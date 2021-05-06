@@ -1,0 +1,698 @@
+This file contains a `by-topic' summary of comments and actions taken 
+between version 14.10 (the second dpANS CL) and version 15.17.
+
+This document is NOT nor does it contain the official X3J13 responses
+to reviewers.   It is just the editor's working notes.
+ -kmp (12-May-94)
+
+=====[ Shepard #1 ]========================================
+
+ACTION:  X3J13 voted to ACCEPT the proposed change.
+
+IMPACT:  EDITORIAL.  No aspect of the language is believed to rely upon
+         the content of this table.  It is for cross-reference purposes 
+         only.
+
+EFFECT:
+
+  Old definition was:
+
+     \displaythree{General Purpose Array-Related Defined Names}{
+     adjust-array&array-in-bounds-p&svref\cr
+     adjustable-array-p&array-rank&upgraded-array-element-type\cr
+     aref&array-rank-limit&upgraded-complex-part-type\cr
+     array-dimension&array-row-major-index&vector\cr
+     array-dimension-limit&array-total-size&vector-pop\cr
+     array-dimensions&array-total-size-limit&vector-push\cr
+     array-element-type&fill-pointer&vector-push-extend\cr
+     array-has-fill-pointer-p&make-array&\cr
+     }
+
+  New table definition is:
+
+     %% Added ARRAY-DISPLACEMENT per Tom Shepard.  (X3J13 approved: May 4-5, 1994)
+     %% -kmp 9-May-94
+     \displaythree{General Purpose Array-Related Defined Names}{
+     adjust-array&array-has-fill-pointer-p&make-array\cr
+     adjustable-array-p&array-in-bounds-p&svref\cr
+     aref&array-rank&upgraded-array-element-type\cr
+     array-dimension&array-rank-limit&upgraded-complex-part-type\cr
+     array-dimension-limit&array-row-major-index&vector\cr
+     array-dimensions&array-total-size&vector-pop\cr
+     array-displacement&array-total-size-limit&vector-push\cr
+     array-element-type&fill-pointer&vector-push-extend\cr
+     }
+
+=====[ Boyer #1 ]========================================
+
+ACTION:  X3J13 voted to REJECT this proposal.
+
+IMPACT:  NONE.
+
+EFFECT:  NONE.
+
+=====[ Boyer #2 ]========================================
+
+ACTION:  X3J13 voted to clarify its wording.
+
+IMPACT:  EDITORIAL.  This change is believed to cause the document to say more
+         clearly what it had already said.
+
+EFFECT:
+
+  In 1.5.2 (Conforming Programs) on page 1-29:
+
+     %% Rewritten per X3J13 and Boyer/Kaufmann/Moore #2 (second public review).
+     %% -kmp 9-May-94
+     % \itemitem{2.} \term{Conforming code} shall not rely on any particular
+     %               interpretation of \term{implementation-dependent} features.
+     \itemitem{2.} \term{Conforming code} may use
+                   \term{implementation-dependent} features and values, 
+                   but shall not rely upon
+                   any particular interpretation of these features and values 
+                   other than those that are discovered by the execution of \term{code}.
+
+=====[ Boyer #3 ]========================================
+
+ACTION:  X3J13 voted to ACCEPT proposed change as an editorial clarification.
+
+IMPACT:  EDITORIAL.  This change just makes glossary cross-references from text
+         which obviously already means what the glossary says the words mean.
+
+EFFECT:
+
+  In 1.4.4.12 on page 1-22:
+
+     %% Added italic font for "argument precedence order" per Boyer/Kaufmann/Moore #3.
+     %% -kmp 9-May-94
+     This information describes the \term{argument precedence order}.
+     If it is omitted, the \term{argument precedence order} is the default (left to right).
+
+=====[ Boyer #4 ]========================================
+
+ACTION:  X3J13 voted to ACCEPT proposed change as an editorial clarification.
+
+IMPACT:  EDITORIAL.  This change makes the document consistent throughout.  
+         (There were numerous other references to the correct usage.)
+
+EFFECT:  
+
+  In 2.1.4.6, page 2-9:
+
+     %% "slash" => "backslash" as an editorial change per Boyer/Kaufmann/Moore #4.
+     %% This was right everywhere else in the manual--shame for it to be wrong here.
+     %% -kmp 9-May-94
+     \term{Backslash} is a \term{single escape} \term{character} in \term{standard syntax}.
+
+=====[ Boyer #5 ]========================================
+
+ACTION:  X3J13 voted to make several wording clarifications that we hope
+         will clear up this confusion.
+
+IMPACT:  EDITORIAL.  This just says differently what we all agree it meant to say
+         before, but hopefully in a less confusing way.
+
+EFFECT:
+
+  Changed the definition of "variable" in the glossary to the following.
+  Note that section SymbolsAsForms is 3.1.2.1.1 (Symbols as Forms).
+
+  \gentry{variable} \Noun\ 
+  %% Rewritten per Boyer/Kaufmann/Moore #5 (by X3J13 vote at May 4-5, 1994 meeting).
+  %% -kmp 9-May-94
+  %   %!!! Moon: This is certainly no valid definition, especially when contrasting
+  %   %          the variable namespace with the function namespace.
+  %   a \term{binding} in which a \term{symbol} is the \term{name}
+  %   used to refer to an \term{object}.
+    a \term{binding} in the ``variable'' \term{namespace}.
+    \Seesection\SymbolsAsForms.
+
+  \gentry{binding} \Noun\ 
+    an association between a \term{name} and that which the \term{name} 
+    denotes.  
+    \gexample{A lexical binding is a lexical association between a 
+              name and its value.}
+  %% Added per Boyer/Kaufmann/Moore #5 (by X3J13 vote at May 4-5, 1994 meeting).
+  %% -kmp 9-May-94
+    When the term \term{binding} is qualified by the name of a \term{namespace},
+    such as ``variable'' or ``function,'' 
+    it restricts the binding to the indicated namespace, as in:
+    \gexample{\specref{let} establishes variable bindings.}
+    or 
+    \gexample{\specref{let} establishes bindings of variables.}
+
+=====[ Boyer #6 ]========================================
+
+ACTION: X3J13 voted to ACCEPT the suggestion.
+
+IMPACT: EDITORIAL.  This just clarifies a situation that is implied in a number
+        of places but not said explicitly.
+
+EFFECT:
+
+  Represents the \term{type} 
+  %% Replaced per Boyer/Kaufmann/Moore #6 (by X3J13 vote at May 4-5, 1994 meeting).
+  %whose only \term{element} is \param{object}.
+  of all \param{x} for which \f{(eql \param{object} \param{x})} is true.
+
+=====[ Boyer #7 ]========================================
+
+ACTION: X3J13 voted to ACCEPT the suggestion.
+
+IMPACT: EDITORIAL.  This restricts the set of things over which COERCE is
+        defined to the set of things which were meaningfully covered under
+        the old, confusing wording.
+
+EFFECT: 
+   
+   \itemitem{\typeref{complex}}
+   
+   %% 4.8.0 7
+   If the \param{result-type} is \typeref{complex} 
+   %% "number" => "real" per Boyer/Kaufmann/Moore #7 (by X3J13 vote at May 4-5, 1994 meeting)
+   %% -kmp 9-May-94
+   and the \term{object} is a \term{real},
+   then the \param{result} is obtained by constructing a \term{complex}
+   whose real part is the \term{object} and
+   whose imaginary part is the result of \term{coercing} an \term{integer} zero
+   to the \term{type} of the \term{object} (using \funref{coerce}).
+   (If the real part is a \term{rational}, however, 
+   then the result must be represented as a \term{rational} rather
+   than a \term{complex}; \seesection\RuleOfCanonRepForComplexRationals.
+   So, for example, \f{(coerce 3 'complex)} is permissible,
+   but will return \f{3}, which is not a \term{complex}.)
+
+=====[ Boyer #8, #9 ]========================================
+
+ACTION: X3J13 voted to make a change to the glossary definition of "function name".
+
+IMPACT: EDTIORIAL.  It was plain from the uses in the text throughout the document
+        that there was an ambiguity of meaning that was widespread.  Since the
+        ambiguity can be pragmatically resolved, we decided to merely make the 
+        ambiguity explicit rather than making a technical change.
+
+EFFECT:
+
+  \gentry{function name} \Noun\ 
+    1. (in an \term{environment})
+       A \term{symbol} or a \term{list} \f{(setf \i{symbol})} 
+       that is the \term{name} of a \term{function} in that \term{environment}.
+  %   \editornote{KMP: I think that in many (but obviously not all) cases where
+  %                `function name' is used, `operator name' might be intended.
+  %                I'll be looking for such cases later, but if readers happen
+  %                to notice any of these, they should feel free to mark them.}%!!!
+  % !!! Moon: Not always with respect to an environment, see e.g., function block name.
+  %           Also, can sometimes name a macro or special operator or be fbound.
+  %% Added per Boyer/Kaufmann/Moore #8,#9 (by X3J13 vote at May 4-5, 1994 meeting)
+  %% -kmp 9-May-94
+    2. A \term{symbol} or a \term{list} \f{(setf \i{symbol})}.
+
+=====[ Boyer #10 ]========================================
+
+ACTION: X3J13 voted to cross-reference something else.
+
+IMPACT: EDITORIAL.  This is just cross-reference information.
+
+EFFECT:
+
+  In CONSTANTLY (on page 5-66):
+
+     \label See Also::
+     
+     %% "not" => "identity" per Boyer/Kaufmann/Moore #10 (by X3J13 vote at May 4-5, 1994 meeting)
+     %% -kmp 9-May-94
+     \funref{identity}
+
+=====[ Boyer #11 ]========================================
+
+ACTION: X3J13 voted to ACCEPT the proposed change.
+
+IMPACT: EDITORIAL.  Simple typo.
+
+EFFECT:
+
+  In SYMBOL (on page 10-2):
+
+     %% "historically" => "historical" per Boyer/Kaufmann/Moore #11 (by X3J13 vote at May 4-5, 1994 meeting)
+     %% -kmp 9-May-94
+
+=====[ Boyer #12 ]========================================
+
+Boyer #12:
+
+ACTION: X3J13 voted to make an editorial clarification.
+
+IMPACT: EDITORIAL.  This situation could not happen in practice because of
+        implications elsewhere in the document.
+
+EFFECT:
+
+  In USE-PACKAGE (on page 11-28):
+
+  Old Wording:
+
+    \param{package}---a \term{package designator}.
+       \Thepackage{keyword} cannot be supplied.
+       \Default{the \term{current package}}
+
+  New Wording:
+
+    \param{package}---a \term{package designator}.
+       \Default{the \term{current package}}
+     %% Next sentence reworded and moved per Boyer/Kaufmann/Moore #12
+     %% (by X3J13 vote at May 4-5, 1994 meeting)
+     %% -kmp 9-May-94
+     % \Thepackage{keyword} cannot be supplied.
+       The \param{package} cannot be \thepackage{keyword}.
+
+=====[ Boyer #13 ]========================================
+
+ACTION: X3J13 voted to ACCEPT the proposed change.
+
+IMPACT: EDITORIAL.  A change to indentation in a coding example,
+        not affecting correct execution -- only presentation.
+
+EFFECT:
+
+  The following indentation will be used in the Notes on page 14-17:
+    
+    %% Indentation fixed per Boyer/Kaufmann/Moore #13 (by X3J13 vote at May 4-5, 1994 meeting)
+    %% -kmp 9-May-94
+    \code
+     (defun subst (old new tree &rest x &key test test-not key)
+       (cond ((satisfies-the-test old tree :test test
+                                  :test-not test-not :key key)
+              new)
+             ((atom tree) tree)
+             (t (let ((a (apply #'subst old new (car tree) x))
+                      (d (apply #'subst old new (cdr tree) x)))
+                  (if (and (eql a (car tree))
+                           (eql d (cdr tree)))
+                      tree
+                      (cons a d))))))
+    \endcode
+
+=====[ Boyer #14 ]========================================
+
+ACTION: X3J13 voted to make changes to the text to clarify the status quo.
+
+IMPACT: EDITORIAL.  These issues were already implied by other passages, but
+        needed to be made less difficult to fish out.
+
+EFFECT:
+
+ 1. In 12.1.3.3 (on page 12-5), second paragraph, inserted "irrational" before 
+    "mathematical function":
+
+      If the arguments to 
+      %% Added "irrational" per Boyer/Kaufmann/Moore #14 (by X3J13 vote at May 4-5, 1994 meeting)
+      %% -kmp 9-May-94
+      %a
+      an irrational
+      mathematical \term{function} are all of type
+      ...
+
+ 2. Inserted a third paragraph:
+
+     %% Added per Boyer/Kaufmann/Moore #14 (by X3J13 vote at May 4-5, 1994 meeting)
+     %% -kmp 9-May-94
+     Float substitutability applies neither to the rational \term{functions} 
+           \funref{+},
+           \funref{-},
+           \funref{*},
+       and \funref{/} 
+     nor to the related \term{operators} 
+           \funref{1+},
+           \funref{1-},
+           \macref{incf},
+           \macref{decf},
+       and \funref{conjugate}.
+     For rational \term{functions},
+       if all arguments are \term{rational},
+         then the result is \term{rational}; 
+       if all arguments are of type \f{(or rational (complex rational))},
+         then the result is of type \f{(or rational (complex rational))}.
+
+ 3. In table 12-8, changed #c(1 0) to 1:
+
+     %% #c(1 0) => 1 per Boyer/Kaufmann/Moore #14 (by X3J13 vote at May 4-5, 1994 meeting)
+     %% -kmp 9-May-94
+     \funref{cis}    & \f{(cis 0) \EV\ 1 \i{or} \#c(1.0 0.0)} \cr
+
+=====[ Boyer #15 ]========================================
+
+ACTION: X3J13 voted to ACCEPT the proposed change.
+
+IMPACT: EDITORIAL.   This was just a typo.  The strange cross-reference was really
+        a cross-reference to a table that had long since gone away.
+
+EFFECT:
+
+  In the text of 12.1.6. (Interval Designators) at bottom of p12-9:
+
+     The \term{compound type specifier} form of the numeric \term{type specifiers}
+     %% Removed per Boyer/Kaufmann/Moore #15 (by X3J13 vote at May 4-5, 1994 meeting)
+     %% -kmp 9-May-94
+     %in \thenextfigure\ 
+     permit the user to specify an interval on the real number line
+
+=====[ Boyer #16 ]========================================
+
+ACTION: X3J13 voted to make a slightly different change.
+
+IMPACT: EDITORIAL.  This is just in the Notes (not a binding part anyway) and
+        only affects cross-reference information.
+
+EFFECT:
+
+  Old text:
+
+     \label See Also::
+     
+     \funref{realpart}, \funref{imagpart}
+     
+     \label Notes::
+     
+     \code
+      #c(a b) \EQ #.(complex a b)
+     \endcode
+
+  New text:
+
+    \label See Also::
+    
+    \funref{realpart},
+    \funref{imagpart},
+    %% Added per Boyer/Kaufmann/Moore #15 (by X3J13 vote at May 4-5, 1994 meeting)
+    %% -kmp 9-May-94
+    {\secref\SharpsignC}
+    
+    \label Notes:\None.
+    
+    %% Removed per Boyer/Kaufmann/Moore #15 (by X3J13 vote at May 4-5, 1994 meeting)
+    %% -kmp 9-May-94
+    % \code
+    %  #c(a b) \EQ #.(complex a b)
+    % \endcode
+
+=====[ Pitman #1 ]========================================
+
+ACTION: X3J13 noted this comment.
+
+IMPACT: NONE.
+
+EFFECT: Moral support.
+
+=====[ Pitman #2 ]========================================
+
+ACTION: X3J13 voted to ACCEPT the proposed action.
+
+IMPACT: EDITORIAL.  Removed an ill-formed and confusing fragment having no
+        useful meaning.
+
+EFFECT:
+
+  %% Removed per Pitman #2 (by X3J13 vote at May 4-5, 1994 meeting)
+  %% -kmp 9-May-94
+  %\auxbnf{symbol-name}{(\term{symbol} | \term{string})}
+
+
+=====[ Pitman #3 ]========================================
+
+ACTION: X3J13 voted to ACCEPT the proposed action.
+
+IMPACT: EDITORIAL. This is just frontmatter.
+
+EFFECT: 
+
+  On page "Credits v" in the front matter, added to 
+  Major Administrative Contributions the following:
+
+     Tyson, Mabry\cr               % Mailing lists at SRI
+
+=====[ Schulenburg #1 ]========================================
+
+
+ In the descriptions of SORT, REMOVE, REMOVE-DUPLICATES and SUBSTITUTE 
+ (and all friends) move the sentence "The result might or might not be simple
+ and might or might not be identical to sequence." to the Notes section
+ and prepend "If sequence is a vector, ...".
+
+ In Description for each of SORT, REMOVE, REMOVE-DUPLICATES, and SUBSTITUTE:
+
+     %% Moved to notes per Schulenburg #1 (by X3J13 vote at May 4-5, 1994 meeting).
+     %% -kmp 9-May-94
+     % The result might or might not be simple, 
+     % and might or might not be \term{identical} to \param{sequence}.
+
+ In Notes for each of SORT, REMOVE, REMOVE-DUPLICATES, and SUBSTITUTE:
+
+     %% Moved from Description per Schulenburg #1 (by X3J13 vote at May 4-5, 1994 meeting).
+     %% -kmp 9-May-94
+     If \param{sequence} is a \term{vector},
+     the result might or might not be simple, 
+     and might or might not be \term{identical} to \param{sequence}.
+
+=====[ Misc #1 ]========================================
+
+ACTION: X3J13 voted to add Loeffler to major contributions list.
+
+IMPACT: EDITORIAL.  This is just frontmatter.
+
+EFFECT:
+
+  On page "Credits v" in the front matter, added to 
+  Major Administrative Contributions the following:
+
+     Loeffler, David D.\cr         % Mailing lists at MCC
+
+=====[ Dalton #1 (First Public Review) ]========================================
+
+ACTION: X3J13 reviewed follow-up comments on this matter and voted
+        to make a minor presentational change.
+
+IMPACT: EDITORIAL.  Just moving text from one place to another.
+
+EFFECT:
+
+  Created new section 1.5.2.2 (Character Set for Portable Code) and moved
+  the sentence "Portable code is written ..." from 1.5.2.1 to this new section.
+
+  In 1.5.2.1:
+
+    %% Moved to its own section (see below) per Dalton #1 (1st Public Review) 
+    %% by X3J13 vote May 4-5, 1994 (after 2nd public review).
+    %% -kmp 9-May-94
+    % %!!! Barmar wonders if this is really the right place for the next sentence.
+    % \term{Portable code} is written using only \term{standard characters}.
+
+  After 1.5.2.1 (to create 1.5.2.2:
+
+    \beginsubsubsection{Character Set for Portable Code}
+    
+    \term{Portable code} is written using only \term{standard characters}.
+    
+    \endsubsubsection%{Character Set for Portable Code}
+
+=====[ Dalton #6 (First Public Review) ]========================================
+
+ACTION: X3J13 reaffirmed its vote to REJECT this proposal.
+
+IMPACT: NONE.
+
+EFFECT: NONE.
+
+=====[ Dalton #7 (First Public Review) ]========================================
+
+ACTION: X3J13 reaffirmed its vote to REJECT this proposal.
+
+IMPACT: NONE.
+
+EFFECT: NONE.
+
+=====[ Dalton #8 (First Public Review) ]========================================
+
+ACTION: X3J13 reaffirmed its vote to REJECT this proposal.
+
+IMPACT: NONE.
+
+EFFECT: NONE.
+
+=====[ Dalton #10 (First Public Review) ]========================================
+
+ACTION: X3J13 reaffirmed its vote to REJECT this proposal.
+
+IMPACT: NONE.
+
+EFFECT: NONE.
+
+=====[ Misc #2 ]========================================
+
+ACTION: X3J13 voted to make detailed changes to the chairmanships.
+
+IMPACT: EDITORIAL.  This is just frontmatter.
+
+EFFECT: 
+
+  1. Change the erroneous title "Committee Chair" to "Ad Hoc Group Chairs":
+      
+	In the credits, on page "Credits v":
+      
+	  %Committee Chairs:&\cr
+	  Ad Hoc Group Chairs:&\cr
+
+  2. Remove Daniels, Waters (iteration), Purdue, and Pitman (Lisp1/Lisp2).
+
+     %% Removed per X3J13 at May 4-5, 1994 meeting. -kmp 9-May-94
+     %                           & Daniels, Andy       \cr
+     ...
+     %% Removed per X3J13 at May 4-5, 1994 meeting. -kmp 9-May-94
+     %                           & Waters, Richard C.  \cr
+     %                           & Perdue, Crispin     \cr
+     ...
+     %% Removed per X3J13 at May 4-5, 1994 meeting. -kmp 9-May-94
+     %                           & Pitman, Kent M.     \cr
+
+  3. Add "Graphics and Windows: Doug Rand."
+
+     %% Added per X3J13 at May 4-5, 1994 meeting. -kmp 9-May-94
+       Graphics \& Windows       & Douglas Rand        \cr
+
+  4. Add Daniels, Purdue to significant technical.  [Also added comments
+     to Pitman, Waters even though they were already in list.]
+
+      Barrett, Kim A.     &         % Review, Cleanups
+      Loosemore, Sandra   \cr       % Review, Compiler
+      Bobrow, Daniel G.   &         % CLOS
+      Margolin, Barry     \cr       % Review
+      Daniels, Andy       &         % Conditions
+      Moon, David A.      \cr       % Review, CLOS, Conditions
+      DeMichiel, Linda G.  &        % CLOS
+      Pitman, Kent M.     \cr       % Review, Conditions, Cleanup, Editor, Lisp1/Lisp2
+      Dussud, Patrick H.  &         % CLOS
+      Perdue, Crispin     \cr       % Iteration
+      Gabriel, Richard P. &         % Review, Editing, CLOS
+      Steele, Guy L., Jr. \cr       % Review, CLtL
+      Ida, Masayuki       &         % Administration of Public Review work
+      Waters, Richard C.  \cr       % Pretty Printer, Iteration
+      Kiczales, Gregor    &         % CLOS
+      White, JonL         \cr       % Review, LOOP
+
+=====[ Misc #3 ]========================================
+
+ACTION: X3J13 voted to clarify in 1.4.4.3 that the consequences are undefined
+        if these type restrictions are violated.
+
+IMPACT: EDITORIAL.  This is implied by other things, but it makes it more clear
+	to say it.
+
+EFFECT:
+
+  In 1.4.4.3 (The ``Arguments and Values'' Section of a Dictionary Entry):
+
+     %% I added the first part of this sentence as editorial discretion 
+     %% since I believe we strongly feel that this is not specified otherwise,
+     %% but we want to avoid an unexpected conflict in case it is. -kmp 9-May-94
+     Except as explicitly specified otherwise,
+     %% Added per X3J13 at May 4-5, 1994 meeting.  -kmp 9-May-94
+     the consequences are undefined if these type restrictions are violated.
+
+  In 1.4.4.22 (The ``Value Type'' Section of a Dictionary Entry):
+  
+     %% I added the first part of this sentence as editorial discretion 
+     %% since I believe we strongly feel that this is not specified otherwise,
+     %% but we want to avoid an unexpected conflict in case it is. -kmp 9-May-94
+     Except as explicitly specified otherwise,
+     %% Added per X3J13 at May 4-5, 1994 meeting.  -kmp 9-May-94
+     the consequences are undefined if this type restriction is violated.
+
+=====[ Editor #1 ]========================================
+
+ACTION: Even though we didn't vote it, I made a number of mechanical changes
+        (version number bumping, modification of change history, etc.)
+        necessary to the mechanics of producing a new draft.
+
+IMPACT: EDITORIAL.  This is just frontmatter.
+
+EFFECT:
+
+ 1. a. Add document numbers of public review comments for reference.
+    b. Correct lost reference to Cerys public review comment #21 in first review.
+    c. Add mention of 3 second public review comments, and Shepard's late comment.
+
+ 09-Sep-92 & Samson    & Public Review Comments (\#1). Documents X3J13/92-1001 to 92-1003.\cr
+ 22-Oct-92 & Rose, Yen & Public Review Comments (\#2). Documents X3J13/92-1101 to 92-1103.\cr
+ 23-Oct-92 & Staley    & Public Review Comments (\#3). Documents X3J13/92-1201 to 92-1204.\cr
+ 09-Nov-92 & Barrett   & Public Review Comments (\#4). Documents X3J13/92-3101 to 92-3110.\cr
+ 11-Nov-92 & Moon      & Public Review Comments (\#5). Documents X3J13/92-3201 to 92-3248.\cr
+ 17-Nov-92 & Loosemore & Public Review Comments (\#6). Documents X3J13/92-1301 to 92-1335.\cr
+ 23-Nov-92 & Margolin  & Public Review Comments (\#7). Documents X3J13/92-1401 to 92-1419.\cr
+ 23-Nov-92 & Withington & Public Review Comments (\#8a). Documents X3J13/92-1501 to 92-1512.\cr\cr
+ 23-Nov-92 & Feinberg   & Public Review Comments (\#8b). Documents X3J13/92-1601 to 92-1603.\cr
+ 23-Nov-92 & Wechsler   & Public Review Comments (\#8c). Documents X3J13/92-1701 to 92-1703.\cr
+ 23-Nov-92 & Moore     & Public Review Comments (\#9). Documents X3J13/92-1801 to 92-1802.\cr
+ 23-Nov-92 & Flanagan  & Public Review Comments (\#10). Documents X3J13/92-1901 to 92-1910.\cr
+ 23-Nov-92 & Dalton    & Public Review Comments (\#11). Documents X3J13/92-2001 to 92-2012.\cr
+ 23-Nov-92 & Gallagher & Public Review Comments (\#12). Documents X3J13/92-2101 to 92-2103.\cr
+ 23-Nov-92 & Norvig    & Public Review Comments (\#13). Documents X3J13/92-2201 to 92-2208.\cr
+ 24-Nov-92 & Robertson & Public Review Comments (\#14). Document X3J13/92-2301.\cr
+ 23-Nov-92 & Kawabe    & Public Review Comments (\#15). Documents X3J13/92-2401 to 92-2403.\cr
+ 23-Nov-92 & Barrett   & Public Review Comments (\#16). Documents X3J13/92-2511 to X3J13/92-2531.\cr
+ 23-Nov-92 & Wertheimer & Public Review Comments (\#17). Document X3J13/92-2601.\cr
+ 24-Nov-92 & Pitman    & Public Review Comments (\#18). Documents X3J13/92-2701 to 92-2742.\cr
+ 24-Nov-92 & Mato Mira & Public Review Comments (\#19). Documents X3J13/92-2801 to 92-2805.\cr
+ 24-Nov-92 & Philpot   & Public Review Comments (\#20). Document X3J13/92-2901.\cr
+ 23-Nov-92 & Cerys     & Public Review Comments (\#21). Document X3J13/92-3001.\cr
+ 30-Aug-93 & Pitman    & Draft 13.65 (for X3J13 consideration). Document X3J13/93-101.\cr
+ 04-Oct-93 & X3J13     & Minor fixes to Draft 13.65 before sending to X3.\cr
+ 05-Oct-93 & Pitman    & Draft 14.10 (for X3 consideration). Document X3J13/93-102.\cr
+ 08-Nov-93 & Dalton    & ``reply to reply to pr comments''.  Document X3J13/94-311.\cr
+ 04-Apr-94 & Boyer,    & \cr
+           & Kaufmann, & \cr
+           & Moore     & Public Review Comments (\#1).  Document X3J13/94-305.\cr
+ 05-Apr-94 & Pitman    & Public Review Comments (\#2).  Document X3J13/94-306.\cr
+ 14-Mar-94 & Schulenburg & Public Review Comments (\#3).  Document X3J13/94-307.\cr
+ 04-Apr-94 & Shepard   & Late commentary.  Document X3J13/94-309.\cr
+ 05-May-94 & X3J13     & Editorial-only changes to Draft 14.10 in response to comments.\cr
+ 10-May-94 & Pitman    & Draft {\rev} (for X3 consideration). Document {\DocumentNumber}.\cr
+
+ 2. Assigned new document number:
+
+    \def\DocumentNumber{X3J13/94-101}
+
+ 3. Document version with be 15.nn.  Date will be assigned automatically 
+    my by checkpoint facility.
+
+ 4. Changed the word "Draft" to "Version" in the banner on each page, 
+    so that when final approvals are made and this is no longer a 
+    "draft proposed" American National Standard, the word "Draft" on 
+    every page won't confuse people.
+
+=====[ Editor #2 ]========================================
+
+ACTION: In both cases in MISC #3, I prepended the phrase
+	  "Except as explicitly specified otherwise,"
+	just to make sure we are not accidentally creating an apparent attempt
+        to override some preexisting text.  [GLS and KAB concurred with me that 
+ 	this was reasonable to do under the heading of "editorial discretion".]
+
+IMPACT: EDITORIAL.  This assures that an editorial change we made in the 
+	meeting is really just that and doesn't have any unexpected surprises.
+
+EFFECT: See Misc #3 above.
+
+=====[ Editor #3 ]========================================
+
+Action: I added index cross-references for the format operations and many
+	readmacros, which were omitted in the previous pass due to
+	lack of time.  (In some cases, it was painful to do the necessary 
+	superquoting to make both TeX and my indexing program happy; 
+        in those cases, I just gave up, figuring some indexing was better 
+	than no indexing.)
+
+IMPACT: EDITORIAL.  This only affects indexing, which is really frontmatter
+        (or backmatter), but in any case is not a formal part of the spec.
+
+EFFECT: Numerous changes to the source files concept-macro-chars.tex, 
+        concept-format.tex, and dict-printer.tex.  See the detailed 
+	Change-Log.text file which accompanies this file.

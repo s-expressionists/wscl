@@ -1,0 +1,1517 @@
+Comparing Draft 14.10 with Draft 15.17 ...
+============================================================
+           File: chap-0-edit-history.tex
+============================================================
+Source compare made by kmp on 5/11/94 23:03:14		-*-Mode:Fundamental-*-
+of File B:>ansi-cl>spec>source>chap-0-edit-history.tex.82
+with File B:>ansi-cl>spec>source>chap-0-edit-history.tex.89
+**** File B:>ansi-cl>spec>source>chap-0-edit-history.tex.82, Line #134:
+ 09-Sep-92 & Samson    & Public Review Comments (\#1).\cr
+ 22-Oct-92 & Rose, Yen & Public Review Comments (\#2).\cr
+ 23-Oct-92 & Staley    & Public Review Comments (\#3).\cr
+ 09-Nov-92 & Barrett   & Public Review Comments (\#4).\cr
+ 11-Nov-92 & Moon      & Public Review Comments (\#5).\cr
+ 17-Nov-92 & Loosemore & Public Review Comments (\#6).\cr
+ 23-Nov-92 & Margolin  & Public Review Comments (\#7).\cr
+ 23-Nov-92 & Withington & Public Review Comments (\#8a).\cr
+ 23-Nov-92 & Feinberg   & Public Review Comments (\#8b).\cr
+ 23-Nov-92 & Wechsler   & Public Review Comments (\#8c).\cr
+ 23-Nov-92 & Moore     & Public Review Comments (\#9).\cr
+ 23-Nov-92 & Flanagan  & Public Review Comments (\#10).\cr
+ 23-Nov-92 & Dalton    & Public Review Comments (\#11).\cr
+ 23-Nov-92 & Gallagher & Public Review Comments (\#12).\cr
+ 23-Nov-92 & Norvig    & Public Review Comments (\#13).\cr
+ 24-Nov-92 & Robertson & Public Review Comments (\#14).\cr
+ 23-Nov-92 & Kawabe    & Public Review Comments (\#15).\cr
+ 23-Nov-92 & Barrett   & Public Review Comments (\#16).\cr
+ 23-Nov-92 & Wertheimer & Public Review Comments (\#17).\cr
+ 24-Nov-92 & Pitman    & Public Review Comments (\#18).\cr
+ 24-Nov-92 & Mato Mira & Public Review Comments (\#19).\cr
+ 24-Nov-92 & Philpot   & Public Review Comments (\#20).\cr
+ 30-Aug-93 & Pitman    & Draft 13.65 (for X3J13 consideration). Document X3J13/93-101.\cr
+ 04-Oct-93 & X3J13     & Minor fixes to Draft 13.65 before sending to X3.\cr
+ 05-Oct-93 & Pitman    & Draft {\rev} (for X3 consideration). Document {\DocumentNumber}.\cr
+%??-???-?? & Pitman    & Draft {\rev} (???).\cr
+} $$
+**** File B:>ansi-cl>spec>source>chap-0-edit-history.tex.89, Line #134:
+ 09-Sep-92 & Samson    & Public Review Comments (\#1). Documents X3J13/92-1001 to 92-1003.\cr
+ 22-Oct-92 & Rose, Yen & Public Review Comments (\#2). Documents X3J13/92-1101 to 92-1103.\cr
+ 23-Oct-92 & Staley    & Public Review Comments (\#3). Documents X3J13/92-1201 to 92-1204.\cr
+ 09-Nov-92 & Barrett   & Public Review Comments (\#4). Documents X3J13/92-3101 to 92-3110.\cr
+ 11-Nov-92 & Moon      & Public Review Comments (\#5). Documents X3J13/92-3201 to 92-3248.\cr
+ 17-Nov-92 & Loosemore & Public Review Comments (\#6). Documents X3J13/92-1301 to 92-1335.\cr
+ 23-Nov-92 & Margolin  & Public Review Comments (\#7). Documents X3J13/92-1401 to 92-1419.\cr
+ 23-Nov-92 & Withington & Public Review Comments (\#8a). Documents X3J13/92-1501 to 92-1512.\cr\cr
+ 23-Nov-92 & Feinberg   & Public Review Comments (\#8b). Documents X3J13/92-1601 to 92-1603.\cr
+ 23-Nov-92 & Wechsler   & Public Review Comments (\#8c). Documents X3J13/92-1701 to 92-1703.\cr
+ 23-Nov-92 & Moore     & Public Review Comments (\#9). Documents X3J13/92-1801 to 92-1802.\cr
+ 23-Nov-92 & Flanagan  & Public Review Comments (\#10). Documents X3J13/92-1901 to 92-1910.\cr
+ 23-Nov-92 & Dalton    & Public Review Comments (\#11). Documents X3J13/92-2001 to 92-2012.\cr
+ 23-Nov-92 & Gallagher & Public Review Comments (\#12). Documents X3J13/92-2101 to 92-2103.\cr
+ 23-Nov-92 & Norvig    & Public Review Comments (\#13). Documents X3J13/92-2201 to 92-2208.\cr
+ 24-Nov-92 & Robertson & Public Review Comments (\#14). Document X3J13/92-2301.\cr
+ 23-Nov-92 & Kawabe    & Public Review Comments (\#15). Documents X3J13/92-2401 to 92-2403.\cr
+ 23-Nov-92 & Barrett   & Public Review Comments (\#16). Documents X3J13/92-2511 to X3J13/92-2531.\cr
+ 23-Nov-92 & Wertheimer & Public Review Comments (\#17). Document X3J13/92-2601.\cr
+ 24-Nov-92 & Pitman    & Public Review Comments (\#18). Documents X3J13/92-2701 to 92-2742.\cr
+ 24-Nov-92 & Mato Mira & Public Review Comments (\#19). Documents X3J13/92-2801 to 92-2805.\cr
+ 24-Nov-92 & Philpot   & Public Review Comments (\#20). Document X3J13/92-2901.\cr
+ 23-Nov-92 & Cerys     & Public Review Comments (\#21). Document X3J13/92-3001.\cr
+ 30-Aug-93 & Pitman    & Draft 13.65 (for X3J13 consideration). Document X3J13/93-101.\cr
+ 04-Oct-93 & X3J13     & Minor fixes to Draft 13.65 before sending to X3.\cr
+ 05-Oct-93 & Pitman    & Draft 14.10 (for X3 consideration). Document X3J13/93-102.\cr
+ 08-Nov-93 & Dalton    & ``reply to reply to pr comments''.  Document X3J13/94-311.\cr
+ 04-Apr-94 & Boyer,    & \cr
+           & Kaufmann, & \cr
+           & Moore     & Public Review Comments (\#1).  Document X3J13/94-305.\cr
+ 05-Apr-94 & Pitman    & Public Review Comments (\#2).  Document X3J13/94-306.\cr
+ 14-Mar-94 & Schulenburg & Public Review Comments (\#3).  Document X3J13/94-307.\cr
+ 04-Apr-94 & Shepard   & Late commentary.  Document X3J13/94-309.\cr
+ 05-May-94 & X3J13     & Editorial-only changes to Draft 14.10 in response to comments.\cr
+ 10-May-94 & Pitman    & Draft {\rev} (for X3 consideration). Document {\DocumentNumber}.\cr
+} $$
+***************
+
+**** File B:>ansi-cl>spec>source>chap-0-edit-history.tex.82, Line #175:
+Committee Chairs:&\cr
+\noalign{\vskip 8pt}
+**** File B:>ansi-cl>spec>source>chap-0-edit-history.tex.89, Line #184:
+%Committee Chairs:&\cr
+Ad Hoc Group Chairs:&\cr
+\noalign{\vskip 8pt}
+***************
+
+**** File B:>ansi-cl>spec>source>chap-0-edit-history.tex.82, Line #180:
+			    & Fahlman, Scott	  \cr
+  Compiler                  & Haflich, Steve      \cr
+			    & Loosemore, Sandra   \cr
+  Conditions                & Pitman, Kent M.     \cr
+                            & Daniels, Andy       \cr
+  Editorial                 & Chapman, Kathy      \cr
+% Graphics \& Windows       & ???                 \cr
+  Iteration                 & White, JonL         \cr
+                            & Waters, Richard C.  \cr
+			    & Perdue, Crispin     \cr
+  Lisp$\sub1$/Lisp$\sub2$   & Gabriel, Richard P. \cr
+			    & Pitman, Kent M.     \cr
+  Macros                    & Haflich, Steve      \cr
+			    & Pitman, Kent M.     \cr
+  Objects                   & Bobrow, Daniel G.   \cr
+**** File B:>ansi-cl>spec>source>chap-0-edit-history.tex.89, Line #190:
+                            & Fahlman, Scott      \cr
+  Compiler                  & Haflich, Steve      \cr
+                            & Loosemore, Sandra   \cr
+  Conditions                & Pitman, Kent M.     \cr
+%% Removed per X3J13 at May 4-5, 1994 meeting. -kmp 9-May-94
+%                           & Daniels, Andy       \cr
+  Editorial                 & Chapman, Kathy      \cr
+%% Added per X3J13 at May 4-5, 1994 meeting. -kmp 9-May-94
+  Graphics \& Windows       & Douglas Rand        \cr
+  Iteration                 & White, JonL         \cr
+%% Removed per X3J13 at May 4-5, 1994 meeting. -kmp 9-May-94
+%                           & Waters, Richard C.  \cr
+%                           & Perdue, Crispin     \cr
+  Lisp$\sub1$/Lisp$\sub2$   & Gabriel, Richard P. \cr
+%% Removed per X3J13 at May 4-5, 1994 meeting. -kmp 9-May-94
+%                           & Pitman, Kent M.     \cr
+  Macros                    & Haflich, Steve      \cr
+                            & Pitman, Kent M.     \cr
+  Objects                   & Bobrow, Daniel G.   \cr
+***************
+
+**** File B:>ansi-cl>spec>source>chap-0-edit-history.tex.82, Line #209:
+Mathis, Robert&               % Convenor; Chairman; Interfacing to X3, etc.
+Barrett, Kim\cr               % Administration of Cleanup
+Steele, Guy L., Jr.&          % Interfacing to X3, etc.; Vice-Chairman; Roberts Rules expert 
+Brown, Gary\cr                % Secretary, Funding administration for DEC's editorship
+Zubkoff, Jan L.&  	      % Meeting organization, Secretary, Funding administration for Lucid
+Eiron, Hanoch\cr              % Funding administration for Franz, Help finding other funding
+Gabriel, Richard P.&          % Interfacing to ISO, etc.
+Haflich, Steve\cr             % Establishment of second-generation CL Editorship
+Masinter, Larry&              % Administration of Cleanup, agenda setting
+Whittemore, Susan\cr          % Funding administration for Apple
+Loosemore, Sandra&            % Administration of Cleanup & Compiler, agenda setting
+Woodyatt, Anne\cr             % Funding administration for Harlequin
+Pitman, Kent M.&              % Administration of Cleanup, agenda setting
+Ida, Masayuki\cr	      % International Liaison to Japan
+}
+**** File B:>ansi-cl>spec>source>chap-0-edit-history.tex.89, Line #223:
+%% Added "Loeffler" and "Tyson" per Pitman #3 (by X3J13 vote at May 4-5, 1994 meeting)
+%% -kmp 9-May-94
+Mathis, Robert&               % Convenor; Chairman; Interfacing to X3, etc.
+Brown, Gary\cr                % Secretary, Funding administration for DEC's editorship
+Steele, Guy L., Jr.&          % Interfacing to X3, etc.; Vice-Chairman; Roberts Rules expert 
+Eiron, Hanoch\cr              % Funding administration for Franz, Help finding other funding
+Zubkoff, Jan L.&  	      % Meeting organization, Secretary, Funding administration for Lucid
+Haflich, Steve\cr             % Establishment of second-generation CL Editorship
+Gabriel, Richard P.&          % Interfacing to ISO, etc.
+Ida, Masayuki\cr	      % International Liaison to Japan
+Masinter, Larry&              % Administration of Cleanup, agenda setting
+Loeffler, David D.\cr	      % Mailing lists at MCC
+Loosemore, Sandra&            % Administration of Cleanup & Compiler, agenda setting
+Tyson, Mabry\cr		      % Mailing lists at SRI
+Pitman, Kent M.&              % Administration of Cleanup, agenda setting
+Whittemore, Susan\cr          % Funding administration for Apple
+Barrett, Kim&                 % Administration of Cleanup
+Woodyatt, Anne\cr             % Funding administration for Harlequin
+}
+***************
+
+**** File B:>ansi-cl>spec>source>chap-0-edit-history.tex.82, Line #235:
+DeMichiel, Linda G. &         % CLOS
+Moon, David A.      \cr       % Review, CLOS, Conditions
+Dussud, Patrick H.  &         % CLOS
+Pitman, Kent M.     \cr       % Review, Conditions, Cleanup, Editor
+Gabriel, Richard P. &         % Review, Editing, CLOS
+Steele, Guy L., Jr. \cr       % Review, CLtL
+Ida, Masayuki       &  	      % Administration of Public Review work
+Waters, Richard C.  \cr       % Pretty Printer
+Kiczales, Gregor    &         % CLOS
+**** File B:>ansi-cl>spec>source>chap-0-edit-history.tex.89, Line #253:
+Daniels, Andy       &         % Conditions
+Moon, David A.      \cr       % Review, CLOS, Conditions
+DeMichiel, Linda G.  &        % CLOS
+Pitman, Kent M.     \cr       % Review, Conditions, Cleanup, Editor, Lisp1/Lisp2
+Dussud, Patrick H.  &         % CLOS
+Perdue, Crispin     \cr       % Iteration
+Gabriel, Richard P. &         % Review, Editing, CLOS
+Steele, Guy L., Jr. \cr       % Review, CLtL
+Ida, Masayuki       &  	      % Administration of Public Review work
+Waters, Richard C.  \cr       % Pretty Printer, Iteration
+Kiczales, Gregor    &         % CLOS
+***************
+
+Done.
+============================================================
+           File: concept-arrays.tex
+============================================================
+Source compare made by kmp on 5/11/94 13:45:14
+of File B:>ansi-cl>spec>source>concept-arrays.tex.19
+with File B:>ansi-cl>spec>source>concept-arrays.tex.20
+**** File B:>ansi-cl>spec>source>concept-arrays.tex.19, Line #130:
+\displaythree{General Purpose Array-Related Defined Names}{
+adjust-array&array-in-bounds-p&svref\cr
+adjustable-array-p&array-rank&upgraded-array-element-type\cr
+aref&array-rank-limit&upgraded-complex-part-type\cr
+array-dimension&array-row-major-index&vector\cr
+array-dimension-limit&array-total-size&vector-pop\cr
+array-dimensions&array-total-size-limit&vector-push\cr
+array-element-type&fill-pointer&vector-push-extend\cr
+array-has-fill-pointer-p&make-array&\cr
+}
+**** File B:>ansi-cl>spec>source>concept-arrays.tex.20, Line #130:
+%% Added ARRAY-DISPLACEMENT per Tom Shepard.  (X3J13 approved: May 4-5, 1994)
+%% -kmp 9-May-94
+\displaythree{General Purpose Array-Related Defined Names}{
+adjust-array&array-has-fill-pointer-p&make-array\cr
+adjustable-array-p&array-in-bounds-p&svref\cr
+aref&array-rank&upgraded-array-element-type\cr
+array-dimension&array-rank-limit&upgraded-complex-part-type\cr
+array-dimension-limit&array-row-major-index&vector\cr
+array-dimensions&array-total-size&vector-pop\cr
+array-displacement&array-total-size-limit&vector-push\cr
+array-element-type&fill-pointer&vector-push-extend\cr
+}
+***************
+
+Done.
+============================================================
+           File: concept-conformance.tex
+============================================================
+Source compare made by kmp on 5/11/94 13:45:15
+of File B:>ansi-cl>spec>source>concept-conformance.tex.66
+with File B:>ansi-cl>spec>source>concept-conformance.tex.68
+**** File B:>ansi-cl>spec>source>concept-conformance.tex.66:
+\itemitem{2.} \term{Conforming code} shall not rely on any particular
+              interpretation of \term{implementation-dependent} features.
+
+**** File B:>ansi-cl>spec>source>concept-conformance.tex.68, Line #130:
+
+%% Rewritten per X3J13 and Boyer/Kaufmann/Moore #2 (second public review).
+%% -kmp 9-May-94
+% \itemitem{2.} \term{Conforming code} shall not rely on any particular
+%               interpretation of \term{implementation-dependent} features.
+\itemitem{2.} \term{Conforming code} may use
+	      \term{implementation-dependent} features and values, 
+	      but shall not rely upon
+	      any particular interpretation of these features and values 
+	      other than those that are discovered by the execution of \term{code}.
+
+***************
+
+**** File B:>ansi-cl>spec>source>concept-conformance.tex.66, Line #191:
+ 
+%!!! Barmar wonders if this is really the right place for the next sentence.
+\term{Portable code} is written using only \term{standard characters}.
+
+**** File B:>ansi-cl>spec>source>concept-conformance.tex.68, Line #199:
+
+%% Moved to its own section (see below) per Dalton #1 (1st Public Review) 
+%% by X3J13 vote May 4-5, 1994 (after 2nd public review).
+%% -kmp 9-May-94
+% %!!! Barmar wonders if this is really the right place for the next sentence.
+% \term{Portable code} is written using only \term{standard characters}.
+
+***************
+
+**** File B:>ansi-cl>spec>source>concept-conformance.tex.66, Line #257:
+\endsubSection%{Conforming Programs}
+**** File B:>ansi-cl>spec>source>concept-conformance.tex.68, Line #268:
+\beginsubsubsection{Character Set for Portable Code}
+
+\term{Portable code} is written using only \term{standard characters}.
+
+\endsubsubsection%{Character Set for Portable Code}
+
+\endsubSection%{Conforming Programs}
+***************
+
+Done.
+============================================================
+           File: concept-definitions.tex
+============================================================
+Source compare made by kmp on 5/11/94 13:45:16
+of File B:>ansi-cl>spec>source>concept-definitions.tex.174
+with File B:>ansi-cl>spec>source>concept-definitions.tex.177
+**** File B:>ansi-cl>spec>source>concept-definitions.tex.174, Line #596:
+\beginsubSection{Error Terminology}\idxterm{error terminology}
+\DefineSection{ErrorTerms}
+**** File B:>ansi-cl>spec>source>concept-definitions.tex.177, Line #596:
+\beginsubSection{Error Terminology}\idxtext{error terminology}
+\DefineSection{ErrorTerms}
+***************
+
+**** File B:>ansi-cl>spec>source>concept-definitions.tex.174, Line #885:
+\endsubsubsection%{The ``Arguments and Values'' Section of a Dictionary Entry}
+**** File B:>ansi-cl>spec>source>concept-definitions.tex.177, Line #885:
+%% I added the first part of this sentence as editorial discretion 
+%% since I believe we strongly feel that this is not specified otherwise,
+%% but we want to avoid an unexpected conflict in case it is. -kmp 9-May-94
+Except as explicitly specified otherwise,
+%% Added per X3J13 at May 4-5, 1994 meeting.  -kmp 9-May-94
+the consequences are undefined if these type restrictions are violated.
+
+\endsubsubsection%{The ``Arguments and Values'' Section of a Dictionary Entry}
+***************
+
+**** File B:>ansi-cl>spec>source>concept-definitions.tex.174, Line #1042:
+This information describes the argument precedence order.
+If it is omitted, the argument precedence order is the default (left to right).
+
+**** File B:>ansi-cl>spec>source>concept-definitions.tex.177, Line #1049:
+%% Added italic font for "argument precedence order" per Boyer/Kaufmann/Moore #3.
+%% -kmp 9-May-94
+This information describes the \term{argument precedence order}.
+If it is omitted, the \term{argument precedence order} is the default (left to right).
+
+***************
+
+**** File B:>ansi-cl>spec>source>concept-definitions.tex.174, Line #1382:
+\endsubsubsection%{The ``Value Type'' Section of a Dictionary Entry}
+**** File B:>ansi-cl>spec>source>concept-definitions.tex.177, Line #1391:
+%% I added the first part of this sentence as editorial discretion 
+%% since I believe we strongly feel that this is not specified otherwise,
+%% but we want to avoid an unexpected conflict in case it is. -kmp 9-May-94
+Except as explicitly specified otherwise,
+%% Added per X3J13 at May 4-5, 1994 meeting.  -kmp 9-May-94
+the consequences are undefined if this type restriction is violated.
+
+\endsubsubsection%{The ``Value Type'' Section of a Dictionary Entry}
+***************
+
+Done.
+============================================================
+           File: concept-format.tex
+============================================================
+Source compare made by kmp on 5/11/94 13:45:18
+of File B:>ansi-cl>spec>source>concept-format.tex.41
+with File B:>ansi-cl>spec>source>concept-format.tex.44
+**** Section "Tilde C: Character"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #137:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #137:
+\idxtext{C (format directive)}\idxtext{Tilde C (format directive)}
+
+
+***************
+
+**** Section "Tilde Percent: Newline"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #207:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #209:
+\idxtext{Percent (format directive)}\idxtext{Tilde Percent (format directive)}
+
+***************
+
+**** Section "Tilde Ampersand: Fresh-Line"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #218:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #221:
+\idxtext{Ampersand (format directive)}\idxtext{Tilde Ampersand (format directive)}
+
+***************
+
+**** Section "Tilde Vertical-Bar: Page"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #231:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #235:
+\idxtext{Vertical-Bar (format directive)}\idxtext{Tilde Vertical-Bar (format directive)}
+
+***************
+
+**** Section "Tilde Tilde: Tilde"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #242:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #247:
+\idxtext{Tilde (format directive)}\idxtext{Tilde Tilde (format directive)}
+
+***************
+
+**** Section "Tilde R: Radix"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #252:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #258:
+\idxtext{R (format directive)}\idxtext{Tilde R (format directive)}
+
+***************
+
+**** Section "Tilde D: Decimal"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #314:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #321:
+\idxtext{D (format directive)}\idxtext{Tilde D (format directive)}
+
+***************
+
+**** Section "Tilde B: Binary"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #365:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #373:
+\idxtext{B (format directive)}\idxtext{Tilde B (format directive)}
+
+***************
+
+**** Section "Tilde O: Octal"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #385:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #394:
+\idxtext{O (format directive)}\idxtext{Tilde O (format directive)}
+
+***************
+
+**** Section "Tilde X: Hexadecimal"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #405:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #415:
+\idxtext{X (format directive)}\idxtext{Tilde X (format directive)}
+
+***************
+
+**** Section "Tilde F: Fixed-Format Floating-Point"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #429:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #440:
+\idxtext{F (format directive)}\idxtext{Tilde F (format directive)}
+
+***************
+
+**** Section "Tilde E: Exponential Floating-Point"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #534:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #546:
+\idxtext{E (format directive)}\idxtext{Tilde E (format directive)}
+
+***************
+
+**** Section "Tilde G: General Floating-Point"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #667:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #680:
+\idxtext{G (format directive)}\idxtext{Tilde G (format directive)}
+
+***************
+
+**** Section "Tilde Dollarsign: Monetary Floating-Point"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #716:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #730:
+\idxtext{Dollarsign (format directive)}\idxtext{Tilde Dollarsign (format directive)}
+
+***************
+
+**** Section "Tilde A: Aesthetic"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #787:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #802:
+\idxtext{A (format directive)}\idxtext{Tilde A (format directive)}
+
+***************
+
+**** Section "Tilde S: Standard"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #830:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #846:
+\idxtext{S (format directive)}\idxtext{Tilde S (format directive)}
+
+***************
+
+**** Section "Tilde W: Write"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #850:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #867:
+\idxtext{W (format directive)}\idxtext{Tilde W (format directive)}
+
+***************
+
+**** Section "Tilde Underscore: Conditional Newline"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #876:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #894:
+\idxtext{Underscore (format directive)}\idxtext{Tilde Underscore (format directive)}
+
+***************
+
+**** Section "Tilde Less-Than-Sign: Logical Block"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #886:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #905:
+\idxtext{Less-Than-Sign (format directive)}\idxtext{Tilde Less-Than-Sign (format directive)}
+
+***************
+
+**** Section "Tilde I: Indent"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #955:
+ 
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #975:
+\idxtext{I (format directive)}\idxtext{Tilde I (format directive)}
+ 
+***************
+
+**** Section "Tilde Slash: Call Function"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #964:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #985:
+\idxtext{Slash (format directive)}\idxtext{Tilde Slash (format directive)}
+
+***************
+
+**** Section "Tilde T: Tabulate"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #1012:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #1034:
+\idxtext{T (format directive)}\idxtext{Tilde T (format directive)}
+
+***************
+
+**** Section "Tilde Less-Than-Sign: Justification"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #1068:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #1091:
+\idxtext{Less-Than-Sign (format directive)}\idxtext{Tilde Less-Than-Sign (format directive)}
+
+***************
+
+**** Section "Tilde Greater-Than-Sign: End of Justification"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #1151:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #1175:
+\idxtext{Greater-Than-Sign (format directive)}\idxtext{Tilde Greater-Than-Sign (format directive)}
+
+***************
+
+**** Section "Tilde Asterisk: Go-To"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #1164:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #1189:
+\idxtext{Asterisk (format directive)}\idxtext{Tilde Asterisk (format directive)}
+
+***************
+
+**** Section "Tilde Left-Bracket: Conditional Expression"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #1192:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #1218:
+\idxtext{Left-Bracket (format directive)}\idxtext{Tilde Left-Bracket (format directive)}
+
+***************
+
+**** Section "Tilde Right-Bracket: End of Conditional Expression"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #1271:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #1298:
+\idxtext{Right-Bracket (format directive)}\idxtext{Tilde Right-Bracket (format directive)}
+
+***************
+
+**** Section "Tilde Left-Brace: Iteration"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #1280:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #1308:
+\idxtext{Left-Brace (format directive)}\idxtext{Tilde Left-Brace (format directive)}
+
+***************
+
+**** Section "Tilde Right-Brace: End of Iteration"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #1390:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #1419:
+\idxtext{Right-Brace (format directive)}\idxtext{Tilde Right-Brace (format directive)}
+
+***************
+
+**** Section "Tilde Question-Mark: Recursive Processing"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #1399:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #1429:
+\idxtext{Question-Mark (format directive)}\idxtext{Tilde Question-Mark (format directive)}
+
+***************
+
+**** Section "Tilde Left-Paren: Case Conversion"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #1443:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #1474:
+\idxtext{Left-Paren (format directive)}\idxtext{Tilde Left-Paren (format directive)}
+
+***************
+
+**** Section "Tilde Right-Paren: End of Case Conversion"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #1492:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #1524:
+\idxtext{Right-Paren (format directive)}\idxtext{Tilde Right-Paren (format directive)}
+
+***************
+
+**** Section "Tilde P: Plural"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #1501:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #1534:
+\idxtext{P (format directive)}\idxtext{Tilde P (format directive)}
+
+***************
+
+**** Section "Tilde Semicolon: Clause Separator"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #1534:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #1568:
+\idxtext{Semicolon (format directive)}\idxtext{Tilde Semicolon (format directive)}
+
+***************
+
+**** Section "Tilde Circumflex: Escape Upward"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #1543:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #1578:
+\idxtext{Circumflex (format directive)}\idxtext{Tilde Circumflex (format directive)}
+
+***************
+
+**** Section "Tilde Newline: Ignored Newline"
+**** File B:>ansi-cl>spec>source>concept-format.tex.41, Line #1648:
+
+**** File B:>ansi-cl>spec>source>concept-format.tex.44, Line #1684:
+\idxtext{Newline (format directive)}\idxtext{Tilde Newline (format directive)}
+
+***************
+
+Done.
+============================================================
+           File: concept-glossary.tex
+============================================================
+Source compare made by kmp on 5/11/94 13:45:21
+of File B:>ansi-cl>spec>source>concept-glossary.tex.210
+with File B:>ansi-cl>spec>source>concept-glossary.tex.212
+**** Glossary entry "binding"
+**** File B:>ansi-cl>spec>source>concept-glossary.tex.210, Line #488:
+ 
+**** File B:>ansi-cl>spec>source>concept-glossary.tex.212, Line #488:
+%% Added per Boyer/Kaufmann/Moore #5 (by X3J13 vote at May 4-5, 1994 meeting).
+%% -kmp 9-May-94
+  When the term \term{binding} is qualified by the name of a \term{namespace},
+  such as ``variable'' or ``function,'' 
+  it restricts the binding to the indicated namespace, as in:
+  \gexample{\specref{let} establishes variable bindings.}
+  or 
+  \gexample{\specref{let} establishes bindings of variables.}
+ 
+***************
+
+**** Glossary entry "function name"
+**** File B:>ansi-cl>spec>source>concept-glossary.tex.210, Line #2189:
+\gentry{function name} \Noun\ (in an \term{environment})
+  A \term{symbol} or a \term{list} \f{(setf \i{symbol})} 
+  that is the \term{name} of a \term{function} in that \term{environment}.
+**** File B:>ansi-cl>spec>source>concept-glossary.tex.212, Line #2197:
+\gentry{function name} \Noun\ 
+  1. (in an \term{environment})
+     A \term{symbol} or a \term{list} \f{(setf \i{symbol})} 
+     that is the \term{name} of a \term{function} in that \term{environment}.
+***************
+
+**** Glossary entry "function name"
+**** File B:>ansi-cl>spec>source>concept-glossary.tex.210, Line #2198:
+
+**** File B:>ansi-cl>spec>source>concept-glossary.tex.212, Line #2207:
+%% Added per Boyer/Kaufmann/Moore #8,#9 (by X3J13 vote at May 4-5, 1994 meeting)
+%% -kmp 9-May-94
+  2. A \term{symbol} or a \term{list} \f{(setf \i{symbol})}.
+
+***************
+
+**** Glossary entry "variable"
+**** File B:>ansi-cl>spec>source>concept-glossary.tex.210, Line #5003:
+%!!! Moon: This is certainly no valid definition, especially when contrasting
+%          the variable namespace with the function namespace.
+\gentry{variable} \Noun\ 
+  a \term{binding} in which a \term{symbol} is the \term{name}
+  used to refer to an \term{object}.
+ 
+**** File B:>ansi-cl>spec>source>concept-glossary.tex.212, Line #5015:
+\gentry{variable} \Noun\ 
+%% Rewritten per Boyer/Kaufmann/Moore #5 (by X3J13 vote at May 4-5, 1994 meeting).
+%% -kmp 9-May-94
+%   %!!! Moon: This is certainly no valid definition, especially when contrasting
+%   %          the variable namespace with the function namespace.
+%   a \term{binding} in which a \term{symbol} is the \term{name}
+%   used to refer to an \term{object}.
+  a \term{binding} in the ``variable'' \term{namespace}.
+  \Seesection\SymbolsAsForms.
+ 
+***************
+
+Done.
+============================================================
+           File: concept-macro-chars.tex
+============================================================
+Source compare made by kmp on 5/11/94 13:45:27
+of File B:>ansi-cl>spec>source>concept-macro-chars.tex.140
+with File B:>ansi-cl>spec>source>concept-macro-chars.tex.152
+**** Section "Left-Parenthesis"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #18:
+\DefineSection{LeftParen}
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #18:
+\DefineSection{LeftParen}\idxcode{(}\idxtext{Left-Parenthesis (reader macro)}\idxref{list}
+
+***************
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #52:
+If a \term{token} that is just a dot
+not immediately preceded by an escape character
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #52
+If a \term{token} that is just a dot\idxterm{dot}\idxcode{.}
+not immediately preceded by an escape character
+***************
+
+**** Section "Right-Parenthesis"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #88:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #88:
+\idxcode{)}\idxtext{Right-Parenthesis (reader macro)}
+
+***************
+
+**** Section "Single-Quote"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #99:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #100:
+\idxcode{'}\idxtext{Single-Quote (reader macro)}\idxtext{quotation (of forms)}\idxref{quote}
+
+***************
+
+**** Section "Semicolon"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #123:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #125:
+\idxcode{;}\idxtext{Semicolon (reader macro)}\idxtext{comment}
+
+***************
+
+**** Section "Double-Quote"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #231:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #234:
+\idxtext{Double-Quote (reader macro)}\idxtext{quotation (of strings)}\idxref{string}
+
+***************
+
+**** Section "Backquote"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #281:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #285:
+\idxcode{`}\idxtext{Backquote (reader macro)}\idxtext{quotation (of forms)}
+\idxref{quote}\idxref{list}\idxref{cons}
+
+***************
+
+**** Section "Comma"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #466:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #472:
+\idxcode{,}\idxtext{Comma (reader macro)}\idxtext{quotation (of forms)}
+\idxref{quote}\idxref{list}\idxref{cons}
+
+***************
+
+**** Section "Sharpsign"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #476:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #484:
+\idxcode{\#}\idxtext{Sharpsign (reader macro)}
+
+***************
+
+**** Section "Sharpsign Backslash"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #615:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #624:
+\idxtext{Sharpsign Backslash (reader macro)}\idxtext{Backslash (sharpsign reader macro)}\idxref{character}
+
+***************
+
+**** Section "Sharpsign Single-Quote"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #670:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #680:
+\idxtext{Sharpsign Single-Quote (reader macro)}\idxtext{Single-Quote (sharpsign reader macro)}\idxref{function}
+
+***************
+
+**** Section "Sharpsign Left-Parenthesis"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #694:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #705:
+\idxtext{Sharpsign Left-Parenthesis (reader macro)}\idxtext{Left-Parenthesis (sharpsign reader macro)}\idxref{vector}\idxref{simple-vector}
+
+***************
+
+**** Section "Sharpsign Asterisk"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #746:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #758:
+\idxtext{Sharpsign Asterisk (reader macro)}\idxtext{Asterisk (sharpsign reader macro)}\idxref{bit-vector}\idxref{simple-bit-vector}
+
+***************
+
+**** Section "Sharpsign Colon"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #806:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #819:
+\idxtext{Sharpsign Colon (reader macro)}\idxtext{Colon (sharpsign reader macro)}\idxref{symbol}
+
+***************
+
+**** Section "Sharpsign Dot"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #833:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #847:
+\idxtext{Sharpsign Dot (reader macro)}\idxtext{Dot (sharpsign reader macro)}\idxref{eval}\idxref{*read-eval*}
+
+***************
+
+**** Section "Sharpsign B"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #873:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #888:
+\idxtext{Sharpsign B (reader macro)}\idxtext{B (sharpsign reader macro)}\idxref{*read-base*}
+
+***************
+
+**** Section "Sharpsign O"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #893:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #909:
+\idxtext{Sharpsign O (reader macro)}\idxtext{O (sharpsign reader macro)}\idxref{*read-base*}
+
+***************
+
+**** Section "Sharpsign X"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #914:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #931:
+\idxtext{Sharpsign X (reader macro)}\idxtext{X (sharpsign reader macro)}\idxref{*read-base*}
+
+***************
+
+**** Section "Sharpsign R"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #935:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #953:
+\idxtext{Sharpsign R (reader macro)}\idxtext{R (sharpsign reader macro)}\idxref{*read-base*}
+
+***************
+
+**** Section "Sharpsign C"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #980:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #999:
+\idxtext{Sharpsign C (reader macro)}\idxtext{C (sharpsign reader macro)}\idxref{complex}
+
+***************
+
+**** Section "Sharpsign A"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #1017:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #1037:
+\idxtext{Sharpsign A (reader macro)}\idxtext{A (sharpsign reader macro)}\idxref{array}
+
+***************
+
+**** Section "Sharpsign S"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #1067:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #1088:
+\idxtext{Sharpsign S (reader macro)}\idxtext{S (sharpsign reader macro)}\idxref{structure}
+
+***************
+
+**** Section "Sharpsign P"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #1105:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #1127:
+\idxtext{Sharpsign P (reader macro)}\idxtext{P (sharpsign reader macro)}\idxref{pathname}
+
+***************
+
+**** Section "Sharpsign Equal-Sign"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #1125:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #1148:
+\idxtext{Sharpsign Equal-Sign (reader macro)}\idxtext{Equal-Sign (sharpsign reader macro)}\idxref{*print-circle*}
+
+***************
+
+**** Section "Sharpsign Sharpsign"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #1140:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #1164:
+\idxtext{Sharpsign Sharpsign (reader macro)}\idxtext{Sharpsign (sharpsign reader macro)}\idxref{*print-circle*}
+
+***************
+
+**** Section "Sharpsign Plus"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #1178:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #1203:
+\idxtext{Sharpsign Plus (reader macro)}\idxtext{Plus (sharpsign reader macro)}\idxref{*features*}
+
+***************
+
+**** Section "Sharpsign Minus"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #1209:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #1235:
+\idxtext{Sharpsign Minus (reader macro)}\idxtext{Minus (sharpsign reader macro)}\idxref{*features*}
+
+***************
+
+**** Section "Sharpsign Vertical-Bar"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #1225:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #1252:
+\idxtext{Sharpsign Vertical-Bar (reader macro)}\idxtext{Vertical-Bar (sharpsign reader macro)}\idxtext{comment}
+
+***************
+
+**** Section "Sharpsign Less-Than-Sign"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #1323:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #1351:
+\idxtext{Sharpsign Less-Than-Sign (reader macro)}\idxtext{Less-Than-Sign (sharpsign reader macro)}
+
+***************
+
+**** Section "Sharpsign Whitespace"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #1338:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #1367:
+\idxtext{Sharpsign Whitespace}
+
+***************
+
+**** Section "Sharpsign Right-Parenthesis"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #1351:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #1381:
+\idxtext{Sharpsign Right-Parenthesis}
+
+***************
+
+**** Section "Re-Reading Abbreviated Expressions"
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.140, Line #1369:
+
+**** File B:>ansi-cl>spec>source>concept-macro-chars.tex.152, Line #1400:
+\idxtext{Dot Dot}\idxcode{..}
+\idxtext{Dot Dot Dot}\idxcode{...}
+\idxtext{Sharpsign Whitespace}\idxtext{Sharpsign Right-Parenthesis}
+
+***************
+
+Done.
+============================================================
+           File: concept-numbers.tex
+============================================================
+Source compare made by kmp on 5/11/94 13:45:31
+of File B:>ansi-cl>spec>source>concept-numbers.tex.34
+with File B:>ansi-cl>spec>source>concept-numbers.tex.35
+**** File B:>ansi-cl>spec>source>concept-numbers.tex.34, Line #267:
+If the arguments to a mathematical \term{function} are all of type
+  \f{(or rational (complex rational))} 
+**** File B:>ansi-cl>spec>source>concept-numbers.tex.35, Line #267:
+If the arguments to 
+%% Added "irrational" per Boyer/Kaufmann/Moore #14 (by X3J13 vote at May 4-5, 1994 meeting)
+%% -kmp 9-May-94
+%a
+an irrational
+mathematical \term{function} are all of type
+  \f{(or rational (complex rational))} 
+***************
+
+**** File B:>ansi-cl>spec>source>concept-numbers.tex.34, Line #286:
+\tablefigtwo{Functions Affected by Rule of Float Substitutability}%
+**** File B:>ansi-cl>spec>source>concept-numbers.tex.35, Line #291:
+%% Added per Boyer/Kaufmann/Moore #14 (by X3J13 vote at May 4-5, 1994 meeting)
+%% -kmp 9-May-94
+Float substitutability applies neither to the rational \term{functions} 
+      \funref{+},
+      \funref{-},
+      \funref{*},
+  and \funref{/} 
+nor to the related \term{operators} 
+      \funref{1+},
+      \funref{1-},
+      \macref{incf},
+      \macref{decf},
+  and \funref{conjugate}.
+For rational \term{functions},
+  if all arguments are \term{rational},
+    then the result is \term{rational}; 
+  if all arguments are of type \f{(or rational (complex rational))},
+    then the result is of type \f{(or rational (complex rational))}.
+
+\tablefigtwo{Functions Affected by Rule of Float Substitutability}%
+***************
+
+**** File B:>ansi-cl>spec>source>concept-numbers.tex.34, Line #295:
+\funref{cis}    & \f{(cis 0) \EV\ \#c(1 0) \i{or} \#c(1.0 0.0)} \cr
+\funref{cos}    & \f{(cos 0) \EV\ 1 \i{or} 1.0} \cr
+**** File B:>ansi-cl>spec>source>concept-numbers.tex.35, Line #319:
+%% #c(1 0) => 1 per Boyer/Kaufmann/Moore #14 (by X3J13 vote at May 4-5, 1994 meeting)
+%% -kmp 9-May-94
+\funref{cis}    & \f{(cis 0) \EV\ 1 \i{or} \#c(1.0 0.0)} \cr
+\funref{cos}    & \f{(cos 0) \EV\ 1 \i{or} 1.0} \cr
+***************
+
+**** File B:>ansi-cl>spec>source>concept-numbers.tex.34, Line #574:
+in \thenextfigure\ permit the user to specify an interval on the real number line
+which describe a \term{subtype} of the \term{type} which would be described by the
+**** File B:>ansi-cl>spec>source>concept-numbers.tex.35, Line #600:
+%% Removed per Boyer/Kaufmann/Moore #15 (by X3J13 vote at May 4-5, 1994 meeting)
+%% -kmp 9-May-94
+%in \thenextfigure\ 
+permit the user to specify an interval on the real number line
+which describe a \term{subtype} of the \term{type} which would be described by the
+***************
+
+Done.
+============================================================
+           File: concept-syntax.tex
+============================================================
+Source compare made by kmp on 5/11/94 13:45:33
+of File B:>ansi-cl>spec>source>concept-syntax.tex.92
+with File B:>ansi-cl>spec>source>concept-syntax.tex.93
+**** File B:>ansi-cl>spec>source>concept-syntax.tex.92, Line #572:
+\term{Slash} is a \term{single escape} \term{character}
+in \term{standard syntax}.
+
+**** File B:>ansi-cl>spec>source>concept-syntax.tex.93, Line #572:
+%% "slash" => "backslash" as an editorial change per Boyer/Kaufmann/Moore #4.
+%% This was right everywhere else in the manual--shame for it to be wrong here.
+%% -kmp 9-May-94
+\term{Backslash} is a \term{single escape} \term{character} in \term{standard syntax}.
+
+***************
+
+Done.
+============================================================
+           File: dict-conses.tex
+============================================================
+Source compare made by kmp on 5/11/94 13:45:34
+of File B:>ansi-cl>spec>source>dict-conses.tex.195
+with File B:>ansi-cl>spec>source>dict-conses.tex.196
+**** File B:>ansi-cl>spec>source>dict-conses.tex.195, Line #948:
+\code
+ (defun subst (old new tree &rest x &key test test-not key)
+   (cond ((satisfies-the-test old tree :test test
+                                 :test-not test-not :key key)
+         new)
+        ((atom tree) tree)
+        (t (let ((a (apply #'subst old new (car tree) x))
+                 (d (apply #'subst old new (cdr tree) x)))
+             (if (and (eql a (car tree))
+                      (eql d (cdr tree)))
+                 tree
+                 (cons a d))))))
+\endcode
+**** File B:>ansi-cl>spec>source>dict-conses.tex.196, Line #948:
+%% Indentation fixed per Boyer/Kaufmann/Moore #13 (by X3J13 vote at May 4-5, 1994 meeting)
+%% -kmp 9-May-94
+\code
+ (defun subst (old new tree &rest x &key test test-not key)
+   (cond ((satisfies-the-test old tree :test test
+                              :test-not test-not :key key)
+          new)
+         ((atom tree) tree)
+         (t (let ((a (apply #'subst old new (car tree) x))
+                  (d (apply #'subst old new (cdr tree) x)))
+              (if (and (eql a (car tree))
+                       (eql d (cdr tree)))
+                  tree
+                  (cons a d))))))
+\endcode
+***************
+
+Done.
+============================================================
+           File: dict-flow.tex
+============================================================
+Source compare made by kmp on 5/11/94 13:45:39
+of File B:>ansi-cl>spec>source>dict-flow.tex.322
+with File B:>ansi-cl>spec>source>dict-flow.tex.323
+**** File B:>ansi-cl>spec>source>dict-flow.tex.322, Line #4228:
+\funref{not}
+
+**** File B:>ansi-cl>spec>source>dict-flow.tex.323, Line #4228:
+%% "not" => "identity" per Boyer/Kaufmann/Moore #10 (by X3J13 vote at May 4-5, 1994 meeting)
+%% -kmp 9-May-94
+\funref{identity}
+
+***************
+
+Done.
+============================================================
+           File: dict-numbers.tex
+============================================================
+Source compare made by kmp on 5/11/94 13:45:48
+of File B:>ansi-cl>spec>source>dict-numbers.tex.207
+with File B:>ansi-cl>spec>source>dict-numbers.tex.208
+**** File B:>ansi-cl>spec>source>dict-numbers.tex.207, Line #3357:
+\funref{realpart}, \funref{imagpart}
+
+\label Notes::
+
+\code
+ #c(a b) \EQ #.(complex a b)
+\endcode
+\endcom
+**** File B:>ansi-cl>spec>source>dict-numbers.tex.208, Line #3357:
+\funref{realpart},
+\funref{imagpart},
+%% Added per Boyer/Kaufmann/Moore #15 (by X3J13 vote at May 4-5, 1994 meeting)
+%% -kmp 9-May-94
+{\secref\SharpsignC}
+
+\label Notes:\None.
+
+%% Removed per Boyer/Kaufmann/Moore #15 (by X3J13 vote at May 4-5, 1994 meeting)
+%% -kmp 9-May-94
+% \code
+%  #c(a b) \EQ #.(complex a b)
+% \endcode
+
+\endcom
+***************
+
+Done.
+============================================================
+           File: dict-packages.tex
+============================================================
+Source compare made by kmp on 5/11/94 13:45:55
+of File B:>ansi-cl>spec>source>dict-packages.tex.167
+with File B:>ansi-cl>spec>source>dict-packages.tex.169
+**** File B:>ansi-cl>spec>source>dict-packages.tex.167, Line #1486:
+  \Thepackage{keyword} cannot be supplied.
+  \Default{the \term{current package}}
+\endissue{PACKAGE-FUNCTION-CONSISTENCY:MORE-PERMISSIVE}
+**** File B:>ansi-cl>spec>source>dict-packages.tex.169, Line #1486:
+  \Default{the \term{current package}}
+%% Next sentence reworded and moved per Boyer/Kaufmann/Moore #12
+%% (by X3J13 vote at May 4-5, 1994 meeting)
+%% -kmp 9-May-94
+% \Thepackage{keyword} cannot be supplied.
+  The \param{package} cannot be \thepackage{keyword}.
+\endissue{PACKAGE-FUNCTION-CONSISTENCY:MORE-PERMISSIVE}
+***************
+
+**** File B:>ansi-cl>spec>source>dict-packages.tex.167, Line #1585:
+\auxbnf{symbol-name}{(\term{symbol} | \term{string})}
+\endissue{DOCUMENTATION-FUNCTION-BUGS:FIX}
+**** File B:>ansi-cl>spec>source>dict-packages.tex.169, Line #1589:
+%% Removed per Pitman #2 (by X3J13 vote at May 4-5, 1994 meeting)
+%% -kmp 9-May-94
+%\auxbnf{symbol-name}{(\term{symbol} | \term{string})}
+\endissue{DOCUMENTATION-FUNCTION-BUGS:FIX}
+***************
+
+Done.
+============================================================
+           File: dict-printer.tex
+============================================================
+Source compare made by kmp on 5/11/94 13:45:57
+of File B:>ansi-cl>spec>source>dict-printer.tex.192
+with File B:>ansi-cl>spec>source>dict-printer.tex.195
+**** File B:>ansi-cl>spec>source>dict-printer.tex.192, Line #844:
+    ``\f{. }'' is printed followed by the remaining `list.' 
+    (This makes it easier to write printing functions that 
+**** File B:>ansi-cl>spec>source>dict-printer.tex.195, Line #844:
+    ``\f{. }''\idxterm{dot} is printed followed by the remaining `list.' 
+    (This makes it easier to write printing functions that 
+***************
+
+**** File B:>ansi-cl>spec>source>dict-printer.tex.192, Line #852:
+    ``\f{...}'' is printed.
+    (This makes it easy to write printing functions that properly handle
+**** File B:>ansi-cl>spec>source>dict-printer.tex.195, Line #852:
+    ``\f{...}''\idxtext{Dot Dot Dot}\idxcode{...} is printed.
+    (This makes it easy to write printing functions that properly handle
+***************
+
+**** File B:>ansi-cl>spec>source>dict-printer.tex.192, Line #860:
+    ``\f{\#\i{n}\#}'' marker.
+    (This catches instances of \term{cdr} circularity and sharing in lists.)
+**** File B:>ansi-cl>spec>source>dict-printer.tex.195, Line #860:
+    ``\f{\#\i{n}\#}''\idxtext{Sharpsign Sharpsign (reader macro)} marker.
+    (This catches instances of \term{cdr} circularity and sharing in lists.)
+***************
+
+**** File B:>ansi-cl>spec>source>dict-printer.tex.192, Line #2183:
+``\f{..}'' is printed at the end of the last line followed by all of the
+suffixes (closing delimiters) that are pending to be printed.
+**** File B:>ansi-cl>spec>source>dict-printer.tex.195, Line #2183:
+``\f{..}''\idxtext{Dot Dot}\idxcode{..}
+is printed at the end of the last line followed by all of the
+suffixes (closing delimiters) that are pending to be printed.
+***************
+
+Done.
+============================================================
+           File: dict-sequences.tex
+============================================================
+Source compare made by kmp on 5/11/94 13:46:00
+of File B:>ansi-cl>spec>source>dict-sequences.tex.139
+with File B:>ansi-cl>spec>source>dict-sequences.tex.140
+**** File B:>ansi-cl>spec>source>dict-sequences.tex.139, Line #1023:
+The result might or might not be simple, 
+and might or might not be \term{identical} to \param{sequence}.
+%% Another possible interpretation:
+**** File B:>ansi-cl>spec>source>dict-sequences.tex.140, Line #1023:
+%% Moved to notes per Schulenburg #1 (by X3J13 vote at May 4-5, 1994 meeting).
+%% -kmp 9-May-94
+% The result might or might not be simple, 
+% and might or might not be \term{identical} to \param{sequence}.
+%% Another possible interpretation:
+***************
+
+**** File B:>ansi-cl>spec>source>dict-sequences.tex.139, Line #1152:
+\label Notes:\None.
+
+**** File B:>ansi-cl>spec>source>dict-sequences.tex.140, Line #1154:
+\label Notes::
+
+%% Moved from Description per Schulenburg #1 (by X3J13 vote at May 4-5, 1994 meeting).
+%% -kmp 9-May-94
+If \param{sequence} is a \term{vector},
+the result might or might not be simple, 
+and might or might not be \term{identical} to \param{sequence}.
+
+***************
+
+**** File B:>ansi-cl>spec>source>dict-sequences.tex.139, Line #1745:
+The result might or might not be simple, and 
+might or might not be \term{identical}
+to \param{sequence}.
+%% Another possible interpretation:
+**** File B:>ansi-cl>spec>source>dict-sequences.tex.140, Line #1753:
+%% Moved to notes per Schulenburg #1 (by X3J13 vote at May 4-5, 1994 meeting).
+%% -kmp 9-May-94
+% The result might or might not be simple, 
+% and might or might not be \term{identical} to \param{sequence}.
+%% Another possible interpretation:
+***************
+
+**** File B:>ansi-cl>spec>source>dict-sequences.tex.139, Line #1851:
+\issue{TEST-NOT-IF-NOT:FLUSH-ALL}
+**** File B:>ansi-cl>spec>source>dict-sequences.tex.140, Line #1860:
+%% Moved from Description per Schulenburg #1 (by X3J13 vote at May 4-5, 1994 meeting).
+%% -kmp 9-May-94
+If \param{sequence} is a \term{vector},
+the result might or might not be simple, 
+and might or might not be \term{identical} to \param{sequence}.
+
+\issue{TEST-NOT-IF-NOT:FLUSH-ALL}
+***************
+
+**** File B:>ansi-cl>spec>source>dict-sequences.tex.139, Line #2208:
+The result might or might not be simple, and 
+might or might not be \term{identical}
+to \param{sequence}.
+%% Another possible interpretation:
+**** File B:>ansi-cl>spec>source>dict-sequences.tex.140, Line #2223:
+%% Moved to notes per Schulenburg #1 (by X3J13 vote at May 4-5, 1994 meeting).
+%% -kmp 9-May-94
+% The result might or might not be simple, 
+% and might or might not be \term{identical} to \param{sequence}.
+%% Another possible interpretation:
+***************
+
+**** File B:>ansi-cl>spec>source>dict-sequences.tex.139, Line #2354:
+\issue{TEST-NOT-IF-NOT:FLUSH-ALL}
+**** File B:>ansi-cl>spec>source>dict-sequences.tex.140, Line #2370:
+%% Moved from Description per Schulenburg #1 (by X3J13 vote at May 4-5, 1994 meeting).
+%% -kmp 9-May-94
+If \param{sequence} is a \term{vector},
+the result might or might not be simple, 
+and might or might not be \term{identical} to \param{sequence}.
+
+\issue{TEST-NOT-IF-NOT:FLUSH-ALL}
+***************
+
+**** File B:>ansi-cl>spec>source>dict-sequences.tex.139, Line #2419:
+The result might or might not be simple, and 
+might or might not be \term{identical}
+to \param{sequence}.
+%% Another possible interpretation:
+**** File B:>ansi-cl>spec>source>dict-sequences.tex.140, Line #2441:
+%% Moved to notes per Schulenburg #1 (by X3J13 vote at May 4-5, 1994 meeting).
+%% -kmp 9-May-94
+% The result might or might not be simple,
+% and might or might not be \term{identical} to \param{sequence}.
+%% Another possible interpretation:
+***************
+
+**** File B:>ansi-cl>spec>source>dict-sequences.tex.139, Line #2498:
+\issue{TEST-NOT-IF-NOT:FLUSH-ALL}
+**** File B:>ansi-cl>spec>source>dict-sequences.tex.140, Line #2521:
+%% Moved from Description per Schulenburg #1 (by X3J13 vote at May 4-5, 1994 meeting).
+%% -kmp 9-May-94
+If \param{sequence} is a \term{vector},
+the result might or might not be simple, 
+and might or might not be \term{identical} to \param{sequence}.
+
+\issue{TEST-NOT-IF-NOT:FLUSH-ALL}
+***************
+
+Done.
+============================================================
+           File: dict-symbols.tex
+============================================================
+Source compare made by kmp on 5/11/94 13:46:03
+of File B:>ansi-cl>spec>source>dict-symbols.tex.136
+with File B:>ansi-cl>spec>source>dict-symbols.tex.137
+**** File B:>ansi-cl>spec>source>dict-symbols.tex.136, Line #55:
+\term{Symbols} have the following attributes. For historically reasons,
+these are sometimes referred to as \term{cells}, although the actual
+**** File B:>ansi-cl>spec>source>dict-symbols.tex.137, Line #55:
+\term{Symbols} have the following attributes. 
+%% "historically" => "historical" per Boyer/Kaufmann/Moore #11 (by X3J13 vote at May 4-5, 1994 meeting)
+%% -kmp 9-May-94
+For historical reasons,
+these are sometimes referred to as \term{cells}, although the actual
+***************
+
+Done.
+============================================================
+           File: dict-types.tex
+============================================================
+Source compare made by kmp on 5/11/94 13:46:05
+of File B:>ansi-cl>spec>source>dict-types.tex.161
+with File B:>ansi-cl>spec>source>dict-types.tex.163
+**** File B:>ansi-cl>spec>source>dict-types.tex.161, Line #910:
+Represents the \term{type} whose only \term{element} is \param{object}.
+
+**** File B:>ansi-cl>spec>source>dict-types.tex.163, Line #910:
+Represents the \term{type} 
+%% Replaced per Boyer/Kaufmann/Moore #6 (by X3J13 vote at May 4-5, 1994 meeting).
+%whose only \term{element} is \param{object}.
+of all \param{x} for which \f{(eql \param{object} \param{x})} is true.
+
+***************
+
+**** File B:>ansi-cl>spec>source>dict-types.tex.161, Line #1005:
+and the \term{object} is a \term{number},
+then the \param{result} is obtained by constructing a \term{complex}
+**** File B:>ansi-cl>spec>source>dict-types.tex.163, Line #1008:
+%% "number" => "real" per Boyer/Kaufmann/Moore #7 (by X3J13 vote at May 4-5, 1994 meeting)
+%% -kmp 9-May-94
+and the \term{object} is a \term{real},
+then the \param{result} is obtained by constructing a \term{complex}
+***************
+
+Done.
+============================================================
+           File: setup-aux.tex
+============================================================
+Source compare made by kmp on 5/11/94 23:04:05		-*-Mode:Fundamental-*-
+of File B:>ansi-cl>spec>source>setup-aux.tex.411
+with File B:>ansi-cl>spec>source>setup-aux.tex.412
+**** File B:>ansi-cl>spec>source>setup-aux.tex.411, Line #264:
+\hbox{\prmeleven Draft \rev\thedraftcomment}\hbox{\prmeleven \timestamp}
+\vskip 2pc}
+**** File B:>ansi-cl>spec>source>setup-aux.tex.412, Line #264:
+\hbox{\prmeleven Version \rev\thedraftcomment}\hbox{\prmeleven \timestamp}
+\vskip 2pc}
+***************
+
+**** File B:>ansi-cl>spec>source>setup-aux.tex.411, Line #300:
+\hbox{\prmeleven Draft \rev\thedraftcomment}\hbox{\prmeleven \timestamp}
+\vskip 2pc}
+**** File B:>ansi-cl>spec>source>setup-aux.tex.412, Line #300:
+\hbox{\prmeleven Version \rev\thedraftcomment}\hbox{\prmeleven \timestamp}
+\vskip 2pc}
+***************
+
+Done.
+============================================================
+           File: setup-title.tex
+============================================================
+Source compare made by kmp on 5/11/94 13:46:10
+of File B:>ansi-cl>spec>source>setup-title.tex.10
+with File B:>ansi-cl>spec>source>setup-title.tex.11
+**** File B:>ansi-cl>spec>source>setup-title.tex.10, Line #26:
+\def\DocumentNumber{X3J13/93-102}
+**** File B:>ansi-cl>spec>source>setup-title.tex.11, Line #26:
+\def\DocumentNumber{X3J13/94-101}
+***************
+
+Done.
+============================================================
+           File: setup-version.tex
+============================================================
+Source compare made by kmp on 5/11/94 23:04:09		-*-Mode:Fundamental-*-
+of File B:>ansi-cl>spec>source>setup-version.tex.641
+with File B:>ansi-cl>spec>source>setup-version.tex.660
+**** File B:>ansi-cl>spec>source>setup-version.tex.641, Line #4:
+\def\rev{{14.10}}
+
+\def\timestamp{{Tue 5-Oct-1993 5:00pm EDT}}
+**** File B:>ansi-cl>spec>source>setup-version.tex.660, Line #4:
+\def\rev{{15.17}}
+
+\def\timestamp{{Wed 11-May-1994 6:57pm EDT}}
+***************
+
+Done.
+These files have the same source in Draft 14.10 and Draft 15.17:
+  B:>ansi-cl>spec>source>setup-terms.tex.40
+  B:>ansi-cl>spec>source>setup-tables.tex.5
+  B:>ansi-cl>spec>source>setup-options.tex.32
+  B:>ansi-cl>spec>source>setup-for-toc.tex.2
+  B:>ansi-cl>spec>source>setup-document.tex.105
+  B:>ansi-cl>spec>source>setup-cmfont.tex.3
+  B:>ansi-cl>spec>source>setup-boxfig.tex.5
+  B:>ansi-cl>spec>source>setup-amfont.tex.7
+  B:>ansi-cl>spec>source>setup.tex.250
+  B:>ansi-cl>spec>source>dict-system-construction.tex.132
+  B:>ansi-cl>spec>source>dict-structures.tex.102
+  B:>ansi-cl>spec>source>dict-strings.tex.33
+  B:>ansi-cl>spec>source>dict-streams.tex.208
+  B:>ansi-cl>spec>source>dict-reader.tex.141
+  B:>ansi-cl>spec>source>dict-pathnames.tex.125
+  B:>ansi-cl>spec>source>dict-objects.tex.192
+  B:>ansi-cl>spec>source>dict-iteration.tex.43
+  B:>ansi-cl>spec>source>dict-hash-tables.tex.106
+  B:>ansi-cl>spec>source>dict-files.tex.93
+  B:>ansi-cl>spec>source>dict-eval-compile.tex.275
+  B:>ansi-cl>spec>source>dict-environment.tex.164
+  B:>ansi-cl>spec>source>dict-conditions.tex.215
+  B:>ansi-cl>spec>source>dict-characters.tex.131
+  B:>ansi-cl>spec>source>dict-arrays.tex.158
+  B:>ansi-cl>spec>source>concept-types.tex.397
+  B:>ANSI-CL>spec>source>concept-type-intro.tex.59
+  B:>ANSI-CL>spec>source>concept-traversal.tex.4
+  B:>ansi-cl>spec>source>concept-tokens.tex.101
+  B:>ansi-cl>spec>source>concept-tests.tex.18
+  B:>ansi-cl>spec>source>concept-systems.tex.10
+  B:>ansi-cl>spec>source>concept-symbols.tex.2
+  B:>ANSI-CL>spec>source>concept-subsets.tex.4
+  B:>ANSI-CL>spec>source>concept-strings.tex.2
+  B:>ansi-cl>spec>source>concept-streams.tex.24
+  B:>ansi-cl>spec>source>concept-slots.tex.32
+  B:>ansi-cl>spec>source>concept-sequences.tex.13
+  B:>ANSI-CL>spec>source>concept-reinit.tex.1
+  B:>ansi-cl>spec>source>concept-references.tex.39
+  B:>ANSI-CL>spec>source>concept-reader-algorithm.tex.46
+  B:>ANSI-CL>spec>source>concept-reader.tex.19
+  B:>ansi-cl>spec>source>concept-print.tex.71
+  B:>ansi-cl>spec>source>concept-pprint.tex.45
+  B:>ansi-cl>spec>source>concept-places.tex.43
+  B:>ansi-cl>spec>source>concept-pathnames.tex.47
+  B:>ansi-cl>spec>source>concept-packages.tex.37
+  B:>ANSI-CL>spec>source>concept-organization.tex.26
+  B:>ansi-cl>spec>source>concept-objects.tex.55
+  B:>ANSI-CL>spec>source>concept-meta-objects.tex.2
+  B:>ansi-cl>spec>source>concept-loop.tex.115
+  B:>ansi-cl>spec>source>concept-logical-pathnames.tex.17
+  B:>ansi-cl>spec>source>concept-history.tex.31
+  B:>ANSI-CL>spec>source>concept-hash-tables.tex.18
+  B:>ansi-cl>spec>source>concept-gfs-and-methods.tex.13
+  B:>ansi-cl>spec>source>concept-files.tex.17
+  B:>ansi-cl>spec>source>concept-filenames.tex.16
+  B:>ANSI-CL>spec>source>concept-extensions.tex.29
+  B:>ANSI-CL>spec>source>concept-exits.tex.2
+  B:>ansi-cl>spec>source>concept-eval.tex.177
+  B:>ansi-cl>spec>source>concept-environment.tex.15
+  B:>ansi-cl>spec>source>concept-destruction.tex.8
+  B:>ansi-cl>spec>source>concept-deprecated.tex.10
+  B:>ansi-cl>spec>source>concept-decls.tex.29
+  B:>ansi-cl>spec>source>concept-conses.tex.8
+  B:>ansi-cl>spec>source>concept-conditions.tex.45
+  B:>ansi-cl>spec>source>concept-compile.tex.144
+  B:>ansi-cl>spec>source>concept-classes.tex.69
+  B:>ansi-cl>spec>source>concept-cl-symbols.tex.18
+  B:>ANSI-CL>spec>source>concept-characters.tex.20
+  B:>ansi-cl>spec>source>concept-change-class.tex.3
+  B:>ansi-cl>spec>source>concept-bvl.tex.84
+  B:>ansi-cl>spec>source>concept-args.tex.19
+  B:>ANSI-CL>spec>source>chap-a.tex.17
+  B:>ANSI-CL>spec>source>chap-9.tex.4
+  B:>ANSI-CL>spec>source>chap-8.tex.23
+  B:>ANSI-CL>spec>source>chap-7.tex.25
+  B:>ansi-cl>spec>source>chap-6.tex.15
+  B:>ANSI-CL>spec>source>chap-5.tex.43
+  B:>ANSI-CL>spec>source>chap-4.tex.31
+  B:>ANSI-CL>spec>source>chap-3.tex.29
+  B:>ANSI-CL>spec>source>chap-26.tex.6
+  B:>ANSI-CL>spec>source>chap-25.tex.6
+  B:>ANSI-CL>spec>source>chap-24.tex.4
+  B:>ANSI-CL>spec>source>chap-23.tex.4
+  B:>ANSI-CL>spec>source>chap-22.tex.9
+  B:>ANSI-CL>spec>source>chap-21.tex.3
+  B:>ANSI-CL>spec>source>chap-20.tex.7
+  B:>ANSI-CL>spec>source>chap-2.tex.46
+  B:>ANSI-CL>spec>source>chap-19.tex.6
+  B:>ANSI-CL>spec>source>chap-18.tex.5
+  B:>ANSI-CL>spec>source>chap-17.tex.4
+  B:>ANSI-CL>spec>source>chap-16.tex.6
+  B:>ANSI-CL>spec>source>chap-15.tex.5
+  B:>ANSI-CL>spec>source>chap-14.tex.5
+  B:>ANSI-CL>spec>source>chap-13.tex.4
+  B:>ANSI-CL>spec>source>chap-12.tex.5
+  B:>ANSI-CL>spec>source>chap-11.tex.3
+  B:>ANSI-CL>spec>source>chap-10.tex.6
+  B:>ansi-cl>spec>source>chap-1.tex.46
+  B:>ansi-cl>spec>source>chap-0.tex.28
+  B:>ansi-cl>spec>source>appendix-removed.tex.31
+  B:>ansi-cl>spec>source>appendix-portability.tex.16
+  B:>ANSI-CL>spec>source>appendix-implem-defined.tex.55
+These files have the same source in Draft 14.10 and Draft 15.17:
+  B:>ansi-cl>spec>source>setup-sections-for-toc.tex.8, .tex.10
+  B:>ansi-cl>spec>source>setup-sections.tex.116, .tex.125
+  B:>ansi-cl>spec>source>setup-figures.tex.37, .tex.43
+Done comparing files.
+
+(The file index.idx is separately maintained from this set, 
+ and has changed as a result of the above changes.  This index 
+ is compiled under program control and the nature of the indexing
+ program has not materially changed.)
