@@ -1,0 +1,37 @@
+* Introduction
+
+  This repository contains the TeX and plain-text source files from
+  which the Common Lisp ANSI standard and the Common Lisp HyperSpec
+  were created.
+
+  The only changes to the source files correct typographic, syntactic
+  and other minor errors and should be easily identifiable from the
+  version history of the repository and/or the file:changes directory.
+
+* Purpose
+
+  The purpose of this repository is making slightly fixed versions of
+  the mentioned documents easily accessible for further processing.
+
+* Content
+
+  + file:dpANS3 directory ::
+
+       This directory contains the TeX sources of the final draft of
+       the Common Lisp specification.
+
+  + file:x3j13-issues directory ::
+
+       This directory contains a subset of the X3J13 cleanup issues
+       produced by the committee.
+
+       The files in this directory have been obtained from
+       http://www.cs.cmu.edu/afs/cs/project/ai-repository/ai/lang/lisp/doc/standard/ansi/cleanup/
+       on 2021-05-06. Unfortunately, that collection does not contain
+       all issue files.
+
+  + file:changes directory ::
+
+       This directory contains descriptions of changes that were made
+       to TeX sources of the final draft of the Common Lisp
+       specification as well as the X3J13 cleanup issues.

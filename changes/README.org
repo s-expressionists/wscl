@@ -1,0 +1,76 @@
+* Introduction
+
+  This directory contains descriptions of changes that were made to
+  TeX sources of the final draft of the Common Lisp specification as
+  well as the X3J13 cleanup issues to produce the contents of the
+  file:../dpANS3 and file:../issues directories respectively.
+
+* Change Description Format
+
+  Each change description is contained in a single file. Each file
+  contains a single s-expression of the following form:
+
+  #+BEGIN_SRC lisp
+    (:change
+     ()
+     :kind        (:KIND₁ :KIND₂ …)
+     :description "DESCRIPTION"
+     :who         "NAME <EMAIL>"
+     :when        "UNIVERSAL-TIME")
+  #+END_SRC
+
+  A change will usually specify a single kind but multiple kinds may
+  be needed in rare cases. The currently defined kinds are:
+
+  + ~:encoding~ :: The encoding of a file was changed.
+
+  + ~:syntax~ :: A file was changed to fix a syntax error. This mostly
+                 applies to cleanup issues since there is a defined
+                 syntax but conformance to this syntax was apparently
+                 not enforced.
+
+  + ~:markup~ :: The markup in a file was changed in a way that would
+                 not affect the representation in the CLHS. An example
+                 of this kind of change is correcting a ~\funref~
+                 reference to a ~\macref~ reference since both would
+                 result in the same hyperlink in the CLHS.
+
+  + ~:reference~ :: A reference was changed either from a non-existing
+                    target to an existing target or from an incorrect
+                    target to a correct target. These changes would be
+                    reflected in the CLHS representation. An example
+                    of this kind of change is correcting the reference
+                    ~\macref{destruct}~ to ~\macref{defstruct}~.
+
+  + ~:semantic~ :: A change that affects the semantic of the
+                   specification. An example is changing the ftype of
+                   the ~slot-value~ component from ~Function~ to
+                   ~Accessor~ and extending the syntax part to include
+                   the ~setf~ syntax.
+
+  The following kinds can be used as a an additional element of the
+  list of kinds but can not be used as the only element of the list:
+
+  + ~:tex-macro~ :: The change affects a TeX macro.
+
+  + ~:typo~ :: The change corrects a problem that is assumed to be the
+               result of typo.
+
+* Versioning Policy and Retrieving Diffs
+
+  A change description is always committed together with the
+  corresponding changes to the draft specification and issue
+  sources. Change descriptions may be changed in later
+  commits. Changes to the draft specification and issue sources may
+  not be amended. That is, further changes require new change
+  descriptions.
+
+  Given a change description ~changes/NAME.sexp~, the corresponding
+  changes to the draft specification and issue sources can be obtained
+  using the following method:
+
+  1. Determine the git commit $c$ that created the file
+     ~changes/NAME.sexp~
+
+  2. For the commit $c$ produce the diff restricted to the directories
+     ~dpANS3~ and ~issues~.
