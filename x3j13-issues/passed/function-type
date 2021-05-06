@@ -1,0 +1,270 @@
+Issue:        FUNCTION-TYPE
+References:   functions (p32), types (p33), FUNCTIONP (p76),
+              SYMBOL-FUNCTION (p90), APPLY (p107), COERCE (pp51-52)
+Category:     CHANGE
+Edit History: 26-Feb-87, Version 1 by Gabriel
+              15-Mar-87, Version 2 by Cleanup Committee
+              10-May-87, Version 3 by Fahlman
+              29-May-87, Version 4 by Masinter (incorporate comments)
+              15-Jun-87, Version 5 by Fahlman (include two options)
+              23-Oct-87, Version 6 by Masinter (only STRICT-REDEFINITION)
+              09-Nov-87, Version 7 by Masinter (minor cleanup)
+              14-Nov-87, Version 8 by Pitman (major restructuring)
+              13-Feb-88, Version 9 by Masinter, (add back 2nd option)
+              19-May-88, Version 10 by Masinter, (modify as per X3J13)
+              24-May-88, Version 11 by van Roggen
+                            (don't coerce lists, relax SYMBOL-FUNCTION reqs)
+		   4-Sep-88, Version 12 by Masinter
+		 	(incorporate amendments adopted at June 88 X3J13)
+
+Problem Description:
+
+ The definition of the term ``function'' in CLtL includes all symbols and
+ many lists in addition to `true' functions.
+
+ Also, page 47 of CLtL states that the FUNCTION type specifier can only
+ be used for declaration and not for discrimination. Some of the original
+ Common Lisp designers maintain that this restriction on the use of the
+ FUNCTION specifier was meant to apply only to long-form FUNCTION
+ specifiers, but since this intent was not explicitly stated, the status
+ of FUNCTION as a type is blurred. 
+
+ A consequence of the p47 confusion is that (FUNCTIONP x) cannot portably
+ be relied upon to be equivalent to (TYPEP x 'FUNCTION).
+
+Proposal FUNCTION-TYPE:X3J13-MARCH-88
+
+This proposal is basically the STRICT-REDEFINITION proposal of version 9
+of this issue, correcting a few typos, changing section 2E as
+agreed upon at X3J13 March 1988, allowing symbols but not lists to
+be FUNCALLed or APPLYed, and relaxing some SYMBOL-FUNCTION/FBOUNDP
+requirements.
+
+ 1.  Redefine the type FUNCTION so that it can be used for discrimination
+     as well as declaration.
+
+    1a. The types CONS, SYMBOL, ARRAY, NUMBER, CHARACTER, and FUNCTION
+        are pairwise disjoint.  In particular, a list may not be used
+        to implement any FUNCTION subtype.
+
+    1b. Define that the type COMPILED-FUNCTION is a subtype of FUNCTION.
+        Implementations are free to define other subtypes of FUNCTION.
+
+ 2. Define that a ``function'' as used throughout the CLtL is restricted
+    to be exactly those objects of type FUNCTION.
+
+    2a. This type no longer includes objects of type SYMBOL or lists
+        whose CAR is LAMBDA.
+
+    2b. The behavior of FUNCTIONP is defined to be exactly equivalent to
+        #'(LAMBDA (X) (TYPEP X 'FUNCTION)).  This is an incompatible
+        change.
+
+    2c. Clarify that the list form of the FUNCTION type specifier may
+        still only be used for declaration.
+
+    2d. Clarify that the symbol form of the FUNCTION type specifier may
+        be used for type discrimination.
+
+    2e. FUNCALL and APPLY and all Common Lisp functions that
+	take function arguments to also take a symbol, which will
+	be coerced to a function as if by SYMBOL-FUNCTION.
+
+    2f. This is an incompatible change in that it is an error to pass
+	  anything other than a function or symbol as the functional
+	  argument.
+
+ 3. Clarify that the result of a FUNCTION special form must be a function.
+
+    3a. This implies that some (FUNCTION name) may be implicitly interpreted
+	as (THE FUNCTION (FUNCTION name)). 
+
+ 4. Clarify that it is an error to use the special form FUNCTION on a
+    symbol that does not denote a function in the lexical environment in
+    which the special form appears. Specifically, it is an error to use the
+    FUNCTION special form on a symbol that denotes a macro or special form.
+    
+    4a. Some implementations may choose not to signal this error for
+        performance reasons, but implementations are forbidden from
+        defining the failure to signal an error as a `useful' behavior.
+
+ 5. Clarify that FBOUNDP must return true for a symbol naming a macro or
+    a special form, and that it is permissible to call SYMBOL-FUNCTION
+    on any symbol for which FBOUNDP returns true.
+
+    5a. The value returned by SYMBOL-FUNCTION when FBOUNDP returns true
+        but the symbol denotes a macro or special form is not well-defined,
+        but SYMBOL-FUNCTION will not signal an error. 
+
+    5b. SETF of SYMBOL-FUNCTION requires a FUNCTION as the new value.
+	It is an error to set the SYMBOL-FUNCTION of a symbol to a
+	symbol or a list or the value returned by SYMBOL-FUNCTION on
+	the name of a macro or a special form.
+
+    5c. The motivation for this distinction between FUNCTION and 
+	SYMBOL-FUNCTION is that FUNCTION is intended for day-to-day
+	use within programs while SYMBOL-FUNCTION is a data structure
+	accessor used primarily for meta-level applications and not
+	recommended for general use. It is provided primarily to
+	complete the set of accessors on symbols.
+
+ 6. COERCE is extended to allow objects to be coerced to type FUNCTION.
+
+    6a. (COERCE symbol 'FUNCTION) extracts the SYMBOL-FUNCTION of the
+        given symbol, signalling an error if the symbol is not FBOUNDP or
+	if the symbol names a macro or a special-form.
+
+    6b. (COERCE x 'FUNCTION), where the value of x is a list that
+		 begins with LAMBDA, will return a FUNCTION similar to
+		 (EVAL '(FUNCTION ,x)).
+
+ 7. Clarify that the value of *MACROEXPAND-HOOK* is first coerced to a
+    function before being called as the expansion interface hook by
+    MACROEXPAND-1.
+
+Rationale:
+
+ The fuzzy definition of ``function'' has descended from older dialects of
+ Lisp, such as Maclisp. Many places in existing code make assumptions about
+ the current meaning, making any change painful.
+
+ It is very important both for documentation clarity and for program type
+ discrimination (such as CLOS) to have a clear term which denotes a 
+ ``true function.''
+
+ This proposal is a compromise between a CONSERVATIVE proposal (which left
+ FUNCTION alone and introduced a new type), and a STRICT-REDEFINITION proposal,
+ which incompatibly changed not only the FUNCTION type and SYMBOL-FUNCTION,
+ but also the behavior of FUNCALL, APPLY and functions with functional
+ arguments.
+
+ For compatibility reasons symbols are still acceptable to FUNCALL et al.,
+ but for aesthetic reasons lambda-expressions (lists whose CAR is LAMBDA
+ and whose CADR is a list) are no longer acceptable.
+
+Current Practice:
+
+ In some implementations, (TYPEP x 'FUNCTION) signals an error.
+ In some implementations, (TYPEP x 'FUNCTION) is true for values
+   returned by FUNCTION, symbols that are FBOUNDP, and lambda expressions. 
+ In some implementations, (TYPEP x 'FUNCTION) is true only for values
+   returned by FUNCTION.
+
+ Implementations vary on what my go into the function cell, depending on
+ how much error checking they want to have to do at function call time, and
+ depending on whether they store other kinds of information (such as special
+ form information) in the function cell.
+
+ Few current Common Lisp implementations have exactly the
+ semantics described in this proposal.
+
+Cost to Implementors:
+
+ Bringing type predicates (FUNCTIONP, etc.) and higher order functions
+ (APPLY, etc.) into compliance should require little effort in most
+ implementations.
+
+ Compiled functions are true functions in almost all current
+ implementations, but in many implementations, interpreted functions and
+ closures stored in the function cell of a symbol are represented as lists.
+ Under this proposal, this representation would have to be different
+ (implemented either as structures or as some special internal data type).
+ The behavior of COMPILE, STEP, TRACE, and possibly ED would have to be 
+ modified to deal with functions that are not lists (but from which the
+ list form can be reconstructed if necessary).
+
+Cost to Users:
+
+ The changes to FUNCTIONP and the FUNCTION type declaration are relatively easy
+ to deal with. 
+
+ Because CLtL's language was somewhat fuzzy about what might go into the
+ function cell of a symbol, some code that explicitly deposited symbols
+ or lists in a symbol's function cell, or expected lists back, will
+ have to change. Such code was already not portable, however, since some
+ implementations signal an error when this is done.
+
+ The original STRICT-REDEFINITION proposal required users to deal with
+ the use of symbols and lambda-expressions as functional arguments.  However
+ this proposal is compatible with current CLtL definition in the use of
+ symbols, which would be the hardest change to make.  There are probably
+ relatively few uses of lambda-expressions as ``functions'', which can
+ be dealt with by (EVAL `(FUNCTION ,lambda-expresssion)).
+
+Benefits:
+
+ The term ``function'' would be given a useful and precise meaning.
+ The FUNCTION datatype would be useful for type discrimination in CLOS.
+
+ The type hierarchy would be simplified.
+
+ This proposal brings Common Lisp slightly closer to Scheme and the
+ work of the EuLisp committee. Scheme, for example, also has the concept
+ of a ``procedure'' which is compatible with the FUNCTION type.
+
+
+Aesthetics:
+
+ This proposal improves the aesthetics of the language.
+
+ Lambda-expressions do not obey the normal, apparent scoping rules because
+ free variables cannot refer to lexical bindings.  This is because
+ coercing a list to a function would mean (EVAL `(FUNCTION ,list)).
+
+ The following code does -not- count the number of nodes in a graph:
+
+  (LET ((COUNTER 0))
+    (TRAVERSE-THING '(LAMBDA (NODE) (INCF COUNTER))
+                    (THING-ROOT)))
+
+ since it is not the same as
+
+  (LET ((COUNTER 0))
+    (TRAVERSE-THING #'(LAMBDA (NODE) (INCF COUNTER))
+                    (THING-ROOT)))
+
+ which does pass around a closure incrementing the LET variable.
+ (These examples assume COUNTER wasn't PROCLAIMed SPECIAL.)
+
+ Making the coercion of lambda-expressions to functions explicit with
+ the use of EVAL will encourage less confusing code and also highlight
+ that use of EVAL.
+
+
+Discussion:
+
+This issue has been discussed at great length; this section attempts
+only to summarize the important points.
+
+There is general agreement that the definition of the FUNCTION data type
+must be clarified or revised. The cleanup of the type hierarchy is important
+to the CLOS group.
+
+The description of COMPILE must be changed, since it is no longer
+meaningful to speak of a symbol with a definition that "is a
+lambda-expression".  We believe this is a subject for a separate
+proposal, as the behavior of COMPILE needs additional clarification.
+
+Many different alternatives have been discussed both in the cleanup committee
+and X3J13. Two proposals were circulated at the March 1988 meeting of X3J13;
+this version is the result of discussions at that meeting. It is a compromise
+between the conflicting goals of backward compatibility, flexibility in the
+language, and simple semantics.
+ 
+This proposal does not address the issue of when coercion to functions occur.
+For example, it is allowed to write
+
+(MAPCAR 'FROB my-list)
+
+It is not specified when the coercion of FROB to its SYMBOL-FUNCTION 
+occurs. For example, 
+
+(DEFUN FROB (X) 
+   (WHEN (> X 0) (SETF (SYMBOL-FUNCTION 'FROB) #'(LAMBDA (X) NIL)))
+   T)
+
+(MAPCAR 'FROB '(-1 -1 1 1))
+
+may return different results if MAPCAR coerces its functional argument
+once rather than for each element. This may require a separate
+cleanup issue.

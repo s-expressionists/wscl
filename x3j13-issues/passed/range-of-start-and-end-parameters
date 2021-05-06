@@ -1,0 +1,95 @@
+Status:	Passed, Jan 89 X3J13
+Issue:        RANGE-OF-START-AND-END-PARAMETERS
+References:   COUNT (p257), COUNT-IF (p257), COUNT-IF-NOT (p257),
+	      DELETE (p257), DELETE-DUPLICATES (p254), DELETE-IF (p254),
+	      DELETE-IF-NOT (p254), FILL (p252), FIND (p257), FIND-IF (p257),
+	      FIND-IF-NOT (p257), MAKE-STRING-INPUT-STREAM (p330),
+	      MISMATCH (p257), NSTRING-CAPITALIZE (p304), 
+	      NSTRING-DOWNCASE (p304), NSTRING-UPCASE (p304), SUBSTITUTE (p255),
+	      NSUBSTITUTE-IF (p256), NSUBSTITUTE-IF-NOT (p256), 
+	      PARSE-INTEGER (p381), PARSE-NAMESTRING (p414), POSITION (p257),
+	      POSITION-IF (p257), POSITION-IF-NOT (p257), 
+	      READ-FROM-STRING (p381), REDUCE (p251), REMOVE (p253), 
+	      REMOVE-DUPLICATES (p254), REMOVE-IF (p253), REMOVE-IF-NOT (p253),
+	      REPLACE (p252), SEARCH (p258), STRING-CAPITALIZE (p303),
+	      STRING-EQUAL (p301), STRING-DOWNCASE (p303), STRING-GREATERP (p302),
+	      STRING-LESSP (p302), STRING-NOT-EQUAL (p302),
+	      STRING-NOT-GREATERP (p302), STRING-NOT-LESSP (p302),
+	      STRING-UPCASE (p303), STRING/= (p301), STRING< (p301), 
+	      STRING<= (p301), STRING= (p300), STRING> (p301), STRING>= (p301),
+	      SUBSEQ (p248), SUBSTITUTE (p255), SUBSTITUTE-IF (p255), 
+	      SUBSTITUTE-IF-NOT (p255), WRITE-LINE (p384), WRITE-STRING (p384)
+Category:     CLARIFICATION
+Edit history: 14-Sep-88, Version 1 by Pitman
+
+Problem Description:
+
+  CLtL is not always clear about the possible values which the START and END
+  parameters of built-in Common Lisp can take.
+
+Proposal (RANGE-OF-START-AND-END-PARAMETERS:INTEGER-AND-INTEGER-NIL):
+
+  Clarify that for functions permitting a parameter named START, START1,
+  or START2 which delimits the beginning point in a sequence to be
+  considered for some operation, that paremeter must be a non-negative
+  integer. If the argument is optional or key (as is the case for all
+  functions referenced above except SUBSEQ), the value will default to
+  0 if not supplied. It is not permissible to pass NIL as this argument.
+
+  Clarify that for functions permitting a parameter named END, END1,
+  or END2 which delimits the end point in a sequence to be considered
+  for some operation, that paremeter must be a non-negative integer
+  indicating a termination point or NIL indicating the last element
+  in the sequence. If the argument is optional or key (as is the case
+  for all functions referenced above), the value will default to NIL
+  if not supplied. Supplying NIL is, therefore, equivalent to not
+  supplying this argument.
+
+Test Case:
+
+  (SEARCH "F" "FOO" :START1 NIL) is an error.
+
+  (SEARCH "F" "FOO" :START2 0) is permissible and is equivalent to
+  (SEARCH "F" "FOO")
+
+  (SEARCH "F" "FOO" :END2 NIL) is permissible and is equivalent to
+  (SEARCH "F" "FOO")
+
+Rationale:
+
+  To keep data flow between programs from becoming excessively complicated,
+  it's a good idea to specify what the default values are so that they can
+  be passed explicitly rather than requiring an alternate calling sequence
+  for all possible cases where the value might need to default.
+
+Current Practice:
+
+  Symbolics Genera implements the proposed behavior.
+
+Cost to Implementors:
+
+  Hopefully most implementations already do this. Those that do not will
+  probably have to make quite a number of small changes to both the code
+  for these functions and to any associated compiler optimizers.
+
+Cost to Users:
+
+  This change is upward compatible with existing user code. Any program
+  which did not conform to this proposal was already not portable.
+
+Cost of Non-Adoption:
+
+  Subtle gratuitous differences in the handling of these arguments would
+  continue to be a possibility and a barrier to portability.
+
+Benefits:
+
+  The language would be more regular and well-defined.
+
+Aesthetics:
+
+  If it makes things clearer, it's an improvement.
+
+Discussion:
+
+  Pitman supports RANGE-OF-START-AND-END-PARAMETERS:INTEGER-AND-INTEGER-NIL.

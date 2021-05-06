@@ -1,0 +1,212 @@
+Status: passed, 1988 (not sure at which meeting)
+
+Issue:        DECLARE-MACROS 
+References:   Declaration Syntax (p154)
+Category:     CHANGE
+Edit history: 22-Oct-87, Version 1 by Pitman
+               9-Nov-87, Version 2 by Masinter
+               5-Feb-88, Version 3 by Pitman
+
+Problem Description:
+
+  It is permissible for a macro call to expand into a declaration and be
+  recognized as such. This linguistic feature provides some useful
+  flexibility, but has a number of disadvantages:
+
+  * Operations on the executable portion of a body of code inside a 
+    binding form (such as inserting an additional form) is a complicated
+    operation. This is because one or more trial macro expansions must be
+    done in order to pass over any declarations or documentation string
+    and find the beginning of the body.
+
+  * In order to find the end of the declarations, MACROEXPAND must be
+    called until a non-macro form is seen or until a macro does not expand
+    into a macro. In some interpreters which do macro expansion on the fly,
+    this may cause inefficiency because macro expansion of the first form
+    in a body must be done twice. In implementations where this is 
+    optimized, the implementor may resent the fact that an optimization is
+    needed in the first place.
+
+  * Various code analysis tools have been shown to have been significantly
+    slowed down by the need to expand macros in order to determine whether
+    a binding is SPECIAL when analyzing a variable binding form. This is
+    particularly serious when macro invocations are deeply nested; the
+    number of macro expansions can be exponential in the depth of nesting
+    unless a macro-expansion caching mechanism is added. 
+
+  * User macros must be very careful about finding declarations in a body
+    of code by doing proper macro expansion. Often, however, naive users
+    don't realize this and so unknowingly write buggy code. This problem can
+    be (and is) defined away as simply a programmer error, but this is a
+    place where we could fairly straightforwardly redefine the language to
+    better accommodate what has been shown to be a common expectation of the
+    naive user.
+
+Proposal (DECLARE-MACROS:FLUSH):
+
+   Under this proposal, it would not be "permissible for a macro call to
+   expand into a declaration and be recognized as such, provided that the
+   macro call appears where a declaration may legitimately appear." (CLtL
+   p. 154). Macros could not legitimately expand into declarations; the only
+   valid declarations would be a list whose CAR is the symbol DECLARE.
+
+   It would still be possible for a macro call to expand into a PROCLAIM
+   form, however.
+
+Rationale:
+
+  The ability to have a macro form expand into a declaration has been shown
+  to be useful in some situations.  More often, however, the presence of
+  this feature has been seen to cause problems elsewhere in the language.
+  Ultimately, its benefits have not outweighed its costs.
+
+Current Practice:
+
+  Most or all implementations support the old behavior even though few
+  user programs probably need it.
+
+  Some user macros are careful about finding declarations in a body of code
+  by doing proper macro expansion, but some probably cheat and look just
+  for explicit uses of DECLARE. The cheat probably works most of the time.
+
+Cost to implementors:
+
+  The nature of this change is such that implementations which did not
+  choose to change would simply be supporting an implementation-dependent
+  extension (except for some `minor' worry about destructive modification
+  due to macro expanding while *MACROEXPAND-HOOK* is set to something
+  which implemented displacing macros).
+
+  In any case, there might be several places in which the interpreter,
+  compiler, and system macros had knowledge about doing macro expansion
+  before declaration processing. The change is not trivial, but most of
+  its complexity is likely to be in finding the places which need change
+  and not in making the actual change.
+
+Cost to users:
+
+  Most users probably do not write macros which expand into DECLARE forms
+  so most users are probably not affected.
+
+  Users who do exploit this feature probably know that they do. In any
+  case, compilers could be made to detect cases where this feature is
+  being exploited and warn about it.
+
+  Franz and Gold Hill are notable exceptions to the claim that users may
+  not want this. Both claim to make a reasonable amount of use of macros
+  which expand into different SPEED and SAFETY declarations, usually
+  dependent on a global switch.
+
+  Rewrites must be devised on a case-by-case basis. A common sort of
+  rewrite would take the form:
+
+   Old code:  (DEFMACRO SPEEDY ()
+		`(DECLARE (OPTIMIZE (SPEED 3) (SAFETY 0))))
+   	      (LET (..bindings..) (SPEEDY) ..body..)
+
+   New code:  (DEFMACRO SPEEDY-LET (BVL &BODY FORMS)
+		`(LET ,BVL
+		   (DECLARE (OPTIMIZE (SPEED 3) (SAFETY 0)))
+		   ,@FORMS))
+	      (SPEEDY-LET (..bindings..) ..body..)
+
+  Another tactic would be:
+
+   Old code: (EVAL-WHEN (EVAL COMPILE LOAD)
+	       (DEFVAR *SPEEDY* NIL))
+	     (DEFMACRO USE-STANDARD-SPEED-AND-SAFETY ()
+	       (IF *SPEEDY*
+		   `(DECLARE (OPTIMIZE (SPEED 3) (SAFETY 0)))
+		   `(DECLARE (OPTIMIZE (SPEED 0) (SAFETY 3)))))
+	     (DEFUN FOO ()
+	       (USE-STANDARD-SPEED-AND-SAFETY)
+	       ...)
+   New code: (EVAL-WHEN (EVAL COMPILE LOAD)
+	       (DEFVAR *STANDARD-SPEED-AND-SAFETY* '((SPEED 0) (SAFETY 3))))
+	     (DEFUN FOO ()
+	       (DECLARE (OPTIMIZE #.*STANDARD-SPEED-AND-SAFETY*))
+	       ...)
+
+  Still a third tactic would be to actually shadow DEFUN, LET, etc. with
+  variants that process macro expansions and then to build code in a
+  package that used the revised DEFUN, LET, etc. eg,
+
+    (DEFUN PARSE-BODY (BODY ENV)
+      (LET ((DECLS '())
+	    (DOC   '()))
+	(DO () ((NULL (CDR BODY)))
+	  (LET ((EXP (MACROEXPAND (POP BODY) ENV)))
+	    (COND ((AND (STRINGP EXP) BODY)
+		   (UNLESS (NULL DOC)
+		     (WARN "More than one documentation string was seen."))
+		   (PUSH EXP DOC))
+		  ((AND (NOT (ATOM EXP)) (EQ (CAR EXP) 'DECLARE))
+		   (PUSH EXP DECLS))
+		  (T
+		   (PUSH EXP BODY)
+		   (RETURN NIL)))))
+	(VALUES BODY (NREVERSE DECLS) (NREVERSE DOC))))
+
+   (DEFMACRO MY:DEFUN (NAME LAMBDA-LIST &BODY DECLS-DOC-AND-FORMS
+		       &ENVIRONMENT ENV)
+     (MULTIPLE-VALUE-BIND (FORMS DECLS DOC-STRINGS)
+	 (PARSE-BODY DECLS-DOC-AND-FORMS ENV)
+       `(DEFUN ,NAME ,BVL ,@DECLS ,@DOC-STRINGS ,@FORMS)))
+
+   (DEFMACRO MY:LET (BINDINGS &BODY DECLS-DOC-AND-FORMS
+		     &ENVIRONMENT ENV)
+     (MULTIPLE-VALUE-BIND (FORMS DECLS DOC-STRINGS)
+	 (PARSE-BODY DECLS-DOC-AND-FORMS ENV)
+       `(LET ,BINDINGS ,@FORMS)))
+
+   ...etc.
+
+  LAMBDA cannot be done this way, of course, since it is not a macro (or
+  even a special form). Support for expanding declarations in a LAMBDA
+  would have to be provided either by using implementation-specific support
+  (such as Zetalisp's ``lambda macros'') or by a workaround such as a
+  macro like:
+
+   (DEFMACRO LAMBDA (LAMBDA-LIST &BODY DECLS-DOC-AND-FORMS
+		     &ENVIRONMENT ENV)
+     (MULTIPLE-VALUE-BIND (FORMS DECLS DOC-STRINGS)
+	 (PARSE-BODY DECLS-DOC-AND-FORMS ENV)
+       `#'(LAMBDA ,BINDINGS ,@FORMS)))
+
+  Note that unlike the other examples, LAMBDA need not be (and in fact,
+  may not be) in the "MY" package in order for this to work since the
+  FUNCTION special form will generally only recognize LISP:LAMBDA.
+
+Benefits:
+
+  The efficiency of some tools may be improved.
+  User macros which must do minor surgery on bodies of code will be
+  easier to write.
+
+Aesthetics:
+
+  This change simplifies the semantics of the language slightly and
+  probably tends to better support the assumptions of naive programmers
+  writing macros.
+
+  In some cases involving complicated extensions to declarations, it
+  may be slightly harder to express such extensions in a modular way.
+  Experience thus far has shown such cases to be rare, however.
+
+Discussion:
+
+  Symbolics took an in-house poll of people who take advantage of the
+  feature and it was generally agreed that in most cases where this
+  feature is used at all, that it would be just as easy to work around
+  using the sample rewrite techniques cited above.
+
+  Moon `credits' Pitman for (against some opposition) pushing this
+  `feature' down everyone's throats in the original CL design process.
+  Pitman admits this was an expensive mistake. Moon and Pitman support
+  this change as an important simplification to the language.
+
+  The cleanup committee unanimously endorsed this proposal.
+
+  In discussion at the Nov-87 X3J13 meeting, Franz and Gold Hill
+  mentioned that they use this feature a lot and were not entirely
+  happy about its going away.

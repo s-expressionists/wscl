@@ -1,0 +1,39 @@
+Status: passed, jun87
+Issue:        IMPORT-SETF-SYMBOL-PACKAGE
+References:   IMPORT (CLtL p. 186)
+Category:     CLARIFICATION.
+Edit History: Version 2 at committee meeting 15-Mar-87 15:19:23
+              Version 3 by Masinter 15-Mar-87 18:42:13
+              Version 4 29-May-87 by Masinter, remove confusing
+                "to further clarify".
+              Version 5 to X3J13
+
+Problem Description:
+
+The action of IMPORT on the home package of a symbol is not described well; does it affects the "home package" of a symbol.
+
+Proposal (IMPORT-SETF-SYMBOL-PACKAGE:YES):
+
+IMPORT behaves as follows: if any symbol to be imported has no home package (SYMBOL-PACKAGE returns NIL), then IMPORT sets the home package of the symbol to the specified package being imported to.
+
+Rationale:
+
+Current practice:
+
+Most Common Lisp implementations work this way. 
+
+Adoption Cost:
+
+small -- it requires a simple rewrite if not done this way.
+
+Benefits:
+
+Without this proposal, there is confusion about how Common Lisp works, and the risks that some new implementations will not work this way.
+
+Conversion Cost:
+
+None, as this describes current practice.   
+
+Discussion: 
+
+The cleanup committee supports this clarification.

@@ -1,0 +1,84 @@
+Status:       Passed v1 (as amended in v2) Mar-89 by 18-0 vote.
+
+Issue:        TIME-ZONE-NON-INTEGER
+References:   Section 25.4.1 (Time Functions) (p. 443-444)
+Category:     CLARIFICATION
+Edit history: 1-Mar-89, Version 1 by Chapman
+	      10-Apr-89, Version 2 by Pitman (amendments per X3J13)
+
+Problem Description:
+
+ CLtL states that the time zone part of Decoded Time is an integer.
+ However, it is possible to have a non-integer time-zone.
+
+Proposal (TIME-ZONE-NON-INTEGER:ALLOW)
+
+ Specify that the time zone part of Decoded Time is 
+   1. a rational number (either an integer or a ratio)
+   2. in the range -24 to 24 (inclusive on both ends)
+   3. a multiple of 1/3600.
+
+Rationale:
+
+ 1. For CL to accommodate all possible time designations, it is
+    necessary to allow time zone to be non-integer.  Some places
+    in the world are on half-hour or quarter-hour times.
+
+    There is no demand for floating point time zones.  Since such
+    zones would introduce inexact arithmetic, we did not consider
+    adding them at this time.
+    
+ 2. This prohibits the perverse use of very incredibly time zone
+    magnitudes to get around the year restriction on times
+    in portable code.
+
+ 3. This requires time zones to be represented as even multiples
+    of 1 second.
+
+Current Practice:
+
+ VAX LISP allows time zone to be non-integer.
+
+Cost to Implementors:
+
+ Very slight. Implementations which use integer-only arithmetic
+ in dealing with time zones might have to switch to a more generic
+ kind of arithmetic.
+
+Cost to Users:
+
+ Depends on situation. Very slight negative to very strong positive
+ effects will be seen by users.
+
+ In some cases, this legitimizes time zones which are already a
+ political necessity and may make life easier for users.
+
+ In at least one known case, this will make things a little harder
+ because `very large' time zones will not be permitted.  However, 
+ such time zones probably were not really portable to begin with
+ so this is more just a recognition of the status quo.
+
+Benefits:
+
+ See Rationale.
+
+Conversion Cost:
+
+ In most cases, no user code will have to be modified.
+
+ In the one known case using `very large' time zones, the user may
+ have to write his own time manipulation software if he really wants
+ to be portable.
+
+Aesthetics:
+
+ Probably slightly improved.
+
+Discussion:
+
+ Haflich was claiming he might want to use very large negative time zones
+ to go back in history beyond 1900 (where universal times supposedly 
+ bottom out).  However, most implementations probably don't represent the
+ shifts in calendar system which occurred at various points before that
+ time, most implementors present at the Mar-89 meeting seemed to think this
+ `hack' was probably not really going to work portably anyway.

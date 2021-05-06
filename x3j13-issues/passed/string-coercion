@@ -1,0 +1,95 @@
+Status:	Passed, Jun 89 X3J13
+Issue:          STRING-COERCION
+References:     Strings (pp299-304),
+                STRING= (p300), STRING-EQUAL (p301), STRING< (p301),
+                STRING> (p301), STRING<= (p301), STRING>= (p301),
+                STRING/= (p301), STRING-LESSP (p302), STRING-GREATERP (p302),
+                STRING-NOT-GREATERP (p302), STRING-NOT-LESSP (p302),
+                STRING-NOT-EQUAL (p302), STRING-TRIM (p302), STRING-LEFT-TRIM (p302),
+                STRING-RIGHT-TRIM (p302), STRING-UPCASE (p303), STRING-DOWNCASE (p303),
+                and STRING-CAPITALIZE (p303).
+Related issues: none
+Category:       CLARIFICATION
+Edit history:   Version 1, 9-May-89 by Moon
+                Version 2, 9-May-89 by Pitman (editorial changes)
+
+Problem description:
+
+  CLtL is inconsistent about the argument coercion performed by the
+  referenced functions. Page 299 says that the <string> argument can
+  be either a symbol or a string.  Page 304 says that these functions
+  effectively call the STRING function, thus accepting a symbol,
+  a string, or a character.
+
+  Neither page lists the set of affected functions explicitly.
+
+  Page 304 says that if any other data type is used, an error is
+  signalled.  But some implementations allow other types, such as
+  pathnames, to be coerced to strings, which page 299 appears to allow
+  but page 304 appears to forbid.  In some implementations these
+  coercions are under user control via methods for a generic function.
+
+Proposal (STRING-COERCION:MAKE-CONSISTENT):
+
+  Specify that the referenced functions perform coercion identical to
+  the action of the STRING function.
+
+  Specify that the STRING function can perform additional implementation
+  dependent coercions.  In all cases the returned value is of type STRING.
+  Only in the case where no coercion is defined is the STRING function
+  required to signal an error; in that case, the error is of type TYPE-ERROR.
+
+Examples:
+
+  (string-lessp #\a "B") => T
+
+Rationale:
+
+  Our choices are to make the coercion identical to the STRING function,
+  identical to the COERCE function, or different from both of them.  The
+  COERCE function won't coerce non-null symbols to strings, so it is out.
+  Being consistent with the STRING function seems better than inventing
+  yet another set of string coercion rules.  Removing the ability for the
+  STRING function to coerce characters to strings would be an incompatible
+  change, so instead we clarify that the other functions have that ability.
+
+  Allowing additional coercions is harmless and consistent with current
+  practice.
+
+Current practice:
+
+  Symbolics Genera follows page 304 except for allowing additional
+  coercions.  Symbolics Cloe follows page 299 except for not allowing
+  additional coercions.
+
+Cost to Implementors:
+
+  Small changes to eighteen functions.
+
+Cost to Users:
+
+  None, this is upward-compatible.
+
+Cost of non-adoption:
+
+  Inconsistency and confusion about what coercions are allowed.
+
+Performance impact:
+
+  None.  If these things have to accept symbols, accepting characters
+  too can't make much difference.  The implementation of character
+  arguments to string functions might cons a string, but this has no
+  performance impact on programs that don't use the feature.
+
+Benefits:
+
+  Consistency.
+
+Esthetics:
+
+  Consistency.
+
+Discussion:
+
+  None.
+

@@ -1,0 +1,180 @@
+Status: Accepted, as amended, Jan 89 X3J13
+Forum:       Cleanup
+Issue:        PATHNAME-UNSPECIFIC-COMPONENT
+Forum:        Cleanup
+References:   File System Interface (pp409-427)
+Category:     CHANGE
+Edit history: 27-Dec-88, Version 1 by Pitman
+			17-Mar-89, Version 2 by Masinter (as amended)
+Subsumes:     Issue PATHNAME-TYPE-UNSPECIFIC
+
+Problem Description:
+
+  In some file systems, it is inappropriate to represent particular
+  pathname components, either all the time or in some specialized 
+  circumstance.
+
+   - Unix pathnames never have a version field.
+
+   - In some file systems, specifying a device and a directory means
+     something very different than specifying the device alone, 
+     particularly when the device is a "logical device" that may
+     already imply a directory.
+
+   - Some Unix pathnames have types and others do not. For example,
+     it is possible to make files named "foo." and "foo" which are
+     distinct. CLtL (p412) specifies that the type is ``always a
+     string, NIL, or :WILD.'' This description is too restrictive
+     to be practical in this case. One of these (usually the former)
+     can get a type of "" but it is not clear how to represent the
+     other. If NIL is used, merging primitives cannot detect that the
+     field is filled and should not be merged against. 
+
+   - ITS pathnames have either a version or a type, but never both.
+     "JOE;FILE 32" has a directory, a name, and a version.
+     "JOE;FILE TEXT" has a directory, a name, and a type.
+     "JOE;FILE TEXT 32" is not a possible ITS filename.
+
+Proposal (PATHNAME-UNSPECIFIC-COMPONENT:NEW-TOKEN):
+
+  Permit :UNSPECIFIC as a value of any field of a pathname,
+  including the HOST, DEVICE, DIRECTORY, NAME, TYPE, or
+  VERSION field of a pathname, for file systems in which it makes sense.
+
+  The results of supplying :UNSPECIFIC to a file system for which
+  it does not make sense are undefined.
+
+  When a pathname is converted to a namestring, NIL and :UNSPECIFIC
+  are treated as if the field were empty. That is, they both cause the
+  component not to appear in the string.
+
+  When merging, however, only a NIL value for a component will be
+  replaced with the default for that component, while :UNSPECIFIC
+  will be left alone as if the field were filled.
+
+  Portable programs should expect to find :UNSPECIFIC in the device,
+  directory, type, or version field in some implementations.
+
+  Portable programs should not explicitly place :UNSPECIFIC in any
+  field, since that it might not be permitted in some situations,
+  but portable programs may sometimes do so implicitly.
+
+Test Case:
+
+  ;; #1: Non-portable code. This may signal an error in some
+  ;;     implementations where an unspecific type makes no sense.
+
+  (MAKE-PATHNAME :TYPE :UNSPECIFIC)	;not portable
+
+  ;; #2: In this example, assume a Unix file system.
+
+  (PATHNAME-TYPE (PARSE-NAMESTRING "foo."))
+  => ""
+
+  (PATHNAME-TYPE (PARSE-NAMESTRING "foo"))
+  => :UNSPECIFIC
+
+  (PATHNAME-TYPE (MERGE-PATHNAMES (PARSE-NAMESTRING "foo")
+				  (MAKE-PATHNAME :TYPE "BAR")))
+  => :UNSPECIFIC
+
+  ;; #3: In this example, assume an ITS file system.
+
+  (LET ((P (PARSE-NAMESTRING "FOO 32")))
+    (LIST (PATHNAME-TYPE P) (PATHNAME-VERSION P)))
+  => (:UNSPECIFIC 32)
+
+  (LET ((P (PARSE-NAMESTRING "FOO TEXT")))
+    (LIST (PATHNAME-TYPE P) (PATHNAME-VERSION P)))
+  => ("TEXT" :UNSPECIFIC)
+
+  (LET ((P (MERGE-PATHNAMES (PARSE-NAMESTRING "FOO 32")
+			    (PARSE-NAMESTRING "FOO TEXT"))))
+    (LIST (PATHNAME-TYPE P) (PATHNAME-VERSION P)))
+  => (:UNSPECIFIC 32)
+
+  ;; Note: It is not the intent of this proposal to actually legislate
+  ;; the canonical representation of Unix pathnames "foo." and "foo",
+  ;; nor of ITS pathnames "FOO 32" and "FOO TEXT". That should probably
+  ;; be done, but under separate cover. The above examples are intended
+  ;; only to demonstrate how this proposal will permit the representation
+  ;; of pathnames not usefully representable under CLtL.
+
+Rationale:
+
+  This is, by necessity, current practice in some implementations
+  already.
+
+Current Practice:
+
+  Symbolics Genera uses a file types and versions of :UNSPECIFIC on
+  Unix and ITS file systems, for example.
+
+Cost to Implementors:
+
+  None. No change to any implementation is forced.
+
+  Some implementations which already do this are legitimized.
+
+  Some implementations which use a non-standard token other than 
+  :UNSPECIFIC to implement this functionality would want to switch
+  to use :UNSPECIFIC so that portable programs could expect it.
+
+Cost to Users:
+
+  Some programs which manipulate pathnames should be updated to expect
+  :UNSPECIFIC in the type fields in some situations.
+
+  Any program which doesn't already expect :UNSPECIFIC is already not really
+  portable, however, given that some implementations have been forced to
+  go beyond the standard in order to represent all possible pathnames.
+
+Cost of Non-Adoption:
+
+  Some implementations would be unable to both represent all possible 
+  pathnames in a rational way and at the same time to conform to the
+  standard. Such an inability would seriously jeopardize the usefulness
+  of Common Lisp in the design of serious programs.
+
+Benefits:
+
+  Some programs involving pathnames would be more portable.
+
+Aesthetics:
+
+  Sweeping a hairy situation under the rug doesn't make it go away.
+  This change makes things appear less simple, but since in reality
+  they were less simple, it is effectively a simplification of the
+  correspondence between the CL model and reality.
+
+Discussion:
+
+  Pitman and Moon support PATHNAME-TYPE-UNSPECIFIC:NEW-TOKEN.
+
+  This feature existed (for types) in the Colander draft edition of
+  CLtL, but was removed for the Laser edition. The following text is
+  excerpted from the Colander edition, p259:
+
+   ``??? Query: Is :unspecific really needed over and above nil?
+
+   ``A component of a pathname can also be the keyword
+     :UNSPECIFIC. This means that the component has been explicitly
+     determined not to be there, as opposed to be missing. One way
+     this can occur is with generic pathnames, which refer not to
+     a file but to a whole family of files. The version, and usually
+     the type, of a generic pathname are :unspecific. Another way
+     :unspecific is used to represent components that are not simply
+     supported by a file system. When a pathname is converted to a
+     namestring, nil and :unspecific both cause the component not to
+     appear in the string. When merging, however, a nil value for
+     a component will be replaced with the default for that
+     component, while :unspecific will be left alone.''
+
+"The stuff about generic pathnames in the discussion section
+was brain damage and may have lead to the confusion that caused
+:unspecific to be dropped from Common Lisp.  Only the stuff about
+components not supported by a file system makes sense."
+
+
+
+     ----- End Forwarded Messages -----

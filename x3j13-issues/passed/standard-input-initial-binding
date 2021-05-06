@@ -1,0 +1,177 @@
+Status:	Passed, Jan 89 X3J13
+Issue:         STANDARD-INPUT-INITIAL-BINDING
+References:    Standard streams (pp. 327-329)
+Category:      CHANGE
+Edit history:  Version 1 by Pierson and Haflich 1/19/87
+    	       Version 2 by Pierson 2/29/88
+	       Version 3 by Pierson 5/23/88, per comments by Moon
+               Version 4 by Pierson 5/26/88, clean up
+    	       Version 5 by Pierson 6/28/88, simple design per Masinter
+    	       Version 6 by Pierson 7/ 5/88, clean up and split issue
+	       Version 7 by Pierson 7/ 8/88, clean up per Pitman
+	       Version 8 by Pierson 7/ 8/88, yet more clean up
+
+Problem description:
+
+CLtL requires that *STANDARD-INPUT*, *STANDARD-OUTPUT*,
+*ERROR-OUTPUT*, *TRACE-OUTPUT*, *QUERY-IO*, and *DEBUG-IO* are
+initially bound to synonym streams to *TERMINAL-IO*.  This requirement
+hampers the integration of Common Lisp with many existing and
+potential operating environments.
+
+For example, a Unix implementation is currently unable to legally
+support Unix standard error output even though Common Lisp defines
+*ERROR-OUTPUT* because *ERROR-OUTPUT* is required to start out bound
+to the same stream as *STANDARD-OUTPUT*.  A workstation environnment
+which provides stream access to windows as an extension is currently
+forbidden to make trace output appear in a separate window by default
+because *TRACE-OUTPUT* is required to start out bound to the same
+stream as *STANDARD-OUTPUT*.
+
+Proposal (STANDARD-INPUT-INITIAL-BINDING:DEFINED-CONTRACTS):
+
+A Common Lisp implementation is required to provide the following
+initial streams.  Each initial stream has a specific purpose as
+defined in CLtL.  This proposal redefines the initial bindings of
+the streams and leaves the rest of the CLtL description unchanged.
+
+    *TERMINAL-IO*
+    *STANDARD-INPUT*
+    *STANDARD-OUTPUT*
+    *ERROR-OUTPUT*
+    *TRACE-OUTPUT*
+    *QUERY-IO*
+    *DEBUG-IO*
+
+    	The initial bindings of these variables are undefined except
+	that:
+	    1. They are all initially bound to open streams.
+	    2. The streams must support input and/or output as
+	       indicated by the variable name.
+    	    3. None of the standard streams (including *TERMINAL-IO*)
+	       may be directed by synonym streams to another of these
+	       stream variables (except *TERMINAL-IO*), whether
+	       directly or by indirection via some composite stream
+	       such as a two way stream with one of the arms being a
+	       synonym stream.
+	    4. Any or all of these streams may be synonyms for the
+	       common implementation dependent stream.  For example,
+	       in an interactive Common Lisp invocation running on a
+	       character terminal, all of the streams mentioned here
+	       might be synonym streams (or two-way streams to synonym
+	       streams) to a pair of hidden terminal input/output
+	       streams maintained by the implementation.
+
+	The intent of the above rules is to ensure that it is always
+	safe to bind any of the above variables to another of the
+	above variables without unduly restricting implementation
+	flexibility.
+
+
+Examples:
+
+(PROGN
+   (PRINT "Output" *STANDARD-OUTPUT*)
+   (PRINT "Error" *ERROR-OUTPUT*))
+
+In current Common Lisp will write:
+    ------
+    Output
+    Error
+    ------
+
+With proposal *might* write:
+    ------
+    Output
+    ------
+    and "Error" appears somewhere else.
+
+
+(LET ((*STANDARD-OUTPUT* *DEBUG-IO*))
+  ...)
+
+In current Common Lisp: 
+    Might cause a circular stream reference if *DEBUG-IO* was
+    bound to a two-way stream made up of synonym streams to
+    *STANDARD-INPUT* and *STANDARD-OUTPUT*.
+
+With this proposal:
+    Would be guaranteed not to cause a circular stream reference
+    unless the initial value of *DEBUG-IO* had been changed to a value
+    that did not conform the restrictions in this proposal.  While no
+    Common Lisp implementation should do this, a user program might.
+
+
+(LET ((*STANDARD-INPUT*  *TERMINAL-IO*)
+      (*STANDARD-OUTPUT* *TERMINAL-IO*))
+  ...)
+
+In current Common Lisp: 
+    Might cause a circular stream reference because *TERMINAL-IO* was
+    bound to a two-way stream made up of synonym streams to
+    *STANDARD-INPUT* and *STANDARD-OUTPUT*.
+
+With this proposal:
+    Would be guaranteed not to cause a circular stream reference.
+
+
+Rationale:
+
+This proposal attempts to provide a balance between over-specifying
+behavior to the point that Lisp programs can't behave like other
+programs in conventional operating systems and providing enough
+specification that Common Lisp programs can perform portable input and
+output.
+
+Current practice:
+
+Lucid binds *TERMINAL-IO* to a special internal stream type.  Franz
+binds *TERMINAL-IO* to a special internal stream type for terminal
+streams which reads from Unix standard input and writes to Unix
+standard output.  KCL binds *TERMINAL-IO* to a standard two-way-stream
+with input from Unix standard input and output to Unix standard
+output.  Symbolics Genera binds *TERMINAL-IO* as appropriate for each
+process, usually to a window for interactive applications or to a
+stream which will conjure an interaction window on demand for
+background tasks.
+
+Cost to Implementors:
+
+All implementations will have to change to some degree but the changes
+will probably be simple and localized.  All known implementations
+already support the underlying streams required to implement this
+proposal.
+
+Cost to Users:
+
+User code which depends on the strict binding hierarchy in CLtL may
+have to change.  
+
+Cost of non-Adoption:
+
+It will continue to be difficult or impossible to integrate portable
+Common Lisp progams in conventional operating system environments.
+Many implementations will have to continue to choose between
+conforming to the standard and providing a superior user environment.
+
+Benefits:
+
+Implementations will be more able to match their IO behavior to their
+environment and their user's expectations.
+
+Aesthetics:
+
+Improved because this area becomes better defined.
+
+Discussion:
+
+Moon says that *TERMINAL-IO* (and, by extension, *QUERY-IO*, and
+*DEBUG-IO*) should fail to work in a non-interactive environment where
+nothing like a terminal exists.  This proposal fails to address this.
+
+Masinter notes that:
+    ``In many multi-processing multi-window environments,
+      the "initial binding" for *STANDARD-INPUT*, *QUERY-INPUT*
+      differs for each process.''  
+
+Pierson and Pitman support STANDARD-INPUT-INITIAL-BINDING:DEFINED-CONTRACTS.

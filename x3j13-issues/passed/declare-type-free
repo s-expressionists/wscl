@@ -1,0 +1,383 @@
+Status:		Proposal LEXICAL passed Jan 89 X3J13
+Forum:         Cleanup
+Issue:         DECLARE-TYPE-FREE
+References:    CLtL p.158
+               DECLARATION-SCOPE
+Related issues: FUNCTION-TYPE-ARGUMENT-TYPE-SEMANTICS
+               DECLARATION-SCOPE
+               SPECIAL-TYPE-SHADOWING
+Category:      CLARIFICATION/ADDITION
+
+Edit history:  Version 1, 18-Sep-88, Moon
+               Version 2, 22-Sep-88, Moon
+                (small edits to reflect mail discussion)
+               Version 3, 22-Sep-88, Masinter
+               Version 4, 27-Sep-88, JonL 
+               Version 5, 30-Sep-88, Masinter (cost to implementors)
+               Version 6, 06-Oct-88, Pitman (minor edits in Discussion)
+               Version 7,  5-Dec-88, Masinter (scope->extent)
+               Version 8,  7-Dec-88, Masinter (back to scope)
+               Version 9,  2-Jan-89, Moon (2 proposals, to clarify discussion)
+               Version 10, 12-Jan-89, Masinter (add back lost v.6 phrase 
+                                                re nested declarations)
+
+
+Problem description:
+
+  Section 9.2 of CLtL, p158, says that a declaration specifier like
+  (TYPE type var1 var2 ...) "... affects only variable bindings".  
+  Since declarations can occur in contexts other than establishing 
+  "variable bindings", most people interpret this statement to mean 
+  that type declarations not in such context are either (1) completely 
+  to be ignored, or (2) invalid CL  syntax.  Thus both of the following 
+  forms would be suspect in that the type declarations could not have 
+  any effect:
+
+    (if (and (typep x 'fixnum) (typep y 'fixnum))
+        (locally (declare (fixnum x y))             ;LOCALLY does not bind
+          ...algorithm using x and y...)            ; any variables.
+        ...similar algorithm using x and y...)
+
+    (let ((y 'foo))
+      (setq y 10)
+      (let ((x 5))                                  ;'y' is not being bound in
+        (declare (fixnum y))                        ; this particular context.
+        (incf y)
+         ...random algorithm...))
+
+
+Proposal (DECLARE-TYPE-FREE:ALLOW):
+  
+  Specify that a type declaration does not only "affect variable bindings";
+  rather, type declarations are legal in all declarations. The interpretation
+  of a type declaration is that, during the execution of any expression 
+  within the scope of the declaration,  it is an error for the value of
+  the declared variable not to be of the declared type. For declarations
+  that are associated with variable bindings, the type declaration also
+  applies to the initial binding of the variable. In the special case
+  of a declaration for which there are no executable expressions
+  within the scope of the declaration (e.g., (locally (declare (integer x)))),
+  the result is as if there were executable expressions.
+
+  In this proposal, a type declaration affects not only variable
+  references within its scope, but also affects variable references that
+  are outside the scope of the declaration but dynamically inside the
+  execution of a form that is itself inside the scope of the
+  declaration.  Such references can exist when the variable is SPECIAL
+  or when the declaration is not attached to the variable's binding, so
+  that the scope of the declaration does not include the entire scope
+  of the variable.
+
+  Clarify that if nested type declarations refer to the same variable,
+  then the value of the variable must be a member of the intersection of
+  the declared types.
+
+
+Proposal (DECLARE-TYPE-FREE:LEXICAL):
+
+  Specify that a type declaration does not only "affect variable bindings";
+  rather, type declarations are legal in all declarations. The interpretation
+  of a type declaration is that, during the execution of any reference to the
+  declared variable within the scope of the declaration, it is an error for
+  the value of the declared variable not to be of the declared type; and
+  during the execution of any SETQ of the declared variable within the scope
+  of the declaration, it is an error for the newly assigned value of the
+  declared variable not to be of the declared type; and at the moment the
+  scope of the declaration is entered, it is an error for the value of the
+  declared variable not to be of the declared type.
+
+  In this proposal, a type declaration affects only variable references within
+  its scope, and the meaning of "free" and "variable-binding-associated" type
+  declarations can be described identically.
+
+  This proposal is equivalent to saying that the meaning of a type declaration
+  is equivalent to changing each reference to <var> within the scope of the
+  declaration to (THE <type> <var>), changing each expression assigned to the
+  variable within the scope of the declaration to (THE <type> <new-value>),
+  and executing (THE <type> <var>) at the moment the scope of the declaration
+  is entered.
+
+  Clarify that if nested type declarations refer to the same variable,
+  then the value of the variable must be a member of the intersection of
+  the declared types.
+
+Examples:
+
+;; this is an error under DECLARE-TYPE-FREE:ALLOW:
+;; the assertion that x is a fixnum is violated between the two 
+;; calls to (zap)
+;; this is a valid program under DECLARE-TYPE-FREE:LEXICAL
+
+        (let ((x 12) (y 'foo))
+          (flet ((zap () (rotatef x y)))
+            (locally (declare (fixnum x))
+              (zap)
+              (zap)
+              x)))
+
+;; this is an error under both proposals
+
+        (let ((x 12) (y 'foo))
+          (flet ((zap () (rotatef x y)))
+            (locally (declare (fixnum x))
+              (zap)
+              (print x)
+	      (zap)
+              x)))
+
+;; this is an error under DECLARE-TYPE-FREE:ALLOW, because
+;; the assertion that x is a fixnum
+;; is violated during the call to zap, even though few 
+;; implementations will be able to check:
+;; this is a valid program under DECLARE-TYPE-FREE:LEXICAL
+
+        (let ((x 12) (y 'foo))
+          (flet ((zap ()
+                   (rotatef x y)
+                   (rotatef x y)))
+            (locally (declare (fixnum x))
+              (zap)
+              x)))
+
+;; this is an error under both proposals, even though the
+;; violation of the type constraint happens after the form
+;; with the declaration is exited.
+
+   (let ((f (let ((x 3))
+              (declare (fixnum x))
+              #'(lambda (z) (incf x z)))))
+     (funcall f 4.3))
+
+
+Rationale:
+
+  This proposal enables optimizing compilers to make use of the otherwise
+  ignored type information.  Many people have often asked for it, and
+  there is no strong reason to forbid it.
+  
+  DECLARE-TYPE-FREE:ALLOW is more restrictive on programs and hence allows
+  more freedom for optimizing compilers.  DECLARE-TYPE-FREE:LEXICAL is easier
+  to understand but allows a specialized representation only where the scope
+  of the variable is the same as the scope of the declaration or the compiler
+  can prove that there are no relevant other references to the variable.
+
+Current practice:
+
+  Lucid Common Lisp allows "free" type declarations;  under some 
+  circumstances the compiler issues a warning message that such usage 
+  is an extension to Common Lisp.
+
+Cost to Implementors:
+
+  Implementations that might currently warn about such declarations
+  would have to remove the warning; otherwise, it is valid to ignore 
+  type declarations.
+
+Cost to Users:
+
+  None, this is a compatible addition.
+
+Cost of non-adoption:
+
+  Common Lisp will be less self-consistent.
+
+Benefits:
+
+  Programmers will be able to use type declaration to express their
+  intent, rather than having to manually insert THE wrappers around 
+  every reference.
+
+
+Esthetics:
+
+  It is a simpler interpretation for type declaration specifiers, with
+  fewer special cases; hence reduces the number of exceptions in the
+  language.
+
+Discussion:
+
+  Another cleanup issue, DECLARATION-SCOPE, addresses the scope of 
+  declarations. This proposal carefully uses the phrase "within the 
+  scope of the declaration" to avoid confounding the two issues. 
+
+  This issue has been discussed at the Fort Collins X3J13 meeting in
+  November 1987, and at length on the various electronic mailing lists.
+
+  At least one current implementation is able to generate more efficient
+  code when declarations are associated with a particular binding, since
+  it then has the option to choose type-specific specialized storage for 
+  the runtime value of the variable.  So, for example, 
+
+      (let ((x v)) (declare (type float x)) (+ x x))
+
+  is sometimes more efficient than
+
+      (let ((x v)) (locally (declare (type float x)) (+ x x)))
+
+  However, the local type declarations allowed by this proposal do
+  provide some useful information, even if it is not the *most* useful.
+  It is possible for a sufficiently "smart" compiler to infer the 
+  equivalent of a "binding declaration" when it can ascertain that the 
+  type of the binding value -- 'v' above -- is commensurate with the 
+  type locally declared over the scope of usage of the variable.
+
+  It may be useful for a compiler to issue a warning whenever it finds
+  nested type declarations referring to the same variable and the
+  intersection of the declared types is null.
+
+  Documentation might want to discuss the style implications of
+  nested declarations intersecting. The interesting cases are:
+   - An inner declaration could be a subtype of an outer one.
+     This is the most useful case and probably the only one to
+     be encouraged in code written by humans. e.g.,
+       (locally (declare (type number x))
+         (locally (declare (type integer x))
+           ...use X as integer...))
+   - An outer declaration could be a subtype of an inner one.
+     This is useless but harmless. It might happen as the result
+     of certain macro situations. e.g.,
+       (locally (declare (type integer x))
+         (locally (declare (type number x))
+           ...use X as integer...))
+   - Two types may only partially overlap. This would presumably
+     happen only as the result of a macro expansion.
+       (locally (declare (type fixnum x))
+         (locally (declare (type (or bit package) x))
+           ...use X as BIT...))
+
+*start*
+05268 00024 USm
+GV-Info: X3J13-mailer@SAIL.Stanford.EDU at  7-Apr-89 15:28:47 from AG
+Return-Path: <X3J13-mailer@SAIL.Stanford.EDU>
+Received: from SAIL.Stanford.EDU ([36.86.0.194]) by Xerox.COM ; 07 APR 89 14:36:21 PDT
+Received: from STONY-BROOK.SCRC.Symbolics.COM by SAIL.Stanford.EDU with TCP; 7 Apr 89  14:20:08 PDT
+Received: from EUPHRATES.SCRC.Symbolics.COM by STONY-BROOK.SCRC.Symbolics.COM via CHAOS with CHAOS-MAIL id 573609; Fri 7-Apr-89 17:19:10 EDT
+Date: Fri, 7 Apr 89 17:18 EDT
+From: David A. Moon <Moon@STONY-BROOK.SCRC.Symbolics.COM>
+Subject: Did you blow it?
+To: Guy Steele <gls@Think.COM>, rpg@lucid.com
+cc: x3j13@sail.stanford.edu
+In-Reply-To: <8904071720.AA18178@verdi.think.com>
+Message-ID: <19890407211851.9.MOON@EUPHRATES.SCRC.Symbolics.COM>
+
+    Date: Fri, 7 Apr 89 13:20:57 EDT
+    From: Guy Steele <gls@Think.COM>
+
+       Date: Thu, 6 Apr 89 15:19:42 PDT
+       From: Richard P. Gabriel <rpg@lucid.com>
+
+       When I read the effect of Issue: DECLARE-TYPE-FREE on page 223, I
+       completely flipped. I think you might have gotten it wrong.
+
+He did.
+
+       You say that in this code:
+
+       (defun f (x)
+	 (declare (type float x))
+	 (let ((x 'a)) ...)
+	  ...)
+
+       The declaration affects both bindings of x. This cannot make any sense
+       at all.  I don't have marked which version of this issue passed, but I
+       think neither implies this. The most that is implied is that if you
+       say this:
+
+       (defun f (x)
+	 ...
+	 (let ((y 'a))
+	  (declare (type float x))
+	  ...)
+	 ...)
+
+       then the declaration applies to variable references within the let-y
+       and not to within some larger scope.
+
+       I hope you are wedged, because otherwise the proposal is wedged.
+
+    I also hope I am wedged.  I am taking the liberty of cc'ing this
+    to X3J13 so that others can let me know what they think.
+
+    I believe I was confused by this paragraph from proposal
+    DECLARE-TYPE-FREE:LEXICAL, passed January 1989:
+
+      This proposal is equivalent to saying that the meaning of a type declaration
+      is equivalent to changing each reference to <var> within the scope of the
+      declaration to (THE <type> <var>), changing each expression assigned to the
+      variable within the scope of the declaration to (THE <type> <new-value>),
+      and executing (THE <type> <var>) at the moment the scope of the declaration
+      is entered.
+
+    The ambiguity concerns whether in
+
+       (defun f (x)
+	 (declare (type float x))
+	 x     ;reference 1
+	 (let ((x 'a)) ...)
+	   x   ;reference 2
+	   ...)
+
+    the two references are construed to be to the same *variable*.
+    (I readily grant that they refer to different *bindings*.)
+    I assumed that they were contrued to be the same variable,
+    in which case I believe that what I wrote on page 223 of the
+    CLtL II draft is a correct conclusion.
+
+The phrase "within the scope of the declaration" quoted above is
+supposed to be a precisely defined phrase.  The passed cleanup
+issue DECLARATION-SCOPE was supposed to define that phrase.
+Unfortunately, there is a problem: the precise language in version
+2 of the proposal was replaced with much less precise language 
+in version 4, which was the version that was voted upon.
+The version 2 language was:
+  
+  The scope of a `bound' declaration is exactly the scope of the
+  associated lexical variable or function.  If the declaration is
+  associated with a special variable, the scope is the scope the variable
+  would have had if it had not been special.
+  
+  `Free' declarations are scoped as if they appeared in a new LOCALLY form
+  which surrounded the entire special form at the beginning of whose body
+  the declaration appears.  This is the same as what CLtL p.155 defines to
+  be the scope of `pervasive' declarations.
+
+This answers your question about special variables.  I think that
+for declarations that concern variable or function bindings, but are
+not actually attached to a binding (i.e. are used free), the correct
+scope is the same as the scope of a non-special binding of that name
+surrounding the form to which the binding is attached; the language
+about LOCALLY quoted above is out of date.
+
+Gurg.  Your example above is misindented.  If you meant
+
+       (defun f (x)
+	 (declare (type float x))
+	 x     ;reference 1
+	 (let ((x 'a))
+	   x   ;reference 2
+	   ...)
+
+then the scope of the declaration does not include (let ((x 'a)) x ...)
+because type declarations are not "pervasive".  Thus what you wrote
+on p.223 of CLtL is wrong.
+
+But if you meant
+
+       (defun f (x)
+	 (declare (type float x))
+	 x     ;reference 1
+	 (let ((x 'a)) ...)
+	 x   ;reference 2
+	 ...)
+
+then the example does not address the question since reference 1
+and reference 2 are clearly both in the scope of the type declaration.
+
+    Now that you have pointed it out, I agree that a more likely
+    and more desirable interpretation is that the references are
+    considered to be to different variables.  Question: what if x
+    had been proclaimed SPECIAL?  Then what would the interpretation be?
+
+A special declaration should not affect the scope of a type declaration.
+Now, the version of DECLARATION-SCOPING that actually passed does not
+actually say that.  But I don't think any other position is arguable.

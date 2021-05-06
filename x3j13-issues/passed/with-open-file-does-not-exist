@@ -1,0 +1,94 @@
+Status: Proposal STREAM-IS-NIL passed, Jun 89 X3J13
+
+Issue:         WITH-OPEN-FILE-DOES-NOT-EXIST
+References:    CLtL page 422
+Category:      Clarify
+Edit history:  17-Mar-89, Version 1
+
+Problem description:
+The documentation for WITH-OPEN-FILE (p 422) says:
+  "WITH-OPEN-FILE evaluates the Forms of the body (an implict PROGN)
+with the variable Stream bound to a stream that reads or writes the
+file named by the value of Filename. The options are evaluated and
+used as keyword arguments to the function OPEN."
+
+  It is not clear what to do when there is no stream
+"that reads or writes the file" named by Filename.
+  Is the body evaluated? What is Stream bound to?
+
+Proposal: WITH-OPEN-FILE-DOES-NOT-EXIST:DONT-EVALUATE
+  If the result of OPEN does not return a stream (eg returns NIL)
+Then the body of WITH-OPEN-FILE is not evaluated, NIL is returned.
+
+Rationale:
+  The contract that "the body is evaluated with ... bound to a stream"
+is maintained in the sense of a vacuous evalation.
+  The alternatives are:
+    To let the stream variable be bound to NIL (unintuitive and dangerous).
+    If users want to Signal-An-Error in this case, they can use
+    :if-does-not-exist :error  
+  The test for (STREAMP Stream) is probably done anyway,
+    since the UNWIND-PROTECT cleanup form can't call CLOSE on NIL.
+
+Proposal: WITH-OPEN-FILE-DOES-NOT-EXIST:STREAM-IS-NIL
+  Clarify the documentation to explain that:
+    Stream is bound to the value returned by OPEN.
+    Users of :if-does-not-exist NIL should check for a valid stream.
+
+Rationale:
+  This simple to implement, no extra testing is done.
+  Users who use :if-does-not-exist NIL  can wrap their body forms
+with (when (STREAMP Stream) ...)
+
+Examples:
+1. (WITH-OPEN-FILE (foo "no-such-file" :IF-DOES-NOT-EXIST nil)
+	(READ foo) t)
+   DONT-EVALUATE: => NIL, no I/O is done, do not read from *standard-input*
+   STREAM-IS-NIL: => T, reads from *standard-input*
+
+2. (WITH-OPEN-FILE (foo "/no-dir" :direction :output :IF-DOES-NOT-EXIST nil)
+	(format foo t) t)
+   DONT-EVALUATE: => NIL, no string is created.
+   STREAM-IS-NIL: => T, creates a string and writes to it.
+
+Current practice:
+    Symbolics and Lucid apparently implement STREAM-IS-NIL.
+
+Cost to Implementors:
+    STREAM-IS-NIL: no cost.
+    DONT-EVALUATE:
+        Trivial? to test for :if-does-not-exist NIL and supply a 
+        test for (STREAMP Stream) in that case [or in every case].
+
+Cost to Users:
+    DONT-EVALUATE: System tests for (STREAMP Stream), possibly extraneously.
+    STREAM-IS-NIL: User must write a test for (STREAMP Stream).
+  Probably no portable code uses :if-does-not-exist NIL without
+  testing explicitly for (STREAMP Stream).
+
+Cost of non-adoption:
+    The current situation is non-intuitive and/or confusing.
+
+Benefits:
+    Users would know if the STREAMP test has been done or whether 
+they must supply it.
+
+Esthetics:
+
+Discussion:
+
+
+
+GV-Info: CL-Cleanup-mailer@SAIL.Stanford.EDU at 21-Mar-89 16:03:29 from AG
+Return-Path: <CL-Cleanup-mailer@SAIL.Stanford.EDU>
+Redistributed: xerox-cl-cleanup^.pa
+Received: from SAIL.Stanford.EDU ([36.86.0.194]) by Xerox.COM ; 21 MAR 89 16:03:30 PST
+Received: from STONY-BROOK.SCRC.Symbolics.COM (SCRC-STONY-BROOK.ARPA) by SAIL.Stanford.EDU with TCP; 21 Mar 89  16:01:17 PST
+Received: from EUPHRATES.SCRC.Symbolics.COM by STONY-BROOK.SCRC.Symbolics.COM via CHAOS with CHAOS-MAIL id 562394; Tue 21-Mar-89 18:59:52 EST
+Date: Tue, 21 Mar 89 18:59 EST
+From: David A. Moon <Moon@STONY-BROOK.SCRC.Symbolics.COM>
+Message-ID: <19890321235935.6.MOON@EUPHRATES.SCRC.Symbolics.COM>
+
+I think WITH-OPEN-FILE-DOES-NOT-EXIST:STREAM-IS-NIL is clearly correct,
+although I agree that CLtL doesn't really say.
+

@@ -1,0 +1,146 @@
+Issue:               FORMAT-STRING-ARGUMENTS
+References:          
+Related issues:      Issue PRETTY-PRINT-INTERFACE
+Category:            CLARIFICATION, CHANGE
+Edit history:        V1, 10 May 90, Sandra Loosemore
+
+Problem description:
+
+Issue PRETTY-PRINT-INTERFACE says that
+    The function FORMAT is extended so that it can accept a
+    function instead of a FORMAT string.  (This change is also made
+    in the other functions that accept FORMAT strings such as ERROR
+    and WARN.)
+
+The pretty printer proposal did not explicitly address whether
+this also affects the :FORMAT-STRING slot of simple-condition 
+objects, and whether any macros (as well as functions) specified 
+in the standard were affected by the change.
+
+Also, there is potential for confusion in using the terminology
+"format strings" to refer to objects that are now permitted to
+be either strings or functions.
+
+There are two proposals, SPECIFY and RETRACT.
+
+This is issue #1 from Loosemore's list.
+
+Proposal (FORMAT-STRING-ARGUMENTS:SPECIFY):
+
+  (1) Clarify that the following functions and macros which formerly were
+  specified to take format strings as arguments now accept either
+  a format string or a format function:
+
+  ASSERT (datum; treated like a string argument is now)
+  BREAK (format-string)
+  CERROR (both continue-format-string and datum arguments)
+  DEFINE-METHOD-COMBINATION (:DESCRIPTION argument)
+  ERROR (datum; treated like a string argument is now)
+  FORMAT (control-string)
+  INVALID-METHOD-ERROR  (format-string)
+  METHOD-COMBINATION-ERROR (format-string)
+  SIGNAL (datum; treated like a string argument is now)
+  WARN (datum; treated like a string argument is now)
+  WITH-SIMPLE-RESTART (format-string)
+  Y-OR-N-P (format-string)
+  YES-OR-NO-P (format-string)
+
+  (2) Clarify that the :FORMAT-STRING argument passed to MAKE-CONDITION
+  to construct a condition which is a subtype of SIMPLE-CONDITION
+  may be either a string or a function, and the accessor 
+  SIMPLE-CONDITION-FORMAT-STRING can return either a string or a function.
+
+  (3) Change the name of the :FORMAT-STRING argument to MAKE-CONDITION 
+  associated with SIMPLE-CONDITION types to :FORMAT-CONTROL, and
+  rename the accessor function to SIMPLE-CONDITION-FORMAT-CONTROL.  As
+  an editorial matter, change all references to arguments now
+  named "format-string" to "format-control".
+
+  Rationale for proposal SPECIFY:
+
+  Items (1) and (2) were probably what was intended by the
+  PRETTY-PRINT-INTERFACE proposal.  Item (3) is a logical
+  extension; since the arguments need not be strings, calling
+  them "format-strings" is a misnomer.
+
+
+Proposal (FORMAT-STRING-ARGUMENTS:RETRACT):
+
+  (1) Retract the part of issue PRETTY-PRINT-INTERFACE that required
+  FORMAT, related functions such as ERROR and WARN, and the ~?
+  and ~{~} directives to accept format control functions as well
+  as strings.
+
+  (2) Remove the FORMATTER macro from the language.
+
+  Rationale for proposal RETRACT:
+
+  It is easier to remove this feature than to try to fix the rest
+  of the language to be consistent with it.  Having a macro to
+  "compile" format strings into functions is probably not useful
+  in the absence of the extensions to FORMAT.
+  
+
+Current Practice:
+
+  Unknown.  The pretty printer specification is a fairly recent
+  addition to the language and it probably hasn't been fully
+  integrated into any implementation yet.
+
+Cost to Implementors:
+
+  The actual implementation cost of extending the listed functions 
+  and macros to accept function arguments is probably small, since
+  in most cases they just pass the argument to FORMAT anyway.
+  Both proposals probably involve changes to documentation.
+  
+Cost to Users:
+
+  For proposal SPECIFY, the incompatible change to the name of the 
+  :FORMAT-STRING slot of SIMPLE-CONDITION objects may cause some 
+  problems for users who have started using the condition system
+  in their code, but these ought to be fairly straightforward to 
+  track down and fix.
+
+  Proposal RETRACT may cause some problems for users who have
+  started writing code which uses the FORMATTER macro and the
+  extension to FORMAT to accept functions, but again the
+  problems should generally be easy to find and fix.
+  
+Cost of non-adoption:
+
+  Parts of the language are poorly specified.
+
+Performance impact:
+
+  The ability to "compile" format strings into functions in advance can
+  potentially lead to greater runtime efficiency.  On the other
+  hand, some implementations might implement FORMATTER in such a
+  way that it is less efficient than passing a format string
+  directly.  Furthermore, even without FORMATTER in the language,
+  it is still possible for implementations to do a compile-time
+  transformation to "compile" constant string arguments to FORMAT
+  and related functions.
+
+Benefits:
+
+  The language is better specified.
+
+Esthetics:
+
+  Either proposal would be an improvement over the current
+  situation.
+
+Discussion:
+
+  Conceivably, the FORMATTER macro could be left in the language
+  even while removing the extensions to FORMAT and friends, but it's 
+  not clear how useful this would be to users.
+
+  Loosemore opposes other partial solutions (like requiring FORMAT 
+  to accept both strings and functions but specifying everything else 
+  to accept only strings) on the grounds that they would
+  introduce additional, unnecessary complexity and inconsistency
+  into the language.  If the feeling is that this feature belongs
+  in the language, we ought to bite the bullet and do it
+  properly.

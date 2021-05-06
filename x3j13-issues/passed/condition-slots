@@ -1,0 +1,122 @@
+Issue:         CONDITION-SLOTS
+
+References:    Condition System, version 18
+               Issue CLOS-CONDITIONS
+               Issue PACKAGE-CLUTTER
+               ANSI CL draft pp.5-4, 5-5
+
+Category:      CLARIFICATION
+
+Edit history:  3-Jan-90, Version 1 by Barrett
+               30-Apr-90, Version 2 by Moon (rewrite, just one proposal,
+                 extend to cover all specified objects that have slots)
+
+Problem description:
+
+  Pages 5-4 and 5-5 of the ANSI CL draft specification from last fall refer
+  to slots of specified conditions.  However these slots were not put into
+  the specification in a consistent way.
+
+  CLOS-CONDITIONS:INTEGRATE, which was adopted by X3J13, changed condition
+  slots to be the same as CLOS slots, but did not say that the specified
+  conditions have any specified slots.  However, some people have taken it
+  to mean that the condition classes defined by the standard all contain
+  slots whose names are external symbols in the CL package which are
+  STRING= to the specified initargs for creating conditions.  The ANSI CL
+  draft specification was edited in some places as if this were true.
+
+  Revision 18 of the conditions document, which was adopted by X3J13,
+  refers to initialization arguments and accessors, but carefully avoids
+  naming the slots themselves.  The philosophy of that document was that
+  slots are only defined for programmer defined conditions, and that the
+  only sanctioned interface for the standard condition classes is through
+  the use of the defined accessor functions.
+
+  A related, more general issue that PACKAGE-CLUTTER:REDUCE failed to
+  address is whether there are naming restrictions on
+  implementation-dependent slots of specified classes.
+
+  This is Symbolics issue #8 and Loosemore issue #15 of 27 Feb 90.
+
+Proposal (CONDITION-SLOTS:HIDDEN):
+
+  1. Clarify that no specified condition classes have any specified slots.
+  The implementation of the required information storage by the specified
+  condition classes is implementation-dependent.  We need to be clear that
+  specified conditions are not required to have any particular slots with
+  any particular names.  They -are- required to be the type of object that
+  is able to have slots.  User-defined conditions -are- required to have
+  slots with the names mentioned in the DEFINE-CONDITION form.
+
+  2. Table 5-1 in the ANSI CL draft specification should not contain slot
+  names, because they will not necessarily be accessible via WITH-SLOTS in
+  the way people might infer.  Instead, the table should mention initargs
+  and accessors.  For example, :FORMAT-STRING and
+  SIMPLE-CONDITION-FORMAT-STRING -- but not the symbol FORMAT-STRING.
+          
+  3. Define that it is unspecified whether slots are involved in the
+  operation of specified functions on instances of specified classes,
+  except when slots are explicitly specified by the standard.
+
+  4. Define that if in a particular implementation a specified class has
+  slots that are not specified by the standard, the names of these slots
+  must not be external symbols of packages defined in the standard nor
+  otherwise accessible in the USER package.
+
+Rationale:
+
+  Allowing the information storage to be implementation-dependent is
+  essential to compatibility with existing systems, which may not represent
+  this information in the "obvious" way.
+
+  Specifying slots for the condition classes would require putting the slot
+  names into the COMMON-LISP package, adding many symbols.
+
+  Part 4 of the proposal repairs an omission in PACKAGE-CLUTTER:REDUCE.  It
+  is necessary if users are to be able to define a subclass of a condition
+  class (which is necessary whenever users define their own conditions) and
+  give slots to their class without potentially interfering with
+  implementation-defined slots.
+
+Current practice:
+
+  Parts 1 through 3 are likely to be consistent with all existing
+  implementations.  Part 4 is not known to be specifically violated by any
+  implementation, but it might well be violated by accident.  I have not
+  tested any implementations specifically.
+
+Cost to Implementors:
+
+  Easy, all they have to do is keep slot names out of user visible packages.
+
+Cost to Users:
+
+  Easy, all they have to do is use the specified accessors rather than
+  SLOT-VALUE or WITH-SLOTS to access information in conditions.
+
+Cost of non-adoption:
+
+  Substantially increased size of the COMMON-LISP package and considerable
+  extra work on the ANSI CL specification to document all the slots.
+  Porting problems for any code that defines its own condition types
+  because of slot name collisions.
+
+Performance impact:
+
+  None of any consequence.  SLOT-VALUE might be faster than calling an
+  accessor in some implementations (although in most implementations it is
+  slower, when not called from a method), but access to a slot of a
+  condition never occurs in important inner loops.
+
+Benefits:
+
+  Conditions will be specified as originally intended.
+
+Esthetics:
+
+  Abstraction is better than mandating one particular implementation
+  of information storage.
+
+Discussion:
+
+  None.

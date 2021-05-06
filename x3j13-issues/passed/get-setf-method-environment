@@ -1,0 +1,89 @@
+Status: Passed, 1988? (Not sure which meeting)
+Issue:          GET-SETF-METHOD-ENVIRONMENT
+References:     GET-SETF-METHOD (CLtL p 187)
+Category:       Change
+Edit History:   Version 1 9-Jan-87, Version 1 by Masinter 
+                (no version) 7-Apr-87, merged with ENVIRONMENT-ARGUMENTS
+                Version 2 29-May-87, extracted again 
+                Version 3  5-Jun-87, by Masinter
+                Version 4  11-Jun-87, for release
+                Version 5  13-Jul-87, by Masinter
+                
+Problem Description:
+
+If a macro that performs similar processing to SETF uses GET-SETF-METHOD, and that macro occurs within a MACROLET, the expansion will not see the MACROLET definition, e.g.,
+
+ (defmacro special-incf ... (get-setf-method ...) ...)
+
+then  
+
+ (macrolet ((test (x) `(car ,x)))
+         (special-incf (test z)))
+
+would not "see" the test definition.
+
+Proposal (GET-SETF-METHOD-ENVIRONMENT:ADD-ARG):
+
+Add an optional environment argument to GET-SETF-METHOD and GET-SETF-METHOD-MULTIPLE-VALUE. If the argument is not supplied, it defaults to the null lexical environment. NIL can also be passed explicitly to denote the null lexical environment.
+
+Allow &ENVIRONMENT variable to appear in the lambda-list subform of a DEFINE-SETF-METHOD form, as with a DEFMACRO.
+
+Note that macros defined with DEFINE-MODIFY-MACRO correctly pass the environment to GET-SETF-METHOD.
+
+Clarify that, within the scope of a MACROLET, FLET and LABELS, global SETF definitions of the name defined by the MACROLET, FLET or LABELS do not apply.  A SETF method applies only when the global function binding of the name is lexically visible.  All of the built in macros of Common Lisp (SETF, INCF, DECF, POP, ROTATEF, etc.) which modify location specifications obey this convention.
+
+Test Case:
+
+;;; This macro is like POP 
+
+(defmacro xpop (place &environment env)
+  (multiple-value-bind (dummies vals new setter getter)
+                       (get-setf-method place env)
+     `(let* (,@(mapcar #'list dummies vals) (,(car new) ,getter))
+        (prog1 (car ,(car new))
+               (setq ,(car new) (cdr ,(car new)))
+               ,setter)))))
+
+(defsetf frob (x) (value) 
+    `(setf (car ,x) ,value))
+
+;;; The following will modify (cdr z) and not (car z)
+(macrolet ((frob (x) `(cdr ,x)))
+     (xpop (frob z)))
+
+;;; The following is an error; an error may be signaled at macro expansion time
+
+(flet ((frob (x) (cdr x))
+     (xpop (frob z)))
+
+
+Rationale:
+
+This was an omission in the original definition of CLtL.
+
+Current Practice:
+
+Many Common Lisp implementations already have this extension, although some do not. One implementation has extended GET-SETF-METHOD to take an optional argument which is incompatible with this use.
+
+Cost to implementors:
+
+Some implementations will have to add this feature, although it is not a major change.
+
+Cost to users:
+
+This is generally an upward compatible change. In implementations which did not already take into account the lexical environment for SETF'd forms might start working differently if the internal implementation of SETF is changed. The likelihood of this affecting a user's program is very small.
+
+Benefits:
+
+This change improves portability and the ability to use MACROLET, FLET and LABELS in portable code which might also have SETF forms.
+
+Aesthetics:
+
+SETF methods cannot work correctly within lexically defined function symbols without this change. This change makes the language more consistent and correct. 
+
+Discussion:
+
+The cleanup committee generally supports this change.
+
+A number of additional changes for rationally dealing with lexical environments as first class objects, including a more general set of accessors and constructors for lexical environments is required for many language extensions (e.g., a portable version of the proposed Common Lisp Object System) and should be addressed by a future proposal. For a while, the cleanup committee attempted to deal with these issues together, but decided to separate them out into their component parts. This issue is the simplest.
+

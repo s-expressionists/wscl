@@ -1,0 +1,528 @@
+Status: Proposal LARGE, with sections 7, 8, 9 removed, passed Mar 89 X3J13
+
+Issue:         FUNCTION-NAME
+
+References:    SETF rules for what -place- can be (pp.94-7)
+               FBOUNDP function (p.90)
+               FMAKUNBOUND function (p.92)
+               FUNCTION special form (p.87)
+               SYMBOL-FUNCTION and setf of symbol-function (p.90)
+               88-002R pages 1-21, 2-21, 2-26, 2-39, 2-44, 2-46, 2-51, and 2-55
+               (There are additional references for the MEDIUM and LARGE
+                proposals, but they are not listed here.  They're obvious.)
+
+Related issues: SETF-FUNCTION-VS-MACRO, SETF-PLACES (both subsumed by this)
+
+Category:      ADDITION
+
+Edit history:  Version 1, 23-Jan-89, by Moon 
+                              (based on discussion at Jan X3J13 meeting)
+
+
+Problem description:
+
+The Common Lisp Object System needs a well-defined way to relate the name
+and arguments of a writer function to those of a reader function, because
+both functions can be generic and can have user-defined methods.  The way
+that was adopted into Common Lisp when X3J13 voted to accept document
+88-002R was to use a list (SETF reader) as the name of the writer function.
+
+Some changes to the non-object-oriented portion of Common Lisp are required
+in order to support this.
+
+This issue has three proposals.
+
+
+Proposal (FUNCTION-NAME:SMALL):
+          
+  Add a new concept "function-name" (called "function-specifier" in
+  88-002R).  A function-name is either a symbol or a 2-element list whose
+  first element is the symbol SETF and whose second element is a symbol.
+  Implementations are free to extend the syntax of function-names to
+  include lists beginning with additional symbols other than SETF.
+
+  Add a new function (FDEFINITION function-name), which returns the
+  current global function definition named by function-name, or signals
+  an error if there is no global function definition.  This follows all
+  the same rules listed for SYMBOL-FUNCTION in CLtL p.90.
+
+  Add SETF of FDEFINITION to change the current global function definition
+  named by a function-name.  This follows all the same rules listed for
+  SETF of SYMBOL-FUNCTION in CLtL p.90.
+
+  Change the FBOUNDP and FMAKUNBOUND functions, and the FUNCTION special
+  form, to accept function-names in place of symbols.  Implementation
+  defined extensions to the syntax of function-names cannot use the
+  symbol LAMBDA, since FUNCTION already uses that symbol.
+
+  Change the rules for SETF places (CLtL pp.94-7) by adding the following
+  clause after all the existing clauses:
+
+   - Any other list whose first element is a symbol, call it reader.
+     In this case, SETF expands into a call to the function named by the
+     list (SETF reader).  The first argument is the new value and the
+     remaining arguments are the values of the remaining elements of
+     -place-.  This expansion occurs regardless of whether reader or
+     (SETF reader) is defined as a function locally, globally, or not at
+     all.  For example,
+         (SETF (reader arg1 arg2...) new-value)
+     expands into a form with the same effect and value as
+         (LET ((#:temp-1 arg1)          ;force correct order of evaluation
+               (#:temp-2 arg2)
+               ...
+               (#:temp-0 new-value))
+           (FUNCALL (FUNCTION (SETF reader)) #:temp-0 #:temp-1 #:temp-2...)).
+
+  Change the functions GET-SETF-METHOD and GET-SETF-METHOD-MULTIPLE-VALUE
+  to implement the above change to the rules.
+         
+  Document that a function named (SETF reader) should return its first
+  argument as its only value, in order to preserve the semantics of SETF.
+
+  Change the macro DEFGENERIC and the function ENSURE-GENERIC-FUNCTION to
+  refer to the function FDEFINITION where they now refer to the function
+  SYMBOL-FUNCTION.
+
+  Change the macros DEFCLASS, DEFGENERIC, and DEFMETHOD, the special forms
+  GENERIC-FLET and GENERIC-LABELS, and the functions DOCUMENTATION and
+  ENSURE-GENERIC-FUNCTION to use the term "function-name" where they now
+  use the term "function-specifier" or "function specifier".
+
+
+Rationale for FUNCTION-NAME:SMALL:
+
+  This is the minimum change to Common Lisp needed to do what 88-002R says
+  about (SETF reader).  Giving implementations freedom to extend the syntax
+  of function-names allows for current practice.  Changing the name from
+  "function-specifier" to "function-name" avoids confusion and improves
+  consistency with the rest of the language, at the cost of a few small
+  changes to 88-002R.
+
+
+Proposal (FUNCTION-NAME:MEDIUM):
+
+  Everything in FUNCTION-NAME:SMALL, and in addition:
+
+  Change the DEFUN macro to accept a function-name for its name argument,
+  instead of only accepting a symbol.  If function-name is (SETF sym),
+  the body is surrounded by an implicit block named sym.
+
+
+Rationale for FUNCTION-NAME:MEDIUM:
+
+  Keeping DEFUN consistent with DEFMETHOD is a good idea.  Also 88-002R
+  says "The name of a generic function, like the name of an ordinary
+  function, can be either a symbol or a two-element list whose...", which
+  implies this change to DEFUN.
+
+
+Proposal (FUNCTION-NAME:LARGE):
+
+  Everything in FUNCTION-NAME:MEDIUM, and in addition the following
+  numbered points, each of which could be adopted independently,
+  except where explicitly noted:
+
+  1. Change the function COMPILE to accept a function-name as its name
+  argument.
+
+  2. Change the function DISASSEMBLE to accept a function-name as its name
+  argument.
+
+  3. Change the FTYPE, INLINE, and NOTINLINE declarations and proclamations
+  to accept function-names, not just symbols, as function names.
+
+  4. Change the FLET and LABELS special forms to accept a function-name in
+  the name position, not just a symbol.
+
+  5. Change the TRACE and UNTRACE macros to accept function-names, not just
+  symbols, in the function name positions.
+
+  6. Change the ED function to accept (ED function-name) in place of
+  (ED symbol).
+
+  7. Change the syntax of a function call to allow a function-name as the
+  first element of the list, rather than allowing only a symbol.
+
+  8. Change the DEFMACRO macro and the MACROLET special form to accept a
+  function-name in the name position, not just a symbol.  Change the
+  MACRO-FUNCTION function to accept function-names, not just symbols.
+  Change the last rule for SETF places to use
+    ((SETF reader) #:temp-0 #:temp-1 #:temp-2...)
+  in place of
+    (FUNCALL (FUNCTION (SETF reader)) #:temp-0 #:temp-1 #:temp-2...)
+  so that (SETF reader) can be defined as a macro.  This depends on item
+  7.  If item 4 is rejected, MACROLET should be stricken from this item.
+
+  9. Add an optional environment argument to FDEFINITION, SETF of
+  FDEFINITION, FBOUNDP, and FMAKUNBOUND.  This is the same as the
+  &environment argument to a macroexpander.  This argument can be used to
+  access local function definitions, to access function definitions in the
+  compile-time remote environment, and to modify function definitions in
+  the compile-time remote environment.
+
+  10. Change the second, third, fourth, fifth, seventh, and ninth rules for
+  SETF places so that they only apply when the function-name refers to the
+  global function definition, rather than a locally defined function or
+  macro.  (The ninth rule is the one that refers to DEFSETF and
+  DEFINE-SETF-METHOD; the other rules listed are the ones that list
+  specific built-in functions).  The effect of this change is that SETF
+  methods defined for global functions are ignored when there is a local
+  function binding; instead, the function named (SETF reader), which may
+  have a local function binding, is called.  This change is most useful
+  in connection with item 4, but does not actually depend on it.
+
+  11. Clarify that the eighth rule for SETF places (the one for macros)
+  uses MACROEXPAND-1, not MACROEXPAND.
+
+Rationale for FUNCTION-NAME:LARGE:
+
+  This extends the new feature throughout the language, in order to make
+  things generally more consistent and powerful.  Point by point:
+
+  1,2,3 - one should be able to compile, examine, and make declarations
+  about functions regardless of whether they are named with symbols or
+  with lists.
+
+  4 - locally defined non-generic SETF functions are a logical companion
+  to locally defined generic SETF functions, which can be defined with
+  GENERIC-FLET or GENERIC-LABELS.  They make sense on their own, since one
+  might define a local reader function and want a local writer function
+  to go with it.
+
+  5,6 - one should be able to apply development tools to functions
+  regardless of how they are named.  The function DOCUMENTATION was already
+  updated to work for function-names by 88-002R.  There might be some
+  difficulty with implementation-dependent syntax extensions to TRACE and
+  UNTRACE conflicting with this new syntax.
+
+  7 - this restores consistency between the FUNCTION special form and the
+  first element of a function call form.
+
+  8 - it seems more consistent to allow macros to be named the same way
+  that ordinary functions are named.  However, this might be considered
+  redundant with DEFSETF.
+
+  9 - this is not needed by the "chapter 1 and 2" level of CLOS, but might
+  be used by the metaobject based implementation of ENSURE-GENERIC-FUNCTION.
+
+  10 - this change was in SETF-FUNCTION-VS-MACRO and makes item 4 more useful.
+
+  11 - this change was in SETF-FUNCTION-VS-MACRO and is a good idea, but
+  actually is independent of everything else being proposed here.
+
+
+Examples:
+
+;This is an example of the sort of syntax 88-002R allows
+(defmethod (setf child) (new-value (parent some-class))
+  (setf (slot-value 'child parent) new-value)
+  (update-dependencies parent)
+  new-value)
+(setf (child foo) bar)
+
+;If SETF of SUBSEQ was not already built into Common Lisp,
+;it could have been defined like this, if the MEDIUM or LARGE
+;proposal is adopted.
+(defun (setf subseq) (new-value sequence start &optional end)
+  (unless end (setq end (length sequence)))
+  (setq end (min end (+ start (length new-value))))
+  (do ((i start (1+ i))
+       (j 0 (1+ j)))
+      ((= i end) new-value)
+    (setf (elt sequence i) (elt new-value j))))
+
+;The preceding example would have to be defined like this
+;if only the SMALL proposal is adopted.  This is a method
+;all of whose parameter specializer names are T.
+(defmethod (setf subseq) (new-value sequence start &optional end)
+  (unless end (setq end (length sequence)))
+  (setq end (min end (+ start (length new-value))))
+  (do ((i start (1+ i))
+       (j 0 (1+ j)))
+      ((= i end) new-value)
+    (setf (elt sequence i) (elt new-value j))))
+
+;Another example, showing a locally defined setf function
+(defun frobulate (mumble)
+  (let ((table (mumble-table mumble)))
+    (flet ((foo (x)
+             (gethash x table))
+           ((setf foo) (new x)
+             (setf (gethash x table) new)))
+      ..
+      (foo a)
+      ..
+      (setf (foo a) b))))
+
+;get-setf-method could implement setf functions by calling
+;this function when the earlier rules do not apply
+(defun get-setf-method-for-setf-function (form)
+  (let ((new-value (gensym))
+	(temp-vars (do ((a (cdr form) (cdr a))
+			(v nil (cons (gensym) v)))
+		       ((null a) v))))
+    (values temp-vars
+	    (cdr form)
+	    (list new-value)
+	    `(funcall #'(setf ,(car form)) ,new-value ,@temp-vars)
+	    `(,(car form) ,@temp-vars))))
+
+
+Current practice:
+
+  No implementation supports exactly what is proposed.  Symbolics Genera
+  and the TI Explorer support something close to the MEDIUM proposal, but
+  differing in a number of details.  Symbolics Genera supports items 1, 2,
+  3, 6, and 11, and modified forms of items 5 and 8, of the LARGE proposal.
+  Moon considers this proposal's variations from Symbolics current practice
+  to be an improvement, although incompatible in some cases.
+  
+  Many implementations currently support only symbols as function names.
+
+  Symbolics Genera and the TI Explorer have some additional function-name
+  syntaxes.
+
+Cost to Implementors:
+
+  The SMALL and MEDIUM proposals are estimated to be no more than 50 lines
+  of code and require no changes to the "guts" of the interpreter and
+  compiler.  Most of the code for this can be written portably and was
+  shown on two slides at the X3J13 meeting.
+
+  Some of the changes in the LARGE proposal are trivial, some require
+  the compiler to use EQUAL instead of EQ to compare function names, and
+  items 4, 7, and 8 might require a more substantial implementation
+  effort.  Even that effort is estimated to be negligible compared to
+  the effort required to implement CLOS.
+
+Cost to Users:
+
+  No cost to users, other than program-understanding programs, since this
+  is an upward compatible addition.
+
+  As with any language extension, some program-understanding programs may
+  need to be enhanced.  A particular issue here is programs that assume
+  that all function names are symbols.  They may use GET to access
+  properties of a function name or use EQ or EQL (perhaps via MEMBER or
+  ASSOC) to compare function names for equality.  Such programs will need
+  improvement before they can understand programs that use the new feature,
+  but otherwise they will still work.
+
+Cost of non-adoption:
+
+  We would have to make some other language change since the language
+  became inconsistent when 88-002R was adopted.
+
+Performance impact:
+
+  This has no effect on performance of compiled code.  It might slow
+  down the compiler and interpreter but not by very much.
+
+Benefits:
+
+  CLOS will work as designed.
+
+Esthetics:
+
+  Some people dislike using anything but symbols to name functions.
+  Other people would prefer that if the change is to be made at all,
+  the LARGE proposal be adopted so that the language is uniform in its
+  treatment of the new extended function names.  Other proposals for
+  how to deal with SETF in CLOS were considerably less esthetic,
+  especially when package problems are taken into account.
+  
+  SETF would be more esthetic, but less powerful, if it had only the
+  proposed setf functions and did not have setf macros.  Such a major
+  incompatible change is of course out of the question; however, if setf
+  functions are stressed over setf macros, SETF will be much easier to
+  teach.
+
+Discussion:
+
+  Moon supports at least FUNCTION-NAME:MEDIUM.  He does not necessarily
+  approve of all parts of FUNCTION-NAME:LARGE.
+
+
+!
+Additional Comments:
+
+On the whole, I like this presentation much better than either of the
+other two writeups that were circulated previously.  I suspect that it
+might be necessary to vote on each of the items in the LARGE proposal
+individually, though.  I think I would support items 1, 2, and 11, and
+don't have any particular objections to 3, 5, and 6.  For item 4, if
+consistency with GENERIC-FLET and GENERIC-LABELS is an object, another
+alternative is to change those two special forms to be like ordinary
+FLET and LABELS, instead of vice versa.
+
+- - - - - - -
+I support FUNCTION-NAME:MEDIUM and may support LARGE once I think about
+it some more.
+
+As I explained in Hawaii, support for either of these is based on the
+:conc-name bugs being removed from the condition system.  Of course, I
+believe the best way to do that is to CLOSify it.
+- - - - - - - - 
+I'm still thinking about this, but while I am I wanted point out that
+MEDIUM is unacceptable to me because I don't think FLET and DEFUN should
+disagree on what they permit as defined names. If FLET were added to
+MEDIUM, I suspect I'd think it was an internally consistent position.
+
+LARGE has an appeal to me in general, but I'm still mulling over 
+the specifics.
+- - - - - - - - - -
+I favor the FUNCTION-NAME:LARGE proposal, because it defines a single,
+useful notion of what a function name is.  The other proposals have
+the flaw that there are two kinds of function names:  symbols, and
+extended names, with only some of the Lisp primitives accepting the
+latter.  This may be convenient for some implementations, for the
+short term, but it fragments the language.
+
+I have two other comments on the proposal.
+
+
+A. Reducing the Cost to Implementors
+
+One observation you could put in the Cost To Implementors section is
+that none of the SMALL, MEDIUM, or LARGE proposals require changes to
+the "guts" of the interpreter and compiler.  This is because an
+implementation is free to use plain symbols internally to name
+functions, and use a hack like JonL's SETF:|3.FOO.BAR| mapping to
+convert non-symbol names to symbols.  This conversion would be done as a
+part of parsing the handful of forms which accept function names, and
+then all other passes of the interpreter and compiler (the "guts") would
+just see symbols.  (By "parsing" I mean ensuring the right number and
+type of syntactic subforms.  You can see that this is a very early and
+simple stage of processing.)  Or, Lisp compilers with an "alphatization"
+phase could perform function name symbolization at that phase.
+
+
+B. Finishing the Job of Regularization
+
+I'd like to suggest two additions to your smorgasbord of options in the
+FUNCTION-NAME:LARGE section of the proposal.  One addition would
+regularize a major special case of functions--lambda expressions.  The
+other addition would reaffirm an unstated regularity in the language,
+that function names can stand in for functions under FUNCALL and APPLY.
+Not only can the treatment of symbolic and setf-list function names be
+regularized, but lambda too can be treated in a consistent manner.
+
+If these two points are added to your proposal, the language as a whole
+would have a completely uniform treatment of functions and function
+names.  Here they are:
+
+13. Declare that any function name is a suitable argument to FUNCALL and
+    APPLY.  In such a case, the function name is passed to FDEFINITION,
+    and the result (which may in turn be a function name) is called.
+    That is, the following two expressions are equivalent, when fname
+    is a function name:
+	(FUNCALL fname x y)
+	  <==>
+	(FUNCALL (FDEFINITION fname) x y)
+    Note that the definition is sought in the global environment.
+    Compare with the rule which applies to a function name occurs,
+    syntactically, as the car of a list in code:
+	(fname x y)
+	  <==>
+	(FUNCALL (FUNCTION fname) x y)
+	  <==> (under proposal item 9)
+	(FUNCALL (FDEFINITION fname <local-environment>) x y)
+
+12. Declare that any lamba expression (i.e., a list whose car is LAMBDA and
+    whose cdr is a well-formed lambda argument list and body) is a function
+    name.  The effects of the function name accessors on lambda expressions
+    are as follows.  FDEFINITION returns an implementation-defined value which
+    is the function specified the lambda expression, closed in the global
+    environment.  This FDEFINITION value cannot be changed by SETF.
+    FBOUNDP always returns T, and MAKUNBOUND is an error.
+
+Esthetics:
+
+The effect of items 11 and 12 is to complete the regularization of
+Common Lisp's treatment of functions and function names.  The total
+effect of proposal items 1 through 12 is that Lisp has just two notions
+for referencing function objects: FUNCTIONS, which are Lisp objects that
+directly represent executable code, and FUNCTION NAMES, which can denote
+functions.  Symbols, SETF function names, and lambda expressions are all
+examples of the latter notion.  The former notion is highly
+implementation dependent.  Function names can occur as syntactic
+entities in code.  FUNCALL and APPLY work uniformly on both functions
+and function names, with a consistent semantics.
+
+Lambda expressions are often thought to denote "anonymous" functions, so
+it may seem paradoxical to treat them as names.  The paradox is only
+apparent, since the expression itself has the properties of a Lisp
+function name: It is (typically) a cons tree which can be read, printed,
+and stored in source files, and it denotes a well-defined Lisp function.
+
+Benefit to Users:
+
+Function names are useful for representing objects in remote
+environments, because they need not be bound at all times to the same
+function, or to any function, and because they are typically stable in
+meaning across reads and prints, where plain functions are not.
+Programs which deal simultaneously with remote and local environments,
+such as CLOS, can probably be simplified, since function names
+can be used uniformly, rather than an ad-hoc mixture of functions
+and function names.
+
+The language as a whole become more uniform from these additions and
+clarifications, making it easier to learn and use.  (See Esthetics.)
+
+Cost to Implementors:
+
+Interpreters which currently have a special case check for application
+of lambda expressions would need to modify this check to call
+FDEFINITION when a list of any sort is encountered.  Note that all
+Common Lisps already must perform some such check, since lambda
+expressions can be funcalled (and this is currently a very special case,
+the only standard case of a list being funcalled).  This means that
+every Lisp already has a place to insert the required call to
+FDEFINITION.
+
+In some implementations, FDEFINITION of a lambda expression could be that
+lambda-expression itself.  In others featuring a pre-eval codewalk, the
+walk would be done by FDEFINITION, which would return an appropriate
+closure.
+
+Cost of Non-adoption:
+
+Rather than two notions for function references (functions and function
+names), there would be several notions, each corresponding to the valid
+inputs for particular group of primitives.  APPLY and FUNCALL would
+accept functions, symbolic names, and lambda expressions, but not setf
+function names.  FDEFINITION and its kind would accept symbols and setf
+function names but not lambda expressions.  If the :LARGE proposal is
+not adopted, this fragmentation would also apply to the various syntaxes
+involving function names; some names would be acceptable to DEFUN
+but not to FLET, etc.
+
+- - - - - - - - - - - - -
+> 13. Declare that any function name is a suitable argument to FUNCALL and
+>     APPLY.  In such a case, the function name is passed to FDEFINITION,
+>     and the result (which may in turn be a function name) is called.
+
+I don't think this is such a good idea.  The case of automatically coercing
+a symbol to a function is needed because it provides a portable mechanism
+for indirect addressing of a function; I haven't seen a reason to need this
+for non-symbol function specs.  But more important is that coercing a
+symbol to a function is a trivial operation that is reasonable to do at
+run time on each call without adding a significant amount of overhead.
+FDEFINITION, on the other hand, is a much more expensive operation -- at
+best it might use GET to do a property list lookup, or it could be using
+string-append and INTERN to convert the name to a symbol.  In either case,
+I think this is more work than you want to do on each call.
+
+> 12. Declare that any lamba expression (i.e., a list whose car is LAMBDA and
+>     whose cdr is a well-formed lambda argument list and body) is a function
+>     name.  The effects of the function name accessors on lambda expressions
+>     are as follows.  FDEFINITION returns an implementation-defined value which
+>     is the function specified the lambda expression, closed in the global
+>     environment.  This FDEFINITION value cannot be changed by SETF.
+>     FBOUNDP always returns T, and MAKUNBOUND is an error.
+
+The exceptions for SETF and MAKUNBOUND show that this is not really as
+consistent as you might like.  Furthermore, the FUNCTION special form would
+have to treat a LAMBDA expression as a function, not a function name, in
+order for it to be lexically scoped.  It seems like this might just cause
+confusion rather than consistency.

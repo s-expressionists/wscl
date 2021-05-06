@@ -1,0 +1,133 @@
+Status:  Proposal ARGUMENT-STREAM-ONLY passed, Jan 89 X3J13 
+Forum:	Cleanup
+Issue:         CLOSE-CONSTRUCTED-STREAM
+
+References:    Close (CLtL p. 332), WITH-OPEN-STREAM 
+	(CLtL p 330), make-synonym-stream, make-broadcast-stream,
+	make-concatenated-stream, make-two-way-stream,
+	make-echo-stream, make-string-input-stream,
+	make-string-output-stream, with-input-from-string,
+	with-output-from-string
+
+Related issues: CLOSED-STREAM-OPERATIONS
+
+Category:      Clarification/Change
+
+Edit history:  Masinter,  6-Jan-89, Version 1
+               Masinter, 12-Jan-89, Version 2
+
+Problem description:
+
+First some terminology:
+
+A "composite" stream is one created with MAKE-SYNONYM-STREAM, 
+MAKE-BROADCAST-STREAM, MAKE-CONCATENATED-STREAM, MAKE-TWO-WAY-STREAM, 
+MAKE-ECHO-STREAM. 
+
+The "constituents" of a composite stream are the streams it points to:
+the SYMBOL-VALUE of the symbol given to MAKE-SYNONYM-STREAM
+the streams given to MAKE-BROADCAST-STREAM or MAKE-CONCATENATED-STREAM
+the input-stream and output-stream given to MAKE-TWO-WAY-STREAM or MAKE-ECHO-STREAM.
+
+A "constructed" stream is either a composite stream or one created with 
+MAKE-STRING-INPUT-STREAM, MAKE-STRING-OUTPUT-STREAM, WITH-INPUT-FROM-STRING,
+ WITH-OUTPUT-FROM-STRING.
+
+The function "CLOSE" is currently described in 21.3, which starts "This
+section contains discussion of only those operations that are common to all
+streams."  This would seem to imply that they apply to constructed streams. 
+
+The definition of CLOSE "The argument must be a stream. No further input/output
+ operations may be performed on it. ... "  It further states "... and it is 
+permissible to close an already closed stream."
+
+However, the behavior on the constructed streams is not well defined, and
+implementations (apparently) differ.
+
+Proposal (CLOSE-CONSTRUCTED-STREAM:IS-ERROR): 
+
+It "is an error" to call CLOSE on a constructed stream. CLOSE might signal an
+error, or the result of CLOSE could cause the constituent streams to be closed,
+etc, but the effect is implementation-dependent.
+
+Proposal: (CLOSE-CONSTRUCTED-STREAM:SIGNALS-ERROR)
+
+Calling CLOSE on a constructed stream signals an error.
+
+Proposal (CLOSE-CONSTRUCTED-STREAM:ARGUMENT-STREAM-ONLY):
+
+The effect of CLOSE on a constructed stream is to close the "argument" stream
+only. No i/o operations are permitted after the call to CLOSE on the stream
+given to CLOSE; There is no effect on the constituents of composite streams.
+
+For streams created with MAKE-STRING-OUTPUT-STREAM, the result of
+GET-OUTPUT-STREAM-STRING is unspecified after CLOS. For composite streams,
+the call to CLOSE has no effect on any of the constituent streams.
+
+The "links" to the constituents may be broken; if the proposal in STREAM-ACCESS 
+passes, the results of the accessor functions there are unspecified after the
+call to CLOSE.)
+
+Proposal: (CLOSE-CONSTRUCTED-STREAM:CLOSE-CONSTITUENTS)
+
+CLOSE first closes its argument; it then operates recursively on the constituents
+of composite streams.
+
+Examples:
+
+>>not written; sorry<<
+
+Rationale:
+
+Specifying seems better than not saying what happens, even if it is
+"implementation-dependent".
+
+Current practice:
+
+Implementations seem to vary widely.
+
+Cost to Implementors:
+
+Varying, depending on the current level of conformance. Making the changes
+themselves is probably trivial (to the "close" method for each kind of
+constructed stream type) but it is possible that system code might depend
+on the behavior.
+
+Cost to Users:
+
+Likely small; we've not found any good uses for CLOSE on composite streams.
+
+Cost of non-adoption:
+
+Continued minor ambiguity
+
+Performance impact:
+
+near zero
+
+Benefits:
+
+The language would be more well specified.
+
+Esthetics:
+
+Well-specified languages are usually easier to deal with.
+
+Discussion:
+
+Signalling an error is reasonable if no Common Lisp program ever needs to
+call CLOSE on a composite stream. We could not come up with a legitimate
+case where you wouldn't instead close the underlying stream if that's what
+you wanted.
+
+Allowing the result to be implementation dependent is the "status quo". 
+
+ARGUMENT-STREAM-ONLY is probably the "safest" in that it makes it
+harder to accidentally close a stream that wasn't intended. It
+seems counterintuitive and yet it probably wouldn't be harmful
+if it were well-defined that this was what it did.
+
+CLOSE-CONSTITUENTS could be an incompatible change for some
+implementations. It makes more sense for things like broadcast streams
+(which are usually non-interactive) than it does for echo streams
+(which are sometimes interactive).

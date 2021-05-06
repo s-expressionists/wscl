@@ -1,0 +1,63 @@
+Status: passed, 1988? (not sure which meeting)
+Issue:        DO-SYMBOLS-DUPLICATES
+References:   DO-SYMBOLS, CLtL p.187
+Category:     Clarification
+Edit history: Version 1 by Fahlman 17-Apr-87
+              Version 2 by Masinter 29-May-87
+              Version 3 by Masinter 23-Nov-87
+
+Problem Description:
+
+CLtL specifies that DO-SYMBOLS executes the body once for each symbol accessible in the package.  It does not say whether it is permissible for the body to be executed more than once for some accessible symbols. The term "accessible" is defined on page 172 to include symbols inherited from other packages (not including any symbols that may be shadowed).  It is very expensive in some implementations to eliminate duplications that occur because the same symbol is inherited from multiple packages.
+
+Proposal: DO-SYMBOLS-DUPLICATES:ALLOWED
+
+Add to the specification of DO-SYMBOLS a note that it may execute the body more than once for some symbols.
+
+Example:
+
+(SETQ A (MAKE-PACKAGE 'A))
+(SETQ B (MAKE-PACKAGE 'B))
+(EXPORT (INTERN "ASYM" A) A)
+(USE-PACKAGE A B)
+(EXPORT 'B::ASYM B)
+(USE-PACKAGE B A)
+(DO-SYMBOLS (X B) (PRINT X)) 
+;; this may print ASYM once or twice.
+
+Rationale:
+
+Most uses of DO-PACKAGE would not be harmed by the presence of duplicates.  For these applications it is unreasonable to force users to pay the high cost of filtering out the duplications.  Users who really want the duplicates to be removed can add additional code to do this job.
+
+Current Practice:
+
+Many implementations have always produced duplicate values.
+
+Cost to implementors:
+
+None.  Implemenations would still be free to eliminate the duplications, though code will not be assuming that this has been done.
+
+Cost to users:
+
+Code written assuming that DO-SYMBOLS eliminates duplications will have to be modified. (Such code was not truly portable.)
+
+Benefits:
+
+Clarification of a situation that is currently ambiguous.
+
+Aesthetics:
+
+It would be cleaner to present each symbol exactly once.  This is a clear case of choosing efficiency over elegance.
+
+Discussion:
+
+This issue was discussed on the Common Lisp mailing list in 1985, and the solution proposed here seems to have been informally agreed to at the time -- there was no formal decision-making process in place then.
+
+The need for DO-SYMBOLS to be efficient is questionable, however; for many applications (e.g., global package manipulation), duplicate values would create havoc. 
+
+For some implementations, the performance penalty would be well over a factor of two.
+
+Several proposals were considered for adding keyword arguments to DO-SYMBOLS which might specify :ALLOW-DUPLICATES, adding keywords and eliminating DO-EXTERNAL-SYMBOLS, etc., but no clear consensus was reached for making additions.
+
+This version is the closest to the status quo.
+

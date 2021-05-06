@@ -1,0 +1,58 @@
+Issue:         WITH-ADDED-METHODS
+
+References:    88-002R p.2-90
+
+Category:      CHANGE
+
+Edit history:  29-Apr-90, Version 1 by Moon
+               4-May-90, Version 2 by Moon (update discussion)
+
+Problem description:
+
+  WITH-ADDED-METHODS has a strange definition that is hard to understand
+  and apparently is not what was intended by the person who originally
+  proposed the feature.  No CLOS implementation is known that supports it.
+
+  This is Symbolics issue #17.
+
+Proposal (WITH-ADDED-METHODS:DELETE):
+
+  Remove WITH-ADDED-METHODS from the language and remove that symbol from
+  the COMMON-LISP package.
+
+Rationale:
+
+  Why add something new that no one uses or wants?
+
+Current practice:
+
+  No CLOS implementation is known to support WITH-ADDED-METHODS.
+
+Cost to Implementors:
+
+  Trivial.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  We would either have to get the implementors to implement it or explain
+  why we put this thing in the language that everyone refuses to implement.
+
+Performance impact:
+
+  None.
+
+Benefits:
+
+  Smaller language.
+
+Esthetics:
+
+  Smaller language.
+
+Discussion:
+
+  Gregor Kiczales says he supports WITH-ADDED-METHODS:DELETE.

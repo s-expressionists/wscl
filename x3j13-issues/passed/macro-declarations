@@ -1,0 +1,153 @@
+Forum:		Cleanup
+Issue:		MACRO-DECLARATIONS
+References:	Issue SYMBOL-MACROLET-DECLARE
+		Issue DECLARATION-SCOPE
+		Issue DECLARE-TYPE-FREE
+		Issue DEFINE-COMPILER-MACRO
+		Issue DYNAMIC-EXTENT
+                Issue DYNAMIC-EXTENT-FUNCTION
+	        Declarations (CLtL chapter 9)
+Category:	CLARIFICATION
+Edit History:   V1, 26 Oct 1989, Sandra Loosemore
+		V2, 02 Nov 1989, Sandra Loosemore (suggestions from Moon)
+
+
+Problem Description:
+
+Issue SYMBOL-MACROLET-DECLARE defines a meaning for TYPE declarations
+when the lexically visible "binding" of the symbol names a
+symbol-macro.  It also requires SYMBOL-MACRO to signal an error if a
+SPECIAL declaration is provided in the body for a symbol which it
+defines as a symbol-macro.
+
+What is the meaning of a SPECIAL declaration appearing in some other
+context (such as in a LOCALLY construct), for a symbol for which the
+lexically apparent "binding" is a symbol-macro definition?  How about
+any other declaration which normally applies to a variable or function
+binding (IGNORE, DYNAMIC-EXTENT, FTYPE, INLINE, NOTINLINE) when the
+lexically apparent "binding" is a macro or symbol-macro definition? 
+
+
+Proposal (MACRO-DECLARATIONS:MAKE-EXPLICIT):
+
+Clarify that the standard declarations that apply to function or variable
+bindings have the following effects when the binding is a macro or
+symbol-macro:
+
+  SPECIAL
+    SYMBOL-MACROLET signals an error if it includes a SPECIAL declaration 
+    for any symbol that it binds as a symbol-macro.  [Issue
+    SYMBOL-MACROLET-DECLARE]  Presumably, this error is of type 
+    PROGRAM-ERROR and is signalled at compile-time rather than run-time.
+
+    A SPECIAL declaration for a symbol whose lexically visible binding
+    is a symbol-macro causes that binding to be shadowed, in the same way
+    that a SPECIAL declaration shadows lexical variable bindings.
+
+  TYPE
+    A TYPE declaration for a symbol that names a symbol-macro is equivalent
+    to wrapping a THE expression around the expansion of that symbol-macro.
+    [Issue SYMBOL-MACROLET-DECLARE]  This is meaningful regardless of whether 
+    the declaration appears in the form that bound the symbol-macro or as a 
+    free declaration within the scope of the symbol-macro binding.  Multiple
+    TYPE declarations applying to a single symbol-macro binding are handled
+    in the same way as multiple TYPE declarations that apply to a
+    single variable binding.
+
+  FTYPE
+    This declaration is not valid when the lexically apparent binding
+    is a macro binding rather than a function binding.  (This is because
+    FTYPE declares the functional binding of the name to be of a particular
+    subtype of FUNCTION, and macros are not FUNCTIONs.)
+
+  IGNORE
+    IGNORE declarations for symbol-macro bindings should be treated in 
+    exactly the same way as IGNORE declarations for variable bindings.
+    In other words, such a declaration specifies that the bindings of
+    of the specified symbol-macros are never used.
+
+  DYNAMIC-EXTENT
+    This declaration is not valid when the lexically apparent binding
+    is a symbol-macro or macro binding rather than a variable or
+    function binding.
+
+  NOTINLINE
+    In the presence of compiler-macro definitions, this declaration
+    affects references to macros in exactly the same way that it affects
+    references to functions.  When the lexically apparent binding is a 
+    macro that also has a compiler-macro definition, this declaration can 
+    be used to indicate to a language processor that the macro (and not the 
+    compiler-macro) definition should be used.  [Issue DEFINE-COMPILER-MACRO.]
+    A NOTINLINE declaration for a macro has otherwise has no effect on
+    its expansion.  Implementations are not free to ignore this declaration.
+
+  INLINE
+    To parallel treatment of NOTINLINE, in the presence of compiler-macro
+    definitions, this declaration affects references to macros in exactly
+    the same way that it affects references to functions.  When the lexically 
+    apparent binding is a macro that also has a compiler-macro definition, 
+    this declaration can be used to indicate to a language processor that 
+    the compiler-macro (and not the macro) definition should be used.  An
+    INLINE declaration for a macro otherwise has no effect on its expansion.
+    Implementations are free to ignore this declaration.
+
+In those situations where the use of the declaration is not valid, the
+consequences of evaluating or compiling the program are undefined.
+
+
+Rationale:
+
+This proposal is primarily an explicit restatement of things which have
+already been stated in other places, with some obvious interpolations
+added.
+
+Leaving the consequences undefined permits implementations to signal
+an error, to assign some implementation-specific interpretation to
+the declaration, or simply to ignore the declaration.
+
+
+Current Practice:
+
+Utah Common Lisp implements this proposal.  It currently ignores all
+declarations that apply to function or variable bindings when the
+lexically visible binding is a macro or symbol-macro.  The
+declarations are added to the environment in the normal way but are
+never examined by the interpreter or compiler.  The exception is that
+a SPECIAL declaration will shadow a symbol-macro definition in the
+same way that it will shadow a lexical variable binding. 
+
+Neither HPCL-I nor Lucid CL complain about FTYPE or INLINE/NOTINLINE
+declarations when the lexically visible function "binding" is a macro.
+They are apparently being ignored.  KCL ignores all declarations
+that apply to function bindings (and doesn't yet support symbol-macros).
+
+
+Cost to implementors:
+
+Presumably small.  
+
+
+Cost to users:
+
+It seems unlikely that this proposal would be an incompatible change
+that causes many user programs to break, particularly given the
+relative newness of symbol-macros and compiler-macros.
+
+
+Benefits:
+
+More complete specification of the language and less chance for confusion
+to arise later on.
+
+
+Aesthetics:
+
+Some people might be bothered by the asymmetry between the handling of
+TYPE and FTYPE declarations.  Strictly speaking, the special handling for
+TYPE declarations is unnecessary since one could explicitly include the
+THE form in the expansion of the symbol-macro.  Other people probably
+think that the notational convenience outweighs the asymmetry.
+
+Discussion:
+-------
+

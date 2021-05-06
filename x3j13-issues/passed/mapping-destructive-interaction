@@ -1,0 +1,108 @@
+Status:	Passed, Jan 89 X3J13
+Issue:          MAPPING-DESTRUCTIVE-INTERACTION
+References:     MAPCAR, MAPLIST, ... (p128);
+	        DOLIST (p126); MAPHASH (p285); 
+	        DO-SYMBOLS, DO-EXTERNAL-SYMBOLS, DO-ALL-SYMBOLS (pp187-188);
+	        All functions using :TEST	      
+Related-Issues: REMF-DESTRUCTION-UNSPECIFIED.
+Category:       CLARIFICATION
+Edit history:   07-Mar-88, Version 1 by Pitman
+	        09-Jun-88, Version 2 by Pitman
+		   (merge Moon's comments and update current practice)
+
+Problem Description:
+
+ The interaction of mapping functions and DOLIST with destructive
+ operations on the list being operated on is unclear. For example,
+ if you destructively modify some tail of a list being mapped down,
+ does that affect the mapping process?
+
+Proposal (MAPPING-DESTRUCTIVE-INTERACTION:EXPLICITLY-VAGUE):
+
+ Clarify that it in general is an error (the effect is not defined
+ but in general no error will be signalled) for code executed during a
+ "structure traversing" operation to destructively modify the
+ structure in a way that might affect the ongoing traversal operation.
+
+ For list traversal operations, this means that the cdr chain of the
+ list may not be destructively modified.
+
+ For array traversal operations, the array may not be adjusted and
+ its fill-pointer, if any, may not be changed.
+
+ For hash tables, new elements may not be added or deleted EXCEPT
+ that the element corresponding to the current hash key may be
+ changed or removed.
+
+ For packages, new symbols may not be interned in or uninterned from
+ the package being traversed or any package that it uses EXCEPT that
+ the current symbol may be uninterned from the package being traversed
+ in a DO-SYMBOLS.
+
+ Note: This proposal is intended to clarify restrictions on user code
+  for use with structure manipulators which are not inherently
+  destructive. Other operators, such as DELETE-DUPLICATES or NREVERSE,
+  may have much more complicated restrictions and are intentionally not
+  treated by this proposal. See the issue REMF-DESTRUCTION-UNSPECIFIED
+  for more discussion of such issues.
+
+Test Case:
+
+ (LET* ((L (LIST 'A 'B 'C)) (LL L) (I 0))
+   (DOLIST (FOO L)
+     (INCF I)
+     (IF (EQ FOO 'B)
+	 (SETF (CDR LL) NIL)
+	 (POP LL)))
+   (LIST I L)) might return (2 (A B)) or (3 (A B)), for example.
+
+Rationale:
+
+ This clarifies the status quo.
+
+ Also, the likelihood that the user will want to destructively alter a
+ structure while it is being traversed is low. The likelihood that such
+ code would be readable and maintainable is also low. The likelihood 
+ that a compiler could do some interesting optimization if this point
+ were not pinned down is high enough to be the overriding consideration
+ in this case.
+
+Current Practice:
+
+ The implementation of DOLIST in Symbolics Genera, KCL, and PopLog Common Lisp
+ returns (3 (A B)) for the test case.
+
+Cost to Implementors:
+
+  None. This simply makes the status quo explicit.
+
+Cost to Users:
+
+  Technically none. People who were mistakenly assuming that CLtL guaranteed
+  things which it does not might be inclined to rewrite their code in a more
+  portable way.
+
+Cost of Non-Adoption:
+
+  Users would be less informed.
+
+Benefits:
+
+  users would be more informed.
+
+Aesthetics:
+
+  Some might say it would be clearer to define this one way or the other, but
+  advocates of both camps exist and their arguments are fairly symmetric.
+  In any case, since this is a proposal to preserve the status quo, it has no
+  major impact on aesthetics.
+
+Discussion:
+
+  This idea for this proposal was suggested by the Japanese community.
+
+  Pitman drafted the formal proposal and supports the EXPLICITLY-VAGUE proposal.
+
+  Moon generally supported version 1 of this proposal, but had some specific
+  criticisms about weakness of the wording which this version is an attempt to fix.
+

@@ -1,0 +1,449 @@
+Status:		Passed, Jan 89 X3J13
+
+Forum:         Cleanup
+
+Issue:         ARRAY-TYPE-ELEMENT-TYPE-SEMANTICS
+
+References:    Data types and Type specifiers: CLtL p. 11; Sect. 4.5, p.45
+               Functions: TYPEP and SUBTYPEP; CLtL Sect. 6.2.1, p.72
+                          ARRAY-ELEMENT-TYPE, CLtL p. 291
+               The type-specifiers:
+                          ARRAY,  SIMPLE-ARRAY,  VECTOR,  SIMPLE-VECTOR
+                          COMPLEX
+
+Related Issues: SUBTYPEP-TOO-VAGUE, LIST-TYPE-SPECIFIER
+
+Category:      CHANGE
+
+Edit history:  Version 1, 13-May-88, JonL
+               Version 2, 23-May-88, JonL  
+                (typo fixes, comments from moon, rearrange some discussion)
+               Version 3, 02-Jun-88, JonL  
+                (flush alternate proposal ["flush-upgrading"]; consequently,
+                 move more of discussion back to discussion section.
+               Version 4, 01-Oct-88, Jan Pedersen & JonL
+                (reduce discussion, and "cleanup" wordings)
+               (Version 5 edit history missing)
+               Version 6, 6-Oct-88, Moon
+                (fix typos, cover subtypep explicitly, add complex,
+                 change name of UPGRADE-ARRAY-ELEMENT-TYPE)
+               Version 7, 7-Oct-88, JonL (more name and wording changes)
+               Version 8,  8-Oct-88, Masinter (wording, discussion)
+               Version 9, 31-Oct-88, JonL (major re-wording to accommodate
+		 recent discussion; esp. re-introduce and clarify "upgrading")
+
+
+Problem description:
+
+ CLtL occasionally draws a distinction between type-specifiers "for
+ declaration" and "for discrimination";  see CLtL, section 4.5 "Type 
+ Specifiers That Specialize" (p.45 and following)  The phrase 
+ "for declaration"  encompasses type-specifiers passed in as the 
+ :element-type argument to  MAKE-ARRAY, passed in as the <result-type> 
+ argument to COERCE, and used in THE and DECLARE type declarations.  The 
+ phrase "for discrimination" refers to the type-specifiers passed in as 
+ the <type> argument(s) to TYPEP and SUBTYPEP.
+
+ One consequence of this distinction is that a variable declared to be of 
+ type <certain-type>, and all of whose assigned objects are created in 
+ accordance with that type, may still have none of its values ever satisfy 
+ the TYPEP predicate with that type-specifier.   One type-specifier with 
+ this property is  
+         (ARRAY <element-type>) 
+ for various implementation dependent values of <element-type>.  For
+ example, in most implementations of CL, an array X created with an
+ element-type of (SIGNED-BYTE 5) will, depending on the vendor, either
+ satisfy
+        (TYPEP X '(ARRAY (SIGNED-BYTE 8))), or
+        (TYPEP X '(ARRAY T)) 
+ but (almost) never will it satisfy 
+        (TYPEP X '(ARRAY (SIGNED-BYTE 5))).
+
+ This is entirely permissible within the scope of standardization on
+ MAKE-ARRAY, where an implementation is required only to construct up the
+ result out of "the most specialized [element] type that can nevertheless
+ accommodate elements of the given type [the :element-type argument]"
+ (see CLtL, p287).  That is, an implementation may in fact only provide a 
+ very small number of equivalence classes of element-types for storing 
+ arrays, corresponding to its repertoire of specialized storage techniques;
+ and it is explicitly permitted to "upgrade" any element-type request into 
+ one of its built-in repertoire (see also  CLtL, p45, second and third
+ paragraphs under Section 4.5.)
+
+ As a practical matter, almost every existing implementation does some 
+ serious upgrading of the :element-type argument given to MAKE-ARRAY.  
+ Yet the difference between "for declaration" and "for discrimination" 
+ has been very confusing to many people.  Similarly, portability is
+ hindered when users do not know just how a given implementation does 
+ upgrading.
+ 
+ The type specifier (COMPLEX <part-type>) also falls in the  domain of CLtL
+ Section 4.5.  Currently, only one implementation actually provides any kind 
+ of specialized storage for complex parts; and in this case, the practical
+ matter is less urgent, since the kind of upgrading happening is so obvious 
+ as to cause little or no confusion.
+
+
+Proposal: (ARRAY-TYPE-ELEMENT-TYPE-SEMANTICS:UNIFY-UPGRADING)
+
+ Short Summary:
+
+  ** Eliminate the distinction between type-specifiers "for declaration" and
+     "for discrimination".  In short, change the meaning of array and
+     complex type specifiers in favor of the "for declaration" meaning.
+
+  ** Change the meaning of TYPEP to be in accord with "for declaration"
+     meaning of type-specifiers.
+
+  ** Add an implementation-dependent function that reveals how a given 
+     type-specifier for array element-types is upgraded.  Add another such 
+     function that reveals how a given type-specifier for complex parts is
+     upgraded.
+
+  ** Clarify that "upgrading" implies a movement upwards in the type-
+     hierarchy lattice; i.e., if <type> upgrades to <Type>, then
+     <Type> must be a super-type of <type>.
+
+  ** Clarify that upgrading an array element-type is independent of any 
+     other property of arrays, such as rank, adjustability, fill-pointers, 
+     etc.  
+
+  ** Clarify how SUBTYPEP thus behaves on array type-specifiers.  
+
+  ** Define how SUBTYPEP behaves on complex type-specifiers.  
+
+ Note that despite this issue's name, the detailed specifications herein 
+ apply to the type system -- not to the behavior of MAKE-ARRAY, nor to how
+ arrays are actually implemented.
+
+ Details:
+
+  First, some definitions: Two type-specifiers <type1> and <type2> are said 
+  to be "type-equivalent" if and only if each one specifies a subtype of the
+  other one.  For example, (UNSIGNED-BYTE 5) and (MOD 32) are two different 
+  type- specifiers that always refer to the same sets of things; hence they 
+  are type-equivalent.  But (UNSIGNED-BYTE 5) and (SIGNED-BYTE 8) are not 
+  type- equivalent since the former refers to a proper subset of the latter.
+  Two type-specifiers <type1> and <type2> are said to be "type-disjoint"
+  if their specified intersection is null.  For example, INTEGER and FLOAT 
+  are type disjoint by definition (see CLtL p.33), and (INTEGER 3 5) and 
+  (INTEGER 7 10) are type-disjoint because the specified ranges have no
+  elements in common.
+
+ *. Eliminate the distinction between types "for declaration" and "for 
+    discrimination".  In particular, elminate any such reference in the 
+    discussion of array and complex type-specifiers; this would include 
+    documentation patterned after the discussion in section 4.5, pp. 45-7, 
+    especially the example on p.46 that says "See ARRAY-ELEMENT-TYPE".
+    Change the meaning of (ARRAY <element-type>), as well as any of the
+    subtypes of ARRAY (such as SIMPLE-ARRAY, VECTOR, etc.) in favor of the 
+    "for declaration" meaning.  Make the similar simplification for the 
+    <part-type> specifiers in the COMPLEX type-specifier.
+
+ *. Change the meaning of (TYPEP <x> '(ARRAY <type>)), where <type> is not 
+    *, to be true if and only if <x> is an array that could be the result 
+    of giving <type> as the :element-type argument to MAKE-ARRAY.  While
+    (ARRAY *) refers to all arrays regardless of element type, (ARRAY <type>)
+    refers only to those arrays that can result from giving <type> as the
+    :element-type argument to the function MAKE-ARRAY.  Change the meanings
+    for (SIMPLE-ARRAY <type>) and (VECTOR <type>) in the same way.
+
+    Change the meaning of (TYPEP <x> '(COMPLEX <type>)) similarly.  Thus,
+    (COMPLEX <type>) refers to all complex numbers that can result from 
+    giving numbers of type <type> to the function COMPLEX, plus all other 
+    complex numbers of the same specialized representation.  Remember that
+    both the real and the imaginary parts of any such complex number must 
+    satisfy:
+                (TYPEP <real-or-imag-part> '<type>). 
+
+ *. Add the function UPGRADED-ARRAY-ELEMENT-TYPE of one argument, which
+    returns the element type of the most specialized array representation
+    capable of holding items of the given argument type.   Note that except
+    for storage allocation consequences, it could be defined as:
+
+      (DEFUN UPGRADED-ARRAY-ELEMENT-TYPE (TYPE)
+        (ARRAY-ELEMENT-TYPE (MAKE-ARRAY 0 :ELEMENT-TYPE TYPE)))
+
+    Since element-type upgrading is a fundamental operation implicit in 
+    almost every existing implementation of MAKE-ARRAY, the purpose of this 
+    added function is primarily to reveal how an implementation does its
+    upgrading.
+
+    Add the function UPGRADED-COMPLEX-PART-TYPE of one argument that
+    returns the part type of the most specialized complex number
+    representation that can hold parts of the given argument type.
+
+ *. Clarify that "upgrading" implies a movement upwards in the type-
+    hierarchy lattice.  Specifically, the type-specifier <type> must be
+    a subtype of (UPGRADED-ARRAY-ELEMENT-TYPE '<type>).  Furthermore, if 
+    <type1> is a subtype of <type2>, then:
+            (UPGRADED-ARRAY-ELEMENT-TYPE '<type1>)
+    must also be a subtype of:
+            (UPGRADED-ARRAY-ELEMENT-TYPE '<type2>).  
+    Note however, that two type-disjoint types can in fact be upgraded into 
+    the same thing.
+
+    Clarify that ARRAY-ELEMENT-TYPE returns the upgraded element type
+    for the array; in particular, any documentation patterned after 
+    the sentence on p. 291 begining "This set may be larger than the 
+    set requested when the array was created; for example . . ." should
+    be embellished with this clarification.
+
+    Similarly, the type-specifier <type> must be a subtype of 
+    (UPGRADED-COMPLEX-PART-TYPE <type>).
+
+ *. Clarify that upgrading an array element-type is independent of any 
+    other property of arrays, such as rank, adjustability, fill-pointers, 
+    displacement etc.  For all such properties other than rank this should 
+    be obvious (since they are not expressible in the language of 
+    type-specifiers); but note that unless it is also independent of rank, 
+    it would not be consistently possible to displace arrays to those of 
+    differing rank.
+
+ *. Clarify that SUBTYPEP on ARRAY type-specifiers is as follows:  
+
+    For all type-specifiers <type1> and <type2> other than *, require 
+    (ARRAY <type1>) and (ARRAY <type2>) to be type-equivalent if and only 
+    if they refer to arrays of exactly the same specialized representation; 
+    and require them to be type-disjoint if and only if they refer to arrays 
+    of different, distinct specialized representations.  This definition
+    follows that implicitly prescribed in CLtL.
+
+    As a consequence of the preceding change to TYPEP and of the definition 
+    of UPGRADED-ARRAY-ELEMENT-TYPE, the two type specifiers 
+                (ARRAY <type1>)  and 
+                (ARRAY <type2>)
+    are type-equivalent if and only if
+                (UPGRADED-ARRAY-ELEMENT-TYPE '<type1>)  and
+                (UPGRADED-ARRAY-ELEMENT-TYPE '<type2>) 
+    are type-equivalent.  This is another way of saying that `(ARRAY <type>)
+    and `(ARRAY ,(UPGRADED-ARRAY-ELEMENT-TYPE '<type>)) refer to the same
+    set of specialized array representations.
+
+    This defines the behavior of SUBTYPEP on array type-specifiers; namely:
+                (SUBTYPEP '(ARRAY <type1>) '(ARRAY <type2>))
+    is true if and only if
+                (UPGRADED-ARRAY-ELEMENT-TYPE '<type1>)  and
+                (UPGRADED-ARRAY-ELEMENT-TYPE '<type2>)
+    are type-equivalent.
+
+ *. Define SUBTYPEP on COMPLEX type-specifiers as follows: 
+
+    For all type-specifiers <type1> and <type2> other than *, 
+            (SUBTYPEP '(COMPLEX <type1>) '(COMPLEX <type2>))
+    is  T T  if:
+      1. <type1> is a subtype of <type2>, or
+      2. (UPGRADED-COMPLEX-PART-TYPE '<type1>) is type-equivalent
+         to (UPGRADED-COMPLEX-PART-TYPE '<type2>);  in this case,
+         (COMPLEX <type1>) and (COMPLEX <type2>) both refer to the 
+         same specialized representation.
+   The result is  NIL T  otherwise.
+
+ The small differences between the SUBTYPEP specification for ARRAY and 
+ for COMPLEX are necessary because there is no creation function for 
+ complexes which allows one to specify the resultant part type independently
+ of the actual types of the parts.  Thus in the case of COMPLEX, we must 
+ refer to the actual type of the parts, although a number can be a member 
+ of more than one type; e.g., 17 is of type (MOD 18) as well as of type
+ (MOD 256); and 2.3f5 is of type SINGLE-FLOAT was well as FLOAT.
+ The form:
+     (SUBTYPEP '(COMPLEX SINGLE-FLOAT) '(COMPLEX FLOAT))
+ must be true in all implementations; but:
+     (SUBTYPEP '(ARRAY SINGLE-FLOAT) '(ARRAY FLOAT))
+ is true only in implementations that do not have a specialized array
+ representation for single-floats distinct from that for other floats.
+
+
+Examples:
+
+ Let <aet-x> and <aet-y> be two distinct type specifiers that are
+ definitely not type-equivalent in a given implementation, but for which
+ make-array will return an object of the same array type.  This will be
+ an implementation dependent search, but in every implementation that
+ the proposer has tested, there will be some such types; often,
+ (SIGNED-BYTE 5) and (SIGNED-BYTE 8) will work.
+
+ Thus, in each case, both of the following forms return T T:
+
+  (subtypep (array-element-type (make-array 0 :element-type '<aet-x>))
+            (array-element-type (make-array 0 :element-type '<aet-y>)))
+
+  (subtypep (array-element-type (make-array 0 :element-type '<aet-y>))
+            (array-element-type (make-array 0 :element-type '<aet-x>)))
+
+ To eliminate the distinction between "for declaration" and "for
+ discrimination" both of the following should be true:
+
+  [A]
+   (typep (make-array 0 :element-type '<aet-x>)
+          '(array <aet-x>))
+   (typep (make-array 0 :element-type '<aet-y>)
+          '(array <aet-y>))
+
+ Since (array <aet-x>) and (array <aet-y>) are different names for
+ exactly the same set of objects, these names should be type-equivalent.
+ That implies that the following set of tests should also be true:
+
+  [B]
+   (subtypep '(array <aet-x>) '(array <aet-y>))
+   (subtypep '(array <aet-y>) '(array <aet-x>))
+
+ Additionally, to show that un-equivalent type-specifiers that use the
+ same specialized array type should be equivalent as element-type
+ specifiers, the following type tests should be true:
+
+  [C]
+   (typep (make-array 0 :element-type '<aet-y>)
+          '(array <aet-x>))
+   (typep (make-array 0 :element-type '<aet-x>)
+          '(array <aet-y>))
+
+
+Rationale:
+
+ This proposal legitimizes current practice, and removes the obscure and
+ un-useful distinction between type-specifiers "for declaration" and
+ "for discrimination".  The suggested changes to the interpretation of
+ array and complex type-specifiers follow from defining type-specifiers
+ as names for collections of objects, on TYPEP being a set membership
+ test, and SUBTYPEP a subset test on collections of objects.
+
+
+Current Practice:
+
+ Every vendor's implementation that the proposer has queried has a finite 
+ set of specialized array representations, such that two non-equivalent 
+ element types can be found that use the same specialized array 
+ representation; this includes Lucid, Vaxlisp, Symbolics, TI, Franz,
+ and Xerox. Most implementations fail tests [A] and [C] part 1, but pass
+ tests [A] and [C] part 2; this is a consequence of implementing the
+ distinction between "for declaration" and "for discrimination".  Lucid
+ and Xerox both pass test [B], and the other implementations fail it.
+ The Explorer returns NIL for all six tests in [A], [B], and [C].
+
+ Allegedly, the PCLS implementation does no "upgrading"; each array
+ "remembers" exactly the type-specifier handed to the MAKE-ARRAY call
+ that created it.  Thus the test cases are not applicable to PCLS,
+ since the precondition cannot be met (i.e., find two non-type-equivalent
+ type-specifiers that are non-trivially upgraded by make-array).
+
+ The TI Explorer offers specialized representation for complexes;
+ part types of SINGLE-FLOAT and DOUBLE-FLOAT are specialized.
+
+Cost to Implementors:
+
+ This proposal is an incompatible change to the current language
+ specification, but only a small amount of work should be required in
+ each vendor's implementation of TYPEP and SUBTYPEP.
+
+Cost to Users:
+
+ Because of the prevalence of confusion in this area, it seems unlikely
+ that any user code will have to be changed.  In fact, it is more likely
+ that some of the vendors will cease to get bug reports about MAKE-ARRAY
+ returning a result that isn't of "the obvious type".  Since the change
+ is incompatible, some user code might have to be changed.
+
+
+Cost of non-adoption:
+
+ Continuing confusion in the user community.
+
+
+Benefits:
+
+ It will greatly reduce confusion in the user community.  The fact that
+ (MAKE-ARRAY <n> :ELEMENT-TYPE '<type>) frequently is not of type 
+ (ARRAY <type>) has been very confusing to almost everyone.  
+
+ Portability of applications will be increased slightly, since
+ the behavior of 
+     (TYPEP (MAKE-ARRAY <n> :ELEMENT-TYPE <type>) '(ARRAY <type>))
+  will no longer be implementation-dependent. 
+
+
+Esthetics:
+
+ Reducing the confusing distinction between type-specifiers "for
+ declaration" and "for discrimination" is a simplifying step -- it is a
+ much simpler rule to state that the type-specifiers actually describe
+ the collections of data they purport to name.  Thus this is a step
+ towards increased elegance.
+
+
+Discussion:
+
+ This issue was prompted by a lengthy discussion on the Common Lisp
+ mailing list.  See for example a series of exchanges started on Thu, 
+ 17 Dec 87 10:48:05 PST by Jeff Barnett <jbarnett@nrtc.northrop.com>
+ under the subject line of "Types in CL".  See also the exchange started 
+ Wed, 6 Jan 88 23:21:16 PST by Jon L White <edsel!jonl@labrea.stanford.edu>
+ under the subject line of "TYPEP warp implications"
+
+ Although the types STRING,  BIT-VECTOR,  SIMPLE-STRING, and 
+ SIMPLE-BIT-VECTOR are subtypes of the ARRAY type, they are not
+ specifically discussed in this proposal.  The reason is that 
+ they are not type-specifiers "that specialize", but are merely 
+ abbreviations as follows:
+   STRING             ==  (VECTOR STRING-CHAR)
+   SIMPLE-STRING      ==  (SIMPLE-ARRAY STRING-CHAR (*))
+   BIT-VECTOR         ==  (VECTOR BIT)
+   SIMPLE-BIT-VECTOR  ==  (SIMPLE-ARRAY BIT (*))
+ Thus their semantics could be affected only in an implementation that
+ doesn't support a specific "specialized storage" type for arrays of
+ bits and vectors of string-chars.  But in fact, every CL implementation 
+ must appear to support "specialized storage" for bit-arrays and strings,
+ even if it means nothing more than remembering the fact that such an
+ array was created with that element-type.  This is required in order
+ for strings, bit-vectors,  and bit-arrays to be disjoint datatypes 
+ (see CLtL p.34; see also the definitions of BIT-ARRAY and STRING found 
+ in CLtL p.293, Section 17.4, and in CLtL p.299.)
+
+ We considered the possibility of flushing the permission to "upgrade";
+ for example, it could be made a requirement that:
+     (ARRAY-ELEMENT-TYPE (MAKE-ARRAY <n> :ELEMENT-TYPE <type>))
+ always be equal to <type> (or, at least type-equivalent to <type>)
+ for all valid type specifiers <type>.  This has several problems: it
+ increases the storage requirement for many kinds of arrays, and hides
+ a relevant part of the underlying implementation for no apparently 
+ good reason.  However, it would increase portability, since it would be 
+ much more difficult, for example, to write a program that created an
+ array with one element-type, say, (UNSIGNED-BYTE 5), but operated on it 
+ assuming a non-trivial upgraded element-type, say, (UNSIGNED-BYTE 8).
+ Under this proposal, it is valid for an implementation of MAKE-ARRAY 
+ to have arrays "remember" the type-equivalence class of the original 
+ :element-type argument; such an implementation would satisfy all of 
+ the  constraints listed above.
+
+ We considered a suggestion to restrict the set of "known" array element 
+ types; this would gain portability at the expense of limiting the 
+ language.
+
+ We considered leaving out of the proposal the addition of the two
+ functions UPGRADED-ARRAY-ELEMENT-TYPE and UPGRADED-COMPLEX-PART-TYPE.
+ But it was noted that every implementation of CL supports exactly
+ that functionality somewhere in its implementation of MAKE-ARRAY; and
+ exposing this to the user would be a good thing.  Furthermore, the
+ existence of at least UPGRADED-ARRAY-ELEMENT-TYPE makes the clarifications
+ on "upgrading" and SUBTYPEP implications easier.  Finally, there would
+ be no other way at all to pinpoint just how complex parts are upgraded,
+ since there is no type information available except for the actual
+ types of the parts.
+
+ Since this proposal contains the implication:
+     (ARRAY <type1>)  is-type-equivalent-to  (ARRAY <type2>)
+     ==> 
+      <type1>  is-type-equivalent-to  <type2>
+ then the question naturally arises "Does the reverse implication hold?"  
+ That is, should two non-EQ but type-equivalent type-specifiers <type1>
+ and <type2> always give rise to the same array types?   For example, 
+ consider SHORT-FLOAT and SINGLE-FLOAT in an implementation where these 
+ are type-equivalent (see CLtL section 2.1.3).  One may desire to implement 
+ (ARRAY SHORT-FLOAT) and (ARRAY SINGLE-FLOAT) differently.  Say, for example 
+ that the former is packed into 16-bit half-words, whereas the latter is 
+ packed into 32-bit words; but for either kind of packing, the result of 
+ AREF is an ordinary "single-float".  The whole point of the type-specifier
+ to make-array is merely to specify a packing technique for "packed float" 
+ arrays.  This "krinkle", however, will not be addressed by the proposal 
+ herein; it should simply be remembered that the implication above goes 
+ only one way, and is not an "if-and-only-if" link.

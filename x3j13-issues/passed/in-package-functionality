@@ -1,0 +1,158 @@
+Status: proposal MAR89-X3J13 passed, as amended, Mar 89 X3J13
+
+Issue:          IN-PACKAGE-FUNCTIONALITY
+References:     IN-PACKAGE (p182-183)
+Category:       CHANGE
+Edit history:   07-Jul-88, Version 1 by Pitman
+                 7-Oct-88, Version 2 by Masinter (discussion)
+                 8-Dec-88, Version 3 by Masinter
+                12-Dec-88, Version 4 by Masinter
+                20-Jan-89, Version 5 by Loosemore
+                30-Jan-89, Version 6 by Loosemore
+                10-Mar-89, Version 7 by Loosemore
+                15-Mar-89, Version 8 by Masinter 
+						(add back SELECT-ONLY)
+                 9-Apr-89, Verison 9 by Masinter, as amended Mar 89 X3J13,
+				and discussion updated.
+
+Related-Issues: DEFPACKAGE (passed)
+		COMPILE-FILE-SYMBOL-HANDLING
+
+Problem Description:
+
+  There are two typical uses for IN-PACKAGE -- to define/create a package
+  and to select a package. The fact that these two purposes have been
+  given to the same function has led to reduced error checking.
+
+  A more general problem is that the "Put In Seven Extremely Randoms" 
+  convention described in CLtL is now recognized by many people as being
+  unsatisfactory for both package definition and package selection.
+  The DEFPACKAGE macro provides a much cleaner mechanism for package
+  definition, but there is still a need for a convenient way to select
+  a package that has well-defined compilation semantics.
+
+
+Proposal (IN-PACKAGE-FUNCTIONALITY:MAR89-X3J13):
+
+  Change IN-PACKAGE from a function to a macro:
+
+    IN-PACKAGE name						[macro]
+
+    This macro causes *PACKAGE* to be set to the package named NAME,
+    which must be a symbol or string.  An error is signalled if the
+    package does not already exist.  Everything this macro does is also
+    performed at compile time if the call appears at top-level.
+
+  Remove the second paragraph of section 11.7 in CLtL.  (This includes
+  the requirement for special compile-time treatment of the various
+  package functions.)
+
+  Rationale:
+
+    This could allow improved error checking and modularity, with only
+    minimal loss of functionality.
+
+    Making IN-PACKAGE a macro rather than a function means that there
+    is no need to require COMPILE-FILE to handle it specially.  Since
+    DEFPACKAGE is also defined to side-effect the compilation environment,
+    there is no need to require any of the package functions to be treated
+    specially by the compiler.
+
+    The language in section 11.7 of CLtL puts the burden on
+    implementations of ensuring that all symbols in a file which is
+    compiled and loaded end up in the same package that they would if the
+    source file were loaded interpretively.  No implementation can
+    possibly meet this requirement because, in general, the runtime
+    behavior of the program cannot be predicted by the compiler.
+
+  Current Practice:
+
+    Probably no one implements this behavior exactly since it's an 
+    incompatible change to CLtL.
+
+  Cost to Implementors:
+
+    The IN-PACKAGE macro can be implemented trivially by using 
+    EVAL-WHEN in its expansion:
+
+    (defmacro in-package (name)
+        `(eval-when (eval compile load)
+	     (setq *package*
+	           (or (find-package ',name)
+		       (error "Package ~s does not exist." ',name)))))
+
+    The changes required to COMPILE-FILE to remove the magic treatment
+    of the package functions are also likely to be small.
+
+  Cost to Users:
+
+    In most cases, minor syntactic changes to some files would be
+    necessary.  Programmers that are now using the "Put In Seven
+    Extremely Randoms" convention will probably find it straightforward
+    to convert their code to do a DEFPACKAGE followed by a 
+    IN-PACKAGE.
+
+  Cost of Non-Adoption:
+
+    The specification of COMPILE-FILE will be much more difficult to
+    understand.
+
+    The standard will require compilers to solve the halting problem.
+
+  Benefits:
+
+    Modular package declarations would be encouraged and errors due
+    to demand-creation of packages would be easier to detect.
+
+    The specification of COMPILE-FILE will be simplified.
+
+    There will be a clear statement of the requirements for program
+    conformance, as relating to usage of packages.
+
+  Aesthetics:
+
+    The fact that IN-PACKAGE is currently ambiguous about intent (whether
+    the package should exist already or not) is clearly not aesthetic.
+    Removing it can't be any worse.
+
+    The fact that the currently stated requirements for handling of
+    the package functions by the compiler are not implementable is
+    clearly not aesthetic.
+Discussion:
+
+  The dual use of IN-PACKAGE has not been helpful and is confusing.
+
+  This is an incompatible change.
+
+KMP's notes of the Mar 89 X3J13:
+
+ On Tuesday, we took a straw poll.
+   0 opposed both proposals.
+  15 liked NEW-MACRO.
+   7 liked SELECT-ONLY.
+ ``Keeping IN-PACKAGE makes no difference to compatibility.'' --Moon
+ Pitman moved to amend this to say "deprecate" instead of remove.
+ The motion to amend failed 3-N.
+ The NEW-MACRO proposal passed unamended 12-4.
+
+ On Thursday, Aaron Larson and JonL asked that the issue be reconsidered.
+ The motion to reconsider passed N-1.
+ There was a motion to rename the SELECT-PACKAGE which we'd voted in to
+ IN-PACKAGE -- so that the compatible syntax (IN-PACKAGE "FOO") would work
+ in CLtL and ANSI CL.
+ Steele requested verbal clarification that we were not trying to solve
+ the ``dusty file'' problem but rather to make it possible to write new code
+ that worked in old and new situations -- it was agreed that this was a
+ correct characterization of the proposal.
+ JonL's amendment passed 13-1.
+ Then the amended proposal was voted in 14-0.
+
+The net effect is that NEW-MACRO passed with the name of SELECT-PACKAGE
+changed to IN-PACKAGE.
+
+
+-----
+LMM added 19-Mar-90:
+(in-package foo)   is now legal (but illegal CLtL)
+(in-package 'foo) is now not legal (but legal CLtL)
+(in-package "FOO") is now legal (and was in CLtL too)

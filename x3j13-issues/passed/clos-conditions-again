@@ -1,0 +1,126 @@
+Date: Fri, 8 Jun 90 19:55 EDT
+From: David A. Moon <Moon@STONY-BROOK.SCRC.Symbolics.COM>
+Subject: Issue: CLOS-CONDITIONS-AGAIN (Version 6)
+To: X3J13@mcc.com
+Message-ID: <19900608235525.3.MOON@KENNETH-WILLIAMS.SCRC.Symbolics.COM>
+
+This version includes the amendment that was passed at the X3J13 meeting today.
+
+Issue:         CLOS-CONDITIONS-AGAIN
+
+References:    ANSI CL draft specification, page 5-4
+
+Related issues: CLOS-CONDITIONS
+
+Category:      ADDITION and CHANGE
+
+Edit history:  30-Apr-90, Version 1 by Moon (for Pitman)
+               30-Apr-90, Version 2 by Moon (deal with slots)
+	        2-May-90, Version 3 by Pitman (minor wording clarifications)
+                2-May-90, Version 4 by Moon (final check for typos)
+                5-Jun-90, Version 5 by Moon (mention multiple inheritance)
+                8-Jun-90, Version 6, by Moon (as amended at X3J13 meeting)
+
+Problem description:
+
+  The condition system should not be too tightly integrated into CLOS, for
+  two reasons:  Some implementations already have a native condition system
+  that is not based on CLOS, and it should be possible to integrate the
+  native conditions and the ANSI CL conditions.  Some people would like to
+  define an ANSI Common Lisp subset that does not contain CLOS but does
+  contain conditions.
+
+  The problem areas are the use of DEFCLASS, MAKE-INSTANCE, and DEFMETHOD
+  to define and create conditions, rather than using more abstract macros
+  that conceal the implementation of conditions in terms of CLOS, and
+  exposure of the implementation of condition slots as CLOS slots.  If user
+  code was written in a more abstract way, it could run in a subset language
+  that did not contain CLOS.
+
+  This is Symbolics issue #7.
+
+Proposal (CLOS-CONDITIONS-AGAIN:ALLOW-SUBSET):
+	  
+  1. Specify that conforming code must use DEFINE-CONDITION (not DEFCLASS)
+  to define conditions, and MAKE-CONDITION (not MAKE-INSTANCE) to make
+  conditions.  (These two operators already exist in ANSI Common Lisp.)
+
+  2. Specify that conforming code must use the :REPORT option of
+  DEFINE-CONDITION (not DEFMETHOD for PRINT-OBJECT) to define a condition
+  reporter.
+
+  3. Specify that conforming code must not use SLOT-VALUE, SLOT-BOUNDP,
+  SLOT-MAKUNBOUND, or WITH-SLOTS on condition objects.  Instead it must
+  call the accessor functions defined by DEFINE-CONDITION.
+
+  4. Clarify that this proposal does not rule out the use of multiple
+  parent-types in DEFINE-CONDITION.
+
+Rationale:
+
+  1. The reasons are two:
+     - permit flexibility in making the native class system compatible
+       with the ANSI CL one
+     - permit dialects that don't want CLOS to be available to run most
+       common condition-related code.
+
+  2. The reasons are three:
+     - isolate the report part without forcing the user to deal with the
+       case of *PRINT-ESCAPE* being true.
+     - keep a CL subset from having to implement DEFMETHOD to get this
+       important functionality.
+     - don't define two ways to do the same thing.
+
+  3. Using the existing accessor functions seems more conservative than
+     requiring non-CLOS subsets to implement an ersatz SLOT-VALUE function.
+
+     Note also that the requirement here (in #3) is on conforming -code-.
+     An -implementation- can permit the use of SLOT-VALUE, SLOT-BOUNDP,
+     SLOT-MAKUNBOUND, and/or WITH-SLOTS as an extension and still be 
+     conforming.  Programs which used such an extension would not be
+     conforming and might not be portable to all implementations.
+
+  4. There is no substitute for multiple inheritance, and given the
+     limited set of operations that can be performed on conditions, it
+     is easy to fake it.
+
+Current practice:
+
+  1. DEFINE-CONDITION and MAKE-CONDITION are already in the language.
+
+  2. The :REPORT option to DEFINE-CONDITION exists.
+
+  3. Some implementations support use of WITH-SLOTS and some do not.
+     Programs that use WITH-SLOTS are not yet portable.
+
+  4. DEFINE-CONDITION is already specified to support multiple inheritance.
+
+Cost to Implementors:
+
+  Trivial.
+
+Cost to Users:
+
+  They have to write their programs in terms of the condition abstractions
+  if they want them to be portable.
+
+Cost of non-adoption:
+
+  Condition-using programs will not be portable to Common Lisp subsets that
+  don't have CLOS.
+
+Performance impact:
+
+  None.
+
+Benefits:
+
+  See rationale.
+
+Esthetics:
+
+  Abstraction is more esthetic than revealing the implementation.
+
+Discussion:
+
+  Pitman and Moon support this proposal.

@@ -1,0 +1,110 @@
+Status: Passed, Jan 89 X3J13, as amended
+
+Issue:         STEP-ENVIRONMENT
+ 
+References:    STEP (CLtL p.441)
+               TIME (CLtL p.441)
+ 
+Category:      CLARIFICATION/CHANGE
+ 
+Edit history:  Version 1, 12-Mar-88, Moon
+               Version 2, 10-Jun-88, Masinter (add discussion)
+	       Version 3, 20-Jun-88, Loosemore (not a special form)
+	       version 4, 17-Mar-89, Masinter (as amended)
+ 
+Problem description:
+ 
+CLtL does not specify in what lexical environment the form given to STEP
+is evaluated.  Some people think it's supposed to be evaluated in the
+null environment, others think it is supposed to be evaluated in the
+current environment, the one in which the STEP form was evaluated.
+ 
+The same considerations apply to TIME.
+ 
+Proposal (STEP-ENVIRONMENT:CURRENT):
+ 
+1. Clarify that STEP and TIME evaluate the form in the current environment.
+
+2. Clarify that calls to both STEP and TIME may be compiled, but that
+in the case of STEP, it is acceptable for an implementation to
+interactively step through only those parts of the computation that are
+interpreted.
+
+Examples:
+ 
+;Assuming X is not a special variable
+(setq x 1)
+(let ((x 2))
+  (step (print x)))
+ 
+This should print and return 2, not 1, when interpreted.
+ 
+Rationale:
+ 
+1. It is more useful for the lexical environment to pass transparently
+through STEP and TIME than to reset to the null environment.
+
+2. Although STEP is primarily a debugging tool, there is no reason to
+prevent it from being compiled correctly.
+
+Current practice:
+
+Vax Lisp behaves as proposed.  Symbolics Common Lisp treats STEP as a special 
+form and does not allow it to be compiled. 
+
+Cost to Implementors:
+ 
+Minimal.
+
+Cost to Users:
+ 
+None.
+
+Cost of non-adoption:
+ 
+These debugging tools will continue to have vague specifications.
+ 
+Benefits:
+ 
+Slightly more preicse specification of Common Lisp.
+ 
+Esthetics:
+ 
+Slightly improved.
+ 
+Discussion:
+ 
+There was some discussion of separating this out into two separate
+proposals, but it didn't seem useful.
+ 
+Eric Benson contributed the definition of TIME in Lucid Common Lisp:
+ 
+(defmacro time (form)
+  `(time-internal #'(lambda () ,form)))
+ 
+ 
+The function TIME-INTERNAL looks something like:
+ 
+(defun time-internal (thunk)
+  (let ((before-time (get-time-state)))
+    (unwind-protect
+        (funcall thunk)
+      (print-time-information before-time (get-time-state)))))
+ 
+The definition of STEP is similar.  This is just to show that it is
+easy to get the right lexical environment even though TIME and STEP
+are macros.
+
+VaxLisp expands STEP into something like:
+
+(defmacro step (form)
+    `(let ((*eval-hook* #'step-command-loop))
+        ,form))
+
+
+
+Additional comments:
+
+Verbally this was explained to mean that the body of the STEP would
+not be stepped when compiled, but if it just happened to call an
+interpreted function, that function would get stepped.

@@ -1,0 +1,106 @@
+Status: Passed, Jan 89 X3J13
+Forum: Cleanup
+Issue: 	GET-MACRO-CHARACTER-READTABLE
+
+References:  CLtL p.361: COPY-READTABLE, SET-SYNTAX-FROM-CHAR, and
+                         GET-MACRO-CHARACTER
+             CLtL p.364: GET-DISPATCH-MACRO-CHARACTER, 
+             CLtL p.378: Example in middle of page
+
+Category:    CLARIFICATION/CHANGE
+
+Edit history:  Version 1, 16-Nov-88, by JonL
+               Version 2,  8-Dec-88, by Masinter (fix typo)
+		Version 3, 11-Feb-89, as amended Jan 89 X3J13
+
+
+Problem description:
+
+The 'readtable' argument to GET-DISPATCH-MACRO-CHARACTER and to
+GET-MACRO-CHARACTER must be of type READTABLE, without mention of
+what happens when NIL is supplied. This may have been simply
+an oversight, since it makes more sense for it to refer to values from
+the standard readtable.  Both COPY-READTABLE and SET-SYNTAX-FROM-CHAR
+explicitly say that a NIL in the 'from-readtable' argument refers to the
+standard readtable.  Also, an example in the middle of the page, CLtL
+p.378, supplies a NIL to GET-MACRO-CHARACTER, and is clearly intending
+to access the standard readtable values.
+
+
+Proposal (GET-MACRO-CHARACTER-READTABLE:NIL-STANDARD)
+
+Specify that a NIL readtable argument to GET-DISPATCH-MACRO-CHARACTER
+and to GET-MACRO-CHARACTER mean the same thing it does for COPY-READTABLE,
+and SET-SYNTAX-FROM-CHAR; namely a reference to the standard readtable.  
+Thus (GET-MACRO-CHARACTER <char> NIL) would be equivalent to 
+(GET-MACRO-CHARACTER <char> (COPY-READTABLE)), but without consing.
+
+Rationale:
+
+Probably was the original intent; somebody wants it; also see "Esthetics".
+
+Current practice:
+
+Symbolics and Xerox have already implemented the proposal; Lucid, VAXLISP,
+and KCL stuck to the more rigid interpretation.
+
+
+Cost to Implementors:
+
+Trivial.
+
+Cost to Users:
+
+None.
+
+Cost of non-adoption:
+
+Minor worry about porting between implementations that support the
+generalization and those that don't; minor worry about consing when
+calling (COPY-READTABLE) to get at standard readtable semantics.
+
+Performance impact:
+
+See "Cost of non-adoption".
+
+Benefits:
+
+See "Cost of non-adoption".
+
+Esthetics:
+
+Increases parallel design among similar readtable functions.
+
+Discussion:
+
+This question was raised in the Common Lisp mailing last summer:
+    Date: 19 Jul 88 13:35
+    Subject: Question about readtable null arguments
+    From: quiroz%cs.rochester:EDU:Xerox
+    To: common-lisp%sail.stanford:EDU:Xerox
+
+This issue passed at the Jan 89 X3J13 meeting. The only
+difference between version 2 and 3 was to remove the
+test case because of problems of "function equivalence":
+
+If "same-function-p" compared functions:
+
+(let ((standard-rt (copy-readtable))
+      (chars '(#\* #\= #\| #\A #\  #\( #\# #\1)))
+  ;; Test Case 1
+  (dolist (char chars)
+    (assert (same-function-p (get-macro-character char nil)
+                (get-macro-character char standard-rt))
+            () "Lose on character ~C" char))
+  ;; Test Case 2
+  (dolist (char chars)
+    (assert (same-function-p (get-dispatch-macro-character #\# char nil)
+                (get-dispatch-macro-character #\# char standard-rt))
+            () "Lose on #\# dispatch character ~C" char))
+  ;; Test Case 3
+  (assert (same-function-p (get-dispatch-macro-character #\# #\A nil)
+              (get-dispatch-macro-character #\# #\a nil))
+          () "Lose on #\# dispatch character ~C" char)
+ )
+
+

@@ -1,0 +1,48 @@
+Status: Passed, jun-87
+Issue:        FORMAT-ATSIGN-COLON
+References:   FORMAT description (p386)
+Category:     CLARIFICATION
+Edit history: Version 1 by Pitman 02/27/87
+              Version 2 by cleanup committee 15-Mar-87
+              Version 3 by Masinter 15-Mar-87
+              Version 4 by Masinter  5-Jun-87
+
+Problem Description:
+
+CLtL describes the format op syntax as:
+
+"a format directive consists of a tilde (~), optional prefix parameters separated by commas, optional colon (:) and atsign (@) modifiers, and a single character indicating what kind of directive this is."
+
+CLtL uses :@ fairly consistently throughout without saying whether @: is legal. Is @: allowed?
+
+Proposal (FORMAT-ATSIGN-COLON:OK):
+
+There is no required ordering between the @ and : modifier.
+
+Rationale:
+
+This is currently underspecified, and this way of specifying it will cause the least disruption to user code.
+
+Current practice:
+
+Most implementations accept these in either order. Some implementations have been known to expect only :@.
+
+Adoption Cost:
+
+The change to accept either syntax is probably quite trivial.
+
+Benefits:
+
+Having @: and :@ mean different things would be awkward. 
+
+Conversion Cost:
+
+Existing user code would be unaffected.
+
+Aesthetics:
+
+Leaving these unordered is slightly simpler conceptually.
+
+Discussion:
+
+The cleanup committee supports this clarification.

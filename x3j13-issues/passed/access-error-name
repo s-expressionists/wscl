@@ -1,0 +1,28 @@
+Issue: ACCESS-ERROR-NAME
+Edit history: no proposal circulated prior to meeting
+
+
+  David Moon moved, and Dick Gabriel seconded, to
+  Eliminate
+    (OR (FIND-SYMBOL "CELL-ERROR"
+                     (FIND-PACKAGE
+                         "COMMON-LISP"))
+        (FIND-SYMBOL "ACCESS-ERROR"
+                     (FIND-PACKAGE
+                         "COMMON-LISP")))
+
+    Ditto for CELL-ERROR-NAME and/or
+              ACCESS-ERROR-NAME
+
+    Introduce UNBOUND-VARIABLE-NAME,
+              UNDEFINED-FUNCTION-NAME,
+              UNBOUND-SLOT-NAME.
+
+  The amendment passed 9-8.
+
+  Straw vote showed that one person felt strongly about their vote.
+
+  Larry moved, and Dan seconded, to roll back the previous motion to
+  CELL-ERROR.  The motion passed 12-5.
+
+/n

@@ -1,0 +1,277 @@
+Issue:         ARGUMENT-MISMATCH-ERROR
+Forum:         Cleanup
+References:    ANSI CL spec (Aug 29, 1989 draft) pp.4-11,4-12,4-13,4-15,1-10
+               88-002R p.1-26 (appears also on p.4-20 of ANSI CL draft) 
+Category:      CHANGE
+Edit history:  1-Feb-90, Version 1 by Moon
+               9-May-90, Version 2 by Moon 
+                (address another inconsistency, found by Kim Barrett)
+               30-Oct-90, Version 3 by Pitman 
+                (first attempt to formalize X3J13 amendments to v2)
+               01-Nov-90, Version 4 by Pitman (comments by Moon, Barrett)
+	       01-Nov-90, Version 5 by Pitman (more comments by Moon, Barrett)
+Status:        v2+amendments (reflected in v5) accepted by X3J13, June 1990
+
+Problem description:
+  
+  The draft ANSI Common Lisp specification is inconsistent about what kind 
+  of error handling occurs when a function is called with arguments that 
+  do not match its definition.
+  
+   1. For too few arguments, p.4-11 says "there must be at least n passed
+   arguments," which probably (page 1-10) means "the consequences are
+   undefined" if there are too few arguments.
+   
+   2. For too many arguments, p.4-12 says "an error of type error is 
+   signalled."
+   
+   3. For unrecognized keyword arguments, p.4-13 says "the consequences 
+   are undefined."  On the other hand, p.4-15 says "and error would be
+   signalled."
+   
+   4. For keyword argument names that are not symbols, p.4-13 says "the
+   consequences are undefined."
+ 
+   5. For unrecognized keyword arguments supplied to generic functions, 
+   p.4-20 and 88-002R p.1-26 say "an error is signalled."
+ 
+  This is Symbolics issue #5.
+
+Proposal (ARGUMENT-MISMATCH-ERROR:MUST-SIGNAL-WHEN-SAFE-OR-SYSTEM):
+  
+  Define that an error must be signalled in cases 1, 2, 3, and 5 of the
+  argument mismatch situations in the problem description if the caller,
+  the callee, and the point of functional evaluation all appear in a
+  context where a `safe' optimization setting is in effect (i.e., 
+  SAFETY=3).  In all other scenarios for these situations, the 
+  consequences are undefined.
+
+  Case 4 is treated the same, except that when :allow-other-keys t or
+  &allow-other-keys is involved, error detection is optional (i.e., the
+  consequences are undefined if the keyword argument names are not symbols).
+
+  If any of the caller, the callee, or the point of functional evaluation
+  was not user code, and was instead supplied by the implementation as a
+  pre-defined definition, or as automatically generated code (e.g., as
+  in method combination), then it must be treated as safe unless some 
+  user code involved in the scenario is not safe.
+
+  Clarify that a reference to the symbolic name of the function or to the 
+  contents of the symbol-function of a symbol does not count as a functional
+  evaluation.  For the purposes of this definition, functional evaluation
+  occurs either explicitly due to a use of the FUNCTION special form, or 
+  implicitly due to the use of a function name in the car of a normal
+  functional form.
+
+  The naive model which is intended is that the user can rely on error 
+  checking in these situations if he has taken all reasonable steps to
+  ensure that the situations will be safe.
+
+  The exact time that the error will be signalled is implementation-dependent,
+  but will always be prior to the execution of the body of the function being
+  called.
+  
+Clarifications:
+
+  The error might be signalled at compile time or at run time.  If the
+  error is signalled at run time, it might be signalled by either the
+  caller or the callee.
+
+  The reason that this terminology is used, and not the normal, "should
+  signal" terminology is because system code may be involved, and the
+  user may not know in general whether system code was compiled `safe'
+  or `unsafe'.  An implication of this definition is that all code
+  compiled by the system will behave as if compiled safe unless some
+  user code involved in the scenario is not. So, for example, if a user
+  calls MAPCAR from safe code and passes a function which was compiled
+  safe, the system is required to ensure that MAPCAR will make a safe
+  call as well.
+
+Examples:
+
+ A. Given ...
+
+    (declaim (optimize (safety 3)))
+
+    (defun     foo (x)                  (print 'test-failed) x)
+    (defun     bar (&key x)             (print 'test-failed) x)
+    (defmethod baz ((a integer) &key x) (print 'test-failed) x)
+
+    (defun funcall-it (x) (funcall x))
+   
+    Then every implementation must arrange for an error to be signalled
+    no later than the body (i.e., before (print 'test-failed) is executed)
+    if the following forms also occur in safe code:
+
+     A.1:  (foo)
+     A.2:  (foo 1 2)
+     A.3:  (bar :y 1)
+     A.4:  (bar 1 2)
+     A.5:  (baz 1 :y 7)
+     A.6:  (funcall #'foo)
+     A.7:  (funcall 'foo)
+     A.8:  (mapcar #'foo '(1 2) '(1 2))
+     A.9:  (mapcar 'foo '(1 2) '(1 2))
+     A.8:  (mapcar #'1+ '(1 2) '(1 2))
+     A.9:  (mapcar '1+ '(1 2) '(1 2))
+     A.10: (funcall-it #'foo)
+     A.10: (funcall-it 'foo)
+     A.11: (funcall-it #'1+)
+     A.12: (funcall-it '1+)
+     A.13: (let ((x (locally (declare (optimize (safety 0))) 'foo)))
+             (funcall-it x))
+     A.14: (let ((x (locally (declare (optimize (safety 0))) '1+)))
+             (funcall-it x))
+     A.15: (let ((x (locally (declare (optimize (safety 0)))
+		      (symbol-function 'foo))))
+             (funcall-it x))
+     A.16: (let ((x (locally (declare (optimize (safety 0)))
+		      (symbol-function '1+))))
+             (funcall-it x))
+
+ B. Here are some examples of situations that might signal an error, but 
+    are not required to signal an error.  In effect, the consequences are
+    undefined in these cases, even if the surrounding code is declared safe:
+
+          ;; Functional evaluation is not safe:
+    B.1:  (let ((x (locally (declare (optimize (safety 2))) #'foo)))
+            (funcall-it x))
+    B.2:  (let ((x (locally (declare (optimize (safety 2))) #'1+)))
+            (funcall-it x))
+
+          ;; Point of call is not safe:
+    B.3:  (let ((x #'foo))
+            (locally (declare (optimize (safety 2)))
+              (funcall x)))
+    B.4:  (let ((x #'1+))
+            (locally (declare (optimize (safety 2)))
+              (funcall x)))
+
+          ;; Callee is not safe:
+          (locally (declare (optimize (safety 2)))
+            (defun foo1 (x) x))
+    B.5:  (foo1)
+    B.6:  (mapcar #'foo1 '(1 2) '(1 2))
+    B.6:  (funcall-it 'foo1)
+
+Rationale:
+  
+  It's important for the document to be consistent and always say the
+  same thing about each individual error situation.  It also seems
+  important for the five error situations to be treated equally.
+  
+  Further, it's important that programmers be able to debug their code
+  conveniently in a safe environment.  Once they start tampering with
+  safety, they may run immediately into situations that expose
+  variations in how implementations deal with function calling, but
+  where safety is uniformly requested by the code, they should be able
+  to insulate themselves from such differences.
+
+  An exception is made in the name of efficiency for case 4 when
+  :ALLOW-OTHER-KEYS T or &ALLOW-OTHER-KEYS is used.
+
+Current practice:
+
+  CLtL did not require this level of error checking, so it's entirely 
+  likely that there are implementations which do not conform.
+
+  Symbolics Genera conforms to this proposal.
+
+Cost to Implementors:
+
+  Some implementations already implement most or all of this, so their
+  cost will be minimal.
+
+  A few implementations may not implement this.  The cost will vary
+  depending on the implementation. In some cases, it could take a fairly
+  substantial amount of work to make these changes.
+
+  An implementation not willing to make these changes might prefer to
+  identify itself as implementing only a low-safety subset of the
+  language, and simply refuse to compile code which was declared high
+  safety.  This might be appropriate for certain delivery situations.
+
+Cost to Users:
+
+  More robust code.
+
+Cost of non-adoption:
+
+  The specification document will not even be self-consistent.
+
+Performance impact:
+
+  None.
+
+Benefits:
+
+  Language consistency.
+
+Aesthetics:
+
+  This is an improvement over the inconsistent situation which preceded it.
+
+Discussion:
+
+  The idea of making this merely "undefined" was discussed and rejected
+  at the June 1990 meeting.  There was consensus that signalling an
+  error was fine, but the main sticking points were saying under what
+  situations the user could depend on such signalling, and at what time
+  the signalling might be permitted to occur.  The following `amendment'
+  to the previous proposal was proposed and adopted, with the intent
+  that it be clarified later:
+
+    "should signal"
+           +
+    [ efunctuation ]
+    [ caller       ]  [ system or safe ]
+    [ callee       ]
+           +
+    "and no later than the body of the callee"
+
+  Versions 3-5 were an attempt to clarify what was voted upon.
+
+  Moon says:
+    I'm not sure what the callee is when calling a generic function.  Is
+    it the DEFGENERIC or the DEFMETHOD?  What if there is no DEFGENERIC?
+    It's best to say that the generic function definition, if it was
+    defined explicitly, and the method definitions for all the
+    applicable methods, and the method-combination definition must all
+    be safe or system-defined for the callee to be considered safe.
+
+  To which Barrett responds:
+    This is the area I was concerned about when I first poked Kent about
+    getting an updated version of this proposal.  I think for the most
+    part the requirement stated above covers my concerns and fits what I
+    think the intent of X3J13 was when the proposal was voted up.
+    However, I'm not certain that this restriction covers the thing that
+    processes the form returned by the effective method function.  Also,
+    I'm not sure where SAFETY is determed from when a generic function is
+    created by a bare call to ENSURE-GENERIC-FUNCTION or MAKE-INSTANCE
+    rather than through one of the definitional forms.  Perhaps SAFETY
+    ought to be a quality accepted by DEFGENERIC and similar places?
+  but then later adds:
+    After thinking about it some more, I no longer think the thing that
+    processes the form returned by the method-combination function is a
+    problem, since without the MOP it must be `system'.
+
+  Barrett also says:
+    There are quite a few other ways of performing functional evaluation:
+      1. (COERCE lambda-expression 'FUNCTION)
+      2. (ENCLOSE lambda-expression environment)
+      3. (GENERIC-FUNCTION . whatever-goes-here)
+      4. (ENSURE-GENERIC-FUNCTION . arguments)
+      5. {possibly} (MAKE-INSTANCE subtype-of-function . arguments)
+      {any others I haven't thought of}
+    I think that for these, the environment used to determine SAFETY 
+    level is
+      1. COERCE -- NIL
+      2. ENCLOSE -- second argument
+      3. GENERIC-FUNCTION -- expansion environment
+      4. ENSURE-GENERIC-FUNCTION -- :environment argument
+      5. MAKE-INSTANCE -- ??
+
+ Both on the issue of functional evaluation and on the issue of DEFGENERIC,
+ KMP agrees there are some lingering issues which need to be resolved, but
+ wants to see open debate on them and some clear consensus before putting
+ something into the proposal.

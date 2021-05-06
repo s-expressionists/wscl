@@ -1,0 +1,278 @@
+Status:		Passed, Jan 89 X3J13
+
+Issue:         DEFPACKAGE
+
+References:    CLtL section 11.7.
+               Issue: IN-PACKAGE-FUNCTIONALITY
+               Issue: MAKE-PACKAGE-USE-DEFAULT
+               Issue: PACKAGE-DELETION
+
+Category:      ADDITION
+
+Edit history:  Version 1, 12-Mar-88, Moon
+               Version 2, 23-Mar-88, Moon, changes based on discussion
+               Version 3, 27-Sep-88, JonL 
+                (remove :import, :shadowing-import; allow :export to work on
+                 imported and inherited; update references to in-package, etc.)
+               Version 4,  1-Oct-88, Masinter
+               Version 5, 6-Oct-88, Moon
+               Version 6, 6-Oct-88, JonL (little nits)
+               Version 7, 2-Nov-88, JonL 
+		 (incorporate further discussion; simplify handling of
+		  syntactic errors; specify ordering constraints).
+
+Problem description:
+
+Many users incorrectly think that package operations can be performed
+in any order.  CLtL (p.192) contributes to this misconception.
+Programmers need direction on the ordering constraint, especially for
+creating packages, since doing things out of order can lead to
+confusing or even intractable problems.
+
+If the definition of a package is scattered throughout a program as a 
+number of individual forms, it is very easy to read a symbol before the 
+package setup needed to read that symbol correctly has been accomplished. 
+Three examples: an inherited symbol that should have been shadowed might 
+be accessed; a single-colon prefix might be used for a symbol that hasn't
+yet been exported; an internal symbol might be created afresh where a 
+symbol that will later be imported or inherited was intended.  These 
+problems can be difficult to understand or even to recognize; in some 
+cases it is difficult or impossible to correct the situation in the
+same Lisp image.
+
+
+Proposal (DEFPACKAGE:ADDITION):
+      
+Add a DEFPACKAGE macro to the language.  In the description below,
+'package-name' and 'symbol-name' can be a symbol or a string; if a 
+symbol, only its name matters, not what package it is in.
+
+The syntax of DEFPACKAGE is
+
+  (DEFPACKAGE package-name {option}*)
+
+where each option is a list of a keyword and arguments.  Nothing in a
+DEFPACKAGE form is evaluated.
+
+Standard options for DEFPACKAGE are listed below.   Except for :SIZE, 
+options may appear more than once (this is useful primarily for 
+:IMPORT-FROM and :SHADOWING-IMPORT-FROM).
+
+(:NICKNAMES {package-name}*)
+        Set the package's nicknames to the specified names.
+
+(:USE {package-name}*)
+        The package is to "use" the other designated packages; that is,
+        it will inherit from them.  The default value for this option 
+        should be the same as it is for MAKE-PACKAGE (also see the issue
+        MAKE-PACKAGE-USE-DEFAULT).
+
+(:SHADOW {symbol-name}*)
+        Create the specified symbols in the package being defined, 
+        making them shadows, just as the function SHADOW would do.
+
+(:SHADOWING-IMPORT-FROM package-name {symbol-name}*)
+        Find the specified symbols in the specified package, import
+        them into the package being defined, and place them on the 
+        shadowing symbols list.  In no case will symbols be created in 
+        any package other than the one being defined; a continuable error 
+        is signaled if no symbol is accessible in the package named 
+        package-name for one of the symbol-names.
+
+(:IMPORT-FROM package-name {symbol-name}*)
+        Find the specified symbols in the specified package and import
+        them into the package being defined.  In no case will symbols be 
+        created in a package other than the one being defined; a continuable
+        error is signaled if no symbol is accessible in the package named 
+        package-name for one of the symbol-names.
+
+(:EXPORT {symbol-name}*)
+        Find or create symbols with the specified names and export them.
+        Note an interaction with the :USE option, since inherited symbols 
+        can be used rather than new ones created;  note also an interaction 
+        with the :IMPORT-FROM and :SHADOWING-IMPORT-FROM options, since 
+	imported symbols can be used rather than new ones created.
+
+(:INTERN {symbol-name}*)
+        Find or create symbols with the specified names.  Note an 
+        interaction with the :USE option, since inherited symbols 
+        can be used rather than new ones created.  This option is useful if 
+        an :IMPORT-FROM or a :SHADOWING-IMPORT-FROM option in a subsequent 
+        call to DEFPACKAGE (for some other package) expects to find these 
+        symbols accessible but not necessarily external.
+
+(:SIZE integer)
+        Declare the approximate number of symbols expected in the package.
+        This is an efficiency hint only, so that the package's table will
+        not have to be frequently re-expanded when new symbols are added
+        to it (e.g., by reading in a large file "in" that package).
+
+The order in which the options occur in a DEFPACKAGE form is irrelevant;
+but since the effects of the entry-making options are context-sensitive, 
+the order in which they will be executed is as follows:
+  (1) :SHADOW and :SHADOWING-IMPORT-FROM 
+  (2) :USE 
+  (3) :IMPORT-FROM and :INTERN
+  (4) :EXPORT
+Shadows are established first, since they may be necessary to block 
+spurious name conflicts when the use link is established.  Use links are 
+established next so that :intern and :export may refer to normally 
+inherited symbols.  The :export is done last so that it may refer to 
+symbols created by any of the other options; in particular, shadows and 
+imported symbols can be made external.  Note also the prescription on CLtL 
+p.178 to cover the case of calling EXPORT on an inherited symbol.
+
+DEFPACKAGE creates the package as specified and returns it as its value.
+It has no other side effects; e.g., it does not alter the value of *PACKAGE*.
+The function COMPILE-FILE should treat top-level DEFPACKAGE forms the
+same way it treats the other package-effecting functions (see CLtL p.182).
+
+If the specified name already refers to an existing package, then the 
+name-to-package mapping for that name is not changed.   At most, the 
+existing package will be modified to reflect the new definition;  it is 
+undefined what happens if the new definition is at variance with the 
+current state of that package.  If one of the specified nicknames already
+refers to an existing package, then an error is signaled just the same
+as MAKE-PACKAGE would.  See the issue PACKAGE-DELETION for undoing the
+name-to-package mapping.
+
+Some DEFPACKAGE errors are, however,  purely syntactic.
+  (1) An error should be signaled if :SIZE appears than once.
+  (2) Since extended options might be allowed by other implementations, 
+      an error should be signaled if an option is present that is not 
+      actually supported in this implementation.
+  (3) The collection of symbol-name arguments given to the options 
+      :SHADOW, :INTERN, :IMPORT-FROM, and :SHADOWING-IMPORT-FROM must 
+      all be disjoint; additionally, the symbol-name arguments given to 
+      :EXPORT and :INTERN must be disjoint. If either condition is 
+      violated, an error should be signaled.
+Name conflict errors will, of course, be handled by the underlying calls to 
+USE-PACKAGE, IMPORT, and EXPORT.
+
+
+Examples:
+
+;;; An example that "plays it super-safe" by using only strings as names; 
+;;;  does not even assume that the package it is read in to "uses" LISP; 
+;;   *never* creates any symbols whatsoever in the package that it is read 
+;;     in to.
+
+(LISP:DEFPACKAGE "MY-PACKAGE"
+  (:NICKNAMES "MYPKG" "MY-PKG")
+  (:USE "LISP")
+  (:SHADOW "CAR" "CDR")
+  (:SHADOWING-IMPORT-FROM "VENDOR-COMMON-LISP"  "CONS")
+  (:IMPORT-FROM           "VENDOR-COMMON-LISP"  "GC")
+  (:EXPORT "EQ" "CONS" "FROBOLA")
+  )
+
+;;; A similar call, mostly using symbols rather than strings as names.
+;;; Expects to be read in to a package that "uses" LISP and *may* create
+;;;  random internal symbols in that package (such as MY-PACKAGE etc).
+
+(defpackage my-package
+  (:nicknames mypkg :MY-PKG)		;remember CL conventions for case
+  (:use lisp)				; conversion on symbols
+  (:shadow CAR :cdr #:cons)
+  (:export "CONS")			;yes, this is the shadowed one.
+  )
+
+Rationale:
+
+The availability of DEFPACKAGE encourages putting the entire package 
+definition in a single place.  It also encourages putting all the package 
+definitions of a program in a single file, which can be loaded before 
+loading or compiling anything else that depends on those packages; such a
+file can be read in the USER package, avoiding any initial state issues.
+
+In addition, DEFPACKAGE allows a programming environment to process
+the whole package setup as a unit, providing better error-checking and
+more assistance with package problems, by dint of global knowledge of
+the package setup.
+
+Current practice:
+
+Symbolics Common Lisp (SCL) has always had a DEFPACKAGE, and users
+prefer it to individual calls to EXPORT, IMPORT, SHADOW, etc.  The SCL
+version of DEFPACKAGE has quite a few additional options, but none of
+them appears to be necessary to propose for Common Lisp at this time.
+This proposal is incompatible with Symbolics DEFPACKAGE in some ways
+that will probably not cause major problems.
+
+Cost to Implementors:
+
+Small--DEFPACKAGE can be implemented simply as a bunch of
+calls to existing functions.
+
+Cost to Users:
+
+Small, this is upward compatible.
+
+Cost of non-adoption:
+
+Packages continue to be difficult to use correctly.
+
+Benefits:
+
+Guide users away from using packages in ways that get them into trouble.
+
+Esthetics:
+
+Neutral.
+
+Discussion:
+
+It has been suggested that the "Put IN Seven EXtremely Random USEr
+Interface COmmands" mnemonic described in CLtL p.191 could be removed;
+and with possibly a few exceptions, the special handling of them by
+COMPILE-FILE could be removed.  As this would be an incompatible change, 
+it is not part of this proposal.  However, a new mnemonic can be offered, 
+to help remember the ordering constraints mentioned above:
+          I REmember Six USEr Interface Expressions
+Each word in the sentence corresponds to one operation listed below:
+   I				IN-PACKAGE	;"foot" to stand on
+   REmember			REQUIRE		;ensure pre-requisite packages
+   Six				SHADOW		;block multiple-inheritances
+   USEr				USE-PACKAGE	;go for it!
+   Interface			IMPORT		;bring in "foreign" symbols
+   EXpressions			EXPORT		;a "face" to show to others.
+
+It is noted that DEFPACKAGE cannot be used to create two "mutually
+recursive" packages, such as:
+    (defpackage my-package
+      (:use lisp your-package)	      ;requires 'your-package' to exist first
+      (:export "MY-FUN"))
+    (defpackage your-package
+      (:use lisp)
+      (:import-from my-package "MY-FUN") ;requires 'my-package' to exist first
+      (:export "MY-FUN"))
+However, nothing prevents one from using the package-effecting functions 
+such as USE-PACKAGE, IMPORT, and EXPORT to establish such links (which
+ought to be very rare) after a more standard use of DEFPACKAGE.
+
+The macroexpansion of DEFPACKAGE could usefully canonicalize the names
+into strings, so that even if a source file has random symbols in the
+DEFPACKAGE form, the compiled file would only contain strings.
+
+Frequently additional implementation-dependent options take the
+form of a keyword standing by itself as an abbreviation for a list
+(keyword T); this syntax should be properly reported as an unrecognized
+option in implementations that do not support it.
+
+Definition forms in Common Lisp usually just establish a name-to-object
+mapping; there is little precedent for them to modify other global-context
+state.  For this reason, we didn't want DEFPACKAGE also to "go" into the 
+new package.  If it did so, like IN-PACKAGE, then the following reasonable 
+file would become confused, because it wouldn't all be in one package:
+   (in-package "USER")
+   (defpackage "WATER"      (:use "LISP")             (:export "FISH"))
+   (defpackage "ALCHEMY"    (:use "LISP" "PHLOGISTON) (:export gold))
+Should the token 'gold' be read while in the USER package, or in the
+the WATER package?
+
+The issue IN-PACKAGE-FUNCTIONALITY recommends that IN-PACKAGE  be 
+incompatibly changed to recognize only existing packages, not to create 
+them.  IN-PACKAGE would then not accept any keyword arguments.
+
+The function MAKE-PACKAGE might also be extended to take all the keywords
+that DEFPACKAGE does. This could be the subject of a separate cleanup.

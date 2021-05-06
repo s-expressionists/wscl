@@ -1,0 +1,96 @@
+Status: passed, Oct 88 X3J13
+Issue:          DEFSTRUCT-DEFAULT-VALUE-EVALUATION
+References:     CLtL p.308-10 & 86-003 p.4
+Category:       CLARIFICATION
+Edit history:   Revision 1 by Skona Brittain 05/13/88
+
+
+Problem Description:
+
+There is some confusion over whether default initialization
+forms for defstruct slots get evaluated, when they are not needed
+because a keyword argument was supplied to the constructor function.
+As a consequence of this confusion, there is confusion over whether
+there can be a type-mismatch error between the specified type of the slot
+and the type of the default value.
+
+On page 308, it says "The default-init is a form that is evaluated 
+each time a structure is to be constructed; the value is used as the 
+initial value of the slot.  If no default-init is specified, then the
+initial contents of the slot are undefined and implementation-dependent."
+
+On the next page, however, it says that the default-init is evaluated if
+the keyword argument is not supplied and the converse, although not stated,
+is intended and informally implied.
+
+
+Proposal (DEFSTRUCT-DEFAULT-VALUE-EVALUATION:IFF-NEEDED):
+
+Clarify that the converse is true. i.e that the default-init is not evaluated 
+if the keyword argument is supplied.
+
+In the quote from page 308, delete the second sentence and replace 
+"a structure is to be constructed; the value is" by "its value is to be".
+
+To section 19.3, add a clarification,
+such as the following from Guy's issues file:
+       "The default value in a defstruct slot is not evaluated 
+        unless it is needed in the creation of a particular structure
+        instance.  If it is never needed, there can be no type-mismatch
+        error, even if the type of the slot is specified, and no warning
+        should be issued."
+
+
+Test Case:
+
+In the following sequence, only the last call is an error.
+
+        (defstruct person (name 007 :type string)) 
+        (make-person :name "James")
+        (make-person)
+
+
+Rationale:
+
+It is inefficient, and inconsistent with the rest of the language, for the 
+default initialization form to be evaluated when it is not needed.
+Consequently, when it's not needed, such type-mismatch errors should not be 
+detectable in general.
+
+Any existing confusion should be clarified by this proposal.
+
+
+Current Practice:
+
+KCL does not evaluate the default initialization form unless it is needed;
+even when it is needed, the type checking is not done at all.
+
+
+Cost to Implementors:
+
+If there are any implementations that currently behave differently from
+the proposed way, then they need some slight modification.  
+
+
+Cost to Users:
+
+None.
+
+
+Benefits:
+
+Clarity and portability.  In particular, clarifying that the unaesthetic 
+situation mentioned in the next section is allowed should be reassuring.
+
+
+Aesthetics:
+
+It appears slightly unaesthetic to have a default value that violates a 
+type specification.  
+
+
+Discussion: 
+
+Although this issue was mentioned in Guy's original issues file, it has
+not been officially discussed since.
+

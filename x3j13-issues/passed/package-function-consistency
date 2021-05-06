@@ -1,0 +1,101 @@
+Issue:        PACKAGE-FUNCTION-CONSISTENCY
+References:   11.7 Package System Functions and Variables (pp182-188)
+Category:     CLARIFICATION/CHANGE
+Edit history: 21-Oct-88, Version 1 by Pitman
+		12-Jan-89, Version 2 by Masinter (add MORE-PERMISSIVE option)
+		17-Mar-89, Version 3, by Masinter, MORE-PERMISSIVE as
+			amended & adopted at Jan 89 X3j13
+		17-Mar-89, Version 4, by Moon, correct amended wording
+
+Problem Description:
+
+  CLtL is vague about whether either or both of package or package name
+  are permissible in some cases.
+
+Proposal (PACKAGE-FUNCTION-CONSISTENCY:MORE-PERMISSIVE):
+
+  Clarify that it is permissible to pass either a package object
+  or a package name (symbol or string) in the following situations:
+    - the :USE argument to MAKE-PACKAGE or IN-PACKAGE
+    - the first argument to IN-PACKAGE, FIND-PACKAGE, RENAME-PACKAGE
+			or DELETE-PACKAGE
+    - the second argument to INTERN, FIND-SYMBOL, UNINTERN
+    - the second argument to EXPORT, UNEXPORT, IMPORT,
+      SHADOWING-IMPORT, and SHADOW
+    - the first argument (or a member of the list which is the first
+      argument) to USE-PACKAGE or UNUSE-PACKAGE.
+    - all package-name arguments in DEFPACKAGE except for the name and
+      nicknames of the package being defined.
+    - the first argument to PACKAGE-NAME, PACKAGE-NICKNAMES, 
+      PACKAGE-USE-LIST, or PACKAGE-USED-BY-LIST
+    - the PACKAGE argument to DO-SYMBOLS.
+    - the PACKAGE argument to DO-EXTERNAL-SYMBOLS.
+    - the PACKAGE argument to DO-ALL-SYMBOLS.
+
+  If FIND-PACKAGE is given a package object as an argument, it simply
+  returns it.
+
+  Clarify that the function MAKE-PACKAGE permits only a package name
+  as an argument since it does not make sense to create an existing
+  package.
+
+  Clarify that package nicknames must always be expressed as package
+  names (symbols or strings) and may never be actual package objects.
+
+  In the list above, IN-PACKAGE may be changed to SELECT-PACKAGE
+  if IN-PACKAGE-FUNCTIONALITY:NEW-MACRO passes.
+
+Examples:
+
+  (INTERN "FOO" "KEYWORD") => :FOO
+
+  (DEFVAR *FOO-PACKAGE* (MAKE-PACKAGE "FOO"))
+  (RENAME-PACKAGE "FOO" "FOO0")
+  (PACKAGE-NAME *FOO-PACKAGE*) => "FOO0"
+
+
+  (PACKAGE-NAME "SYS") might return "SYSTEM".
+
+Rationale:
+
+   This makes things more consistent.
+   It also adds a generally useful capability.
+
+
+Current Practice:
+
+  Symbolics Genera & Lucid permit strings as package names.
+  Symbolics Cloe does not permit strings as package names.
+  In Lucid FIND-PACKAGE and IN-PACKAGE require names.
+
+Cost to Implementors:
+
+  Small.
+
+Cost to Users:
+
+  None. This change is upward compatible.
+
+Cost of Non-Adoption:
+
+  Implementations would continue to vary gratuitously, leaving a potential
+  for portability problems.
+
+Benefits:
+
+  The cost of non-adoption is avoided.
+
+Aesthetics:
+
+  This makes things more regular, and so presumably more aesthetic.
+
+Discussion:
+
+  Pitman ran across this problem while trying to port Macsyma to various
+  implementations. Discussion with other maintainers of portable programs
+  shows this is a common source of aggravation in portable code.
+
+  It would be possible to say that MAKE-PACKAGE took package objects as
+  arguments and just returned that package. That might have limited
+  usefulness on rare occasions, but mostly seemed too far out in left
+  field to bother suggesting it.

@@ -1,0 +1,168 @@
+TYPE-DECLARATION-ABBREVIATION:ALLOW-ALL was passed 11-0 at the June 1990 meeting.
+TYPE-DECLARATION-ABBREVIATION:FORBID-ALL failed 5-8 at the June 1990 meeting.
+
+Issue:         TYPE-DECLARATION-ABBREVIATION
+
+References:    CLtL p.158, and CLtL Table 4-1 (p.43)
+               ANSI CL draft spec p.6-56 (rev 7.31 of 8/29/89)
+               ANSI CL draft spec Fig 2-10, 2-11 (p.2-28, 2-29)
+
+Related Issues: COMPILE-ENVIRONMENT-CONSISTENCY
+                LISP-SYMBOL-REDEFINITION
+                PACKAGE-CLUTTER
+
+Category:      CHANGE
+
+Edit history:  1-May-90, Version 1 by Moon
+               4-May-90, Version 2 by Moon (update discussion)
+               6-Jun-90, Version 3 by Moon (update discussion)
+               8-Jun-90, Version 4 by Moon (reflect the X3J13 meeting)
+
+Problem description:
+
+  TYPE declaration abbreviation, the ability to write
+    (DECLARE (<type-specifier> <var> <var>...))
+  in place of
+    (DECLARE (TYPE <type-specifier> <var> <var>...))
+  is allowed only for some <type-specifier>s, not for all of them.
+
+  CLtL allows the abbreviation only when <type-specifier> is a symbol
+  and not a user-defined or implementation-defined type.
+
+  The draft ANSI CL specification is unclear since it refers to the wrong
+  table.  If it really meant to refer to Figure 2-11 rather than 2-10, then
+  it says the same thing as CLtL, assuming the mistakes in Figure 2-11 get
+  corrected (e.g. standard-generic-function is missing).
+
+  This makes a distinction between type specifiers specified by the
+  language standard and type specifiers defined by the user or by the
+  implementation.  Do programmers have to know whether types they use come
+  from the kernel language or from a library in order to know whether they
+  are allowed to use abbreviated type declarations?  Do they have to refer
+  to this table that currently contains 91 entries and is still growing?
+
+  This also makes an unnecessary distinction between type specifiers that
+  are symbols and those that are lists or classes.
+
+  This issue contains two proposals.
+
+  This is Symbolics issue #31 and is related to Loosemore's issue #8
+  of 27 Feb 90.
+
+Proposal (TYPE-DECLARATION-ABBREVIATION:ALLOW-ALL):
+
+  Allow the word TYPE to be omitted from all TYPE declarations.
+
+  A symbol cannot be both the name of a type and the name of a
+  declaration.  Defining a symbol as a class, structure, condition,
+  or type name, when the symbol has been defined or proclaimed
+  as a declaration name, or vice versa, signals an error.
+
+Examples:
+
+  (DEFUN SUBSTRING (STRING &OPTIONAL (START 0) END)
+    (DECLARE (STRING STRING)
+             ((INTEGER 0 *) START)
+             ((OR NULL (INTEGER 0 *)) END))
+    (SUBSEQ STRING START END))
+  
+  (DEFSTRUCT SHIP HEADING TONNAGE PASSENGER-LIST)
+  
+  (DEFUN EMBARK (P S)
+    (DECLARE (SHIP S))
+    (PUSHNEW P (SHIP-PASSENGER-LIST S)))
+
+  (DEFCLASS ASTRONAUT () (HELMET-SIZE FAVORITE-BEVERAGE))
+
+  (DEFUN CHECKOUT (A)
+    (DECLARE (#.(FIND-CLASS 'ASTRONAUT) A))
+    (UNLESS (EQ (SLOT-VALUE A 'FAVORITE-BEVERAGE) 'TANG)
+      (ERROR "~A is not a proper astronaut" A)))
+
+Rationale:
+
+  Arbitrary syntactic differences between built-in facilities and
+  user-defined extensions are not in the spirit of Lisp.
+
+  Making type names and declaration names be a single namespace
+  eliminates any issue of ambiguity in interpreting a decl-spec.
+
+Proposal (TYPE-DECLARATION-ABBREVIATION:FORBID-ALL):
+
+  Do not allow the word TYPE to be omitted from any TYPE declarations.
+  This would be an incompatible change.
+
+Current practice:
+
+  I don't know of any implementation that implements either proposal.
+
+Cost to Implementors of ALLOW-ALL:
+
+  Small.  It should be easy to change the declaration parser to check
+  whether the car of a decl-spec is a valid type-specifier, and if so
+  either insert the word TYPE or signal an error, depending on whether it's
+  also a proclaimed declaration.
+
+Cost to Users of ALLOW-ALL:
+
+  None to most users.  Some users might have programs that use the same
+  symbol as both a declaration name and a type name, and they would have
+  to rename either the declaration or the type.
+
+Cost of non-adoption:
+
+  An aesthetic wart on the language will remain.
+
+  Implementors will continue to have to maintain a large and seemingly
+  ever-changing table of type names that are acceptable as declarations.
+
+Performance impact:
+
+  There might be a trivial increase in compilation speed as a result of
+  adopting either proposal.  There should be no run-time performance impact.
+
+Benefits:
+
+  Improved language consistency and aesthetics.
+
+Esthetics:
+
+  Arbitrary syntactic differences between built-in facilities and
+  user-defined extensions are not in the spirit of Lisp.
+
+Discussion:
+
+  Rob MacLachlan was concerned in February about non-obvious side-effects
+  of allowing user types here, but never mentioned a specific problem.
+  From re-reading his mail, he was most likely concerned only about things
+  that are not in this proposal.
+
+  Another possible approach would be to eliminate type declaration
+  abbreviation, however no one liked that idea when it was mentioned a few
+  months ago.
+
+  David Gray is opposed to allowing abbreviation for all types on the
+  grounds that infrequently-used types might not be recognized as types by
+  someone reading a program.  Asked for suggestions, he said:
+
+    Well, if I had to be limited to twelve, I would choose:
+
+            ARRAY CHARACTER CONS FIXNUM FLOAT INTEGER LIST NUMBER
+            STREAM STRING SYMBOL VECTOR
+
+    but I suspect that this small a list would be too much of an incompatibility
+    to be acceptable since other people are sure to have a different favorite
+    twelve.  It might be possible to agree on a list of around twenty, such as:
+
+            ARRAY BIT BIT-VECTOR CHARACTER COMPLEX CONS FIXNUM FLOAT 
+            INTEGER KEYWORD LIST NUMBER PACKAGE PATHNAME REAL SEQUENCE
+            STREAM STRING SYMBOL VECTOR
+
+  David Moon prefers not to single out some types as special cases.
+
+  Glenn Burke is not entirely comfortable with the proposal, but doesn't like
+  restricting programmers' use of data-abstraction by singling out some types
+  as special cases.
+
+  Kim Barrett is concerned that signalling an error when there is a collision
+  between a type name and a declaration name doesn't really solve the problem.

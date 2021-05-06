@@ -1,0 +1,103 @@
+Issue:               LEXICAL-CONSTRUCT-GLOBAL-DEFINITION 
+References:          PPRINT-EXIT-IF-LIST-EXHAUSTED
+                     PPRINT-POP
+                     LOOP-FINISH
+		     CALL-METHOD
+                     CALL-NEXT-METHOD
+		     NEXT-METHOD-P
+Related issues:      Issue LISP-SYMBOL-REDEFINITION
+                     Issue PRETTY-PRINT-INTERFACE
+                     Issue LOOP-FINISH-NOT-FINISHED
+Category:            CLARIFICATION, CHANGE
+Edit history:        V1, 05 May 90, Sandra Loosemore
+                     V2, 29 May 90, Sandra Loosemore (forgot one)
+
+Problem description:
+
+The description of PPRINT-EXIT-IF-LIST-EXHAUSTED and PPRINT-POP
+in issue PRETTY-PRINT-INTERFACE specifies that "an error message
+is issued" if either of these constructs are used anywhere other
+than syntactically nested within a call on PPRINT-LOGICAL-BLOCK.
+It is not clear whether this means "an error is signalled" or
+"a message is printed", or whether this situation must be
+detected at compile time or at run time.
+
+This is actually a more general problem, since there are other 
+constructs in the language that have similar scoping requirements:  
+notably LOOP-FINISH, CALL-METHOD, CALL-NEXT-METHOD, and NEXT-METHOD-P.  
+The error behavior of all of these constructs when they are referenced
+outside the lexical scope where their behavior is defined ought
+to be made consistent, as should the matter of whether they
+are permitted/required/not allowed to be globally FBOUNDP.  
+
+This issue incorporates items #2 and #23 from Loosemore's list.
+
+Proposal (LEXICAL-CONSTRUCT-GLOBAL-DEFINITION:UNDEFINED):
+
+  This proposal affects the constructs PPRINT-EXIT-IF-LIST-EXHAUSTED, 
+  PPRINT-POP, LOOP-FINISH, CALL-METHOD, CALL-NEXT-METHOD, and 
+  NEXT-METHOD-P, which are referred to as "lexically-scoped operators".
+
+  (1) Change the descriptions of lexically-scoped operators to
+  state that any attempt to invoke the operator outside of the
+  lexical scope where its behavior is defined has undefined
+  consequences.
+
+  (2) Clarify that it is unspecified whether function names that
+  are defined by the standard as lexically-scoped operators have
+  global function or macro definitions (i.e., are FBOUNDP).
+
+  (3) Clarify that the restrictions on redefinition or shadowing
+  of symbols in the COMMON-LISP package (originally stated in issue 
+  LISP-SYMBOL-REDEFINITION) are the same for symbols that define 
+  lexical operators as for symbols that are globally defined as
+  operators.
+
+Rationale:
+
+  This gives maximum freedom to implementors and avoids having to
+  deal with sticky issues about whether errors are detected at
+  compile or run time, etc.
+
+Current Practice:
+
+  I suspect it is fairly common practice to define these operators
+  using MACROLET (etc) and provide a global definition that
+  signals an error if it is invoked.
+
+Cost to Implementors:
+
+  None.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Part of the language specification remains imprecise,
+  inconsistent, and confusing.
+
+Performance impact:
+
+  None.
+
+Benefits:
+
+  The language specification is made more precise, consistent,
+  and less confusing.
+
+Esthetics:
+
+  Treating all of these guys uniformly is better than having them
+  all specify something slightly different with regard to their
+  behavior.
+
+Discussion:
+
+The situation with the DECLARE special form is related but not
+entirely analogous, so it has been left out of this proposal.
+From a purely abstract point of view, DECLARE is not a special form 
+at all but simply a syntactic marker like LAMBDA, and the only
+reason for defining it as an operator is to facilitate diagnostics 
+about misplaced declarations.ÿ

@@ -1,0 +1,71 @@
+Status: Passed, Aug 88 X3J13
+Issue:         DATA-TYPES-HIERARCHY-UNDERSPECIFIED
+
+References:    CLtL 33-35 (data types)
+	       CLtL 312 (DEFSTRUCT :INCLUDE option)
+
+Category:      CHANGE
+
+Edit history:  24-Mar-88, version 1 by Steele
+		 4-Sep-88, version 2 by X3J13 June 88
+
+Problem description:
+
+The types HASH-TABLE, READTABLE, PACKAGE, PATHNAME, STREAM, and
+RANDOM-STATE currently are not required to be disjoint from CONS, SYMBOL,
+ARRAY, NUMBER, or CHARACTER.  The same is true of DEFSTRUCT types.  With
+the arrival of CLOS, lack of disjointness will be inconvenient because one
+cannot reliably use generic function dispatch on these types.
+
+
+Proposal (DATA-TYPES-HIERARCHY-UNDERSPECIFIED:DISJOINT):
+
+Remove the third and antepenultimate bulleted items from section 2.15 is
+CLtL and replace with the following:
+
+  * The types CONS, SYMBOL, ARRAY, NUMBER, CHARACTER, HASH-TABLE, READTABLE,
+  PACKAGE, PATHNAME, STREAM, RANDOM-STATE, and any single other type created
+  by DEFSTRUCT [or DEFCLASS] are pairwise disjoint.
+
+Also, in the discussion of the DEFSTRUCT :INCLUDE option, it is an error for
+the type given to the :INCLUDE option to be CONS, SYMBOL, ARRAY, NUMBER,
+CHARACTER, HASH-TABLE, READTABLE, PACKAGE, PATHNAME, STREAM, or
+RANDOM-STATE.
+
+Rationale:
+
+It would be useful to extend sequence functions to operate on streams
+or hash tables, for example, through the CLOS generic function mechanism.
+This is not possible under the current specification.
+
+Current practice:
+
+Some implementations in effect use DEFSTRUCT to define data structures
+such as hash tables and random-states.
+
+Cost to Implementors:
+
+Small or nonexistent.  The main reason this disjointness was not specified
+in CLtL was the possibility that structures might not be easily
+distinguishable: a stupid concern over a slight efficiency.  This
+implementation freedom apparently has not been exploited in practice.
+
+Cost to Users:
+
+None.
+
+Cost of non-adoption:
+
+CLOS will be less useful.
+
+Benefits:
+
+CLOS will be more useful.
+
+Esthetics:
+
+This makes the type system simpler and easier to understand.
+
+Discussion:
+
+This suggestion originated in the CLOS committee.

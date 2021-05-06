@@ -1,0 +1,62 @@
+Issue:         DEFGENERIC-DECLARE
+
+References:    88-002R p.2-27
+
+Category:      ADDITION
+
+Edit history:  29-Apr-90, Version 1 by Moon
+               30-Apr-90, Version 2 by Moon (update current practice)
+
+Problem description:
+
+  DEFGENERIC only allows DECLARE to appear once, which is inconsistent with
+  DEFUN, which allows any number of DECLAREs.
+
+  This is Symbolics issue #23.
+
+Proposal (DEFGENERIC-DECLARE:ALLOW-MULTIPLE):
+
+  Allow the DECLARE option to appear multiple times in a DEFGENERIC form.
+  The multiple declarations are appended together.
+
+Rationale:
+
+  Programmers rely on the syntactic analogy between DEFGENERIC and DEFUN.
+
+  Note that some implementations allow several implementation-dependent
+  declarations in DEFGENERIC, so the list of declarations in a DEFGENERIC
+  could be quite long.
+
+Current practice:
+
+  Symbolics Genera 8.0 only allows DECLARE to appear once.
+  Lucid 4.0.0 Beta-1 allows DECLARE to appear multiple times.
+
+Cost to Implementors:
+
+  Easy.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  DEFGENERIC would be inconsistent with all other forms that allow DECLARE
+  to be used to specify declarations.
+
+Performance impact:
+
+  None.
+
+Benefits:
+
+  More consistent language.
+
+Esthetics:
+
+  More consistent language.
+
+Discussion:
+
+  None.

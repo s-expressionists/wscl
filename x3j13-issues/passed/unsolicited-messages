@@ -1,0 +1,64 @@
+Issue:        UNSOLICITED-MESSAGES
+References:   Chapter 1, Section 1.5, Working draft of standard
+Category:     Clarification
+Edit history: 8-JAN-89, Version 1 by Masinter
+	      6-FEB-89, Version 2 by Chapman
+	      10-MAR-89, Version 3 by Chapman (added discussion)
+	      21-MAR-89, Version 4 by Chapman 
+	      24-MAR-89, Version 5 by Chapman 
+	      6-APR-89, Version 6 by Chapman (added amendment from 3/89 mtg)
+ 
+ 
+ 
+Problem: Is it legal for an implementation to produce unsolicited output,
+e.g., GC notifications, autoload heralds, and progress messages from
+COMPILE-FILE or LOAD?
+ 
+Proposal: UNSOLICITED-MESSAGES:NOT-TO-SYSTEM-USER-STREAMS
+ 
+No output may be produced
+by functions other than that specified in the standard or due to the
+signalling of conditions detected by the function.
+ 
+ 
+Unsolicited output, such as GC notifications and autoload heralds,
+should not go directly to the stream held by any
+Common Lisp stream variable but can go indirectly to
+*TERMINAL-IO* by using a synonym stream to that variable.
+ 
+Output such as progress reports from LOAD and COMPILE are "solicited",
+and are not covered by this issue. See issue COMPILE-AND-LOAD-VERBOSE.
+ 
+ 
+ 
+Rationale:
+ 
+The intent of the proposal is stated informally as follows:
+if a file is written to, no implementation-generated output should
+end up in the file except as stated above.
+ 
+The intent of paragraph 2 of the proposal is that 
+implementations are forced to make such streams possible to
+redirect without redirecting the Common Lisp stream itself.
+ 
+Current Practice:
+ 
+Adoption Cost:
+ 
+Small. Implementations and their documentation may have to change slightly.
+ 
+Benefits:
+ 
+Portability.
+This proposal has very little impact on implementations, but helps the
+user by explicitly stating the disposition of unsolicited output.
+ 
+Conversion Cost:
+ 
+See Adoption Cost.
+ 
+Aesthetics:
+ 
+None.
+ 
+Discussion:

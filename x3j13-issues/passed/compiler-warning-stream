@@ -1,0 +1,51 @@
+Status: passed, June 87
+Issue:        COMPILER-WARNING-STREAM
+References:   COMPILE (p438), COMPILE-FILE (p439)
+Category:     CLARIFICATION/CHANGE
+Edit history: Version 1 by Pitman 02/27/87
+              Version 2 at committee meeting 15-Mar-87
+              Version 3 Masinter 15-Mar-87
+              Version 4 by Fahlman, incorporate Dribble
+              Version 5 by Masinter, 29-May-87, revert to Version 3
+              Version 6 by Masinter,  5-Jun-87, minor formatting
+              
+
+Problem Description:
+
+The description of the COMPILE and COMPILE-FILE functions does not explicitly permit them to print warnings. If this is to be allowed, it should be an explicitly expressed part of the contract.
+
+Proposal (COMPILER-WARNING-STREAM:ERROR-OUTPUT)
+
+COMPILE and COMPILE-FILE are permitted to output warnings; warnings should go to the stream that is the value of *ERROR-OUTPUT*.
+
+Rationale:
+
+Compiler warning output is a widely accepted extension to the compilation. Warnings that come via the WARN function will go to the stream that is the value of *ERROR-OUTPUT*.
+
+Current Practice:
+
+Some implementations send compiler warning output to *ERROR-OUTPUT*. Other implementations send it to *STANDARD-OUTPUT*.
+
+Adoption Cost:
+
+In most cases, the change to the compiler to redirect output is expected to be very slight.
+
+Benefits:
+
+Currently, it is difficult to redirect the output of COMPILE and COMPILE-FILE because it isn't clear where it's directed.
+
+Conversion Cost:
+
+Most user programs that care are probably already tolerant of both situations or naively expect that output will go to *ERROR-OUTPUT*. As such, most users will probably perceive this as a clarification.
+
+Aesthetics:
+
+Most users will probably perceive this change as a simplification because it will allow the kind of warning that comes from WARN and the kind of warning that comes from compilation to be conceptually grouped.
+
+Discussion:
+
+This was a problem in adapting MACSYMA to Common Lisp because Macsyma provides alternate user interfaces to the compiler which it needs to be able to control.
+
+The committee considered extending the proposal to describe the interaction with DRIBBLE on the warning output, but found that DRIBBLE was so underspecified as to make the task impossible. DRIBBLE should be considered in a separate proposal.
+
+The cleanup committee supports this change as stated.

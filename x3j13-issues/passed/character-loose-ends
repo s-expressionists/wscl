@@ -1,0 +1,67 @@
+Issue:         CHARACTER-LOOSE-ENDS
+
+References:    CLtL p.354, pp.51-2
+
+Category:      CLARIFICATION
+
+Edit history:  29-Apr-90, Version 1 by Moon (for Steele)
+
+Problem description:
+
+  The issues passed on the character proposal did not explicitly address
+  the following, but they no longer make sense in light of the new
+  character scheme that has been adopted.
+
+  The #nnn\x reader syntax creates a character with font attribute nnn,
+  but there is no longer a font attribute.
+
+  COERCE coerces an integer to a character by calling INT-CHAR, but the
+  INT-CHAR function no longer exists.
+
+  This is Symbolics issue #26.
+
+Proposal (CHARACTER-LOOSE-ENDS:FIX):
+
+  Remove the #nnn\x reader syntax; an implementation can define it as an
+  extension.
+
+  Remove coercion from integer to character.
+
+Rationale:
+
+  Presumably the character subcommittee simply overlooked these points and
+  the above proposal would have passed with the other character proposals
+  if it had been proposed.
+
+Current practice:
+
+  I don't know.
+
+Cost to Implementors:
+
+  Easy.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  These two features will still be in the language, but their specification
+  will not make any sense.
+
+Performance impact:
+
+  None.
+
+Benefits:
+
+  Consistent language.
+
+Esthetics:
+
+  Consistent language.
+
+Discussion:
+
+  None.

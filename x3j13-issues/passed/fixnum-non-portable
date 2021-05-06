@@ -1,0 +1,123 @@
+Status: Passed Jan 89 X3J13, as amended
+Issue: FIXNUM-NON-PORTABLE
+References:	CLtL p. 14, 34, 43, 231
+Category:	CHANGE, CLARIFICATION
+
+Edit History:   Version 1, 11-Jul-88, Sandra Loosemore
+		    Version 2, 15-Sep-88, Masinter
+		    Version 3, 23-Sep-88, Masinter
+		    Version 4,  7-Dec-88, Masinter (two proposals)
+		    Version 5, 16-Mar-89, Masinter (incorporate amendments)
+		    Version 6, 17-Mar-89, Masinter (incorporate amendments correctly)
+
+Problem Description: 
+
+Implementations of Common Lisp are required to support two disjoint
+subsets of integers, fixnums and bignums, with the promise that
+fixnums have a more efficient representation.  However, nothing is
+guaranteed about the range of integers which are fixnums: "Exactly
+which integers are fixnums is implementation-dependent; typically they
+will be those integers in the range -2**n to 2**n - 1, inclusive, for
+some n not less than 15."
+
+There are few uses of the fixnum type that are portable, given the
+current definition.  In particular, many programmers use FIXNUM type
+declarations where they really mean "small integer".
+
+While most Common Lisp implementations have a FIXNUM range
+which is a subset of integers represeted and operated on most
+efficiently, many also have several other subranges.  The
+partitioning of INTEGER into BIGNUM and FIXNUM is merely
+confusing in these implementations, and not useful.
+
+CLtL p14 and p34 disagree about BIGNUM. One says that
+ FIXNUM and BIGNUM are an exhaustive partition of the
+integer space, the other says they might not be!
+
+Proposal: FIXNUM-NONPORTABLE:TIGHTEN-DEFINITION
+
+(1) Change the description of the type FIXNUM to reflect that it is
+ required to be a supertype of (SIGNED-BYTE 16).
+
+(2) Define BIGNUM to be exactly (AND INTEGER (NOT FIXNUM))
+
+(3) require that (<= ARRAY-DIMENSION-LIMIT MOST-POSITIVE-FIXNUM)
+
+Example:
+
+Consider an implementation with three numeric representations:
+
+	Fast                (INTEGER -1024 1023)
+	Immediate           29 bits
+	Extended            Multi-precision
+
+Such an implementation would have to define
+FIXNUM to be (OR Fast Immediate). BIGNUM
+would then refer to multi-precision integers. 
+
+Rationale:
+
+Many programmers already use FIXNUM to mean "small integer"; this
+proposal makes this usage portable. 
+
+However, there is little portable use for the type BIGNUM, and it
+is inconsistent with many current implementation techniques.
+Removing it is an incompatible change for a weak reason.
+
+Current Practice:
+
+Xerox Common Lisp has 17-bit fixnums.  Most other Common Lisp
+ implementations have  fixnum ranges of 24 bits or larger. We know
+of no implementation that currently violates the proposed minimum 
+size.
+
+Several existing Common Lisp implementations have more than two 
+representations for integers, such that the FIXNUM/BIGNUM distinction
+is confusing; they define BIGNUM to cover all of the larger number
+types.
+
+Cost to implementors:
+
+Slight.  All implementations we know of already define FIXNUMs to be at
+least 16 bits.
+
+Cost to users:
+
+Slight.  
+
+Benefits:
+
+The FIXNUM type specifier would have a portable interpretation.
+
+The language would be less confusing.
+
+Discussion:
+
+There was little consensus on whether to leave BIGNUM in the language.
+
+Earlier discussion of a related proposal contained several other more controversial components (adding a constant MAX-INTEGER-LENGTH, allowing 
+MOST-POSITIVE-FIXNUM to be NIL as well as an integer.) This proposal
+is an attempt to address the part that cleanup committee seemed to agree on.
+
+It is possible that an implementation have a single  representation for all
+integers, and no way to identify any efficient range of integers. Those
+implementations might need to set MOST-POSITIVE-FIXNUM
+ and MOST-NEGATIVE-FIXNUM to arbitrary values, consistent with 
+the requirement that (SIGNED-BYTE 16) is a subtype of FIXNUM.
+
+Other alternatives considered (and not necessarily mutually exclusive
+with this proposal):
+
+  remove the FIXNUM type specifier entirely, while leaving a way
+  to query what is the most efficient range of integers
+
+   leave the range of FIXNUMs unconstrained  and introduce a 
+   SMALL-INTEGER type with a fixed range (but no promises about
+   efficiency) . 
+
+It might be possible to specify the required performance behavior
+of FIXNUMs more concretely, e.g., specify that the basic integer operations
+use algorithms that are not proportional to the size of the data;  it 
+should be just about as fast to add numbers in the middle of the fixnum 
+range as it is to add, say, 10 and 11. This might be a useful way to describe
+the intent of the FIXNUM range, if not its specification.

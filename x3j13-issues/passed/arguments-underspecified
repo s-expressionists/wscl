@@ -1,0 +1,75 @@
+Status:        Passed, Jan 89 X3J13
+Forum:         Cleanup
+Issue:        ARGUMENTS-UNDERSPECIFIED
+References:   LOGBITP (p 224), MAKE-DISPATCH-MACRO-CHARACTER (p 363), 
+              MAKE-HASH-TABLE (p 283), MAKE-SEQUENCE (p 249), READ (p 375)
+              MAKE-STRING (p 302), NTHCDR (p 267), PARSE-INTEGER (p 381),
+              SET (p 92)
+              Issue: RANGE-OF-START-END-PARAMETERS.
+Category:     CLARIFICATION
+Edit history: 26-Aug-88, Version 1 by Chapman
+               4-Sep-88, version 2 by Masinter
+              19-Sept-88, Version 3 by Chapman
+              21-Sep-88, Version 4 by Masinter
+ 
+Problem Description:
+ 
+The descriptions of LOGBITP, MAKE-DISPATCH-MACRO-CHARACTER, READ, SET,
+MAKE-HASH-TABLE, MAKE-SEQUENCE, MAKE-STRING, NTHCDR, and PARSE-INTEGER 
+are not clear about the types of the arguments supplied to these 
+constructs.
+ 
+Proposal (ARGUMENTS-UNDERSPECIFIED:SPECIFY)
+ 
+Clarify that the arguments for the listed constructs are as follows:
+ 
+Construct                Argument	                 Type
+LOGBITP                   index		      non-negative integer
+MAKE-DISPATCH-MACRO-CHARACTER 	char		      character
+MAKE-HASH-TABLE            size	 	      non-negative integer
+MAKE-SEQUENCE              size		      non-negative integer
+MAKE-SEQUENCE              type		      type specifier
+MAKE-STRING                size                non-negative integer
+MAKE-STRING                initial-element	 string-char
+NTHCDR                     n		           non-negative integer
+SET-SYNTAX-FROM-CHAR       to-char,from-char   characters
+READ and others            eof-value	      any value
+SET                        value		      any value
+ 
+(MAKE-HASH-TABLE, MAKE-SEQUENCE, MAKE-STRING have additional constraints on
+their respective SIZE arguments; for example, MAKE-STRING may detect an error if
+SIZE is greater than or equal to ARRAY-DIMENSION-LIMIT. Some additional 
+restriction on the range of characters which can have syntax in readtables 
+and are allowable to MAKE-DISPATCH-MACRO-CHARACTER SET-SYNTAX-FROM-CHAR might
+be required in some other proposal.)
+ 
+Rationale:
+ 
+This clarification allows predictible results to occur when 
+arguments are supplied to these constructs.
+ 
+Current Practice:
+
+This proposal seems to be in line with current implementations.
+
+Cost to Implementors:
+ 
+None, since this is consistent with current practice.
+ 
+Cost to Users:
+None, since this is consistent with current practice.
+ 
+Benefits:
+ 
+This clarification will assist users in writing portable code.
+ 
+Aesthetics:
+ 
+The standard would be less clean were the allowed ranges of its functions not
+specified.
+ 
+Discussion:
+
+There is a separate cleanup proposal RANGE-OF-START-END-PARAMETERS which
+addresses a possible incompatible change. This proposal contains what we
+think are non-controversial clarifications.

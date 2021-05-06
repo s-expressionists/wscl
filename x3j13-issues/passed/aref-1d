@@ -1,0 +1,79 @@
+Status: passed 1988 (not sure which meeting)
+Issue:        AREF-1D
+References:   Arrays (pp286-298)
+Category:     ENHANCEMENT
+Edit history: 22-Apr-87, Version 1 by Pitman
+              02-Jun-87, Version 2 by Pitman (ROW-MAJOR-AREF)
+              6-Jun-87, Versions 3, 4 by Masinter (editorial)
+              11-Jun-87, Version 5, to X3J13 (no changes)
+               6-Jul-87, Version 6, by Masinter
+              14-Nov-87, Version 7, by Masinter (update discussion)
+
+Problem Description:
+
+It's hard to write functions like Maclisp's LISTARRAY and FILLARRAY efficiently in Common Lisp because they take arguments of varying rank. Currently, you have to make a displaced array to work with temporarily and then throw away the displaced array when you're done. In many cases, this is bothersome because there is no a priori reason why they should have to cons at all.
+
+Proposal (AREF-1D:ROW-MAJOR-AREF):
+
+Introduce a new function ROW-MAJOR-AREF that allows one-dimensional access to the storage backing up a given array assuming the normal row-major storage layout.
+
+ROW-MAJOR-AREF is valid for use with SETF.
+
+row-major-aref array index              [Function]
+
+This accesses and returns the element of array specified by index when the elements of array are considered in row-major order. Array may be an array of any dimensionality. row-major-aref may be used with setf. For reference, the following sets of expressions are equivalent:
+
+(row-major-aref array index) ==
+    (aref (make-array (array-total-size array)
+                      :displaced-to array
+                      :element-type (array-element-type array))
+          index)
+
+and
+
+(aref array .. subscripts ..) ==
+    (row-major-aref array (array-row-major-index array .. subscripts ..))
+
+Rationale:
+
+Common Lisp requires row-major storage layout of arrays and has a number of operators that allow users to exploit that order. ROW-MAJOR-AREF is a useful, simple addition.
+
+LISTARRAY and FILLARRAY, for example, could be trivially defined by loops that had the following form:
+
+    (DOTIMES (I (ARRAY-TOTAL-SIZE ARRAY))
+      ... (ROW-MAJOR-AREF ARRAY I) ...)
+
+Currently, the only really efficient way to write this would involve something like:
+
+    (ECASE (ARRAY-RANK ARRAY1)
+      ((0) (SETF (AREF ARRAY1) (AREF ARRAY2)))
+      ((1) (DOTIMES (I (ARRAY-DIMENSION ARRAY 0))
+	     (SETF (AREF ARRAY1 I) (AREF ARRAY2 I))))
+      ((2) (DOTIMES (I (ARRAY-DIMENSION ARRAY 0))
+	     (DOTIMES (I (ARRAY-DIMENSION ARRAY 1))
+	       (SETF (AREF ARRAY1 I J) (AREF ARRAY2 I J)))))
+      ...some finite number of clauses...)
+
+Current Practice:
+
+Many implementations have this primitive under some other name for use internally. In Symbolics systems, for example, it is SYS:%1D-AREF.
+
+Adoption Cost:
+
+This change is fairly localized. In implementations that already use this primitive internally, it's little more than a matter of changing the name of or otherwise releasing the existing primitive. In some implementations, it might involve writing a small amount of code or compiler work to make ROW-MAJOR-AREF work efficiently.
+
+Benefits:
+
+This gives users efficient access to something to which they already have inefficient access.
+
+Conversion Cost:
+
+This is an upward-compatible change; the name ROW-MAJOR-AREF is unlikely to be used by any current program.
+
+Aesthetics:
+
+This allows certain programs to be written in a more aesthetic way.
+
+Discussion:
+
+This issue was conditionally passed at X3J13/June 1987, pending clarification of some details. Those clarifications have been made in this version.

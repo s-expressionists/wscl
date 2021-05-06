@@ -1,0 +1,118 @@
+Status:	Passed, Jun 89 X3J13
+Issue:         SEQUENCE-TYPE-LENGTH
+
+References:    CLtL p.51, p.249, p.260, p.252, p.354
+               CONCATENATE, COERCE, MAKE-SEQUENCE, MAP, MERGE
+
+Category:      CLARIFICATION
+
+Edit history:  16-Jun-89, version 1, by Moon
+
+Problem description:
+
+  In several functions that take a type specifier as an argument and create
+  a sequence of the specified type, it isn't clear what happens if the type
+  specifier has an explicit length that doesn't match the length implied by
+  the other arguments.
+
+Proposal (SEQUENCE-TYPE-LENGTH:MUST-MATCH):
+
+  COERCE should signal an error if the new sequence type specifies the
+  number of elements and the old sequence has a different length.
+
+  MAKE-SEQUENCE should signal an error if the sequence type specifies the
+  number of elements and the size argument is different.
+
+  CONCATENATE should signal an error if the sequence type specifies the
+  number of elements and the sum of the argument lengths is different.
+
+  MAP should signal an error if the sequence type specifies the number of
+  elements and the minimum of the argument lengths is different.
+
+  MERGE should signal an error if the sequence type specifies the number of
+  elements and the sum of the lengths of the two sequence arguments is
+  different.
+
+Examples:
+
+  ;; All of the following forms should signal an error
+  (coerce '(a b c) '(vector * 4))
+  (coerce #(a b c) '(vector * 4))
+  (coerce '(a b c) '(vector * 2))
+  (coerce #(a b c) '(vector * 2))
+  (coerce "foo" '(string 2))
+  (coerce #(#\a #\b #\c) '(string 2))
+  (coerce '(0 1) '(simple-bit-vector 3))
+  (make-sequence '(vector * 2) 3)
+  (make-sequence '(vector * 4) 3)
+  (concatenate '(vector * 2) "a" "bc")
+  (map '(vector * 4) #'cons "abc" "de")
+  (merge '(vector * 4) '(1 5) '(2 4 6) #'<)
+
+Rationale:
+
+  If CLtL hadn't overlooked this situation, it's likely that it would have
+  said it "is an error".  The best translation of that to ANSI CL error
+  terminology seemed to be "should signal".  There doesn't seem to be any
+  reason to require signalling this error even in unsafe code.  There
+  doesn't seem to be any reason to define this situation to do something
+  other than signalling an error, such as ignoring the length in the
+  type specifier or forcing the sequence to have the correct length by
+  truncating or extending it with elements of implementation-dependent
+  value.
+
+Current practice:
+
+  Symbolics Genera 7.2 and 7.4 usually ignore the length in the type
+  specifier in the above situations, but sometimes signal an error.
+  The type of error signalled is sometimes somewhat random.
+  Other implementations were not surveyed.
+
+Cost to Implementors:
+
+  This does not seem like difficult checking to add.  I have not examined
+  the code in any implementation to try to evaluate what it would cost.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Aesthetic.
+
+Performance impact:
+
+  Probably small, just have to keep track of the length when dealing
+  with sequence type specifiers in safe code.  I have not attempted to
+  evaluate the exact impact.
+
+Benefits:
+
+  Less ambiguity in the language specification.  Less deviation among
+  implementations, hence fewer porting problems.
+
+Esthetics:
+
+  Since the length field is present in sequence type specifiers, it
+  seems unesthetic to ignore it, and even more unesthetic not to say
+  what is done with it.
+
+Discussion:
+
+  Moon doesn't know what error condition is appropriate.  TYPE-ERROR
+  doesn't seem quite appropriate here.  One idea is not to say, just let it
+  be any subtype of ERROR.  Another idea is to produce the result object
+  and then signal a TYPE-ERROR that this object doesn't match the
+  type-specifier for the result type.
+
+  Cassels points out that two similar operations are defined in CLtL to be
+  inconsistent with each other:
+
+  (replace (make-array 4) #(1 2 3)) just picks the shortest length, and
+     "the extra elements near the end of the longer subsequence are not
+     involved in the operation" so the result is #(1 2 3 NIL)
+
+  #4(1 2 3) duplicates the last element, so it's like #(1 2 3 3)
+  #2(1 2 3) "is an error".
+

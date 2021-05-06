@@ -1,0 +1,639 @@
+Status:	Passed, Jun 89 X3J13
+Issue:          PATHNAME-LOGICAL
+Forum:          Cleanup
+References:     Pathnames (pp410-413)
+                OPEN (p.418), WITH-OPEN-FILE (p.422), RENAME-FILE (p.423),
+                DELETE-FILE (p.424), PROBE-FILE (p.424),
+                FILE-WRITE-DATE (p.424), FILE-AUTHOR (p.424), LOAD (p.426),
+                COMPILE-FILE (p.439), DIRECTORY (p.427), PATHNAME (p.413),
+                TRUENAME (p.413), MERGE-PATHNAMES (p.415), 
+                MAKE-PATHNAME (p.416), and PARSE-NAMESTRING (p.414).
+Related issues: PATHNAME-CANONICAL-TYPE, PATHNAME-COMPONENT-VALUES, 
+                PATHNAME-SUBDIRECTORY-LIST, and PATHNAME-WILD
+Category:       ADDITION
+Edit history:   Version 1, 11-May-89, by Moon
+                Version 2, 18-May-89, by Moon
+                Version 3, 21-Jun-89, by Moon (revise based on discussion
+                        in the cleanup committee)
+                Version 4, 23-Jun-89, by Moon (remove backtranslation)
+
+Problem description:
+
+  Pathname values are not portable, but they are sometimes part of a
+  program, for example the names of files containing the program and the
+  data used by the program.  Moving large programs between sites would
+  be easier if pathname values did not have to be translated.
+
+  Pathname values are nonportable because not all Common Lisp
+  implementations use the same operating system and file name syntax varies
+  widely among operating systems.  In addition, corresponding files at two
+  different sites may have different names even when the operating system
+  is the same; for example, they may be on different directories or
+  different devices.
+
+  The issue of portable pathname values is separate from the issues of
+  portable pathname operations.  See the related issues listed above.
+  For inter-issue interactions, see the discussion section below.
+
+  Note that issue PATHNAME-LOGICAL fundamentally depends on issue
+  PATHNAME-WILD.  If PATHNAME-WILD:NEW-FUNCTIONS does not pass,
+  PATHNAME-LOGICAL cannot pass.
+
+Proposal (PATHNAME-LOGICAL:ADD):
+
+  1. Define a "logical" file system that looks the same at every site.
+  This file system is implemented by translating each logical pathname into
+  a physical pathname on a real file system.  The logical pathnames are the
+  same at all sites, but the translations are different at each site, thus
+  the physical pathnames can be different at each site.
+
+  2a. The syntax of a logical pathname namestring is as follows:
+
+  [ host ":" ] [ ";" ] { directory ";" }* [ name ] [ "." type [ "." version ]]
+
+  2b. Terminology:
+
+  A <word> consists of one or more uppercase letters, digits, and hyphens.
+
+  A <wildcard word> consists of one or more asterisks, uppercase letters,
+  digits, and hyphens, including at least one asterisk, with no two
+  asterisks adjacent.  Each asterisk matches a sequence of zero or more
+  characters.  The <wildcard word> "*" parses into :WILD, the others parse
+  into strings.
+
+  In <words> and <wildcard words> lowercase letters are translated to
+  uppercase.  The consequences of using other characters are unspecified.
+
+  2c. Logical pathname components:
+
+  The host is a <word> that has been defined as a logical pathname host by
+  using SETF of LOGICAL-PATHNAME-TRANSLATIONS.
+
+  There is no device, so the device component of a logical pathname is
+  always :UNSPECIFIC.  No other component can be :UNSPECIFIC.
+
+  Each directory is a <word>, a <wildcard word>, or "**" (:WILD-INFERIORS).
+  If a semicolon precedes the directories, the directory component is
+  relative, otherwise it is absolute.
+
+  The name is a <word> or a <wildcard word>.
+
+  The type is a <word> or a <wildcard word>.
+
+  The version is a positive decimal integer or "NEWEST" (:NEWEST) or "*"
+  (:WILD).  The letters in "NEWEST" can be in either alphabetic case.
+
+  The consequences of using any value not specified here as a logical
+  pathname component are unspecified.
+
+  The null string "" is not a valid value for any component of a logical
+  pathname, since "" is not a <word> and not a <wildcard word>.
+
+  3. Parsing of logical pathname namestrings into logical pathnames
+  operates as follows:
+
+  3a. Logical pathname namestrings are recognized by the LOGICAL-PATHNAME
+  and TRANSLATE-LOGICAL-PATHNAME functions.  In this case the host portion
+  of the logical pathname namestring and its following colon are required.
+
+  3b. The PARSE-NAMESTRING function recognizes a logical pathname
+  namestring when the host argument is logical or the defaults argument is
+  a logical pathname.  In this case the host portion of the logical
+  pathname namestring and its following colon are optional.  If the host
+  portion of the namestring and the host argument are both present and do
+  not match, an error is signalled.
+
+  The host argument is logical if it is supplied and came from
+  PATHNAME-HOST of a logical pathname.  Whether a host argument is logical
+  if it is a string equal to a logical pathname host name is
+  implementation-defined.
+
+  3c. The MERGE-PATHNAMES function recognizes a logical pathname namestring
+  when the defaults argument is a logical pathname.  In this case the host
+  portion of the logical pathname namestring and its following colon are
+  optional.
+
+  3d. Whether the other functions that coerce strings to pathnames
+  (PATHNAME, TRUENAME, PARSE-NAMESTRING in other circumstances than those
+  described in point 3b, MERGE-PATHNAMES in other circumstances than those
+  described in point 3c, the :DEFAULTS argument to MAKE-PATHNAME,
+  PATHNAME-HOST, PATHNAME-DEVICE, PATHNAME-DIRECTORY, PATHNAME-NAME,
+  PATHNAME-TYPE, PATHNAME-VERSION, NAMESTRING, FILE-NAMESTRING,
+  DIRECTORY-NAMESTRING, HOST-NAMESTRING, ENOUGH-NAMESTRING, OPEN,
+  WITH-OPEN-FILE, RENAME-FILE, DELETE-FILE, PROBE-FILE, FILE-WRITE-DATE,
+  FILE-AUTHOR, LOAD, DIRECTORY, COMPILE-FILE, ED, DRIBBLE, WILD-PATHNAME-P,
+  PATHNAME-MATCH-P, TRANSLATE-PATHNAME, and COMPILE-FILE-PATHNAME)
+  recognize logical pathname namestrings is implementation defined.
+
+  4. Some real file systems do not have versions.  Logical pathname
+  translation to such a file system ignores the version.  This implies that
+  a program cannot rely on being able to store more than one version of a
+  file named by a logical pathname.
+
+  5. The type of a logical pathname for a Common Lisp source file is "LISP".
+  This should be translated into whatever type is appropriate in a physical
+  pathname.
+
+  6. The logical pathname host name "SYS" is reserved for the implementation.
+  The existence and meaning of SYS: logical pathnames is
+  implementation-defined.
+
+  7. File manipulation functions operate with logical pathnames as follows:
+
+  7a. The functions OPEN (and WITH-OPEN-FILE), RENAME-FILE, DELETE-FILE,
+  PROBE-FILE, FILE-WRITE-DATE, FILE-AUTHOR, LOAD, DIRECTORY, COMPILE-FILE,
+  ED, DRIBBLE, COMPILE-FILE-PATHNAME, and TRUENAME accept logical pathnames
+  and translate them into physical pathnames, as if by calling the
+  TRANSLATE-LOGICAL-PATHNAME function.
+
+  7b. PATHNAME of a stream created by OPEN (or WITH-OPEN-FILE) of a logical
+  pathname is a logical pathname.
+
+  7c. TRUENAME, PROBE-FILE, and DIRECTORY never return logical pathnames.
+
+  7d. RENAME-FILE with a logical pathname as the second argument returns a
+  logical pathname as the first value.
+
+  7e. MERGE-PATHNAMES returns a logical pathname if and only if its first
+  argument is a logical pathname or its first argument does not specify a
+  host and the default is a logical pathname.
+
+  7f. MAKE-PATHNAME returns a logical pathname if and only if the host is
+  logical.  If the :host argument to MAKE-PATHNAME is supplied, the host is
+  logical if it came from PATHNAME-HOST of a logical pathname.  Whether a
+  :host argument is logical if it is a string equal to a logical pathname
+  host name is implementation-defined.
+
+  7g. PARSE-NAMESTRING returns a logical pathname according to points 3b
+  and 3d.
+
+  Add these defined names to Common Lisp in support of logical pathnames:
+
+  8. LOGICAL-PATHNAME                                            [Class]
+
+    LOGICAL-PATHNAME is a subclass of PATHNAME.
+
+  9. LOGICAL-PATHNAME pathname                                   [Function]
+
+    Converts the argument to a logical pathname and returns it.  The
+    argument can be a logical pathname, a logical pathname namestring
+    containing a host component, or a stream for which the PATHNAME
+    function returns a logical pathname.  For any other argument,
+    LOGICAL-PATHNAME signals an error of type TYPE-ERROR.
+
+  10. TRANSLATE-LOGICAL-PATHNAME pathname &key                   [Function]
+
+    Translates a logical pathname to the corresponding physical pathname.
+    The pathname argument is first coerced to a pathname.  If it is not a
+    pathname, string, or file stream an error of type TYPE-ERROR is
+    signalled.
+
+    If the coerced argument is a physical pathname, it is returned.
+
+    If the coerced argument is a logical pathname, the first matching
+    translation (according to PATHNAME-MATCH-P) of the logical pathname
+    host is applied, as if by calling TRANSLATE-PATHNAME.  If the result is
+    a logical pathname, this process is repeated.  When the result is
+    finally a physical pathname, it is returned.
+
+    If no translation matches, an error of type FILE-ERROR is signalled.
+
+    TRANSLATE-LOGICAL-PATHNAME might perform additional translations,
+    typically to provide translation of file types to local naming
+    conventions, to accomodate physical file systems with limited length
+    names, or to deal with special character requirements such as
+    translating hyphens to underscores or uppercase letters to lowercase.
+    Any such additional translations are implementation defined.  Some
+    implementations do no additional translations.
+
+    There are no specified keyword arguments for
+    TRANSLATE-LOGICAL-PATHNAME, but implementations are permitted to extend
+    it by adding keyword arguments.  There is one specified return value
+    from TRANSLATE-LOGICAL-PATHNAME; implementations are permitted to
+    extend it by returning additional values.
+
+  11. LOGICAL-PATHNAME-TRANSLATIONS host                         [Function]
+
+    If <host> is not the host component of a logical pathname and not a
+    string that has been defined as a logical pathname host name by SETF of
+    LOGICAL-PATHNAME-TRANSLATIONS, signals an error of type TYPE-ERROR.
+    Otherwise returns the host's list of translations.  Each translation is
+    a list of at least two elements: from-wildcard and to-wildcard.  Any
+    additional elements are implementation defined.  From-wildcard is a
+    logical pathname whose host is <host>.  To-wildcard is a pathname.
+    Translations are searched in the order listed, so more specific
+    from-wildcards must precede more general ones.
+
+    (SETF (LOGICAL-PATHNAME-TRANSLATIONS host) translations) sets a logical
+    pathname host's list of translations.  If <host> is a string that has
+    not been previously used as logical pathname host, a new logical
+    pathname host is defined, otherwise an existing host's translations are
+    replaced.  Logical pathname host names are compared with STRING-EQUAL.
+
+    When setting the translations list, each from-wildcard can be a logical
+    pathname whose host is <host> or a logical pathname namestring
+    parseable by (PARSE-NAMESTRING string <<host>>), where <<host>>
+    represents the appropriate object as defined in point 3b.  Each
+    to-wildcard can be anything coercible to a pathname by
+    (PATHNAME to-wildcard).  If to-wildcard coerces to a logical pathname,
+    TRANSLATE-LOGICAL-PATHNAME will perform repeated translation steps when
+    it uses it.
+
+    Implementations can define additional functions that operate on
+    logical pathname hosts, for example to specify additional translation
+    rules or options.
+
+  12. LOAD-LOGICAL-PATHNAME-TRANSLATIONS host                    [Function]
+
+    If a logical pathname host named <host> (a string) is already defined,
+    return NIL.  Otherwise, search for a logical pathname host definition
+    in an implementation defined manner.  If none is found, signal an
+    error.  If a definition is found, install it and return T.
+
+    The search used by LOAD-LOGICAL-PATHNAME-TRANSLATIONS should be
+    documented, as logical pathname definitions will be created by users,
+    not only by Lisp implementors.  A typical search technique is to
+    look in a certain directory for a file whose name is derived from
+    the host name in an implementation-defined fashion.
+
+  13. COMPILE-FILE-PATHNAME pathname &key :output-file           [Function]
+
+    Returns the pathname that COMPILE-FILE would write into, if given the
+    same arguments.  If the pathname argument is a logical pathname and the
+    :output-file argument is unspecified, the result is a logical pathname.
+    If an implementation supports additional keyword arguments to
+    COMPILE-FILE, COMPILE-FILE-PATHNAME must accept the same arguments.
+
+Examples:
+
+  ;A very simple example of setting up a logical pathname host.  No
+  ;translations are necessary to get around file system restrictions, so
+  ;all that is necessary is to specify the root of the physical directory
+  ;tree that contains the logical file system.
+  ;The namestring syntax on the right-hand side is implementation-specific.
+  (setf (logical-pathname-translations "foo")
+        '(("**;*.*.*"              "MY-LISPM:>library>foo>**>")))
+
+  ;Sample use of that logical pathname.  All return values
+  ;are of course implementation-specific.
+  (translate-logical-pathname "foo:bar;baz;mum.quux.3")
+  => MY-LISPM:>library>foo>bar>baz>mum.quux.3
+
+  ;A more complex example, dividing the files among two file servers
+  ;and several different directories.  This Unix doesn't support
+  ;:WILD-INFERIORS in the directory, so each directory level must
+  ;be translated individually.  No file name or type translations
+  ;are required except for .MAIL to .MBX.
+  ;The namestring syntax on the right-hand side is implementation-specific.
+  (setf (logical-pathname-translations "prog")
+        '(("RELEASED;*.*.*"        "MY-UNIX:/sys/bin/my-prog/")
+          ("RELEASED;*;*.*.*"      "MY-UNIX:/sys/bin/my-prog/*/")
+          ("EXPERIMENTAL;*.*.*"    "MY-UNIX:/usr/Joe/development/prog/")
+          ("EXPERIMENTAL;DOCUMENTATION;*.*.*"
+                                   "MY-VAX:SYS$DISK:[JOE.DOC]")
+          ("EXPERIMENTAL;*;*.*.*"  "MY-UNIX:/usr/Joe/development/prog/*/")
+          ("MAIL;**;*.MAIL"        "MY-VAX:SYS$DISK:[JOE.MAIL.PROG...]*.MBX")))
+
+  ;Sample use of that logical pathname.  All return values
+  ;are of course implementation-specific.
+  (translate-logical-pathname "prog:mail;save;ideas.mail.3")
+  => MY-VAX:SYS$DISK:[JOE.MAIL.PROG.SAVE]IDEAS.MBX.3
+
+  ;Example translations for a program that uses three files main.lisp,
+  ;auxiliary.lisp, and documentation.lisp.  These translations might be
+  ;supplied by a software supplier as examples.
+
+  ;For Unix with long file names
+  (setf (logical-pathname-translations "prog")
+        '(("CODE;*.*.*"             "/lib/prog/")))
+
+  ;Sample use of that logical pathname.  All return values
+  ;are of course implementation-specific.
+  (translate-logical-pathname "prog:code;documentation.lisp")
+  => /lib/prog/documentation.lisp
+
+  ;For Unix with 14-character file names, using .lisp as the type
+  (setf (logical-pathname-translations "prog")
+        '(("CODE;DOCUMENTATION.*.*" "/lib/prog/docum.*")
+          ("CODE;*.*.*"             "/lib/prog/")))
+
+  ;Sample use of that logical pathname.  All return values
+  ;are of course implementation-specific.
+  (translate-logical-pathname "prog:code;documentation.lisp")
+  => /lib/prog/docum.lisp
+
+  ;For Unix with 14-character file names, using .l as the type
+  ;The second translation shortens the compiled file type to .b
+  (setf (logical-pathname-translations "prog")
+        `(("**;*.LISP.*"            ,(logical-pathname "PROG:**;*.L.*"))
+          (,(compile-file-pathname (logical-pathname "PROG:**;*.LISP.*"))
+                                    ,(logical-pathname "PROG:**;*.B.*"))
+          ("CODE;DOCUMENTATION.*.*" "/lib/prog/documentatio.*")
+          ("CODE;*.*.*"             "/lib/prog/")))
+
+  ;Sample use of that logical pathname.  All return values
+  ;are of course implementation-specific.
+  (translate-logical-pathname "prog:code;documentation.lisp")
+  => /lib/prog/documentatio.l
+
+  ;For a Cray with 6 character names and no directories, types, or versions.
+  (setf (logical-pathname-translations "prog")
+        (let ((l '(("MAIN" "PGMN")
+                   ("AUXILIARY" "PGAUX")
+                   ("DOCUMENTATION" "PGDOC")))
+              (logpath (logical-pathname "prog:code;"))
+              (phypath (pathname "XXX")))
+          (append
+            ;; Translations for source files
+            (mapcar #'(lambda (x)
+                        (let ((log (first x))
+                              (phy (second x)))
+                          (list (make-pathname :name log
+                                               :type "LISP"
+                                               :version :wild
+                                               :defaults logpath)
+                                (make-pathname :name phy
+                                               :defaults phypath))))
+                    l)
+            ;; Translations for compiled files
+            (mapcar #'(lambda (x)
+                        (let* ((log (first x))
+                               (phy (second x))
+                               (com (compile-file-pathname
+                                      (make-pathname :name log
+                                                     :type "LISP"
+                                                     :version :wild
+                                                     :defaults logpath))))
+                          (setq phy (concatenate 'string phy "B"))
+                          (list com
+                                (make-pathname :name phy
+                                               :defaults phypath))))
+                    l))))
+
+  ;Sample use of that logical pathname.  All return values
+  ;are of course implementation-specific.
+  (translate-logical-pathname "prog:code;documentation.lisp")
+  => PGDOC
+
+Rationale:
+
+  1. Large programs can be moved between sites without changing any
+  pathnames, provided all pathnames used are logical.  A portable system
+  construction tool can be created that operates on programs defined as
+  sets of files named by logical pathnames.
+
+  2. Logical pathname syntax was chosen to be easily translated into most
+  popular file systems, while still being powerful enough for storing large
+  programs.  Although they have hierarchical directories, extended wildcard
+  matching, versions, and no limit on the length of names, they can be
+  mapped onto a less capable real file file system by translating each
+  directory that is used into a flat directory name, doing wildcards in
+  Lisp rather than in the file system, treating all versions as :newest,
+  and/or using translations to shorten long names.
+
+  Logical pathname words are restricted to non-case-sensitive letters,
+  digits, and hyphens to avoid creating problems with real file systems
+  that support limited character sets for file naming.  Other characters
+  could have been mapped onto such file systems through translations, but
+  that didn't seem worth the trouble.  Logical pathnames have to be
+  non-case-sensitive or it would be very difficult to map them onto a
+  non-case-sensitive file system.
+
+  Features such as :UP and :BACK relative directories and a namestring
+  syntax for the root directory were not felt to be necessary in logical
+  pathnames.  They could be added later if a need emerges.
+
+  It is not a goal of logical pathnames to be able to represent all
+  possible file names.  Their goal is rather to represent just enough file
+  names to be useful for storing software.  Real pathnames, in contrast,
+  need to provide a uniform interface to all possible file names, including
+  names and naming conventions that are not under the control of Common
+  Lisp.
+
+  The choice of logical pathname syntax, using colon, semicolon, and
+  period, was guided by the goals of being visually distinct from real file
+  systems and minimizing the use of special characters.
+
+  The consequences of using any value not specified here as a logical
+  pathname component are unspecified, for the benefit of the Explorer.
+
+  3. The LOGICAL-PATHNAME function is separate from the PATHNAME function
+  so that the syntax of logical pathname namestrings does not constrain the
+  syntax of physical pathname namestrings in any way.  Logical pathname
+  syntax must be defined by Common Lisp so that logical pathnames can be
+  conveniently exchanged between implementations, but physical pathname
+  syntax is dictated by forces outside our control.
+
+  3b,c. Allowing PARSE-NAMESTRING and MERGE-PATHNAMES to recognize logical
+  pathname namestrings in these situations provides for natural operations
+  on logical pathnames.  Frequently a string containing just a name, or a
+  name and a type, will be recognized as a logical pathname by merging it
+  against a default containing a logical pathname host and directory.
+
+  3d. Recognition of logical pathname namestrings by PATHNAME and related
+  functions is left up to each implementation because some implementations
+  definitely require this, other implementations don't want to do this, and
+  nobody wants to change.  In any case, Common Lisp historically has avoided
+  saying anything about the syntax of the strings accepted by the PATHNAME
+  function, and point 3d preserves that position.
+
+  3b,7f. Leaving it implementation defined whether a string, used as the
+  host argument to PARSE-NAMESTRING or the :host argument to MAKE-PATHNAME,
+  can be recognized as logical pathname host name is for the same reason as
+  point 3d.  It allows each implementation to decide whether there is one
+  namespace or two.  The correct way to write this is:
+
+    (MAKE-PATHNAME :HOST (PATHNAME-HOST (LOGICAL-PATHNAME "hostname:"))
+                   ...)
+
+  4. Logical pathname versions could have been supported on real file
+  systems that do not have versions by defining a kind of translation to
+  encode the version number in the name.  However, the typical use of
+  versions is such that on a file system without versions, people would
+  rather just store one version of a file, and not preserve the version
+  information by encoding it somehow in the name.  This is different from
+  the typical use of types or directories, where the files with different
+  values in those components are truly distinct and everything would break
+  if you only kept one file.
+
+  5,13. The COMPILE-FILE-PATHNAME function and the specification of "LISP"
+  as the type of a logical pathname for a Common Lisp source file together
+  provide enough information about compilation for a portable system
+  construction tool that uses logical pathnames to work.  Suppose you want
+  to call COMPILE-FILE only if the source file is newer than the compiled
+  file.  To do that, you have to have a way to know the name of the
+  compiled file without actually calling COMPILE-FILE.
+  No standard file type for compiler output is proposed, because in some
+  implementations the compiler produces one of several file types,
+  depending on a variety of implementation-dependent circumstances.
+  COMPILE-FILE-PATHNAME provides access to the "default[ing] in a manner
+  appropriate to the implementation's file system conventions" mentioned in
+  the CLtL documentation of COMPILE-FILE.
+
+  6. The use of the logical pathname host name "SYS" for the implementation
+  is current practice.  Standardizing on this name helps users choose
+  logical pathname host names that avoid conflicting with
+  implementation-defined names.
+
+  7. Accepting logical pathnames for file access is a natural extension
+  of the file access functions and makes it easier to program using only
+  logical pathnames in situations where that is appropriate.
+
+  8. The LOGICAL-PATHNAME class exists so that methods can distinguish
+  logical pathnames from regular pathnames.
+
+  9. See point 3 above.
+
+  10. TRANSLATE-LOGICAL-PATHNAME is the heart of the logical pathname
+  feature.  Allowing TRANSLATE-LOGICAL-PATHNAME on a physical pathname,
+  simply returning the argument, makes some programs easier to write.
+  Additional implementation defined translations make it possible for
+  implementations with unusual file systems to offer some help to the user
+  in setting up the translations for a logical pathname host, by handling
+  some of the work automatically.  Logical pathnames that translate to
+  other logical pathnames are a feature that several people have requested.
+
+  11. SETF of LOGICAL-PATHNAME-TRANSLATIONS is a simple way for a user to
+  define a new logical pathname host.  Using SETF makes it possible to add
+  to or modify the translations of an existing logical pathname host.
+
+  It is always up to the person who writes the translation rules for a
+  particular logical pathname host to a particular physical file system to
+  make sure that the logical pathnames that are actually going to be used
+  translate to valid pathnames for the particular file system, and that
+  no two logical pathnames that are supposed to be distinct translate to
+  the same physical pathname.
+
+  12. Loading of logical pathname translations from a site-dependent file
+  allows software to be distributed using logical pathnames.  The assumed
+  model of software distribution is a division of labor between the
+  supplier of the software and the user installing it.  The supplier
+  chooses logical pathnames to name all the files used or created by the
+  software, and supplies examples of logical pathname translations for a
+  few popular file systems.  Each example uses an assumed directory and/or
+  device name, assumes local file naming conventions, and provides
+  translations that will translate all the logical pathnames used or
+  generated by the particular software into valid physical pathnames.
+  For a powerful file system these translations can be quite simple.  For
+  a more restricted file system, it may be necessary to list an explicit
+  translation for every logical pathname used, for example when dealing
+  with restrictions on the maximum length of a file name.
+
+  The user installing the software decides on which device and/or directory
+  to store the files and edits the example logical pathname translations
+  accordingly.  If necessary, the user also adjusts the translations for
+  local file naming conventions and any other special aspects of the user's
+  local file system policy and local Common Lisp implementation.  For
+  example, the files might be divided among several file server hosts to
+  share the load.  The process of defining site-customized logical pathname
+  translations is quite easy for a user of a popular file system for which
+  the software supplier has provided an example.  A user of a more unusual
+  file system might have to take more time; the supplier can help by
+  providing a list of all the logical pathnames used or generated by the
+  software.
+
+  Once the user has created a suitable SETF of LOGICAL-PATHNAME-TRANSLATIONS
+  form, he can evaluate that form and then load and run the software.  It
+  may be necessary to use the translations again, or on another workstation
+  at the same site, so it is best to save the SETF form in the standard
+  place where it can be found later by LOAD-LOGICAL-PATHNAME-TRANSLATIONS.
+  Often a software supplier will include a program for restoring software
+  from the distribution medium to the file system, and a program for loading
+  the software from the file system into a Common Lisp, and these programs
+  will start by calling LOAD-LOGICAL-PATHNAME-TRANSLATIONS to make sure that
+  the logical pathname host is defined.
+
+  Note that the SETF of LOGICAL-PATHNAME-TRANSLATIONS form isn't part of
+  the program, it's separate.  It's written by the user, not by the
+  software supplier.  That separation, and a uniform convention for how to
+  do the separation, are the key aspects of logical pathnames.  For small
+  programs involving only a handful of files, it doesn't matter much.  The
+  real benefits come with large programs with hundreds or thousands of
+  files and more complicated situations such as program-generated file
+  names or porting a program developed on a system with long file names
+  onto a system with a very restrictive limit on the length of file names.
+
+Current practice:
+
+  Symbolics Genera has had a similar facility for many years.  It is used
+  extensively for software distribution by Symbolics and its customers.
+  The Genera facility uses the same logical pathname syntax but different
+  function names, and is somewhat more complicated.  The extra complexity
+  is not necessary in the Common Lisp standard.
+
+  The T.I. Explorer also has a comparable logical pathname facility,
+  although the translation mechanism is unfortunately less general than
+  proposed here.  The namestring syntax used is slightly different:
+  
+    host ":" [{directory "."}* directory ";"] [name] ["." type] ["#" version]
+  
+  The newest version is indicated by ">" instead of "newest".
+
+  Macintosh Allegro Common Lisp) has a logical pathname feature which is
+  somewhat simpler but aimed at solving the same problems.  It has logical
+  directory names, to simplify access to sets of files in differently named
+  directories (an especially severe problem on micros where everybody just
+  has to have a different pet name for their hard disk).  This isn't really
+  the same as simplifying access to different file systems, although of
+  course solving the latter automatically solves the former.  In general,
+  access to different file systems requires translating names and types,
+  not just translating directories.
+
+  Symbolics Genera offers a function for translating from a physical
+  pathname back to a logical pathname.  There are a number of problems with
+  this, and so it has not been proposed here.  An earlier version specified
+  TRANSLATE-LOGICAL-PATHNAME to return enough information to allow the user
+  program to perform the backtranslation itself, but that hsd problems
+  so it was removed.
+
+  The Genera equivalent of LOAD-LOGICAL-PATHNAME-TRANSLATIONS looks for
+  a file named SYS:SITE;hostname.TRANSLATIONS.
+
+  Current practice in Genera, Explorer, and Macintosh has one namespace for
+  both logical and physical namestrings.  This proposal allows an
+  implementation to choose to have one namespace or to have two separate
+  namespaces for namestrings.
+
+Cost to Implementors:
+
+  This is a fairly complex facility, but its performance is unimportant
+  so a straightforward implementation should suffice.  Most of the
+  complexity comes in dealing with unusual file systems, such as ones
+  that don't allow long file names.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Portable software construction and distribution will have to rely on
+  implementation-dependent kludges.  Lisp software will continue to be
+  difficult to install.
+
+Performance impact:
+
+  None.
+
+Benefits:
+
+  Avoid cost of non-adoption.
+
+Esthetics:
+
+  Improved portability of large programs.
+
+Discussion:
+
+  Issue PATHNAME-LOGICAL fundamentally depends on issue PATHNAME-WILD.  If
+  PATHNAME-WILD:NEW-FUNCTIONS does not pass, PATHNAME-LOGICAL cannot pass.
+
+  If PATHNAME-CANONICAL-TYPE:NEW-CONCEPT passes, it will affect the
+  behavior of the function TRANSLATE-PATHNAME and therefore the behavior of
+  the function TRANSLATE-LOGICAL-PATHNAME.  When a logical pathname
+  translation has from-wildcard and to-wildcard type components that are
+  :WILD or omitted, translation of the type will be guided by canonical
+  types.  If PATHNAME-CANONICAL-TYPE:NEW-CONCEPT fails to pass, it will
+  either have to be done behind the scenes by TRANSLATE-PATHNAME or users
+  will have to write more verbose translations that individually specify
+  the handling of each file type (as shown in some of the examples here).

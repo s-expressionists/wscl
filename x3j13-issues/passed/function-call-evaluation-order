@@ -1,0 +1,93 @@
+Status:       passed v2 on 15-0 vote, Jun-90
+Issue:        FUNCTION-CALL-EVALUATION-ORDER
+
+References:   CLtL p 194 ("...that order is always left to right")
+              ANSI CL spec (Aug 29, 1989 draft) p.4-10 3rd paragraph
+
+Category:     CLARIFICATION
+
+Edit history: Version 1 by Clinger (22 March 1988)
+              Version 2 by Moon (1 Feb 90), add MORE-UNSPECIFIED
+
+Problem Description:
+
+  CLtL does not say whether the function expression of a call is evaluated
+  before or after the argument expressions.
+
+  This is Symbolics issue #4.
+
+Proposal (FUNCTION-CALL-EVALUATION-ORDER:UNSPECIFIED):
+
+  Common Lisp does not specify whether the function expression of a call is
+  evaluated before or after the argument expressions.  Programs that rely
+  on a particular order of evaluation are in error.
+
+  The above proposal was accepted in October 1988.  The following proposal
+  is new in version 2.
+
+Proposal (FUNCTION-CALL-EVALUATION-ORDER:MORE-UNSPECIFIED):
+
+  Common Lisp does not specify whether the function expression of a call is
+  evaluated before the argument expressions, after the argument
+  expressions, or between any two argument expressions if there is more
+  than one argument.  Programs that rely on a particular order of
+  evaluation are in error.
+
+Example:
+
+  (defun foo (x) (+ x 3))
+  (defun bar () (setf (symbol-function 'foo) #'(lambda (x) (+ x 4))))
+  (foo (progn (bar) 20))
+  ; may return 23 or 24
+
+  (defun foo2 (x y) (+ x y))
+  (defun bar2 () (setf (symbol-function 'foo2) #'(lambda (x y) (* x y))))
+  (defun bar3 () (setf (symbol-function 'foo2) #'(lambda (x y) (- x y))))
+  (foo2 (progn (bar2) 6) (progn (bar3) 7))
+  ; under UNSPECIFIED, may return 13 or -1
+  ; under MORE-UNSPECIFIED, may return 13, -1, or 42
+
+Rationale:
+
+  UNSPECIFIED makes the status quo explicit.
+
+  MORE-UNSPECIFIED allows complete freedom to the implementation; as long
+  as we are not going to require all implementations to be consistent, it
+  seems useless to impose half a restriction on the implementation.  Some
+  RISC machines with delayed branches would prefer to evaluate the function
+  between evaluating the penultimate argument and the last argument in
+  some situations.
+
+Current Practice:
+  
+  TI and Symbolics used to evaluate the function expression last.
+  Symbolics currently evaluates the function expression either first or
+  last depending on the hardware and whether the code is compiled or
+  interpreted.  I'm not sure if TI has changed in the past two years.
+  Lucid and Coral sometimes evaluate the function expression first and at
+  other times evaluate the function expression last.
+
+Cost to implementors:
+
+  None.
+
+Cost to users:
+
+  None.
+
+Benefits:
+
+  Codifies an ambiguity.
+
+Aesthetics:
+  
+  Since Common Lisp evaluates argument expressions from left to right, it
+  would be more consistent for the function expression to be evaluated
+  before the argument expressions.  On the other hand, the evaluation rules
+  for function expressions are already quite different from the rules for
+  argument expressions, and nobody in their right mind would write code
+  that depends on the order of evaluation, so aesthetics should not count
+  for much in this case.  Requiring left to right evaluation would force
+  some implementations to consume an extra register for many function
+  calls.  The efficiency argument seems more important than the aesthetic
+  argument.

@@ -1,0 +1,67 @@
+Issue:		STANDARD-REPERTOIRE-GRATUITOUS
+Forum:		Cleanup
+References:	Character Committee Report, 7/25/89, Proposals 2.2.1 and 2.4.3
+Category:	Change
+Edit history:	Version 1, 1/3/90 by Kim A. Barrett
+
+Problem Description
+  The Character Committee Report Proposal 2.2.1 (passed 3/89) requires
+  implementations to support and document a STANDARD character subrepertoire,
+  whose elements are the specified set of characters.  This set of characters
+  corresponds exactly to those characters which are of type STANDARD-CHAR.
+
+  The Character Committee Report Proposal 2.4.3 (passed 6/89) states that
+  every character repertoire name is a type specifier.
+
+  Thus we have two atomic type specifiers for precisely the same thing.  The
+  type STANDARD is equivelent to the type STANDARD-CHAR.
+
+Proposal (STANDARD-REPERTOIRE-GRATUITOUS:RENAME):
+  Change the name of the STANDARD character subrepertoire required by
+  Character Proposal 2.2.1 to be STANDARD-CHAR.
+
+Rationale:
+  This removes the duplication.
+
+Current Practice:
+  Probably none.
+
+Cost to Implementors:
+  Probably none.
+
+Cost to Users:
+  Probably none.
+
+Benefits:
+  Eliminates possible confusion when a person reading some code sees
+    (TYPEP foo 'STANDARD)
+  and wonders "STANDARD what?  Transmission?"
+
+Discussion:
+  Pitman and Barrett support this proposal (RENAME).
+
+  There was initally some concern that STANDARD-CHAR might not be a valid
+  repertoire name, but there are no restrictions placed on the names of
+  repertoires in any of the proposals in the Character Committee Report
+  dated 7/25/89.  There is a footnote (#15) that constrains character
+  scripts and labels to only use Latin capitals A-Z, hyphen, and digits
+  0-9, which the name STANDARD-CHAR satisfies.  Since this is a footnote,
+  it can be argued that it has no force anyway.
+
+  Unfortunately, this still doesn't remove STANDARD as a defined name
+  (i.e., exported symbol of the cl package) since it's used by CLOS for
+  what might be argued to be an equally ungeneric purpose.  There's a 
+  fair chance that somebody somewhere along the line is going to get 
+  annoyed by the inter-package sharing that occurs due to this symbol
+  being present.
+
+-----
+Additional comments on the write-up:
+
+Moon (9 Jan 90):
+
+  I support this.  I think it's only an accident of the process for
+  amending the character committee's proposals that the duplication
+  between STANDARD and STANDARD-CHAR was overlooked.  Given that we
+  want to get rid of one of the two duplicate names, it's clear
+  that STANDARD-CHAR is a better name.

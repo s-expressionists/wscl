@@ -1,0 +1,71 @@
+Issue:         SLOT-MISSING-VALUES
+
+References:    88-002R p.2-78..79
+
+Category:      CLARIFICATION
+
+Edit history:  29-Apr-90, Version 1 by Moon
+
+Problem description:
+
+  The document says that all values returned by a SLOT-UNBOUND or
+  SLOT-MISSING method are returned from SLOT-VALUE, SETF, SLOT-BOUNDP, or
+  SLOT-MAKUNBOUND.  However, the language mandates particular values to be
+  returned by SETF and by SLOT-MAKUNBOUND, and mandates that SLOT-VALUE and
+  SLOT-BOUNDP return exactly one value.  If methods can change this,
+  efficient compilation becomes very difficult.
+
+  This is Symbolics issue #19.
+
+Proposal (SLOT-MISSING-VALUES:SPECIFY):
+
+  Specify exactly what is done with the values returned from a SLOT-UNBOUND
+  or SLOT-MISSING method, as follows:
+
+  If the operation was SETF or SLOT-MAKUNBOUND, the values are ignored.
+
+  If the operation was SLOT-VALUE or SLOT-BOUNDP, exactly one value is
+  returned; extra values returned by the method are ignored, and if the
+  method returns no values, NIL is returned.
+
+  If the operation was SLOT-BOUNDP and the method returns a value other
+  than NIL, SLOT-BOUNDP might return any object other than NIL that it can
+  validly return; only the truth or falsity of the method's value matters.
+
+Current practice:
+
+  It's likely that all CLOS implementations already conform to the proposal,
+  since implementing what the document says would be extremely difficult.
+  I have not actually tested any implementations.
+
+Cost to Implementors:
+
+  What's proposed is what's easiest to implement.
+
+Cost to Users:
+
+  None, since it's unlikely that any users would depend on being able to
+  force SLOT-VALUE to return two values, or to force SETF of SLOT-VALUE to
+  return something different from new-value.
+
+Cost of non-adoption:
+
+  CLOS will be seriously difficult to implement correctly.
+
+Performance impact:
+
+  Implementing CLOS correctly will cause a serious efficiency impact on
+  SLOT-VALUE if this proposal is not adopted, since it will have to be
+  capable of dynamically deciding at run time to return multiple values.
+
+Benefits:
+
+  Simpler and more consistent language.
+
+Esthetics:
+
+  Simpler and more consistent language.
+
+Discussion:
+
+  None.

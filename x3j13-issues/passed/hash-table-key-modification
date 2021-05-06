@@ -1,0 +1,234 @@
+Issue:		HASH-TABLE-KEY-MODIFICATION
+References:	CLtL page 282, page 168 (last paragraph in 10.2)
+		X3J13 Proposal EQUAL-STRUCTURE:MAYBE-STATUS-QUO (passed 6/89)
+Category:	CLARIFICATION
+Edit history:	Version 1, 12-Sep-88, Moon, for discussion
+		Version 2, 05-Feb-90, by Kim A. Barrett,
+					rewrite with more explicit constraints
+	        Version 3, 16-Feb-90, by Kim Barrett, KMP (respond to comments from Moon)
+
+Problem description:
+
+ CLtL is silent about what happens if you modify a component of an object that
+ is used as a hash-table key.
+
+Proposal (HASH-TABLE-KEY-MODIFICATION:SPECIFY):
+
+ Define that the function supplied as the :TEST argument to MAKE-HASH-TABLE
+ specifies the `equivalence test' for the new hash table.
+
+ Define that an object is `visibly modified' with regard to an equivalence test
+ if there exists some set of objects (or potential objects) which are equivalent
+ to the object before the modification but are no longer equivalent afterwards.
+
+ If an object is used as a key in a hash table and is then visibly modified
+ with regard to the equivalence test of the hash table, then using the object
+ as a key in further operations on the hash table has unspecified consequences.
+ Moreover, this applies for other objects which either are or were equivalent
+ to the key object.  Further, undoing the modification does not remove this
+ effect.
+
+ Following are specifications of the modifications which are visible to the
+ equivalence tests which must be supported by hash tables.  The modifications
+ are described in terms of modification of components, and are defined
+ recursively.  Visible modifications of components of the object are visible
+ modifications of the object.
+
+ 1. EQ and EQL
+   Common Lisp does not specify any method for visibly modifying any data type
+   with regard to either of these equivalence tests.
+
+ 2. EQUAL
+   As a consequence of the behavior for EQUAL specified by Issue
+   EQUAL-STRUCTURE, the specification for this case reverts to the previous
+   description for EQ and EQL for many data types.  The exceptions are
+
+   a. CONS
+     The car and cdr.
+
+   b. BIT-VECTOR
+     Elements of the vector, limited by the fill-pointer if present.
+     The length of the vector, if adjustable or a fill-pointer is present.
+
+   c. STRING
+     Same as for BIT-VECTOR.
+
+   d. PATHNAME
+     Common Lisp does not specify any method for visibly modifying a PATHNAME
+     with regard to EQUAL.
+
+ 3. EQUALP
+   As a consequence of the behavior for EQUALP specified by Issue
+   EQUAL-STRUCTURE, the specification for this case reverts to the previous
+   description for EQUAL for many data types.  The exceptions are
+
+   a. NUMBER
+     Common Lisp does not specify any method for visibly modifying a NUMBER
+     with regard to EQUALP.
+
+   b. CHARACTER
+     Common Lisp does not specify any method for visibly modifying a CHARACTER
+     with regard to EQUALP.
+
+   c. STRUCTURE
+     The values of the slots.
+
+   d. VECTOR
+     Elements of the vector, limited by the fill-pointer if present.
+     The length of the vector, if adjustable or a fill-pointer is present.
+
+   e. ARRAY
+     Elements of the array, limited by the fill-pointer if present.
+     The value of the fill-pointer, if present.
+     The dimensions, if adjustable.
+
+   f. HASH-TABLE
+     The count of entries in the table.
+     The keys.  Note that the visibility of modifications to the keys depends
+       on the equivalence test of the hash table, not on the specification of
+       EQUALP. 
+     The values associated with the keys.
+
+ Implementations which extend the language by providing additional mutator
+ functions (or additional behavior for existing mutator functions) must
+ document how the use of these extensions interacts with equivalence tests and
+ hash table searches.
+
+ Implementations which extend the language by defining additional acceptable
+ equivalence tests for hash tables (allowing additional values for the :TEST
+ argument to MAKE-HASH-TABLE) must document the visible components of these
+ tests.
+
+Test Cases/Examples:
+
+ (setf ht (make-hash-table :test #'eq))
+ (setf a (cons 1 2))
+ (setf (gethash a ht) 'win)
+ (setf (cdr a) 3)
+ (gethash a ht 'lose) => win t
+
+ The same example with :test #'equal in the first line would be an error.
+
+ The following example is not an error, because EQUAL does not examine the
+ components of general vectors:
+
+ (setf ht (make-hash-table :test #'equal))
+ (setf a (vector 1 2))
+ (setf (gethash a ht) 'win)
+ (setf (aref a 1) 3)
+ (gethash a ht 'lose) => win t
+
+ The following example is not an error, because EQUALP is limited by the
+ fill-pointer when examining the elements of a vector:
+
+ (setf ht (make-hash-table :test #'equalp))
+ (setf a (make-array 3 :fill-pointer 2 :initial-contents '(1 2 3)))
+ (setf (gethash a ht) 'win)
+ (setf (aref a 2) 4)
+ (gethash a ht 'lose) => win t
+
+ The following example is an error, because EQUALP may examine the dimensions
+ of arrays:
+
+ (setf ht (make-hash-table :test #'equalp))
+ (setf a (make-array '(2 3) :adjustable t))
+ (setf (gethash a ht) 'win)
+ (setf a (adjust-array a '(3 2)))
+ (gethash a ht 'lose) => `unspecified'
+
+ The following example is not an error, because EQUALP is case insensitive:
+
+ (setf ht (make-hash-table :test #'equalp))
+ (setf a "ABC")
+ (setf (gethash a ht) 'win)
+ (setf (char a 0) #\a)
+ (gethash a ht 'lose) => win t
+
+ The same example with :test #'equal in the first line would be an error.
+
+Rationale:
+
+ EQ and EQL hash tables use the identity of the object as the key, while EQUAL
+ and EQUALP hash tables use the structure of the object as the key.  Component
+ modification changes the structure of an object, while the identity of an
+ object cannot be changed in Common Lisp.
+
+ Specifying `unspecified consequences' provides implementation freedom, while
+ still providing guidance to users.
+
+ This is a generalization of the warning on p.168 of CLtL.
+
+ Note that this proposal implies that it is invalid to use an overly general
+ hash function, such as SXHASH, as the hash function for EQ or EQL hash tables.
+ The value of SXHASH can be affected by component modifications, and this is
+ likely to cause hash table entries to become inaccessible.  The general rule
+ for this is that a hash function must not depend on the value of some
+ property of an object if modification of that property is not visible to the
+ associated equivalence function.
+
+ The documentation requirements for extensions seems like the minimal necessary
+ thing, assuming we want to talk about extensions at all.
+
+Current practice:
+
+ I am not aware of any implementations that do not conform to the proposal.
+
+ Some implementations which provide any of the described extensions may not
+ conform to the documentation requirement.
+
+Cost to Implementors:
+
+ Most implementations probably already conform.  It is possible that some
+ implementations might have to use a different hash function in their
+ implementation of some hash tables in order to conform.
+
+Cost to Users:
+
+ None.
+
+Cost of non-adoption:
+
+ Users would not be sure whether they were allowed to perform side effects on
+ objects that might have been used as keys of hash tables.
+
+Benefits:
+
+ More specific language semantics.
+
+Esthetics:
+ 
+ More specific language semantics.
+
+Discussion:
+
+ Version 1
+  Discussion on the Common-Lisp mailing list was in favor of this.
+ 
+ Version 2
+  Barrett:
+   The two paragraphs about language extensions could be stricken without really
+   affecting the proposal.
+  
+   This proposal does not deal with any of the performance issues addressed by
+   Issue HASH-TABLE-STABILITY.  Rather, it provides guidance to users and
+   implementors as to the requirements for conforming programs.
+  
+   `Unspecified consequences' could be changed to 'undefined consequences',
+   though it seems unlikely that this is actually a 'crash and burn' situation.
+   (The program which was depending on the result of the operation may exhibit
+   undefined consequences as a result of the hash-table operation's having
+   unspecified consequences, but that's not the same thing.)
+
+  Moon:
+    Re: Define that an object is 'visibly modified' with regard to an
+        equivalence test if there exists some class of objects which were 
+	equivalent to the object before the modification but are no longer 
+	equivalent afterwards.
+    Except for ... the use of "class" to mean "set" rather than the
+    usual CLOS meaning, it looks okay.  Actually where it says "some
+    class of objects", a single object would be sufficient.  X is
+    visibly modified if there exists any Y such that (funcall test X Y)
+    produces a different result, provided (this is missing from Kim's
+    writeup) Y has not been modified [whatever that means exactly].
+
+  Pitman and Barrett support this proposal (v3).

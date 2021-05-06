@@ -1,0 +1,240 @@
+Status:       Accepted v8 (superseding v7) on 15-0 vote, Jun-90
+Issue:        PACKAGE-CLUTTER
+References:   LISP, USER, SYSTEM packages (p181)
+
+Related issues: LISP-SYMBOL-REDEFINITION, DEFPACKAGE, 
+		MAKE-PACKAGE-USE-DEFAULT, IN-PACKAGE-FUNCTIONALITY
+		FUNCTION-NAME
+		 
+Category:     CHANGE/CLARIFICATION
+
+Edit history: 07-Jul-88, Version 1 by Pitman
+		  23-Sep-88, Version 2 by Masinter
+		  5-Oct-88, Version 3 by Masinter
+		  7-Oct-88, Version 4 by Masinter (response to KMP)
+		   8-Dec-88, Version 5 by Masinter
+			(add property lists)
+		  12-Dec-88, Version 6 by Masinter (respond to comments)
+		  17-Mar-89, Version 7 by Masinter (as amended Jan 89 X3J13)
+		   3-Jan-90, Version 8 by Barrett (add more cases)
+
+Problem Description:
+
+  CLtL specifies that
+
+   ``The package named LISP contains the primitives of
+     the Common Lisp system. Its external symbols include
+     all of the user-visible functions and global variables
+     that are present in the Common Lisp system, such as
+     CAR, CDR, *PACKAGE*, etc. Almost all other packages will
+     want to use LISP so that these symbosl will be accessible
+     without qualification.''
+
+  It specifies "all" but not "all and only".
+
+  Some implementations place their extensions in the Lisp package.
+  Nothing in CLtL explicitly prohibits this, but it leads to problems 
+  in general.  For example:
+
+  - A user defining a function by a name not mentioned in CLtL may be
+    surprised to clobber a system function in some implementations
+
+  - In one particular implementation, the variable HELP was a system
+    constant, so that ((LAMBDA (HELP) ...HELP...) "Press ? for help.")
+    signalled a correctable error (asking what variable to bind
+    instead of HELP :-).
+
+Proposal (PACKAGE-CLUTTER:REDUCE):
+
+  Specify that, not only must the LISP package contain at least all of the
+  symbols listed in the standard, it will have no other external symbols.
+  (The LISP package may have additional internal symbols.)
+
+  External symbols of the LISP package may have function, macro, or special
+  form definitions, setf method definition, top level value or SPECIAL
+  proclamations, or type definitions only if explicitly permitted in the
+  specification.  That is, a program is valid Common Lisp if it assumes that
+  this is true; for example, FBOUNDP will be false for all external symbols of
+  the LISP package except those documented to be functions, macros or special
+  forms; no setf method will be defined for such a symbol, and FBOUNDP on
+  (SETF symbol) will be false; BOUNDP will be false for all those except those
+  documented to be variables, and portable programs can use symbols in the
+  LISP package as local lexical variables with the presumption that the
+  variables are not proclaimed special, except for those variables specified
+  as constants or variables.
+
+  No external symbols of the LISP package may have properties with
+  property indicators that are either external symbols of packages
+  defined in the standard or are otherwise accessible in the USER
+  package.
+
+  This proposal constrains implementations as to what their
+  initial package configuration must be. That is, valid programs
+  can assume that the conformal Lisp implementation will not
+  have prohibited properties.  The proposal LISP-SYMBOL-REDEFINITION
+  addresses the converse; that is, what user programs are allowed
+  to do.
+
+  Eliminate the requirement that the initial Common Lisp system 
+  have a package named "SYSTEM". Specify that implementations may
+  have several other packages available, that these should be
+  documented. If it is appropriate, the standard might contain
+  as an example that implementations might have a package named
+  "SYSTEM".
+
+  Clarify that the "USER" package may have additional symbols interned
+  within it and that it may :USE other implementation-specific packages.
+
+ 
+ Examples:
+
+  #1: The symbol HELP may not be on the LISP package because it is not
+      mentioned in CLtL.
+
+  #2: The symbol VARIABLE is specified to be on the LISP package (because
+      it is a valid second argument to the DOCUMENTATION function). Since
+      it is not defined as a variable, type, or function, however, it will
+      not initially be bound, defined as a type, or defined as a function,
+      macro or special form.
+
+Rationale:
+
+  If extra symbols are permitted in the LISP package, users may be surprised
+  by relationships between the LISP package and other packages which they
+  did not expect, or may be surprised by functionality that they did not
+  expect. The degenerate case is:
+
+   (DEFCONSTANT LISP:A 'YOU-LOSE)
+   (DEFCONSTANT LISP:B 'YOU-LOSE)
+   (DEFCONSTANT LISP:C 'YOU-LOSE)   
+   ...
+   (DEFCONSTANT LISP:AA 'YOU-LOSE)
+   (DEFCONSTANT LISP:AB 'YOU-LOSE)
+   (DEFCONSTANT LISP:AB 'YOU-LOSE)
+   ...etc.
+
+  Given such an implementation, even things like (LAMBDA (X) X) are not
+  valid because they attempt to bind "system constants". It is necessary
+  that the programmer be able to know for sure that an arbitrary name is
+  "free for use" and best way to conveniently assure this is to require
+  that the LISP package be unadulterated.
+
+  As for the additional definitions, there are situations where additional
+  definitions would cause a problem. For example, if a symbol on the Lisp
+  package were declared as a special variable even though that value was
+  not mentioned in the standard, that variable would behave incorrectly when
+  used as a lexical variable. Similarly, if a symbol in the lisp package
+  were defined as an implementation-dependent special form, problems might
+  result if a user redefined or even bound (as by FLET or MACROLET) that
+  name.
+
+  The LISP package is the foothold from which portable programs establish
+  their desired environment. Careful control is desirable to make sure
+  everyone is starting off on the right foot.
+
+Current Practice:
+
+  Some implementations have been known to add additional symbols (usually
+  functional and/or variable extensions) to the LISP package.
+
+  Several implementations have restricted the LISP package to only contain
+  those symbols in CLtL. (The exact set was difficult to extract because not all
+  LISP package symbols appeared in the index of CLtL.)
+
+  Even in those implementations that have only the prescribed symbols in CLtL,
+  there can be extra definitions for those symbols. For example, in Symbolics Genera,
+  the symbols EVALHOOK, ROOM, and APPLYHOOK
+  are spuriously defined as special variables, and the symbol LAMBDA is defined
+  as a macro. 
+
+Performance Impact:
+
+  None
+
+Cost to Implementors:
+
+  The actual cost of moving the symbols out of the LISP package in cases
+  where they are not already gone is quite small. However, if any
+  implementation really has to do this, it may have a number of suppositions
+  about what is in what package, and the changes could potentially be extensive.
+
+Cost to Users:
+
+  This change is upward compatible with any portable program, but users
+  of a particular implementation's extensions may be forced to find their
+  functions in a different package, so there may be a measurable practical
+  cost.
+
+  In many cases where an extension symbol FOO is simply expected to have
+  been directly available (due to :USE "LISP"), it will work to just just
+  do (IMPORT 'new-home-package-for-foo:FOO) where the user's package is
+  declared.
+
+  More likely the extension symbols would be moved to one or more
+  extensions packages, e.g. ACME-COMMON-LISP, so user packages in which
+  the extensions were desired could simply :USE the extensions package(s).
+  Implementations might want to use this way of conforming with this
+  proposal in order to minimize cost to users.
+
+  In many cases where an extension symbol FOO is used by explicit package
+  prefix, such as LISP:FOO, it should be easy to search for `LISP:FOO' or
+  even `LISP:' to find the cases.
+
+Cost of Non-Adoption:
+
+  The potential for the LISP package to be adulterated and for supposedly
+  portable programs to have difficulty getting a foothold in some
+  implementations will be `noticeably non-zero'.
+
+Benefits:
+
+  Portability of some programs will be enhanced.
+
+Aesthetics:
+
+  This change probably supports the naive expectation of most programmers
+  writing portable code.
+
+Discussion:
+
+  This proposal basically affects what implementors are allowed to do;
+  it says that portable programs can rely on a standard initial package
+  structure with the same symbols in it. A separate proposal, 
+  LISP-SYMBOL-REDEFINITION, discusses the restrictions on portable
+  programs as far as redefining LISP symbols.
+
+  Whether the USER package may contain symbols other than those 
+  specified in the standard was controversial.  The smart programmer
+  of portable code will never rely on the contents of the
+  USER package. However, if someone wants a completely empty 
+  package that uses only Lisp, it's easy and portable to create one.
+
+  While it would improve portability slightly to disallow additional internal
+  symbols in the LISP package (since it affects what DO-SYMBOLS will do)
+  explicitly prohibiting a common practice didn't seem like the best way
+  to discourage a possibly troublesome implementation technique. 
+
+  Implementors should be especially careful about accidentally 
+  exporting unwanted additional definitions for symbols,e.g., a variable
+   definition for EVALHOOK which might show through because of
+   an unintended name collision.
+
+  It is likely that the recently included portions of the standard (CLOS and
+  the signal mechanism) will reside in their own packages. These externally
+  defined packages should have the same constraints as outlined for
+  the LISP package here.
+
+  There has been a suggestion that vendor-specific extensions should
+  be placed in a package named like ACME-COMMON-LISP for the "Acme"
+  company. 
+
+  A registry of packages (as well as features, modules and other global
+  names) would be useful, although probably not a part of the language
+  standard, per se.
+
+  Barrett and Pitman support superseding version 7 with version 8.
+
+----------
+Additional comments on the write-up:
+
+ "This is clearly correct." --Moon (9 Jan 90)

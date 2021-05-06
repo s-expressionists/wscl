@@ -1,0 +1,131 @@
+Issue:        FUNCTION-DEFINITION
+References:   Issue FUNCTION-TYPE
+Category:     ADDITION
+Edit history: 23-Jun-88, Version 1 by Pitman
+              09-Dec-88, Version 2 by GZ (change name, remove REQUIRED
+                     option, specify first value to be a lambda, add to
+	             discussion and current practice)
+		10-Feb-89, Version 3, as amended Jan 89 X3J13
+
+Problem Description:
+
+  There are portable ways to turn symbols and lists into functions,
+  but there are no portable ways to get back the original symbols and
+  lists given the functions.
+
+  In many cases, it used to be possible to recover the lambda expression
+  after a DEFUN by using FUNCTION or SYMBOL-FUNCTION, but the passage of
+  FUNCTION-TYPE will make this no longer be the case.
+
+Proposal (FUNCTION-DEFINITION:JAN89-X3J13):
+
+  Introduce a new function called FUNCTION-LAMBDA-EXPRESSION
+  which takes as its argument a function and returns three values:
+   #1: The function's defining lambda expression, or NIL if the information
+       is not available.  The lambda expression may have been pre-processed
+       in some ways, but it should remain a suitable argument to COMPILE
+       or FUNCTION.
+   #2: NIL if the definition was enclosed in the null lexical
+       environment or something non-NIL if the definition might
+       have been enclosed in some non-null lexical environment.
+   #3: the `name' of this function. The name is intended for debugging
+       only and may be any lisp object -- not necessarily one that would
+       be valid for use as a name in DEFUN or FUNCTION, for example.
+       By convention, NIL is used to mean that the function had no name.
+
+  Implementations are free to always return NIL T NIL, but are encouraged
+  to return the lambda expression in the case where the argument was created
+  by an in-core call to COMPILE or EVAL (as opposed to being created by
+  loading a compiled file).
+
+Examples:
+  
+    The following examples illustrate some possible return values, but
+    are not intended to be exhaustive:
+  
+    #1:    (FUNCTION-LAMBDA-EXPRESSION #'(LAMBDA (X) X))
+	or (FUNCTION-LAMBDA-EXPRESSION
+		(FUNCALL #'(LAMBDA () #'(LAMBDA (X) X))))
+	might return NIL, NIL, NIL
+		  or (LAMBDA (X) X), T, NIL
+		  or (LAMBDA (X) X), NIL, NIL
+
+    #2: (FUNCTION-LAMBDA-EXPRESSION 
+		(FUNCALL #'(LAMBDA (X) #'(LAMBDA () X)) NIL))
+	might return NIL, T, NIL
+		  or (LAMBDA () X), T, NIL
+	   but -not- (LAMBDA () X), NIL, NIL
+  
+    #3: (DEFUN FOO (X) X)
+	(SETF (SYMBOL-FUNCTION 'BAR) #'FOO)
+	(FUNCTION-LAMBDA-EXPRESSION #'BAR)
+	might return NIL, NIL, NIL
+		  or (LAMBDA (X) (BLOCK FOO X)), T, NIL
+		  or (LAMBDA (X) (BLOCK FOO X)), NIL, FOO
+		  or (SI::BLOCK-LAMBDA FOO (X) X), NIL, FOO
+
+    #4: (DEFUN FOO ()
+	  (FLET ((BAR (X) X))
+	    #'BAR))
+	(FUNCTION-LAMBDA-EXPRESSION (FOO))
+	might return NIL, T, NIL
+		  or (LAMBDA (X) (BLOCK BAR X)), T, NIL
+		  or (LAMBDA (X) (BLOCK BAR X)), T, (:INTERNAL FOO 0 BAR)
+		  or (LAMBDA (X) (BLOCK BAR X)), NIL, "BAR in FOO"
+  
+Rationale:
+  
+    This functionality would be useful to a pretty printer, debugger,
+    inspector, and other tools.
+  
+Cost to Implementors:
+  
+    The following implementation is technically legitimate, although many
+    implementations would want to provide something more useful:
+  
+     (DEFUN FUNCTION-LAMBDA-EXPRESSION (FUNCTION)
+       (CHECK-TYPE FUNCTION FUNCTION)
+       (VALUES NIL T NIL))
+
+Current Practice:
+
+  Many implementations record this information, but not all that do
+  publish an interface to extracting the information.  VAXLISP and
+  Lucid call it SOURCE-CODE.  Coral calls it UNCOMPILE-FUNCTION.
+  The language T has this operation and calls it DISCLOSE. It is the
+  conceptual inverse of the ENCLOSE which occurs in some Scheme dialects,
+  and is implemented as what CLOS would call a "generic function".
+
+Cost to Users:
+
+  None. The change is upward compatible.
+
+Cost of Non-Adoption:
+
+  Certain kinds of portable debugging tools would be harder to write.
+
+Benefits:
+
+  The cost of non-adoption would be avoided.
+
+Aesthetics:
+
+  The phrase ``program is data; data is program'' comes up a lot in discussions
+  about Lisp. This makes the case for ``program is data'' more interesting.
+
+Discussion:
+
+  The initial name proposed for this function was FUNCTION-DEFINITION.  This
+  was changed because of technical uses of the term ``definition'' to refer
+  to the entire defining form (e.g. a DEFUN form) rather than the lambda
+  expression that might be recovered from it.
+
+  The possibility of _requiring_ the lambda expression to be available for
+  all functions created by in-core calls to COMPILE or FUNCTION was considered
+  but didn't receive much support.  Pitman would prefer that option because
+  it is considerably more useful in practice, but would like to see at least
+  the current proposal.
+
+  Jan 89 X3J13 amended the proposal of Version 2 to change the name
+  from FUNCTION-SOURCE to FUNCTION-LAMBDA-EXPRESSION.
+

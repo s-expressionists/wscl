@@ -1,0 +1,87 @@
+Issue:         MACRO-FUNCTION-ENVIRONMENT
+
+References:    MACRO-FUNCTION, p. 144
+               MACROLET, pp. 113-4
+               &ENVIRONMENT, pp. 145-6
+               MACROEXPAND and MACROEXPAND-1, pp. 151-2
+
+Category:      ADDITION
+
+Edit history:  Version 1, Pavel, March 21, 1988
+		   Version 2, Masinter,  8-Jun-88, (as per cleanup discussion)
+
+Problem description:
+
+The &ENVIRONMENT argument to a macro-expansion function may only be used as the
+second argument to the functions MACROEXPAND and MACROEXPAND-1.  It is sometimes
+more convenient, however, to be able to work directly with the more primitive
+function MACRO-FUNCTION, on which MACROEXPAND and MACROEXPAND-1 are presumably
+based.  However, since MACRO-FUNCTION does not take an environment argument, it
+cannot be used in situations in which that environment must be taken into
+account.
+
+Proposal (MACRO-FUNCTION-ENVIRONMENT:YES):
+
+Add an optional second argument to MACRO-FUNCTION, that argument being an
+environment that was passed as the &ENVIRONMENT argument to some macro expansion
+function.  If the argument is not given, or the argument is NIL, the null
+environment is used.  MACRO-FUNCTION will now consider macro definitions from
+that environment in preference to ones in the global environment.  It is an error
+to supply the environment argument in a use of MACRO-FUNCTION as a SETF location
+specifier.
+
+Examples:
+
+(macrolet ((foo (&environment env)
+              (if (macro-function 'bar env)
+                 ''yes
+                 ''no)))
+   (list (foo)
+         (macrolet ((bar () :beep))
+            (foo))))
+
+=> (no yes)
+
+(setf (macro-function 'bar env) ...) is an error.
+
+Rationale:
+
+Intuitively, the more primitive operation in macro expansion is MACRO-FUNCTION,
+not MACROEXPAND or MACROEXPAND-1, yet the environment argument can only be
+supplied to the latter functions and not to the former one.  By changing this
+state of affairs, the model of macro expansion becomes somewhat simpler.  Also,
+more flexible use of the facility is enabled.
+
+Current practice:
+
+Xerox Common Lisp already implements this proposal.  Symbolics Common Lisp,
+and Kyoto Common Lisp do not. Lucid Common Lisp did not, but version 3.0 does.
+
+Cost to Implementors:
+
+This is presumably a simple change to make, a small matter of moving the
+environment-searching code from MACROEXPAND-1 to MACRO-FUNCTION.
+
+Cost to Users:
+
+The change is upward-compatible and so poses no cost to users.
+
+Cost of non-adoption:
+
+One more (small) semantic wart on the language.
+
+Benefits:
+
+The function that users think of as being more primitive really is.
+
+Aesthetics:
+
+This slightly cleans up the language.
+
+Discussion:
+
+This issue was discussed starting in January 1987, but got tangled in
+a web of other related proposals. In its current form, the only objections
+have been that some other proposal or committee might otherwise change
+macro handling, or that this proposal doesn't fix enough of the problems.
+

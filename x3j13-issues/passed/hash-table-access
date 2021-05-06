@@ -1,0 +1,78 @@
+Status:       Passed, as amended, Mar 89 X3J13 (by vote of 17-0)
+
+
+Issue:        HASH-TABLE-ACCESS
+References:   Hash-tables (Chapter 21 of CLtL)
+Category:     ADDITION
+Edit History: 13-Sept-88, version 1 by Walter van Roggen
+              13-Oct-88, version 2 by Walter van Roggen
+	      05-Apr-89, version 3 by Pitman (changes per x3J13)
+ 
+Problem Description:
+ 
+  There are many characteristics of hash-tables which are specified upon
+  creation but are not accessible afterwards.
+ 
+Proposal: (HASH-TABLE-ACCESS:X3J13-MAR-89)
+ 
+  Add the following functions to the language:
+ 
+  HASH-TABLE-REHASH-SIZE hash-table
+ 
+    Returns the current rehash size of a hash table.
+ 
+  HASH-TABLE-REHASH-THRESHOLD hash-table
+ 
+    Returns the current rehash threshold of a hash table.
+ 
+  HASH-TABLE-SIZE hash-table
+ 
+    Returns the current size of a hash table.
+ 
+  HASH-TABLE-TEST hash-table
+ 
+    Returns the test used for comparing keys in the hash table.
+    By default the value will be EQL.
+ 
+  Define that the results of HASH-TABLE-REHASH-SIZE, 
+  HASH-TABLE-REHASH-THRESHOLD, and HASH-TABLE-SIZE are suitable
+  for use in a call to MAKE-HASH-TABLE in order to produce a hash
+  table with state corresponding to the current state of the hash
+  table.
+
+  Clarify that the result of HASH-TABLE-TEST is always a symbol
+  naming a function rather than the function itself if the test
+  is one of those defined by this standard. (Implementations which
+  provide additional tests for hash tables may determine how this
+  function relates to such extended tests.)
+ 
+Current Practice:
+ 
+  VAX LISP and Lucid 3.0 implement the proposal.
+ 
+Cost to Implementors:
+ 
+  Most of these should be trivial to implement, since the information
+  must be present for nearly all types.
+ 
+Cost to Users:
+ 
+  None.  This is an upward-compatible extension.
+ 
+Cost of Non-Adoption:
+ 
+  The benefits would not be available in a portable fashion.
+ 
+Benefits:
+ 
+  Programs would be able to access useful information otherwise hidden.
+  For example, it would allow programs to gain statistics about hash
+  table usage that might enable better tuning.
+ 
+Discussion:
+ 
+  None of these are required to be SETF'able, though some might be
+  reasonable implementation-dependent extensions.  Including such
+  modification abilities might constrain some implementations unduly.
+ 
+  This first appeared in ">GLS>clarifications.text" of 12/06/85.

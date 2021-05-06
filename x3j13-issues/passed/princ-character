@@ -1,0 +1,99 @@
+Issue:        PRINC-CHARACTER
+References:   PRINC (p383)
+Category:     CHANGE/CLARIFICATION
+Edit History: 23-Feb-87, Version 1 by Pitman
+              29-Apr-87, Version 2 by Pitman (removed FORMAT-OP-C)
+
+Problem Description:
+
+ CLtL is not adequately specific about the function of PRINC
+ when given a character as an argument. 
+
+ For example, does (PRINC #\Space) print ``Space'' or `` ''? 
+
+ The advice that "the general rule is that output from PRINC is
+ intended to look good to people" is the root of a lot of the problem.
+ The truth is that what looks good varies with context. viz,
+
+ * For (FORMAT NIL "Foo~ABar" #\Space)
+   Pretty result: "Foo Bar"
+   Ugly result:   "FooSpaceBar"
+   In other words, " " looks better here.
+
+ * For (FORMAT T "Type ~C to continue" #\Space)
+   Pretty result: "Type Space to continue"
+   Ugly result:   "Type   to continue"
+   In other words, "Space" looks better here.
+
+Proposal (PRINC-CHARACTER:WRITE-CHAR):
+
+ (PRINC char stream) should be defined to be equivalent to
+ (WRITE-CHAR char stream).
+
+Rationale:
+
+ The behavior of (PRINC char) should be well-defined even if a
+ completely arbitrary decision had to be made.
+
+ In fact, though, we can get some advice by appealing to history.
+ The only data type which corresponds to characters in most old
+ lisps was symbols. For example, in Maclisp,
+   (PRINC char-symbol) == (TYO (GETCHARN char-symbol 1))
+
+ In Common Lisp, it would make sense in the absence of arguments
+ to the contrary to preserve an analagous relation, namely:
+   (PRINC char) == (WRITE-CHAR char)
+
+Current Practice:
+
+ Vaxlisp, Symbolics, Spice Lisp, and Lucid all print " " and not
+ "Space" for (PRINC #\Space).
+
+ Symbolics and Spice are known to use the WRITE-CHAR strategy.
+ Vaxlisp and Lucid might be using it, too, or they might be
+ using ~C in FORMAT; no one familiar with their internals has
+ commented.
+
+ In any case, some other implementations are believed to differ
+ (ie, to output "Space" when you PRINC a #\Space), but a specific
+ reference is not currently available. In any case, the wording
+ in CLtL is not clear enough to preclude such a differing
+ implementation from `legitimately' emerging.
+
+Adoption Cost:
+
+ Any implementations which did not already implement this proposal
+ decided upon would suffer an incompatible change.
+
+Benefits:
+
+ User code that uses PRINC (and presumably ~A) on characters would
+ have a chance of being portable.
+
+Conversion Cost:
+
+ It's easy to search for occurrences of PRINC and ~A in code, but
+ it may not always be apparent when the argument is a character.
+ Automatic conversion is unlikely to succeed.
+
+Aesthetics:
+
+ Making PRINC do something well-defined for as many primitive data
+ types as possible will probably be perceived as a simplification.
+
+Discussion:
+
+ The cleanup committee generally supports this proposal.
+
+ Pitman thinks this is moderately important because it is embarrassing
+ to have commonly used functions like this vary so widely in behavior
+ between implementations. He doesn't think it is critical because
+ (if nothing else) it is only one of many problems with the vague
+ contract of PRINC.
+
+ There was an alternate proposal PRINC-CHARACTER:FORMAT-OP-C which
+ suggested making PRINC work like ~C in FORMAT, but no one seemed
+ to think that was useful and the proposal was removed for Version 2
+ to keep from muddying what's likely to be a very straightforward 
+ vote in favor of PRINC-CHARACTER:WRITE-CHAR.
+

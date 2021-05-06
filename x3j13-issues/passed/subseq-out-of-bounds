@@ -1,0 +1,103 @@
+Issue:         SUBSEQ-OUT-OF-BOUNDS
+
+References:    :START and :END arguments (246-247), SUBSEQ (248)
+
+Category:      CLARIFICATION
+
+Edit history:  24-Mar-88, Version 1 by Steele
+	       29-Mar-88, Version 2 by Steele, in response to Moon's comments
+
+Problem description:
+
+The descriptions of :START and :END arguments, and of SUBSEQ, do not
+explicitly address the question of out-of-bounds indices.  (The language on
+page 246, "These arguments should be integer indices into the sequence," is
+considered too vague on this point.)
+
+Also, the language on page 246 does not make clear whether the prohibition
+against "start > end" applies to defaulted values as well as explicit
+values, and does not specify clearly whether the default value for the
+end argument is the allocated length or the active length.
+
+
+Proposal (SUBSEQ-OUT-OF-BOUNDS:IS-AN-ERROR):
+
+Specify that it is an error for the :START argument of any standard
+function, or the second argument to SUBSEQ, to be less than zero.
+
+Specify that it is an error for the :END argument of any standard function,
+or the third argument to SUBSEQ, to be greater than the active length of
+the sequence in question (as returned by LENGTH).
+
+Specify that the start value, after defaulting, must not be greater than
+the end value, after defaulting.
+
+Specify that the default value for the end argument is the active length of
+the sequence in question.
+
+This may be summarized as follows:
+
+Let X be the sequence within which indices are to be considered.  Let S be
+the :START argument of any standard function, or the second argument to
+SUBSEQ, whether explicitly specified or defaulted, through omission, to
+zero.  Let E be the :END argument of any standard function, or the third
+argument to SUBSEQ, whether explicitly specified or defaulted, through
+omission or an explicitly passed NIL value, to the active length of X, as
+returned by LENGTH.  It is an error if the condition (<= 0 S E (LENGTH X))
+is not true.
+
+Test Cases/Examples:
+
+(SUBSEQ "Where's the beef?" -1 5) might be assumed to be "Where" or " Where".
+
+(SUBSEQ "Where's the beef?" -3 -3) might be assumed to be "".
+
+(SUBSEQ "Where's the beef?" 16 18) might be assumed to be "?" or "? ".
+
+(SUBSEQ "Where's the beef?" 10000 10000) might be assumed to be "".
+
+Under this proposal each of these situations is an error, and portable
+programs may not rely on their behavior.
+
+Rationale:
+
+We don't want code indexing off the ends of arrays.
+
+Current practice:
+
+KCL interpreted and compiled code signals an error.
+
+Symbolics Common Lisp interpreted and compiled code signals an error; the
+compiler also issued an out-of-range warning (possible because the
+arguments were all constant).
+
+Lucid Common Lisp interpreted and compiled code signals an error.
+
+
+Cost to Implementors:
+
+None.
+
+Cost to Users:
+
+Users who depended on some specific implementation behavior in these cases
+may find that their pragmatically unportable code is now officially
+unportable.
+
+Cost of non-adoption:
+
+Confusion.
+
+Benefits:
+
+Removal of a small but important ambiguity in the spec.
+
+Esthetics:
+
+It seems cleaner not to allow indexing off the end of an array, and
+by extension not allow it for any sequence.
+
+Discussion:
+
+This merely clarifies the original intent of the passage on page 246.
+

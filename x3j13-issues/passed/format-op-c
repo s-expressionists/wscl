@@ -1,0 +1,70 @@
+Issue:        FORMAT-OP-C
+References:   WRITE-CHAR (p384), ~C (p389)
+Category:     CHANGE/CLARIFICATION
+Edit History: 23-Feb-87, Version 1 by Pitman
+              29-Apr-87, Versions 2,3 by Pitman
+               5-Jun-87, Version 4 by Masinter (copy-editing)
+              11-Jun-87, Version 5 release to X3J13
+					(remove confusing paragraph)
+
+Problem Description:
+
+CLtL is not adequately specific about the function of the format operation ~C. The description on p389 says that "~C prints the character in an implementation-dependent abbreviated format. This format should be culturally compatible with the host environment." This description is not very useful in practice.
+
+Presumably the authors intended the `cultural compatibility' part to gloss issues like how the SAIL character set printed, but unfortunately another completely reasonable (albeit unplanned) interpretation arose: some implementations have (FORMAT NIL "~C" #\Space) => "Space" rather than " ".
+
+Since the behavior of ~A is also vague on characters (a separate proposal will address this), the only way to safely output a literal character is to WRITE-CHAR; currently, FORMAT does not suffice.
+
+Proposal (FORMAT-OP-C:WRITE-CHAR):
+
+Change the behavior of ~C to say that, when given a character with zero bits, it will perform the same action as WRITE-CHAR. (This proposal leaves the behavior of ~C with non-zero bits incompletely specified.) For example, the description of the ~C format directive on p389 of CLTL might read:
+
+  ~C prints the character using WRITE-CHAR if it has zero bits.
+  Characters with bits are not necessarily printed as WRITE-CHAR
+  would do, but are displayed in an implementation-dependent
+  abbreviated format that is culturally compatible with the host
+  environment.
+
+Test Case:
+
+(EQUAL (FORMAT NIL "~C" #\Space) " ")
+
+Rationale:
+
+This was probably the intent of the Common Lisp designers. 
+
+It makes things clear enough that programmers can know what to expect in the normal case (standard characters with zero bits).
+
+Users can use (FORMAT NIL "~:C" #\Space) to get "Space" if they want it. It seems as if the implementations which return "Space" treat ~C and ~:C equivalently or very similarly.
+
+Current Practice:
+
+Implementations are divided. Some implementations have
+     (FORMAT NIL "~C" #\Space) => "Space".
+Others have the same form return " ".
+
+Adoption Cost:
+
+Those implementations which did not already implement ~C as WRITE-CHAR would require an incompatible change.
+
+Benefits:
+
+User code that uses ~C would have a chance of being portable. As things stand, users who use ~C can't reliably port their code.
+
+~C and ~:C would perform usefully distinct operations.
+
+Conversion Cost:
+
+Standard ``Query Replace'' technology for finding occurrences of "~C" and changing them to "~:C" semi-automatically should suffice.
+
+Aesthetics:
+
+Making ~C do something well-defined will probably be perceived as a simplification.
+
+Discussion:
+
+The cleanup committee generally supports this clarification.
+
+The original version of this proposal (which tried to make WRITE-CHAR and ~C identical in all cases) prompted the following comment:
+
+"I believe the error in CLtL is that it was not stated explicitly that the `implementation-dependent abbreviated format' applies only to characters with non-zero char-bits. Thus instead of removing the mumbling about cultural compatibility, I suggest simply adding a sentence saying that ~C is the same as WRITE-CHAR for characters with zero char-bits.  I don't think we want to require ~C and write-char to do the same thing for characters with bits."

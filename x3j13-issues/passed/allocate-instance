@@ -1,0 +1,81 @@
+Issue:         ALLOCATE-INSTANCE
+
+References:    88-002R p.1-41
+               89-003 p.3-35
+
+Related issues: LOAD-OBJECTS
+
+Category:      ADDITION
+
+Edit history:  30-Apr-90, Version 1 by Moon
+
+Problem description:
+
+  The function page for the generic function ALLOCATE-INSTANCE was
+  accidentally omitted from 88-002R.
+
+Proposal (ALLOCATE-INSTANCE:ADD):
+
+  Add a generic function ALLOCATE-INSTANCE that takes one required
+  argument, a class, plus initialization arguments, and returns one value,
+  a freshly created instance of the given class.  The class argument must
+  be an actual class, not a class name, and must not be a built-in class.
+
+  The object returned by ALLOCATE-INSTANCE is "uninitialized"; when the
+  class is a standard class, this means the slots are unbound; when the
+  class is a structure class, this means the slots' values are unspecified.
+
+  Common Lisp does not specify how to add methods to ALLOCATE-INSTANCE;
+  this capability might be added by the Metaobject Protocol.
+
+  This is Symbolics issue #32 and Loosemore's issue #6 of 27 Feb 90.
+
+Examples:
+
+  (DEFCLASS MYCLASS () (A B C))
+  (ALLOCATE-INSTANCE (FIND-CLASS 'MYCLASS))
+  (SLOT-BOUNDP * 'B) => NIL
+
+Rationale:
+
+  Some of the authors of 88-002R say the omission of ALLOCATE-INSTANCE was
+  simply a mistake.  Note that LOAD-OBJECTS:MAKE-LOAD-FORM assumes the
+  existence of ALLOCATE-INSTANCE and that user-written MAKE-LOAD-FORM
+  methods that return two values will typically use ALLOCATE-INSTANCE in
+  the first value.
+
+Current practice:
+
+  Symbolics Genera 8.0 does not provide ALLOCATE-INSTANCE (although
+  it does exist in an internal package).  Lucid 4.0.0 Beta-1 provides
+  ALLOCATE-INSTANCE.
+
+Cost to Implementors:
+
+  Any CLOS implementation needs ALLOCATE-INSTANCE or something like it
+  internally, so implementing this proposal is largely a matter of
+  exporting the symbol from the COMMON-LISP package and documenting it.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  MAKE-LOAD-FORM would be considerably less useful.
+
+Performance impact:
+
+  None other than the impact of adding a symbol to the COMMON-LISP package.
+
+Benefits:
+
+  Missing piece of CLOS provided.
+
+Esthetics:
+
+  Neutral.
+
+Discussion:
+
+  None.

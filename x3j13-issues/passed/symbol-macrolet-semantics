@@ -1,0 +1,143 @@
+Status: Version 5 passed Jan 89 X3J13
+	Version 6 passed Mar 89 X3J13
+
+Issue:		SYMBOL-MACROLET-SEMANTICS
+References:	SYMBOL-MACROLET (88-002R page 2-81)
+
+
+Related Issues: SYMBOL-MACROLET-DECLARE
+Category:	CHANGE
+Edit history:	29-July-88, Version 1 by Piazza
+		21-September-88, Version 2 by Piazza
+		22-September-88, Version 3 by Piazza 
+		22-September-88, Version 4 by Piazza
+		30-Nov-88, Version 5 by Masinter
+		14-Mar-89, Version 6 by Steele
+
+Problem Description:
+
+    The SYMBOL-MACROLET construct, introduced with CLOS in X3J13 document
+    88-002R, profoundly alters the interpretation of symbols appearing as
+    forms in a Common Lisp program--what previously was necessarily a variable
+    might now be a symbol macro instead.  Macros which appear in the body of a
+    SYMBOL-MACROLET form are currently unable to determine whether a symbol
+    form is a variable or a symbol macro, and, if the latter, what the
+    expansion of the symbol macro is.  Consequently, complex macros (such as
+    SETF or PUSH) which depend on the form of their argument(s), are unable to
+    produce their desired results in some cases, as in the following example:
+
+	    (let ((a (make-array 5))
+		  (i 0))
+	      (symbol-macrolet ((place  (aref a (incf i))))
+	        (push x place))
+	      i)		==> 2
+
+    In addition, it would be both natural and nice to be able to write
+
+  (with-slots (rho theta) point
+    (declare (single-float rho theta))
+    ...computation...)
+
+    as well as DECLARE within SYMBOL-MACROLET forms.
+
+Proposal (SYMBOL-MACROLET-SEMANTICS:SPECIAL-FORM):
+
+    Change the definition of SYMBOL-MACROLET to specify that it is a special
+    form, which affects the evaluation environment for symbols.  Enhance
+    MACROEXPAND and MACROEXPAND-1 so that they can expand a symbol macro.
+    Modify SETF et al to use the new MACROEXPAND and MACROEXPAND-1 to examine
+    even symbol subforms.  Specify that the expansion of a symbol macro IS
+    subject to further macro expansion in the same lexical environment as the
+    symbol macro invocation, exactly analogous to normal macros. Clarify that
+    within the body of a SYMBOL-MACROLET, SETQ of a symbol defined as
+    a symbol macro will be treated as if it were a SETF.
+
+    Furthermore PSETQ of a symbol defined as a symbol macro will
+    behave as if it were a PSETF, and MULTIPLE-VALUE-SETQ will behave
+    as if SETQ were used on each variable to be set.
+
+    When MACROEXPAND or MACROEXPAND-1 sees a symbol macro, it calls
+    the value of *MACROEXPAND-HOOK* in the same manner as for an
+    ordinary macro.  The three values given to the hook function
+    in this case will be an expansion function, a form (in this case
+    the symbol naming the symbol macro), and an environment.  The
+    only guaranteed property of the expansion function is that when
+    it is applied to the form and the environment it will return the
+    correct expansion of the symbol macro.  (In particular, nothing
+    it said in this specification whether the expansion is conceptually
+    stored in the expansion function, the environment, or both.)
+
+Rationale:
+
+    The potential for interaction between macros is exactly why &environment
+    arguments were originally added to macros.  Changing SYMBOL-MACROLET to be
+    a special form, which communicates through the &environment arguments to
+    macros with MACROEXPAND and MACROEXPAND-1, would allow PUSH and SETF
+    (among others) to work with SYMBOL-MACROLET in the same way they work with
+    MACROLET.
+
+    This change cannot (reasonably) support the currently specified semantics
+    that the expansion text is "outside" the scope of the symbol macro.  For
+    indeed, when the symbol macro is expanded, (a copy of) the expansion is
+    then within the scope of the SYMBOL-MACROLET, and should then be subject
+    to further scrutiny.  The issue of "infinite expansion" of symbol macros is
+    no more dangerous than that of normal macros.
+
+Current Practice:
+
+    Portable Common Loops provides a code-walking implementation of
+    SYMBOL-MACROLET as specified in 88-002R.  Symbolics Cloe has both a
+    code-walking version of a SYMBOL-MACROLET macro and compiler support for
+    a SYMBOL-MACROLET special form.
+
+Cost to Implementors:
+
+    If SYMBOL-MACROLET is modified to be a special form, compilers and
+    interpreters will have to change, as well as MACROEXPAND, MACROEXPAND-1,
+    PUSH, INCF, DECF, and others.
+
+Cost to Users:
+
+    If SYMBOL-MACROLET is converted to a special form, code-walking programs
+    will have to be modified to handle SYMBOL-MACROLET correctly.  Those same
+    programs would have to be modified to handle the other special forms
+    specified in CLOS, anyway.
+
+Cost of Non-Adoption:
+
+    SYMBOL-MACROLET will retain its confusing semantics, leading to bugs when
+    it interacts with complex macros and forms which produce side-effects.
+
+    Implementations which support ONCE-ONLY will break.  For that matter, any
+    mechanism which examines code and assumes that "variables" have no side
+    effects will break.
+
+Benefits:
+
+    SYMBOL-MACROLET-SEMANTICS:SPECIAL-FORM avoids the hairiest problems
+    surrounding interaction of macros (like SETF) and side effects, and makes
+    SYMBOL-MACROLET consistent with MACROLET.
+
+Aesthetics:
+
+    If SYMBOL-MACROLET is made to be a special form, aesthetics are improved
+    by making symbol macros consistent with normal macros.
+
+Discussion:
+
+    A case could be made for adding a new function, SYMBOL-MACRO-FUNCTION, as
+    a dual of MACRO-FUNCTION.  However, symbol macros are simpler than normal
+    macros: a symbol macro is associated with a single expansion form, rather
+    than an arbitrary function which computes the expansion.  For this reason,
+    the augmented MACROEXPAND-1 proposed here can also fill the role of
+    SYMBOL-MACRO-FUNCTION: the second value of (macroexpand-1 sym env) will be
+    T if and only if sym is a symbol macro, while the first value gives the
+    expansion of sym, if it has one.
+
+    Rather than extending the existing MACROEXPAND and MACROEXPAND-1
+   functions, new functions could be introduced to expand symbol macros. 
+   However, there seems to be no particular reason to do this.
+
+
+
+     ----- End Forwarded Messages -----

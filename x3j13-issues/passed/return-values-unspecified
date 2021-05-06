@@ -1,0 +1,102 @@
+Status:	Passed, Jan 89 X3J13
+Issue:        RETURN-VALUES-UNSPECIFIED
+References:   CLOSE (p 332), IN-PACKAGE (p 183), RENAME-PACKAGE (p 184),
+	      TRACE (p 440), UNTRACE (p 440), INSPECT (p 442), 
+	      SET-SYNTAX-FROM-CHAR (p 361),
+	      LOCALLY (p 156), PROVIDE (p 188), REQUIRE (P 188)
+
+Related issues: REQUIRE-PATHNAME-DEFAULTS
+                CLOSED-STREAM-OPERATIONS
+Category:     CLARIFICATION
+Edit history: 26-Aug-88, Version 1 by Chapman
+	      19-Sept-88, Version 2 by Chapman
+		 6-Oct-88, Version 3 by Masinter
+		 7-Oct-88, Version 4 by Masinter
+		26-Nov-88, Version 5 by Masinter
+ 		 9-Dec-88, Version 6 by Masinter
+
+
+Problem Description:
+ 
+The descriptions of CLOSE, IN-PACKAGE, RENAME-PACKAGE, TRACE, UNTRACE,
+INSPECT, SET-SYNTAX-FROM-CHAR, LOCALLY, PROVIDE, and REQUIRE 
+are not clear about the values returned from those constructs.
+ 
+Proposal (RETURN-VALUES-UNSPECIFIED:SPECIFY)
+ 
+Clarify that the return values for the listed constructs are as follows:
+ 
+CLOSE -- T
+IN-PACKAGE -- the new package, i.e. the value of *PACKAGE* after the
+execution of IN-PACKAGE.
+RENAME-PACKAGE -- the renamed package.
+TRACE (when called with arguments) -- implementation-dependent.
+UNTRACE -- implementation-dependent.
+INSPECT -- implementation-dependent.
+SET-SYNTAX-FROM-CHAR -- T
+LOCALLY -- the return values of the last form of its body, i.e. the body is
+	surrounded by an implicit PROGN.
+PROVIDE -- implementation-dependent.
+REQUIRE -- implementation-dependent.
+ 
+(NB: the issue CLOSED-STREAM-OPERATIONS proposes modifying
+the return value of CLOSE on closed streams. The issue 
+REQUIRE-PATHNAME-DEFAULTS proposes removing 
+REQUIRE and PROVIDE. Those proposals would take 
+priority over this one.)
+
+Rationale:
+ 
+This clarification allows users to know when they can and can not
+count on the values returned from these constructs. 
+ 
+Current Practice:
+
+Varies; the choices made here are consistent with many but
+not all implementations.
+  
+Cost to Implementors:
+ 
+Small.
+
+Benefits:
+ 
+This clarification will assist users in writing portable code.
+ 
+Cost to users:
+ 
+Small; it seems unlikely that there is much code that currently
+depends on the return values of these functions; such code isn't
+portable.
+
+Aesthetics:
+ 
+Specified is better than not, when it makes sense.
+ 
+Discussion:
+ 
+PROVIDE and REQUIRE are not likely to appear except in the "top level" of
+files, and so their return value is possibly moot.  Another proposal would
+eliminate them from the language, and then their return value would definitely
+be moot!
+
+There is some sentiment for leaving unspecified the values of the
+debugging/environment features such as TRACE and UNTRACE,
+for the same reasons that so much else of their behavior is unspecified.
+
+Notes from Oct 88 X3J13:
+
+Except for LOCALLY, why bother?
+
+That just causes portability problems. Don't want to leave it
+unspecified -unless- someone can cite a reason to do so.
+
+"If many weren't defined, maybe we should leave 'em, but
+since nearly all -are- defined, let's just go ahead and
+round out the set."
+
+Most text books she's seen show CLOSE returning NIL.
+One text book shows it returning T.
+Since some people like to think of T as success and NIL
+as failure, maybe it should always return T.
+(See Issue: CLOSED-STREAM-OPERATIONS.)

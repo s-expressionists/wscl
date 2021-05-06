@@ -1,0 +1,67 @@
+Issue:         COMPUTE-APPLICABLE-METHODS
+
+References:    88-002R p.2-19
+
+Category:      CHANGE
+
+Edit history:  2-May-90, Version 1 by Moon
+
+Problem description:
+
+  COMPUTE-APPLICABLE-METHODS is documented as a regular function but it
+  should be a generic function, because the metaobject protocol wants to
+  allow different generic function classes to do it differently.
+
+  This is Symbolics issue #30 and Loosemore issue #22 of 27 Feb 90.
+
+Proposal (COMPUTE-APPLICABLE-METHODS:GENERIC):
+
+  Change COMPUTE-APPLICABLE-METHODS from "Function" to "Standard Generic
+  Function."
+
+Test Case:
+
+  (typep #'compute-applicable-methods 'generic-function) => t
+
+Rationale:
+
+  Needed for metaobject protocol.
+
+Current practice:
+
+  Symbolics Genera 8.0 and Lucid 4.0.0 Beta-1 implement the proposal,
+  however the test case returns nil in Lucid due to an unrelated bug.
+  Other CLOS implementations were not surveyed.
+
+Cost to Implementors:
+
+  Easy.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  This will have to be changed later when the metaobject protocol is put in
+  either as a standard or as an implementation-supplied extension.
+
+Performance impact:
+
+  None of consequence.
+
+Benefits:
+
+  Corrects a technical error in 88-002R.
+
+Esthetics:
+
+  Neutral.
+
+Discussion:
+
+  Gregor says this is correct.
+
+  Originally Moon thought there were also problems with SLOT-BOUNDP,
+  SLOT-EXISTS-P, and SLOT-MAKUNBOUND, but it turns out that those problems
+  were corrected before 88-002R was published.

@@ -1,0 +1,278 @@
+Status:	passed, as amended, Mar 89 X3J13.
+
+Forum:	      Cleanup
+Issue:        DYNAMIC-EXTENT
+References:   Scope and Extent
+Category:     ADDITION
+Edit history: 27-Jun-88, Version 1 by Pitman (as issue STACK-LET)
+  	      15-Nov-88, Version 2 by Pitman (issue renamed, major revision)
+	      11-Jan-89, Version 3 by Masinter (Moon's proposal)
+	      05-Apr-89, Version 4 by Pitman and Steele (changes per X3J13)
+Related-Issues: REST-ARGUMENT-EXTENT, WITH-DYNAMIC-EXTENT
+
+Problem Description:
+
+  Sometimes a programmer knows that a particular data structure
+  will have only dynamic extent. In some implementations, it is
+  possible to allocate such structures in a way that will make them
+  easier to reclaim than by general purpose garbage collection
+  (eg, on the stack or in some temporary area). Currently, however,
+  there is no way to request the use of such an allocation mechanism.
+
+Proposal (DYNAMIC-EXTENT:NEW-DECLARATION):
+
+  Introduce a new declaration called DYNAMIC-EXTENT. The arguments to
+  this declaration are names of variables.
+
+  It is permissible for an implementation to simply ignore this declaration.
+  In implementations which do not ignore it, the compiler (or interpreter)
+  is free to make whatever optimizations are appropriate given this
+  information; the most common optimization is to stack-allocate the
+  initial value of the object. What data types (if any) can have dynamic
+  extent will can vary from implementation to implementation.
+
+  Definition: Object <x> is an ``otherwise inaccessible part'' (OIP)
+    of <y> iff making <y> inaccessible would make <x> inaccessible.
+    (Note that every object is an OIP of itself.)
+
+  Suppose that construct <c> contains a DYNAMIC-EXTENT declaration for
+  variable <v> (which need not be bound by <c>).  Consider the values
+  <w1>, ..., <wN> taken on by <v> during the course of some execution of
+  <c>.  The declaration asserts that if object <x> is an OIP of <wI>
+  when <wI> ever becomes the value of <v>, then just after execution of
+  <c> terminates <x> will be either inaccessible or still an OIP of <v>.
+
+  If the assertion is ever violated, the conseqeuences are undefined.
+
+Examples:
+
+  Since stack allocation of the initial value entails knowing at the
+  object's creation time that the object can be stack-allocated, it is
+  not generally useful to declare DYNAMIC-EXTENT for variables for
+  which have no lexically apparent initial value. For example,
+
+	(DEFUN F ()
+	  (LET ((X (LIST 1 2 3)))
+	    (DECLARE (DYNAMIC-EXTENT X))
+	    ...))
+
+  would permit those compilers which wish to do so to stack-allocate the
+  list in X. However,
+
+	(DEFUN G (X) (DECLARE (DYNAMIC-EXTENT X)) ...)
+	(DEFUN F () (G (LIST 1 2 3)))
+
+  could not typically permit a similar optimization in G because it would
+  be a modularity violation for the compiler to assume facts about G from
+  within F. Only an implementation which was willing to be responsible for
+  recompiling F if G's definition changed incompatibly could stack-allocate
+  the list argument to G in F.
+
+  Other interesting cases are:
+
+	(PROCLAIM '(INLINE G))
+	(DEFUN G (X) (DECLARE (DYNAMIC-EXTENT X)) ...)
+	(DEFUN F () (G (LIST 1 2 3)))
+
+    and	(DEFUN F ()
+	  (FLET ((G (X) (DECLARE (DYNAMIC-EXTENT X)) ...))
+	    (G (LIST 1 2 3))))
+
+  where some compilers might realize the optimization was possible and others
+  might not.
+
+  An interesting variant of this is the so-called `stack allocated rest list'
+  which can be achieved (in implementations supporting the optimization) by:
+
+	(DEFUN F (&REST X)
+	  (DECLARE (DYNAMIC-EXTENT X))
+	  ...)
+
+  Note here that although the initial value of X is not explicit, the F
+  function is responsible for assembling the list X from the passed arguments,
+  so the F function can be optimized by the compiler to construct a 
+  stack-allocated list instead of a heap-allocated list in implementations
+  which support such.
+
+
+In
+            (LET ((X (LIST 'A1 'B1 'C1))
+                  (Y (CONS 'A2 (CONS 'B2 (CONS 'C2 NIL)))))
+              (DECLARE (DYNAMIC-EXTENT X Y))
+              ...)
+The OIP's of X are three conses, and the OIP's of Y are three other
+conses.  None of the symbols A1, B1, C1, A2, B2, C2, or NIL is an
+OIP of X or Y.  However, if a freshly allocated uninterned symbol had
+been used, it would have been an OIP.
+
+- - - - - - - -
+          (DOTIMES (I N) 
+            (DECLARE (DYNAMIC-EXTENT I))
+
+This is particularly instructive.  Since I is an integer by the
+definition of DOTIMES, but EQ and EQL are not necessarily equivalent for
+integers, what are the OIP's of I, which this declaration
+requires the body of the DOTIMES not to "save"?  If the value of I is 3,
+and the body does (SETQ FOO 3), is that an error?  The answer is no, but
+the interesting thing is that it depends on the implementation-dependent
+behavior of EQ on numbers.  In an implementation where EQ and EQL are
+equivalent for 3, then 3 is not an OIP because (EQ I (+ 2 1)) is true,
+and therefore there is another way to access the object besides
+going through I.  On the other hand, in an implementation where EQ and
+EQL are not equivalent for 3, then the particular 3 that is the value of
+I is an OIP, but any other 3 is not.  Thus (SETQ FOO 3) is valid
+but (SETQ FOO I) is erroneous.  Since (SETQ FOO I) is erroneous in some
+implementations, it is erroneous in all portable programs, but some other
+implementations may not be able to detect the error.
+
+- - - - - - - -
+
+  (LET ((X (LIST 1 2 3)))
+    (DECLARE (DYNAMIC-EXTENT X))
+    (PRINT X)
+    NIL)
+  PRINT does not "save" any part of its input.
+  This prints (1 2 3)
+
+- - - - - - - -
+
+  (DO ((L (LIST-ALL-PACKAGES) (CDR L)))
+      ((NULL L))
+    (DECLARE (DYNAMIC-EXTENT L))
+    (PRINT (CAR L)))
+  prints all packages; none of the newly-allocated list structures are saved.
+- - - - - - - -
+  (DEFUN ADD (&REST X) (DECLARE (DYNAMIC-EXTENT X)) (APPLY #'+ X))
+  (ADD 1 2 3) => 6
+
+I.e., useful way to declare that &REST lists have dynamic extent
+- - - - - - - -
+  (DEFUN ZAP (X Y Z)
+    (DO ((L (LIST X Y Z) (CDR L)))
+	((NULL L))
+      (DECLARE (DYNAMIC-EXTENT L))
+      (PRIN1 (CAR L))))
+  (ZAP 1 2 3)
+  prints 123
+
+- - - - - - - -
+  (DEFUN ZAP (N M)
+    ;; Computes (RANDOM (+ M 1)) at relative speed of roughly O(N).
+    ;; It may be slow, but with a good compiler at least it
+    ;; doesn't waste much heap storage.  :-)
+    (LET ((A (MAKE-ARRAY N)))
+      (DECLARE (DYNAMIC-EXTENT A))
+      (DOTIMES (I N) 
+	(DECLARE (DYNAMIC-EXTENT I))
+	(SETF (AREF A I) (RANDOM (+ I 1))))
+      (AREF A M)))
+  (< (ZAP 5 3) 3) => T
+
+- - - - - - - -
+The following are in error, since the value of X is used outside of its
+extent:
+
+       (LENGTH (LIST (LET ((X (LIST 1 2 3))) (DECLARE (DYNAMIC-EXTENT X)) X)))
+
+  (PROGN (LET ((X (LIST 1 2 3))) (DECLARE (DYNAMIC-EXTENT X)) X)
+         NIL)
+
+- - - - - - - -
+
+Rationale:
+
+  This permits a programmer to offer advice to an implementation about
+  what may be stack-allocated for efficiency.
+
+  It may be difficult or impossible for a compiler to infer this
+  same information statically.
+
+  Since a number of implementations offer this capability and there
+  is demand from users for access to the capability, this ``codifies
+  existing practice.''
+
+  Because this approach is purely lexical, it does not interact badly with
+  other programs in the way that the macro WITH-DYNAMIC-EXTENT (see issue
+  by same name) would.
+
+Current Practice:
+
+  Symbolics Genera and Symbolics Cloe offer stack allocation, though not
+  in this strategy.
+
+  [KMP thinks that] Lucid supports the proposal.
+
+Cost to Implementors:
+
+  No cost is forced since implementations are permitted to simply
+  ignore the DYNAMIC-EXTENT declaration.
+
+Cost to Users:
+
+  None. This change is upward compatible.
+
+  There may be some hidden costs to debugging using this declaration (or any
+  feature which permits the user to access dynamic extent objects without
+  the compiler proving that they are appropriate). If the user misdeclares
+  something and returns a pointer into the stack (or stores it in the heap),
+  an undefined situation may result and the integrity of the Lisp storage
+  mechanism may be compromised. Debugging these situations may be tricky,
+  but users who have asked for this feature have indicated a willingness
+  to deal with such costs. Nevertheless, the perils should be clearly
+  documented and casual users should not be encouraged to use this
+  declaration.
+
+Cost of Non-Adoption:
+
+  Some portable code would be forced to run more slowly (due to
+  GC overhead), or to use non-portable language features.
+
+Benefits:
+
+  The cost of non-adoption is avoided.
+
+Aesthetics:
+
+  This declaration allows a fairly low level optimization to work
+  by asking the user to provide only very high level information.
+  The alternatives (sharpsign conditionals, some of which may
+  lead to more bit-picky abstractions) are far less aesthetic.
+
+Discussion:
+
+  A previous version of this proposal suggested primitives STACK-LET
+  and STACK-LET*. Consensus was that the more general declaration facility
+  would be more popular.
+
+  Moon came up with a description of something called a "proper part" which
+  Steele formalized into the idea of an "otherwise inaccessible part". The
+  two are essentially interchangeable, but Steele's description was more
+  rigorous.
+
+  KMP: ... it still raises the question of whether we should define 
+       per-function for every CL function whether any of the arguments is
+       permitted to be "saved" so that CL programs don't get any funny
+       surprises. If we don't, it ends up being implementor's discretion how
+       to resolve cases ... and everyone might not agree that all cases are
+       ... obvious ...
+
+  JonL: PDP10 MacLisp had a similar problem w.r.t pdlnums.  That is why
+	"identity" functions were so troublsome for it -- in order to
+        return a guaranteed safe value, it typically had to copy it's
+	pdlnum argument, thereby making some cases of "fast arithmetic" 
+	code much worse than interpreted code!  [Remember PRINT in MacLisp?
+	it returns T rather than it's argument for just this reason.]
+
+	It is necessary for an optimizing compiler to know something about
+	what happens to the data it passes along to "system" functions; for
+	example, it could assume that GET doesn't clobber the list given
+	to it, nor does it retain pointers to any part of it [what was the
+	terminology in the revised proposal?  "saved"? and "proper part"?]
+	The issue LISP-SYMBOL-REDEFINITION might help here, in that an
+	implementation's compilers could depend upon it's own internal
+	database.  But it wouldn't hurt at all to have some of these
+	requirements "up front" in the standard.
+
+  It was generally agreed that we would also like to consider a proposal
+  on dynamic extent functions at the next meeting. (Sandra said she would
+  prepare one, and has already done so. See issue DYNAMIC-EXTENT-FUNCTION.)

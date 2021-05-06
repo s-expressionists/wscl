@@ -1,0 +1,80 @@
+Issue:              STRUCTURE-READ-PRINT-SYNTAX
+References:         DEFSTRUCT
+Related issues:     Issue DEFSTRUCT-SLOTS-CONSTRAINTS-NAME
+Category:           CHANGE
+Edit history:       V1, 11 May 90, Sandra Loosemore
+                    V2, 29 May 90, Sandra Loosemore (cross-references)
+  
+
+Problem description:
+
+The use of non-keywords for slot names in #S reader/printer
+syntax is ugly.  The standard ought to encourage a cleaner
+style.
+
+Proposal (STRUCTURE-READ-PRINT-SYNTAX:KEYWORDS):
+
+  (1) Deprecate the use of non-keywords to name slots in #S syntax
+      for reading structures.
+
+  (2) Require that #S syntax for printing structures print slot
+      names as keywords.
+
+Rationale:
+
+  This encourages a cleaner style while maintaining backward
+  compatibility for users.
+   
+Current Practice:
+
+  Some implementations already use keywords for printing
+  structures, while some use unqualified symbols.  Practice among
+  users is also mixed.  Many users tend to follow the example of
+  whatever implementation they use most frequently.
+
+Cost to Implementors:
+
+  The actual implementation cost of changing the #S printer 
+  is trivial, but there may be more work involved in updating 
+  documentation.
+
+Cost to Users:
+
+   None.
+
+Cost of non-adoption:
+
+  See "esthetics".
+
+Performance impact:
+
+  Using keywords is probably slightly more efficient than using
+  unqualified symbols, at least on the reader end.
+
+Benefits:
+
+  See "esthetics".
+
+Esthetics:
+
+  The use of non-keywords to name slots in #s syntax is ugly.
+  Technically, there is no reason now why both users and
+  implementors cannot use keywords, but the fact that CLtL
+  goes out of its way to explain that it's not necessary to
+  do so, and that all of the examples of #s syntax use non-keywords, 
+  has encouraged both users and implementors to follow this style.
+
+Discussion:
+
+  Proposal DEFSTRUCT-SLOTS-CONSTRAINTS-NAME:DUPLICATES-ERROR made
+  it clear that DEFSTRUCT slot names must have unique
+  symbol-names.  Therefore there is no possibility for conflicts
+  if the slot names are printed as keyword symbols.
+
+  Several people have voiced support for at least changing the
+  examples in the standard to use keywords, to encourage both
+  users and implementors to adopt the style.
+
+  Dan Pierson says:
+    Yes, YEs, YES!  I've been wanting this fix for bogus implementations
+    since CLtL came out and ******lisp interpreted it the other way.

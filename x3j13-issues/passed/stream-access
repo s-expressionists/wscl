@@ -1,0 +1,160 @@
+Status: Proposal ADD-TYPES-ACCESSORS passed, Jan 89 X3J13
+Forum:		Cleanup
+Issue:		STREAM-ACCESS
+References:	streams (Chapter 21 of CLtL)
+Category:	ADDITION
+Edit History:	17-Jun-88, version 1 by Walter van Roggen
+			30-Nov-88, version 2 by Masinter
+
+Problem Description:
+
+  There are many components of streams which are specified upon creation
+  but are not accessible afterwards.  Furthermore there is no way in
+  Common Lisp to determine the type of a stream to see if it has particular
+  components, or even if it is OPEN.
+
+  The accessors wanted are those associated with broadcast streams,
+  concatenated streams, echo streams, file streams, string streams, 
+  synonym streams, two way streams.
+
+  There are three proposals, which differ only by the whether
+  they include types, type predicates, or both, in addition to
+  the stream component acessors. Ballots can be either for
+  one of the proposals or none. (Other combinations of, say, 
+  accessors without either predicates or types, or types without
+  accessors, do not seem reasonable and are not being proposed
+  at this time.)
+
+
+Proposal STREAM-ACCESS:ADD-TYPES-PREDICATES-ACCESSORS
+
+
+First, add a function to determine whether a stream is "OPEN":
+
+OPEN-STREAM-P stream			[Function]
+
+      Returns T if a stream is open, NIL if it is closed.  It is an error
+      if the argument is not a stream.
+
+    Streams are "open" until they have been closed with
+    CLOSE, or, the dynamic context of the creating/accessing
+    macros of  WITH-OUTPUT-TO-STRING, WITH-OPEN-FILE, 
+    WITH-INPUT-FROM-STRING,  WITH-OPEN-STREAM, 
+    have been exited.
+    
+There are three kinds of things to add associated with each kind of
+stream: data types, predicates, accessors.
+
+Stream data types:
+   BROADCAST-STREAM (returned by MAKE-BROADCAST-STREAM)
+   CONCATENATED-STREAM (returned by MAKE-CONCATENATED-STREAM)
+   ECHO-STREAM (returned by MAKE-ECHO-STREAM)
+   FILE-STREAM (returned by OPEN or created by WITH-OPEN-FILE)
+   STRING-STREAM (returned by MAKE-STRING-INPUT-STREAM, 
+	MAKE-STRING-OUTPUT-STREAM, and created by WITH-INPUT-FROM-STRING
+      and WITH-OUTPUT-TO-STRING and FORMAT with second argument NIL)
+  SYNONYM-STREAM (created by MAKE-SYNONYM-STREAM)
+  TWO-WAY-STREAM (created by  MAKE-TWO-WAY-STREAM)
+
+  The stream data types are all subtypes of type STREAM and are mutually
+  exclusive. (In particular, a synonym stream is only of type SYNONYM-STREAM.)
+
+Stream Predicates:
+
+  Each of these returns T if the object is of the corresponding type,
+  and NIL otherwise.
+
+    BROADCAST-STREAM-P, CONCATENATED-STREAM-P,
+    ECHO-STREAM-P, FILE-STREAM-P, STRING-STREAM-P,
+    SYNONYM-STREAM-P, TWO-WAY-STREAM-P
+
+  Note that the predicates do not "follow the link" of a synonym
+  stream.
+
+Stream Informational Functions:
+
+  BROADCAST-STREAM-STREAMS broadcast-stream       ==> list of streams
+
+      This function returns a list of output streams that constitute
+      all the streams the broadcast stream is broadcasting to.  It is
+      an error if the argument is not of type BROADCAST-STREAM.
+
+  CONCATENATED-STREAM-STREAMS concatenated-stream ==> list of streams
+
+      This function returns a list of input streams that constitute
+      the ordered set of streams the concatenated stream still has to
+      to read from, starting with the current one it is reading from.
+      The list may be () if no more streams remain to be read.
+      It is an error if the argument is not of type CONCATENATED-STREAM.
+
+  ECHO-STREAM-INPUT-STREAM echo-stream            ==> input-stream
+  ECHO-STREAM-OUTPUT-STREAM echo-stream           ==> output-stream
+
+      These functions return the corresponding component stream.  It is
+      an error if the argument is not of type ECHO-STREAM.
+
+  SYNONYM-STREAM-SYMBOL synonym-stream            ==> symbol
+
+      This function returns the symbol whose SYMBOL-VALUE the
+      synonym stream is using.  It is
+      an error if the argument is not of type SYNONYM-STREAM.
+
+  TWO-WAY-STREAM-INPUT-STREAM two-way-stream      ==> input-stream
+  TWO-WAY-STREAM-OUTPUT-STREAM two-way-stream     ==> output-stream
+
+      These functions return the corresponding component stream.  It is
+      an error if the argument is not of type TWO-WAY-STREAM.
+
+
+Proposal: STREAM-ACCESS:ADD-TYPES-ACCESSORS
+
+Identical to ADD-TYPES-PREDICATES-ACCESSORS except to leave out the 
+stream type predicates.
+
+Proposal: STREAM-ACCESS:ADD-PREDICATES-ACCESSORS
+
+Identical to ADD-TYPES-PREDICATES-ACCESSORS except to not
+identify new data types. The accessors act as if the types were specified
+(i.e., are mutually excusive).
+
+Current Practice:
+
+VAX LISP implements ADD-TYPES-PREDICATES-ACCESSORS.
+ We have not surveyed other implementations. 
+
+Cost to Implementors:
+
+  All of the proposals are reasonably simple to implement, since the information
+  must be present for nearly all types. 
+
+Cost to Users:
+
+  The proposals are upward-compatible, and should have little impact.
+
+Cost of Non-Adoption:
+
+  The benefits would not be available in a portable fashion.
+
+Benefits:
+
+  Programs would be able to access useful information otherwise hidden.
+
+Discussion:
+
+  This issue has come up frequently, particularly dealing with SYNONYM-STREAMs.
+
+  The behavior of OPEN-STREAM-P on, for example, broadcast streams, might
+  be specified in a variety of alternative ways. This specification seems the simplest.
+
+  There are three proposals for voting because there was no agreement at the
+  October X3J13 on the issue of whether types, predicates, or both should be
+ added.
+
+  There was a proposal at one time to add a new function FOLLOW-SYNONYM-STREAM
+  which could be written as
+   (defun follow-synonym-stream (x)
+     (if (synonym-stream-p x)
+         (follow-synonym-stream (symbol-value (synonym-stream-symbol x)))
+         x))
+
+  i.e., which chases through zero or more synonym stream indirections.

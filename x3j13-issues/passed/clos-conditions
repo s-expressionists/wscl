@@ -1,0 +1,233 @@
+Status:	Passed, Mar 89 X3J13
+Issue:        CLOS-CONDITIONS
+References:   Condition System (Revision 18)
+Category:     ADDITION
+Edit history: 26-Sep-88, Version 1 by Pitman
+	      06-Oct-88, Version 2 by Pitman
+	      09-Oct-88, Version 3 by Pitman
+	      10-Mar-89, Version 4 by Pitman (remove unsupported options)
+
+Problem Description:
+
+  The description of the Common Lisp condition system presupposes
+  only DEFSTRUCT and not DEFCLASS because it was written when
+  CLOS had not been adopted. It is stylistically out of step with
+  CLOS in a few places and places some restrictions which are not
+  necessary if CLOS can be presupposed.
+
+Proposal (CLOS-CONDITIONS:INTEGRATE):
+
+  1. Define that condition types are CLOS classes.
+
+  2. Define that condition objects are CLOS instances.
+
+  3. Functions such as SIGNAL, which take arguments of class names, are
+     permitted to take class objects. Such class objects must still be
+     subclasses of CONDITION.
+
+  4. Define that slots in condition objects are normal CLOS slots. Note
+     that WITH-SLOTS can be used to provide more convenient access to the
+     slots where slot accessors are undesirable.
+
+  5. Incompatibly change the syntax of a slot in DEFINE-CONDITION
+     to be compatible with a DEFCLASS slot specification.
+
+     An implication of this change is that forms like
+      (DEFINE-CONDITION FOO (BAR) ((A 1) (B 2)))
+     would have to be written
+      (DEFINE-CONDITION FOO (BAR)
+	((A :INITARG :A :READER FOO-A :INITFORM 1)
+	 (B :INITARG :B :READER FOO-B :INITFORM 2)))
+
+  6. Permit multiple parent-types to be named in the list of parent types.
+     Define that these parent types are treated the same as the superior
+     class list in a CLOS DEFCLASS expression.
+
+  7. Eliminate the :CONC-NAME option to DEFINE-CONDITION.
+
+  8. Define that condition reporting is mediated through the PRINT-OBJECT
+     method for the condition type (class) in question, with *PRINT-ESCAPE*
+     always being NIL. Specifying (:REPORT fn) in the definition of a
+     condition type C is equivalent to doing 
+      (DEFMETHOD PRINT-OBJECT ((X c) STREAM)
+	(IF *PRINT-ESCAPE* (CALL-NEXT-METHOD) (fn X STREAM)))
+
+Rationale:
+
+  These changes are consistent with the intent of the X3J13 endorsement
+  of CLOS and the Common Lisp Condition System.
+
+  Although items 5 and 7 are incompatible with the interim condition
+  handling which we've been working with, the overall proposal significantly
+  improves compatibility with CLOS.
+
+  This compatibility will make the language seem less fragmented, and
+  probably more learnable because there will be fewer paradigms to learn.
+
+  Also, items 5 and 7 in particular are an improvement for reasons
+  unrelated to CLOS if only because they get rid of the need for symbol
+  concatenation, a process which has been seen to cause problems because
+  of the transient nature of the binding of *PACKAGE*.
+
+Examples:
+
+  Slot specifiers...
+
+    A slot specifier of X is still valid but is incompatibly
+    changed to mean what CLOS has it mean; no :INITARG or 
+    :READER would be supplied.
+  
+    A slot specifier of (X) is still valid but is incompatibly
+    changed to mean what CLOS has it mean; no :INITARG or 
+    :READER would be supplied.
+
+    A slot specifier of (X V) would no longer be valid.
+    
+    In addition, other slot specifiers such as
+     (X :INITARG :EX :TYPE FIXNUM)
+    are permitted as in DEFCLASS.
+
+ Conc names ...
+
+   (DEFINE-CONDITION FOOBAR (FOO BAR) (X Y) (:CONC-NAME FUBAR))
+   would be rewritten
+   (DEFINE-CONDITION FOOBAR (FOO BAR)
+     ((X :INITARG :X :READER FUBAR-X)
+      (Y :INITARG :Y :READER FUBAR-Y)))
+
+ Report methods ...
+
+   (DEFINE-CONDITION OOPS (ERROR) ())
+   (DEFMETHOD PRINT-OBJECT ((X OOPS) STREAM)
+     (IF *PRINT-ESCAPE* 
+	 (CALL-NEXT-METHOD)
+	 (FORMAT STREAM "Oops! Something went wrong.")))
+   (ERROR 'OOPS)
+   >>Error: Oops! Something went wrong.
+
+
+Current Practice:
+
+  Some implementations supporting CLOS probably already do this,
+  or something very similar.
+
+Cost to Implementors:
+
+  If you really have CLOS, this is very straightforward.
+
+Cost to Users:
+
+  Small, but tractable.
+
+  The main potential problems are:
+
+   - :CONC-NAME. There is nothing that keeps an implementation from
+     continuing to support :CONC-NAME for a short while until old code
+     has been upgraded.
+
+   - The incompatible change to slot syntax. Again, it is possible to
+     unambiguously recognize a 2-list as old-style syntax and an
+     implementation can provide interim compatibility support during
+     a transition period.
+
+  Even if implementations did not provide the recommended compatibility
+  support, users could trivially shadow DEFINE-CONDITION and provide the
+  support themselves, expanding into the native DEFINE-CONDITION in the
+  proper syntax.
+
+  In any case, the total number of uses of DEFINE-CONDITION at this 
+  point is probably quite small. Searching for them and repairing
+  each by hand is probably not an expensive operation.
+
+Cost of Non-Adoption:
+
+  Conditions will seem harder to manipulate than other user-defined types.
+
+  People will wonder if CLOS is really something we're committed to.
+
+Benefits:
+
+  A more regular, more learnable language.
+
+Aesthetics:
+
+  Improved.
+
+Discussion:
+
+  Gregor, Pierson, Moon, and Pitman support this proposal.
+
+  People seem to disagree about the status that CLOS might occupy
+  in the upcoming standard. In spite of a vote of support, they seem
+  to think it might be optional in some way. Passing this proposal
+  establishes a clear precedent for the full integration of CLOS into
+  the emerging language.
+
+  The sense of the cleanup committee was that it was acceptable for
+  a vendor to identify a CLOS-free subset of Common Lisp, but that since
+  the position of X3J13 seems to be that no resources should be devoted
+  to work on subsets, it was inappropriate for us to work out the details
+  of that subset ourselves.  Since nothing about this proposal would
+  impede such a subset, we took that to be adequate basis for presenting
+  this single proposal.
+
+  Moon thinks we might want to add condition types for the errors
+  CLOS might signal. Richard Mlynarik thinks we should add a generic
+  function, REPORT-CONDITION, which is used for reporting conditions.
+  Both of these issues should probably be pursued under separate cover.
+
+
+!
+"One comment is that you should explicitly mention bootstrapping
+concerns under cost to implementors.  If you just leave it out,
+someone may think it is a difficult problem. "
+
+"This isn't any sort of clarification.  The actual clarification required
+-- which has been requested several times, and not just by myself -- is
+what the *METACLASS* of condition types is.
+
+Condition types may be "CLOS classes" without being STANDARD-CLASSes
+Condition objects may be "CLOS instances" without being STANDARD-OBJECTs.
+Just what are "normal CLOS slots"?  As I see it, the "normalcy" or
+otherwise of slots is determined by the metaclass.
+
+
+My opinion for some time has been that condition types should not be
+STANDARD-CLASSes but instead something like READ-ONLY-CLASS.
+Conceptually, It Is An Error to modify the slots of condition objects,
+which are supposed to be immutable descriptions of part of the state of
+a computation.  Implementationally,
+(setf (slot-value <condition-object> <slot-name>) <new-value>) should
+signal an error.
+
+(I also think that conditions in particular have a strong need for
+something like :REQUIRED-INIT-KEYWORDS, but that's another story.)
+
+Even if you decide to make condition classes' metaclass STANDARD-CLASS,
+the point is that you need to state this, so that users may define
+condition classes and mixins using DEFCLASS."
+
+"I do not agree that it is a -necessary- thing to specify the Meta-Class
+of conditions because all intended uses of conditions can be done
+without this information.
+
+I agree that it is a -possibly useful- thing to do, but there is a down
+side to it -- it would unnecessarily tie the hands of people who want
+implementation flexibility for one reason or another."
+
+"... If we don't specify the metaclass, then users
+won't know what other classes they can mix in when defining condition
+classes.  It may seem weird, but I can imagine someone wanting to mix
+in an arbitrary class into a condition class.
+
+I think we should just say that the class CONDITION is an instance of
+STANDARD-CLASS, and that by default DEFINE-CONDITION defines standard
+classes.  Sure it might be nice to do the read only class thing but I
+don't think this is a good time to design a special purpose metaclass
+for this.  "
+
+
+
+
+
+     ----- End Forwarded Messages -----

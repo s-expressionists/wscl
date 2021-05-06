@@ -1,0 +1,117 @@
+Status:	Passed, Jan 89 X3J13
+Forum:         Cleanup
+Issue:         FUNCTION-TYPE-REST-LIST-ELEMENT
+References:    CLtL p. 27, 47-48, 61
+               "Artifical Intelligence Programming", Charniak et. al.
+               X3J13/86-003 (A:>GLS>clarifications.text.4)
+Category:      CLARIFICATION, ADDITION
+Edit history:  Version 1, 23-Nov-1987 Sandra Loosemore
+               Version 2, 15-Jan-1988 Sandra Loosemore
+	           (incorporate comments from Scott Fahlman & others)
+               Version 3, 13-Feb-88 Masinter
+               Version 4,  2-Oct-88 Masinter (update references,
+								discussion)
+               Version 5, 14-Nov-88 Masinter (add to discussion)
+Related issues: FUNCTION-TYPE-KEY-NAME, 
+                FUNCTION-TYPE-ARGUMENT-TYPE-SEMANTICS
+                REST-LIST-ALLOCATION
+
+Problem description:
+
+The FUNCTION type specifier list is provided to allow declaration of
+function argument types and return value types.  This type specifier uses a
+syntax similar to the usual lambda list syntax to specify which types go
+with which lambda list variables.  However, this is actually of limited
+usefulness in the context of a declaration, where one normally wants type
+information about the actual arguments which can be passed to the function
+rather than the lambda variables to which they are bound.
+
+There is a particular problem with &REST lambda variables, which are always
+bound to a value of type LIST.  For the sake of consistency, it would seem
+that the corresponding type given in the FUNCTION declaration must also be
+LIST, but since this provides no information about the actual arguments,
+some users/implementors have instead adopted the convention of supplying
+the type of the actual arguments which are gathered into the list.  
+
+CLtL is vague on the issue, mentioning only that &REST may appear in the
+type specifier without touching upon its interpretation.
+
+Proposal (FUNCTION-TYPE-REST-LIST-ELEMENT:USE-ACTUAL-ARGUMENT-TYPE):
+
+Clarify that, in the FUNCTION type specifier, the type specifier provided
+with &REST is the type of each actual argument, not the type of the
+corresponding lambda variable.
+
+Example:
+
+The type of the function + would be specified as:
+
+(FUNCTION (&REST NUMBER) NUMBER)
+
+Rationale:
+
+This is more useful than specifying that the type of a &REST parameter must
+be LIST, since it provides information about the actual arguments.
+
+Current practice:
+
+There does not appear to be any concensus on this issue.  Most Common Lisp
+implementations currently ignore FUNCTION type declarations. The only
+examples found so far are in a text book on Common Lisp, which follows the
+proposed syntax.
+
+Cost to Implementors:
+
+Implementations that ignore the FUNCTION type specifier may continue to do
+so.  Probably only a small amount of code would have to be written/changed
+in implementations that currently think that the  &REST argument should be
+LIST.
+
+Cost to Users:
+
+Users who have been using the convention that the &REST type parameter must
+be LIST will have to change their code.  However, because this issue is so
+unclear, the FUNCTION type specifier is probably not used very much.
+
+Cost of non-adoption:
+
+If nothing is done, the FUNCTION type specifier will continue to be of
+limited use for its intended purpose.
+
+Benefits:
+
+Adopting the proposal will clear up an area of confusion in the language
+design.
+
+Esthetics:
+
+Debatable.  One the one hand, since the argument type syntax used by the
+FUNCTION type specifier mirrors normal lambda-list syntax, it would be
+cleaner and less confusing to provide the type of the lambda variable
+rather than the type of the actual arguments. However, considering the
+types specified in the FUNCTION specifier to be the types of the actual
+arguments rather than the types of the parameters as seen on the receiving
+end makes the proposed semantics more palatable.
+
+Discussion:
+
+This issue provoked considerable debate in the cleanup committee and at
+X3J13. 
+
+Many people objected to this proposal, and would prefer the alternative
+that the type given after a &REST in a function declaration apply to the
+value of the formal parameter rather than the actual arguments. This would
+be even more useful if complex LIST type specifiers were part of Common
+Lisp (as the proposal in issue LIST-TYPE-SPECIFIER might add) or if it were
+possible to declare, for example, &REST {keyword integer}*.
+
+Some additional arguments against this proposal are the apparent mismatch
+between the external declarations of type and the internal ones. It might
+be that this proposals presumes that rest lists are always lists, and the
+following is illegal:
+
+ (DEFUN FOO (&REST X) X)
+ (APPLY #'FOO T)
+
+which is not otherwise explicitly forbidden, but for which there is no
+legitimate declaration.

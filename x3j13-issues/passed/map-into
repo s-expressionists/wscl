@@ -1,0 +1,101 @@
+Status:	Passed, Jun 89 X3J13
+Issue:          MAP-INTO
+References:     none
+Related issues: BIT-ARRAY-FUNCTIONS
+Category:       ADDITION
+Edit history:   23-May-89, version 1 by Moon
+                19-Jun-89, version 2 by Moon (fix arglist)
+                23-Jun-89, version 3 by Moon (include BarMar's suggestions)
+
+Problem description:
+
+  The function MAP is very useful but can be a source of inefficiency
+  because it conses the result.  Sometimes the user has storage
+  already allocated in which the result could be stored.
+
+Proposal (MAP-INTO:ADD-FUNCTION):
+
+  Add the following function:
+
+    MAP-INTO result-sequence function &rest sequences            [Function]
+
+    Destructively modifies the result-sequence to contain the results of
+    applying function to each element in the argument sequences in turn.
+    Returns result-sequence.
+
+    The arguments result-sequence and each element of sequences can each be
+    either a list or a vector (one-dimensional array).  Note that NIL is
+    considered to be a sequence, of length zero.  If result-sequence and
+    each element of sequences are not all the same length, the iteration
+    terminates when the shortest sequence is exhausted.  If result-sequence
+    is a vector with a fill-pointer, the fill-pointer is ignored when
+    deciding how many iterations to perform, and afterwards the
+    fill-pointer is set to the number of times function was applied.
+
+    If result-sequence is longer than the shortest element of sequences,
+    extra elements at the end of result-sequence are left unchanged.
+
+    MAP-INTO differs from MAP in that it modifies an existing sequence
+    rather than creating a new one.  In addition, MAP-INTO can be called
+    with only two arguments, while MAP requires at least three arguments.
+    If result-sequence is NIL, MAP-INTO immediately returns NIL, since
+    NIL is a sequence of length zero.
+
+    If BIT-ARRAY-FUNCTIONS:NO-NEW-FUNCTIONS passes, then MAP-INTO will
+    allow result-sequence and each element of sequences to be mappables
+    all of the same rank.
+
+    The function must take at least as many arguments as there are
+    sequences provided.
+
+    If function has side effects, it can count on being called first on all
+    of the elements with index 0, then on all of those numbered 1, and so
+    on.
+
+Examples:
+
+  (map-into x #'+ x y)
+  (map-into q #'cons keys vals)
+  (map-into syms #'gensym)
+
+Rationale:
+
+  MAP-INTO is a simple way to express reuse of storage that is
+  stylistically consistent with the rest of Common Lisp.
+
+Current practice:
+
+  Symbolics Genera 7.2 implements the proposal.
+
+Cost to Implementors:
+
+  Small.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Small.
+
+Performance impact:
+
+  None.
+
+Benefits:
+
+  More expressive language.
+
+Esthetics:
+
+  User programs won't have to write the above examples as
+
+   (loop for xx on x and yy in y do
+      (setf (car xx) (+ (car xx) yy)))
+
+  or something else about equally horrible.
+
+Discussion:
+
+  None.

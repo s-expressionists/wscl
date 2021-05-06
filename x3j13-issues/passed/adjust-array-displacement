@@ -1,0 +1,60 @@
+Status: passed, 1988 (not sure which meeting)
+Issue:        ADJUST-ARRAY-DISPLACEMENT
+Reference:    ADJUST-ARRAY (CLtL p.297)
+Category:     Clarification
+Edit history: Version 1 by Fahlman, 18-Apr-87 (from Steele's list)
+              Version 2 by Masinter
+              Version 3 by Masinter, 5-Jun-87 (respond to comments)
+              Version 4 by Masinter, 23-Nov-87
+
+Problem Description:
+
+The interaction of ADJUST-ARRAY and displaced arrays is insufficiently specified in the case where the array being adjusted is displaced.  
+
+Proposal: ADJUST-ARRAY-DISPLAYCEMENT:RULES
+
+Interaction of adjusting and displacement:
+
+Suppose we are adjusting array A, which is perhaps displaced to B before the ADJUST-ARRAY call and perhaps to C after the call.
+
+(1) A is not displaced before or after: The dimensions of A are altered, and the contents rearranged as appropriate.  Additional elements of A are taken from the :INITIAL-ELEMENT.  The use of :INITIAL-CONTENTS causes all old contents to be discarded.
+
+(2) A is not displaced before, but is displaced to C after.  As specified in CLtL, none of the original contents of A appears in A afterwards; A now contains the contents of C, without any rearrangement of C.
+
+(3) A is displaced to B before the call, and is displaced to C after the call.  (B and C may be the same.) As in case (2), the contents of B do not appear in A afterward (unless such contents also happen to be in C).  If :DISPLACED-INDEX-OFFSET is not specified in the ADJUST-ARRAY call, it defaults to zero; the old offset (into B) is not retained.
+
+(4) A is displaced to B before the call, but not displaced afterward.  A gets a new "data region", and contents of B are copied into it as appropriate to maintain the existing old contents; additional elements of A are taken from the :INITIAL-ELEMENT.  However, the use of :INITIAL-CONTENTS causes all old contents to be discarded.
+
+If array X is displaced to array Y, and array Y is displaced to array Z, and array Y is altered by ADJUST-ARRAY, array X must now refer to the adjusted contents of Y.  This means that an implementation may not collapse the chain to make X refer to Z directly and forget that the chain of reference passes through array Y.  (Cacheing techniques are of course permitted, as long as they preserve the semantics specified here and in CLtL.)
+
+If X is displaced to Y, it is an error to adjust Y in such a way that it no longer has enough elements to satisfy X.  This error may be signalled at the time of the adjustment, but this is not required.
+
+Note: Omitting the :DISPLACED-TO argument to ADJUST-ARRAY is equivalent to specifying :DISPLACED-TO NIL; in either case, the array is not displaced after the call and case (1) or (4) hold.
+
+Rationale:
+
+This interaction must be clarified.  This set of rules was proposed some time ago, as a result of discussions on the Common Lisp mailing list, and this model has been adopted by many Common Lisp implementations.
+
+Current Practice:
+
+Many implementations currently follow the model proposed here, although they differ in some detail. For example, Symbolics Common Lisp behaves as indicated  except for case (4); in that case, it never copies the contents of B, and all elements are taken from the :INITIAL-ELEMENT.
+
+Cost to implementors:
+
+Some existing implementations may have to be changed, but adopting any other model would be worse.  Public-domain code implementing this model is available from CMU.
+
+Cost to users:
+
+This is a relatively uncommon situation, which is the reason it didn't occur to the original language designers to specify how it works.  Any user code that cares about this issue probably already follows the proposed model.
+
+Benefits:
+
+Clarification of a situation that is currently not addressed by the standard.
+
+Discussion:
+
+The cleanup committee supports this clarification.
+
+Some consideration was given to adding DISPLACED-ARRAY-P or ARRAY-DISPLACED-TO and ARRAY-DISPLACED-INDEX-OFFSET which would allow access to information as to whether an array was or was not displaced. However, these are not part of the current proposal.
+
+A similar issue arises with ADJUST-ARRAY and fill pointers, and will be the subject of a separate issue.

@@ -1,0 +1,44 @@
+Status: passed, 1988 (I don't know at which meeting)
+Issue:        COLON-NUMBER
+References:   Parsing of Numbers and Symbols (p339-341, 343-344)
+Category:     CLARIFICATION
+Edit history: 22-Oct-87, Version 1 by Pitman
+
+Problem Description:
+
+CLtL is unclear about whether a colon followed by a potential number is a potential number. There are passages which seem to address this issue unambiguously but fail.
+
+Proposal (COLON-NUMBER:UNDEFINED):
+
+Clarify that syntax involving a leading colon followed by a potential number is not well-defined. That is, use of notation such as :1, :1/2, and :2^3 in a position where an expression appropriate for READ is expected is an error.
+
+Rationale:
+
+This makes the status quo apparent.
+
+Current Practice:
+
+Some implementations, such as Symbolics Lisp, claim the right to  interpret this as an ``is an error'' situation where their upward-compatible extension is to parse ``:1'' as the number 1 (incidentally, but uninterestingly, expressed in the KEYWORD package).
+
+Other implementations tokenize ``:1'' as a single token, identify it as a symbol, and then parse it as :\1 would be parsed.
+
+Cost to implementors:
+
+None. This clarification forces no implementations to change.
+
+Cost to users:
+
+Slight. Some users may have mistakenly believed that this was an aspect of the language that was guaranteed and may have written programs that exploited that belief. Such incidences are probably very rare, however. Also, even in the few cases where such code fortuitously worked, implementations are likely to continue to support it so such code will probably continue to fortuitously work in many of those rare situations.
+
+Benefits:
+
+Programmer expectations that any useful behavior can be portably relied upon in this pathological case should be soundly trounced.
+
+Aesthetics:
+
+Arguably a slight improvement in visual aesthetics. What was already  a pretty marginal syntax is discouraged.
+
+Discussion:
+
+Pitman supports this clarification. He thinks this issue is not a big deal, but it does crop up often enough to be a nuisance. It would be nice to have everyone acknowledge a unified position, even if that only meant agreeing to disagree.
+

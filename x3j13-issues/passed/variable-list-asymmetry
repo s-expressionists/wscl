@@ -1,0 +1,90 @@
+Status:	Passed, Jan 89 X3J13
+Issue:          VARIABLE-LIST-ASYMMETRY
+References:     CLtL pgs. 110, 122, 131
+Category:       ADDITION
+Edit history:   26-Jul-88, Version 1 by Skona Brittain
+                04-Aug-88, Version 2 by Skona Brittain
+                08-Oct-88, Version 3 by Pitman
+
+Problem Description:
+
+ The syntax of items in the variable-list for various control structues
+ (do, do*, let, let*, prog, prog*, and compiler-let) varies.  This
+ variation seems unnecessary.
+ 
+ The allowed variations are indicated in the following chart:
+ 
+ do & do*:             (var)    (var init)    (var init step)
+ prog & prog*:   var   (var)    (var init)       n.a.
+ let & let*:     var            (var val)        n.a.
+ compiler-let    var            (var value)
+ 
+ Note that just plain `` var '' is prohibited in do forms
+ and that the case of ``(var)'' is prohibited in let forms
+ and compiler-let forms.
+
+Proposal (VARIABLE-LIST-ASYMMETRY:SYMMETRIZE):
+
+ Allow all the variations in all of the forms;
+ i.e. add the prohibited cases mentioned above.
+ 
+ I.e. change the variable-list in the syntax descriptions as follows:
+
+  do & do*:     ( { var | (var [init [step]] ) }* )
+  let & let*:   ( { var | (var [value]       ) }* )
+  compiler-let: ( { var | (var [value]       ) }* )
+
+Test Cases:
+
+ (let          (a (b) (c 3)) ... )  would be valid.
+ (let*         (a (b) (c 3)) ... )  would be valid.
+ (do           (a (b) (c 3)) ... )  would be valid.
+ (do*          (a (b) (c 3)) ... )  would be valid.
+ (compiler-let (a (b) (c 3)) ... )  would be valid.
+
+Rationale:
+
+ The asymmetry is unnecessary and impedes learning of CL.
+ 
+ Any other way to make these cases consistent, such as either
+ omitting just ``var'' from do & do* and prog & prog*, or
+ omitting ``(var)'' from let & let* and prog & prog*, 
+ would be an incompatible change to the language.  
+ This way just adds the flexibility found in some of the forms to all of them.
+
+Current Practice:
+
+ KCL allows ``(var)'' in let & let* but not ``var'' in do & do*.
+ 
+ Symbolics Genera allows all three cases in all the forms; i.e. it conforms
+ to this proposal.
+
+Cost to Implementors:
+
+ Extremely slight. (May involve subtracting code rather than adding it).
+
+Cost to Users:
+
+ None.
+
+Cost of Non-Adoption:
+
+ The variation in syntax makes them harder to learn.
+
+Benefits:
+
+ Ease of learning.
+
+Aesthetics:
+
+ Symmetry is more aesthetic than asymmetry, at least to some of us.
+
+Discussion: 
+
+ Pitman supports this proposal.
+
+ The issue about whether the atomic ``var'' should be allowed at all in the 
+ variable lists for let & let* is a separate issue.  (So is whether
+ it should mean that the var is initially bound to nil.)  Since it is allowed, 
+ this proposal merely says that the alternative syntax of an atom within a 
+ list with no initial value, ``(var)'', should also be allowed.

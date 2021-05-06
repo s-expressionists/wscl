@@ -1,0 +1,62 @@
+Status: Passed, as amended, Mar 89 X3J13
+
+Issue:        BREAK-ON-WARNINGS-OBSOLETE
+Forum:	      Cleanup
+References:   *BREAK-ON-WARNINGS* (CLtL p432, CL Condition System p40)
+	      *BREAK-ON-SIGNALS* (CL Condition System p25)
+Category:     CLARIFICATION/CHANGE
+Edit history: 07-Mar-89, Version 1 by Pitman
+			 8-Apr-89, Version 2 by Masinter (as amended; update discussion)
+
+Problem Description:
+
+  With the advent of *BREAK-ON-SIGNALS*, *BREAK-ON-WARNINGS* is
+  redundant and unnecessary.
+
+Proposal (BREAK-ON-WARNINGS-OBSOLETE:REMOVE):
+
+  Remove *BREAK-ON-WARNINGS*.
+
+Test Case:
+
+  N/A
+
+Rationale:
+
+  This will lead to simplification of the description of WARN.
+
+  Not only are the two variables overkill, but they have an effect
+  in an identifiably but uselessly distinct place.
+
+Current Practice:
+
+  Most have *BREAK-ON-WARNINGS*.
+
+Cost to Implementors:
+
+  slight.
+
+Cost to Users:
+
+  Users will have to write (SETQ *BREAK-ON-SIGNALS* 'WARNING)
+  rather than (SETQ *BREAK-ON-WARNINGS* T).
+
+  Since this is mainly done interactively and not in programs,
+  the cost is slight.
+
+Cost of Non-Adoption:
+
+  The definition of WARN will be gratuitously cluttered.
+
+Benefits:
+
+  Cost of non-adoption is avoided.
+
+Aesthetics:
+
+  Slight improvement.
+
+Discussion:
+
+  Pitman thinks this is a good idea, but doesn't think a lot of time
+  should be wasted discussing the issue if there is strong opposition.

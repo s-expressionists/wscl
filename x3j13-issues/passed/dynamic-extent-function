@@ -1,0 +1,117 @@
+Status:	passed, jun 89 X3j13
+
+Forum:		CLEANUP
+Issue:          DYNAMIC-EXTENT-FUNCTION
+References:     Scope and Extent
+		Issue DYNAMIC-EXTENT
+Category:       ADDITION
+Edit history:   04-Apr-89, Version 1 by Loosemore
+		11-Jun-89, Version 2 by Loosemore
+
+
+Problem Description:
+
+  Proposal DYNAMIC-EXTENT:NEW-DECLARATION, passed at the March 89 
+  meeting, provides a mechanism for declaring that the values of
+  variables have only dynamic (rather than indefinite) extent.  It
+  would be useful to have similar functionality to indicate that
+  functional bindings may have only dynamic extent.  (For example,
+  this would permit compilers to stack-allocate closures.)
+
+Proposal (DYNAMIC-EXTENT-FUNCTION:EXTEND):
+
+  Extend the DYNAMIC-EXTENT declaration to accept arguments that are
+  lists of the form (FUNCTION <name>) where <name> is a function name,
+  as well as symbols.
+
+  A (FUNCTION <name>) list appearing in a DYNAMIC-EXTENT declaration is
+  used to declare that the lexically visible functional binding of <name>
+  has dynamic extent.  Except for the interpretation of <name> as the
+  name of a function instead of the name of a variable, such a declaration
+  otherwise has semantics that are identical to those already described
+  in proposal DYNAMIC-EXTENT:NEW-DECLARATION.
+
+Rationale:
+
+  This permits a programmer to offer advice to an implementation about
+  what functions may be stack-allocated for efficiency.
+
+  It may be difficult or impossible for a compiler to infer this
+  same information statically.
+
+Current Practice:
+
+  JonL says that Lucid's compiler can stack-allocate closures, but they
+  have no mechanism for programmers to give the compiler permission to
+  do so.
+
+  HPCL-I has an UPWARD-CLOSURES declaration that pervasively affects
+  all closures created within the scope of the declaration.
+
+  The Symbolics Genera compiler can often infer when functions can be 
+  implemented to have dynamic extent.  Also, if a function has a
+  SYS:DOWNWARD-FUNCTION declaration in front of its body, then the
+  function is implemented with dynamic extent regardless of whether
+  the compiler thinks all uses are "downward".  (This declaration is
+  rather peculiar because its scope is actually larger than the lambda
+  expression containing the declaration; implementationally, it's the
+  surrounding function definition.)
+
+Cost to Implementors:
+
+  No cost is forced since implementations are permitted to simply
+  ignore the DYNAMIC-EXTENT declaration.  
+
+Cost to Users:
+
+  None. This change is upward compatible.
+
+  There may be some hidden costs to debugging using this declaration (or any
+  feature which permits the user to access dynamic extent objects without
+  the compiler proving that they are appropriate). If the user misdeclares
+  something and returns a pointer into the stack (or stores it in the heap),
+  an undefined situation may result and the integrity of the Lisp storage
+  mechanism may be compromised. Debugging these situations may be tricky,
+  but users who have asked for this feature have indicated a willingness
+  to deal with such costs. Nevertheless, the perils should be clearly
+  documented and casual users should not be encouraged to use this
+  declaration.
+
+Cost of Non-Adoption:
+
+  Some portable code would be forced to run more slowly (due to
+  GC overhead), or to use non-portable language features.
+
+Benefits:
+
+  The cost of non-adoption is avoided.
+
+Aesthetics:
+
+  This declaration allows a fairly low level optimization to work
+  by asking the user to provide only very high level information.
+  The alternatives (sharpsign conditionals, some of which may
+  lead to more bit-picky abstractions) are far less aesthetic.
+
+Discussion:
+
+  Loosemore supports DYNAMIC-EXTENT-FUNCTION:EXTEND.
+
+  This proposal does not attempt to address the issue of specifying
+  dynamic extent for anonymous closures (which is really a special case
+  of the more general problem of specifying dynamic extent for unnamed
+  objects of any type).  It's possible, although often awkward, to
+  restructure the program to give the object a name and explicitly
+  identify its extent.
+
+  One possible solution to the problem of dynamic extent for anonymous
+  lambdas would be to clarify that a reference to a closed-over variable
+  or function appearing lexically within a FUNCTION form is enough to
+  cause its value to be "saved" when the FUNCTION form is executed,
+  regardless of whether or not that reference is actually executed when
+  the resulting function is called.  Then, if all of the closed-over
+  functions and variables referenced within a closure are declared to
+  have dynamic extent, the closure could be assumed to have dynamic
+  extent as well.  (More precisely, its maximum extent would be the
+  intersection of the extents of the closed-over functions and
+  variables.)

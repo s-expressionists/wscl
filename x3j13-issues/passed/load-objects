@@ -1,0 +1,287 @@
+Status:  Passed, as amended, Mar 89 X3J13 (18-0 vote)
+
+Issue:         LOAD-OBJECTS
+
+References:    none
+
+Related issues: LOAD-TIME-EVAL,
+                CONSTANT-COMPILABLE-TYPES,
+                CONSTANT-CIRCULAR-COMPILATION
+
+Category:      ADDITION
+
+Forum:         Cleanup
+
+Edit history:  Version 1, 2-Jan-89, by Moon (for discussion)
+               Version 2, 13-Jan-89, by Moon (draft updated from discussion)
+               Version 3,  9-Mar-89, by Moon (changes suggested by discussion)
+	       Version 4, 4-Apr-89, by Pitman (changes per X3J13 Mar 89; 
+		 MAKE-LOAD-FORM-USING-SLOTS => MAKE-LOAD-FORM-SAVING-SLOTS)
+
+Problem description:
+
+  Common Lisp doesn't provide any way to use an object of a user-defined
+  type (defined with DEFCLASS or DEFSTRUCT) as a constant in a program
+  compiled with COMPILE-FILE.  The problem is that LOAD has to be able
+  to "reconstruct" an equivalent object when the compiled-code file is
+  loaded, but the programmer has no way to tell LOAD how to do that.
+
+
+Proposal (LOAD-OBJECTS:MAKE-LOAD-FORM):
+          
+  Define a new generic function named MAKE-LOAD-FORM, which takes one
+  argument and returns two values.  The argument is an object that is
+  referenced as a constant or as a self-evaluating form in a file being
+  compiled by COMPILE-FILE.  The objective is to enable LOAD to
+  construct an equivalent object.
+
+  The first value, called the "creation form," is a form that, when
+  evaluated at load time, should return an object that is equivalent to
+  the argument.  The exact meaning of "equivalent" depends on the type
+  of object and is up to the programmer who defines a method for
+  MAKE-LOAD-FORM.  This is the same type of equivalence discussed
+  in issue CONSTANT-COMPILABLE-TYPES.
+
+  The second value, called the "initialization form," is a form that,
+  when evaluated at load time, should perform further initialization of
+  the object.  The value returned by the initialization form is ignored.
+  If the MAKE-LOAD-FORM method returns only one value, the
+  initialization form is NIL, which has no effect.  If the object used
+  as the argument to MAKE-LOAD-FORM appears as a constant in the
+  initialization form, at load time it will be replaced by the
+  equivalent object constructed by the creation form; this is how the
+  further initialization gains access to the object.
+
+  Both the creation form and the initialization form can contain
+  references to objects of user-defined types (defined precisely below).
+  However, there must not be any circular dependencies in creation forms.
+  An example of a circular dependency is when the creation form for the
+  object X contains a reference to the object Y, and the creation form
+  for the object Y contains a reference to the object X.  A simpler
+  example would be when the creation form for the object X contains
+  a reference to X itself.  Initialization forms are not subject to
+  any restriction against circular dependencies, which is the entire
+  reason that initialization forms exist.  See the example of circular
+  data structures below.
+
+  The creation form for an object is always evaluated before the
+  initialization form for that object.  When either the creation form or
+  the initialization form references other objects of user-defined types
+  that have not been referenced earlier in the COMPILE-FILE, the
+  compiler collects all of the creation and initialization forms.  Each
+  initialization form is evaluated as soon as possible after its
+  creation form, as determined by data flow.  If the initialization form
+  for an object does not reference any other objects of user-defined
+  types that have not been referenced earlier in the COMPILE-FILE, the
+  initialization form is evaluated immediately after the creation form.
+  If a creation or initialization form F references other objects of
+  user-defined types that have not been referenced earlier in the
+  COMPILE-FILE, the creation forms for those other objects are evaluated
+  before F, and the initialization forms for those other objects are
+  also evaluated before F whenever they do not depend on the object
+  created or initialized by F.  Where the above rules do not uniquely
+  determine an order of evaluation, which of the possible orders of
+  evaluation is chosen is unspecified.
+
+  While these creation and initialization forms are being evaluated, the
+  objects are possibly in an uninitialized state, analogous to the state
+  of an object between the time it has been created by ALLOCATE-INSTANCE
+  and it has been processed fully by INITIALIZE-INSTANCE.  Programmers
+  writing methods for MAKE-LOAD-FORM must take care in manipulating
+  objects not to depend on slots that have not yet been initialized.
+
+  It is unspecified whether LOAD calls EVAL on the forms or does some
+  other operation that has an equivalent effect.  For example, the
+  forms might be translated into different but equivalent forms and
+  then evaluated, they might be compiled and the resulting functions
+  called by LOAD, or they might be interpreted by a special-purpose
+  interpreter different from EVAL.  All that is required is that the
+  effect be equivalent to evaluating the forms.
+
+  COMPILE-FILE calls MAKE-LOAD-FORM on any object that is referenced as
+  a constant or as a self-evaluating form, if the object's metaclass is
+  STANDARD-CLASS, STRUCTURE-CLASS, any user-defined metaclass (not a
+  subclass of BUILT-IN-CLASS), or any of a possibly-empty
+  implementation-defined list of other metaclasses.  COMPILE-FILE will
+  only call MAKE-LOAD-FORM once for any given object (compared with EQ)
+  within a single file.
+
+  It is valid for user programs to call MAKE-LOAD-FORM in other
+  circumstances, providing the argument's metaclass is not BUILT-IN-CLASS
+  or a subclass of BUILT-IN-CLASS.
+
+  Define a new function named MAKE-LOAD-FORM-SAVING-SLOTS, which takes
+  one required argument and one optional argument and returns two
+  values.  This can be useful in user-written MAKE-LOAD-FORM methods.
+  The first argument is the object.  The optional second argument is a
+  list of the names of the slots to preserve; it defaults to all of the
+  local slots.  MAKE-LOAD-FORM-SAVING-SLOTS returns forms that construct
+  an equivalent object using MAKE-INSTANCE and SETF of SLOT-VALUE for
+  slots with values, or SLOT-MAKUNBOUND for slots without values, or
+  using other functions of equivalent effect.
+  MAKE-LOAD-FORM-SAVING-SLOTS returns two values, thus it can deal with
+  circular structures.  MAKE-LOAD-FORM-SAVING-SLOTS works for any object
+  of metaclass STANDARD-CLASS or STRUCTURE-CLASS.  Whether the result is
+  useful in an application depends on whether the object's type and slot
+  contents fully capture the application's idea of the object's state.
+
+  MAKE-LOAD-FORM of an object of metaclass STANDARD-CLASS or
+  STRUCTURE-CLASS for which no user-defined method is applicable signals
+  an error.  It is valid to implement this either by defining default
+  methods on STANDARD-OBJECT and STRUCTURE-OBJECT that signal an error
+  or by having no applicable method for those classes.
+
+
+Examples:
+
+  ;; Example 1
+  (defclass my-class ()
+     ((a :initarg :a :reader my-a)
+      (b :initarg :b :reader my-b)
+      (c :accessor my-c)))
+  (defmethod shared-initialize ((self my-class) ignore &rest ignore)
+    (unless (slot-boundp self 'c)
+      (setf (my-c self) (some-computation (my-a self) (my-b self)))))
+  (defmethod make-load-form ((self my-class))
+    `(make-instance ',(class-name (class-of self))
+                    :a ',(my-a self) :b ',(my-b self)))
+
+  In this example, an equivalent instance of my-class is reconstructed
+  by using the values of two of its slots.  The value of the third slot
+  is derived from those two values.
+
+  Another way to write the last form in the above example would have been
+
+  (defmethod make-load-form ((self my-class))
+     (make-load-form-saving-slots self '(a b)))
+
+  ;; Example 2
+  (defclass my-frob ()
+     ((name :initarg :name :reader my-name)))
+  (defmethod make-load-form ((self my-frob))
+    `(find-my-frob ',(my-name self) :if-does-not-exist :create))
+
+  In this example, instances of my-frob are "interned" in some way.
+  An equivalent instance is reconstructed by using the value of the
+  name slot as a key for searching existing objects.  In this case
+  the programmer has chosen to create a new object if no existing
+  object is found; alternatively she could have chosen to signal an
+  error in that case.
+
+  ;; Example 3
+  (defclass tree-with-parent () ((parent :accessor tree-parent)
+                                 (children :initarg :children)))
+  (defmethod make-load-form ((x tree-with-parent))
+    (values
+      ;; creation form
+      `(make-instance ',(class-of x) :children ',(slot-value x 'children))
+      ;; initialization form
+      `(setf (tree-parent ',x) ',(slot-value x 'parent))))
+
+  In this example, the data structure to be dumped is circular, because
+  each parent has a list of its children and each child has a reference
+  back to its parent.  Suppose make-load-form is called on one object in
+  such a structure.  The creation form creates an equivalent object and
+  fills in the children slot, which forces creation of equivalent
+  objects for all of its children, grandchildren, etc.  At this point
+  none of the parent slots have been filled in.  The initialization form
+  fills in the parent slot, which forces creation of an equivalent
+  object for the parent if it was not already created.  Thus the entire
+  tree is recreated at load time.  At compile time, MAKE-LOAD-FORM is
+  called once for each object in the true.  All of the creation forms
+  are evaluated, in unspecified order, and then all of the
+  initialization forms are evaluated, also in unspecified order.
+
+  ;; Example 4
+  (defstruct my-struct a b c)
+  (defmethod make-load-form ((s my-struct))
+     (make-load-form-saving-slots s))
+
+  In this example, the data structure to be dumped has no special
+  properties and an equivalent structure can be reconstructed
+  simply by reconstructing the slots' contents.
+
+
+Rationale:
+
+  Only the programmer who designed a class can know the correct
+  way to reconstruct objects of that class at load time, therefore
+  the reconstruction should be controlled by a generic function.
+  Using EVAL as the interface for telling LOAD what to do provides
+  full generality.
+
+  MAKE-LOAD-FORM returns two values so that circular structures can
+  be handled.  If CONSTANT-CIRCULAR-COMPILATION is rejected,
+  MAKE-LOAD-FORM will only return one value, although implementations
+  that make an extension to support circular constants will probably
+  also make the extension to accept two values from MAKE-LOAD-FORM.
+
+  The default for class objects and structures is to signal an error,
+  rather than picking some particular object reconstruction technique,
+  because no reconstruction technique is appropriate for all objects.
+  It only takes two lines of code, as in example 4, to instruct the
+  compiler to use the technique that most often has been suggested
+  as the default.
+
+  MAKE-LOAD-FORM has a natural resemblance to PRINT-OBJECT, as a hook
+  for the programmer to control the system's actions.
+
+  The order of evaluation rules for creation and initialization forms
+  eliminate the possibility of partially initialized objects in the
+  absence of circular structures, and reduce it to the minimum possible
+  in the presence of circular structures.  This allows nodes in
+  non-circular structures to be built out of fully initialized subparts.
+
+
+Current practice:
+
+  Symbolics Flavors has something like this, but under a different name.
+  The name Symbolics uses is not suitable for standardization.
+
+  JonL reports that Lucid is getting more and more requests for this.
+
+Cost to Implementors:
+
+  This seems like only a few one-line changes in the compiled-code
+  file writer and reader.  MAKE-LOAD-FORM-SAVING-SLOTS is a couple
+  dozen lines of code, assuming the presence of the CLOS metaobject
+  protocol or an implementation-dependent equivalent.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Serious impairment of the ability to use extended-type objects.  Each
+  implementation will probably make up its own version of this as an
+  extension.
+
+Performance impact:
+
+  None.
+
+Benefits:
+
+  See Cost of non-adoption.
+
+Esthetics:
+
+  No significant positive or negative impact.
+
+Discussion:
+
+  It would be possible to define an additional level of protocol that
+  allows multiple classes to contribute to the reconstruction of an
+  object, combining initialization arguments contributed by each class.
+  Since a user can easily define that in terms of MAKE-LOAD-FORM without
+  modifying the Lisp system, it is not being proposed now.
+
+  Any type that has a read syntax is likely to appear as a quoted
+  constant or inside a quoted constant.  Pathnames are one example, user
+  programs often define others.  Also many implementations provide a way
+  to create a compiled-code file full of data (rather than compiled Lisp
+  programs), and such data probably include extended-type objects.
+
+  Moon supports this.  David Gray and John Rose made major contributions
+  to the discussion that produced this improved version 2 proposal.

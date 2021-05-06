@@ -1,0 +1,167 @@
+Status:	Passed as amended, Jun 89 X3J13
+Issue:        EQUAL-STRUCTURE
+References:   EQUAL (p80), EQUALP (p81)
+Category:     CLARIFICATION/CHANGE
+Edit history: 18-Mar-88, Version 1 by Pitman
+	      08-Jun-88, Version 2 by Masinter (add Benson's proposal)
+	      23-Sep-88, Version 3 by Masinter (remove all but STATUS-QUO)
+	      01-Oct-88, Version 4 by Masinter (fix description)
+	      01-Oct-88, Version 5 by Pitman   (correct wording, add discussion)
+	      11-Jan-89, Version 6 by Pitman   (attempt EQUALP correction)
+		15-Mar-89, Version 7 by Masinter (amended as per vote at Jan 89 X3J13)
+		3-Jul-89, Version 8, by Masinter (amended as per Jun89 X3J13)
+
+Problem Description:
+
+  The behavior of EQUAL and EQUALP on structures is a subject of controversy.
+  At issue are whether these functions should descend the slots of structures
+  or use simply the structure's primitive identity (i.e., EQ) to test for
+  equivalence.
+
+Proposal (EQUAL-STRUCTURE:MAYBE-STATUS-QUO):
+
+  Clarify that EQUAL and EQUALP do not descend any structures or data types
+  other than the ones explicitly specified here:
+
+   Type                     EQUAL Behavior        EQUALP Behavior
+ 
+   Number                     uses EQL               uses =
+   Character                  uses EQL               uses CHAR-EQUAL
+   Cons                       descends               descends
+   Bit-Vector                 descends               descends
+   String                     descends               descends
+   Pathname                   magic per CLtL         same as EQUAL
+   Structure                  uses EQ                (see below)
+   other Array                uses EQ                descends
+   Hash-Table                 uses EQ                (see below)
+   Instance (Standard-Object) uses EQ                uses EQ
+   Other                      uses EQ                uses EQ
+
+  Note that the order of this table is in some cases important, with upper
+  entries taking priority over lower ones.
+
+  EQUALP descends hash tables by first comparing the count of entries
+  and the :TEST function; if those are the same, it compares the
+  keys of the tables using the :TEST function and then the values
+  of the matching keys using EQUALP recursively.
+
+  EQUALP on two DEFSTRUCT objects 's1' and 's2', where one is a
+  non-:TYPEed DEFSTRUCT and the other is typed, is false.
+
+  EQUALP on two DEFSTRUCT objects 's1' and 's2', where both are
+  non-:TYPEed DEFSTRUCTS is true iff:
+
+  (1) The type of 's1' is the same as the type of 's2' (this is
+   the same as saying that the defstruct name for 's1' is the same
+   as that for 's2').
+
+  (2) The value of each slot of 's1' is EQUALP to the value of the
+  same slot of 's2' (where "same" means same name) (this is not the
+  same as 'slots' for standard-objects in CLOS).
+ 
+Rationale:
+
+  There seem to be as many different equality primitives as there
+  are applications for them. None of the possible ways of changing
+  EQUAL or EQUALP are flawless. Given the inability to "fix" them,
+  it is better to leave them alone.
+
+Current Practice:
+
+  We are unaware of any extensions to CLtL's set of operations,
+  although frequently users request them.
+
+Cost to Implementors:
+
+  Since this seems to be compatible with the status quo, none.
+
+Cost to Users:
+
+  Same
+
+Cost of Non-Adoption:
+
+  Ongoing controversy about whether EQUAL and EQUALP "do the right thing".
+
+Benefits:
+
+  A feeling that EQUAL and EQUALP exist and/or do what they do because serious
+  consideration was given and we consciously decided on a particular resolution
+  to the numerous questions that have come up about them.
+
+Aesthetics:
+
+  There seems to be wide debate about what the proper aesthetics for
+  how equality should work in Common Lisp. While the status quo is not
+  aesthetically more pleasing than the various alternatives, aesthetic
+  considerations vary widely. Different people model structures
+  differently. Sometimes the same person models structures differently in
+  different situations. The question of which should be descended and which
+  should not is a very personal one, and the aesthetic attractiveness of any
+  of these options will vary from person to person or application to
+  application.
+
+Discussion:
+
+  An earlier version of this issue with various alternatives was distributed
+  at the June 1988 X3J13 meeting. Since
+  this is a frequently raised issue, we thought we should submit it
+  as a clarification although there is no change to CLtL.
+
+  Options for which we considered proposals were:
+    - removing EQUAL and EQUALP from the standard.
+    - changing EQUALP to descend structures.
+    - changing EQUALP to be case sensitive.
+    - adding a :TEST keyword to EQUAL.
+    - making EQUAL a generic function
+  All of these had some serious problems.
+
+  The cleanup committee supports option STATUS-QUO.
+
+  It would be useful if descriptions of EQUAL and EQUALP contained some sort
+  of additional commentary alluding to the complex issues discussed here.
+  The following is offered to the Editorial staff as a starting point:
+
+    Object equality is not a concept for which there is a uniquely
+    determined correct algorithm. The appropriateness of an equality
+    predicate can be judged only in the context of the needs of some
+    particular program. Although these functions take any type of
+    argument and their names sound very generic, EQUAL and EQUALP are
+    not appropriate for every application. Any decision to use or not
+    use them should be determined by what they are documented to do
+    rather than any abstract characterization of their function. If
+    neither EQUAL nor EQUALP is found to be appropriate in a particular
+    situation, programmers are encouraged to create another operator
+    that is appropriate rather than blame EQUAL or EQUALP for ``doing
+    the wrong thing.''
+
+
+Additional Comments to Version 6:
+
+Version 6 attempts to fix some of the problems noted in Version 5.
+There are still some open questions. Only the "Proposal"
+part has been changed since Version 5; some of the costs,
+benefits & other discussion is now incorrect.
+
+Kent says:
+
+Please read this very carefully before voting in favor of it.
+There were a lot of Yes votes for the last version, which I think
+had some serious bugs in it. This would be a very bad issue for
+us to screw up.
+
+Things that might need special attention:
+
+ - Moon contends that standard practice in Symbolics Lisp is
+   for instances to be compared using EQ under EQUALP, not by
+   descending. There may be performance issues involved here.
+   Some agreement needs to be reached.
+
+ - Neither the previous version of the proposal nor CLtL was
+   clear on what happens to pathnames under EQUALP. This showed
+   up when I converted the presentation below. That issue should
+   be addressed as well.
+
+Hopefully if this version of the proposal isn't something you want to
+vote yes for, at least it's in a suitable form for easy line-item
+changes interactively in the meeting.

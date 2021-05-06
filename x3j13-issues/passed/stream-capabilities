@@ -1,0 +1,106 @@
+Status:	Passed, Jun 89 X3J13
+Issue:         STREAM-CAPABILITIES
+References:    Standard streams (pp. 327-329)
+Category:      ADDITION
+Edit history:  Version 1 by Pierson 5-Jul-88, add redesign per Pitman
+               Version 2 by Moon, 10-May-89, remove controversial parts
+               Version 3 by Moon, 12-May-89, improve wording and examples
+
+Problem description:
+
+  Programs cannot currently distinguish between interactive use and batch
+  (or background) use without using implementation-dependent extensions.
+  For example, there is currently no way to tell whether it is useful to
+  ask a question when an unexpected situation is encountered.
+
+  Note: earlier versions of this issue tried to solve another problem
+  as well.  See discussion section.
+
+Proposal (STREAM-CAPABILITIES:INTERACTIVE-STREAM-P):
+
+  Add the following function:
+
+    INTERACTIVE-STREAM-P stream
+
+    Returns T if the stream is interactive, otherwise NIL.  Signals
+    an error of type TYPE-ERROR if the argument is not a stream.
+
+    The precise meaning of INTERACTIVE-STREAM-P is implementation
+    dependent, and may depend on the underlying operating system.  However
+    the general intent is to distinguish between interactive and batch (or
+    background or command-file) operations.
+
+    Some examples of the things that might identify a stream as interactive
+    include:
+       1. The stream is connected to a person (or equivalent) in
+          such a way that the program can prompt for information and
+          expect to receive different input depending on the prompt.
+       2. The program is expected to prompt for input and support
+          "normal input editing".
+       3. READ-CHAR might hang waiting for the user to type something
+          instead of quickly returning a character or EOF.
+
+    *TERMINAL-IO* might or might not be interactive.
+
+Examples:
+
+  (when (> measured limit)
+    (let ((error (round (* (- measured limit) 100)
+                        limit)))
+      (unless (if (interactive-stream-p *query-io*)
+                  (yes-or-no-p "The frammis is out of tolerance by ~D%.~@
+                                Is it safe to proceed? " error)
+                  (< error 15))  ;15% is acceptable
+        (error "The frammis is out of tolerance by ~D%." error))))
+
+Rationale:
+
+  INTERACTIVE-STREAM-P has been proposed several times and is clearly
+  needed by any program that alters its behavior depending on whether
+  it is interacting with a user or running in a "batch" mode.
+
+Current practice:
+
+  Most implementations have this feature already, often under a
+  different name.
+
+Cost to Implementors:
+
+  Implementations will have to support this new function.  Correct support
+  will require some thought for each operating system supported.
+
+Cost to Users:
+
+  None, this is an upward-compatible extension.
+
+Cost of non-adoption:
+
+  Less featureful language. 
+
+Performance impact:
+
+  None.
+
+Benefits:
+
+  More featureful language.
+
+Esthetics:
+
+  More featureful language.
+
+Discussion:
+
+  It's not possible to make a specific definition of "interactive" that
+  applies to all operating systems, we concluded from earlier discussion.
+  However, "everyone knows" appoximately what it means.  Hence the idea
+  of describing it by example rather than defining it.
+
+  Note that some proposed features for telling whether two streams are
+  connected to the same source or sink of information have been removed
+  from this version of the proposal.  These were the functions
+  STREAM-SAME-SOURCE-P, STREAM-SAME-DESTINATION-P, STREAM-SOURCE-ID-LIST,
+  and STREAM-DESTINATION-ID-LIST.  These could be revived in another
+  proposal if desired, but Moon thought INTERACTIVE-STREAM-P was
+  important and didn't want it to be lost due to controversy over these 
+  unrelated functions.

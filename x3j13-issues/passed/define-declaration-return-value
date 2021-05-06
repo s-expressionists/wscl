@@ -1,0 +1,96 @@
+Date: Tue, 10 Jul 90 22:04 EDT
+From: David A. Moon <Moon@STONY-BROOK.SCRC.Symbolics.COM>
+Subject: Issue: DEFINE-DECLARATION-RETURN-VALUE
+To: KMP@STONY-BROOK.SCRC.Symbolics.COM, Barmar@Think.com,
+        Sandra@jensen.utah.edu, KAB@CHARON.MIT.EDU, masinter@parc.xerox.com
+File-References: 
+ SCRC|S:>KMP>lisp>x3j13>cleanup>define-declaration-return-value.text.newest
+
+Here is Kent's copy of this issue.  There appears to be no copy on Arisia.
+Kent's notes say the status of this is unknown, mine say that it was accepted
+unanimously at the November meeting.  My notes say Barry proposed returning
+an alist instead of multiple values, but don't indicate whether that was a
+friendly amendment that was accepted, or just something that was mentioned in
+passing and didn't affect anything.  The minutes that Larry mailed out mention
+this being passed but don't mention the amendment.  So I don't know the real
+status of this.
+
+Forum:		Cleanup
+Issue:		DEFINE-DECLARATION-RETURN-VALUE
+References:	DEFINE-DECLARATION (issue SYNTACTIC-ENVIRONMENT-ACCESS)
+Category:	CHANGE
+Edit History:   V1, 29 Oct 1989, Sandra Loosemore
+
+
+Problem Description:
+
+The specification of the return values from handlers defined with
+DEFINE-DECLARATION (added to the language at the June 89 meeting) only
+permits a declaration to apply either to variable bindings, to
+function bindings, or to neither.  The first return value from the
+handler function indicates which of these cases it is, and the second
+return value is a list containing information about the declaration.
+
+The DYNAMIC-EXTENT declaration cannot be handled with this mechanism
+since it can apply to both variable and function bindings.  It seems
+reasonable for both users and implementations to define other kinds of
+declarations that use a similar syntax, and DEFINE-DECLARATION ought
+to be able to handle these cases.
+
+
+Proposal (DEFINE-DECLARATION-RETURN-VALUE:THREE-VALUES):
+
+Change the specification of DEFINE-DECLARATION to require handler
+functions to return three values.
+
+The first value is a list which corresponds to information about
+variable bindings specified by the declaration.  The format of this
+list is the same as is now required to be returned as the second value
+of DEFINE-DECLARATION when the first value is :VARIABLE; that is, a
+list of (binding-name key value) lists.
+
+The second value is a list which corresponds to information about
+function bindings specified by the declaration.  The format of this
+list is the same as is now required to be returned as the second value
+of DEFINE-DECLARATION when the first value is :FUNCTION; that is, a
+list of (binding-name key value) lists.
+
+The third value is a list which corresponds to information about
+declarations that do not apply to either variable or function
+bindings.  The format of this list is the same as is now required to
+be returned as the second value of DEFINE-DECLARATION when the first
+value is :DECLARE; that is, a list whose CAR is a key (used by the
+function DECLARATION-INFORMATION) and whose CDR is the associated
+return value.
+
+
+Rationale:
+
+This proposal fixes a deficiency in the original specification of 
+DEFINE-DECLARATION, while minimizing the change to the format of the
+information that is returned.
+
+
+Current Practice:
+
+Has anybody even implemented DEFINE-DECLARATION (as originally
+specified in issue SYNTACTIC-ENVIRONMENT-ACCESS) yet?
+
+
+Cost to implementors:
+
+Probably minor.
+
+
+Cost to users:
+
+Probably minor.
+
+
+Benefits:
+
+DEFINE-DECLARATION is made more powerful.
+
+
+Discussion:
+

@@ -1,0 +1,52 @@
+&ENVIRONMENT-BINDING-ORDER
+V3, 3-nov-89
+Status: vote for LEFT-TO-RIGHT
+
+COMPLEX-ATANH-BOGUS-FORMULA
+V1, 20-sep-89
+Status: No objections, go for it.
+
+CONDITION-RESTARTS
+V2, 26-Jun-89
+Status: Passed, Jun 89. 
+Some problems (in mail)
+
+DEFINE-COMPILER-MACRO
+V2, 12-jul-89 Passed, Jun 89
+V3, 24-Oct-89: modified proposal
+
+DEFINE-DECLARATION-RETURN-VALUE
+V1, 29-Oct-89: simple change, go for it
+
+DEFMACRO-BLOCK-SCOPE
+V1, 24-Oct-89: two proposals; mail seems to tend toward "excludes-bindings"
+
+DEFSTRUCT-CONSTRUCTOR-OPTIONS
+V1, 11-Oct-89: go for it
+
+DEFSTRUCT-CONSTRUCTOR-SLOT-VARIABLES
+V2, 2-Nov-89: three proposals (BOUND, NOT-BOUND, VISIBLY-BOUND)
+
+DEFSTRUCT-SYNTAX-ERRORSS
+V1, 31-Oct-89
+
+EVALHOOK-STEP-CONFUSION
+V2, 2-Nov-89
+
+FLOATING-POINT-CONDITION-NAMES
+V1, 30-Oct-89
+
+INSPECT-RETURN-VALUE
+V1, 23-Oct-89
+
+MACRO-DECLARATIONS
+V2, 2-Nov-89
+
+MACROEXPAND-RETURN-VALUE
+V1, 29-Oct-89 (true instead of T)
+
+READER-ERROR
+V2, 2-Nov-89
+
+STANDARD-READTABLE
+V3, 2-Nov-89

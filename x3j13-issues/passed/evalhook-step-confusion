@@ -1,0 +1,147 @@
+Forum:		Cleanup
+Issue:		EVALHOOK-STEP-CONFUSION
+References:	CLtL p 321, 323, 441
+		Issue STEP-ENVIRONMENT (passed)
+                Issue APPLYHOOK-ENVIRONMENT (passed)
+Category:	CHANGE/CLARIFICATION
+Edit History:   V1, 9 Oct 1989, Sandra Loosemore
+		V2, 2 Nov 1989, Sandra Loosemore (update discussion)
+	        V3, 4 Dec 1990, Pitman (amendment per X3J13)
+
+Problem Description:
+
+Common Lisp permits the evaluator to be implemented by compiling the
+form before executing it, but notes that this techniques "renders the
+EVALHOOK mechanism relatively useless" (CLtL p. 321).
+
+CLtL also requires the STEP utility to be implemented in terms of
+EVALHOOK (p. 323).  The restriction against implementing STEP using
+some other technique (such as annotations on code lexically within the
+body of the STEP) that make more sense in a compiled-only
+implementation is pointless.  It is probably not even desirable for
+STEP to be implemented with *EVALHOOK*, since this effectively causes
+the stepper to break on user programs that also use *EVALHOOK*.
+
+
+Proposal (EVALHOOK-STEP-CONFUSION:X3J13-NOV-89):
+
+(a) Remove the requirement that STEP be implemented using *EVALHOOK*.
+Make it explicitly vague whether the scope of the code that is affected
+by STEP is lexical or dynamic.
+
+(b) Delete *EVALHOOK*, *APPLYHOOK*, EVALHOOK, and APPLYHOOK.
+
+Proposal (EVALHOOK-STEP-CONFUSION:FIX):
+
+(1) Clarify that there is no guarantee that the functions that are the
+values of *EVALHOOK* and *APPLYHOOK* will ever be invoked during
+evaluation.
+
+(2) Remove the requirement that STEP be implemented using *EVALHOOK*.
+Make it explicitly vague whether the scope of the code that is affected
+by STEP is lexical or dynamic.
+
+(3) Deprecate *EVALHOOK*, *APPLYHOOK*, EVALHOOK, and APPLYHOOK.
+
+
+Rationale:
+
+Point by point:
+
+(1) This is merely an explicit statement of the status quo.
+
+(2) This permits compiled-only implementations to support a STEP
+utility that does something useful.
+
+(3) The eval hook mechanism is a relic of a particular interpreter
+implementation technique and really has no place in a language
+standard, especially since one of the stated goals of the language is
+consistency between compiled and interpreted code.  Since there is no
+guarantee that these functions will ever be invoked, portable programs
+should not rely on them.
+
+
+
+Current Practice:
+
+According to Kent Pitman:
+  I'm told by the guys who did the Cloe implementation that indeed
+  neither evalhook nor step do much of anything useful.  If I understood
+  them correctly, *evalhook* just never gets called, and step works by a
+  different mechanism that may work at a granularity different than what
+  people expect.
+
+Loosemore has been implementing an evaluator for Utah Common Lisp that
+uses a preprocessor to partially compile programs.  The interpreter
+for the processed code does support the use of an *evalhook*-like
+special variable, but the information it is passed is in a different
+format than that which *evalhook* requires.  In particular, the object
+representing the lexical environment contains only bindings and not
+syntactic information such as macro definitions.  It also supports a
+variety of annotation-based program debugging hooks that are specified
+by declarations.  We are in the process of integrating the
+preprocessor into the UCL compiler so that most of these debugging
+hooks will also work in compiled code.
+
+
+Cost to implementors:
+
+None.
+
+
+Cost to users:
+
+None.
+
+
+Benefits:
+
+Users will not be misled into thinking *evalhook* is more portable
+than it actually is.
+
+Compiled-only implementations can make STEP do something reasonable.
+
+
+Discussion:
+
+There is an article by Parker in Lisp Pointers, Vol 1 #4 which
+describes one approach for annotation-based debugging.  Loosemore's
+PhD dissertation (soon to be available as a UofU Tech Report) also
+discusses alternate approaches for implementing program steppers.
+
+Scott Fahlman says:
+  I am staying out of most of these discussions, but thought I'd throw in my
+  two cents' worth on this one: I would very much like to see evalhook and
+  applyhook removed from the standard.  They have been a constant source of
+  confusion, and there are so many different interpretations of what these
+  hooks do that facilities built on top of them are not really very portable
+  in practice.  I'm now convinced that a really good stepping package cannot
+  easily be written using these hooks, but must be integrated into the
+  interpreter of a given implementation.
+
+David Moon says:
+  Seems okay, except that if we are going to deprecate these things,
+  I would much rather just remove them.  You would surely argue that
+  no significant program could possibly be depending on EVALHOOK,
+  since it has no semantics, so there can't be a compatibility issue.
+  If we agree that something is a bad idea, I would rather remove it
+  entirely unless there is a compelling compatibility reason to only
+  deprecate it.  In fact even if some programs used EVALHOOK, I would
+  still want to remove it, as I long ago ceased to believe in any
+  fantasy of seamless compatibility between CLtL and ANSI CL.  But
+  others might not agree with me there.
+
+  Plus if we remove them, Symbolics doesn't have to fix the bug that
+  EVALHOOK and APPLYHOOK accidentally got declared SPECIAL.  I mention
+  this only as an example of the costs of deprecating things instead
+  of removing them.  They have to be maintained.  Not only do they have
+  to be documented, but in addition to documenting them we have to tell
+  people not to use them.
+
+Loosemore says:
+  I'd rather get rid of these things entirely too, but I have previously
+  noted some resistance to the idea from others.  Maybe they've changed
+  their minds by now.  Anyway, if we can't agree to delete them now, 
+  deprecation is better than the current situation.
+-------
+

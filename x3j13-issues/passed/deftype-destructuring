@@ -1,0 +1,79 @@
+Issue:            DEFTYPE-DESTRUCTURING
+References:       DEFTYPE
+Related issues:   DEFTYPE-KEY
+Category:         CLARIFICATION, CHANGE
+Edit history:     V1, 23 May 90, Sandra Loosemore
+
+Problem description:
+
+  The specification of DEFTYPE is not clear on the issue of whether
+  it is supposed to support destructuring.  The description in CLtL
+  twice compares its syntax to that of DEFMACRO, leading some
+  people to think that it does support destructuring.  However,
+  since destructuring is not explicitly mentioned, other people
+  think it does not.
+
+  There are two proposals, YES and NO.
+
+Proposal (DEFTYPE-DESTRUCTURING:YES):
+  
+  Clarify that DEFTYPE does support destructuring of the lambda list.
+  The lambda-list syntax for DEFTYPE is identical to that of
+  DEFMACRO.
+
+  Rationale for proposal YES:
+    Some people think this is the way it was really supposed to
+    work, and that supporting destructuring makes the syntax of 
+    DEFTYPE more consistent with other defining macros.
+
+Proposal (DEFTYPE-DESTRUCTURING:NO):
+
+  Clarify that DEFTYPE does not support destructuring of the lambda
+  list.  
+
+  Rationale for proposal NO:
+    This requires minimal changes for implementors.  The use of
+    destructuring with DEFTYPE is rare and since some
+    implementations do not support it now, code that relies on
+    it working is already nonportable.
+
+Current Practice:
+
+  Spice Lisp implemented a destructuring DEFTYPE, and a number
+  of implementations have copied this behavior.  Other
+  implementations do not support destructuring in DEFTYPE.
+
+Cost to Implementors:
+
+  For proposal YES, fairly small, since every implementation
+  already has support for destructuring for other parts of
+  the language.
+
+  For proposal NO, none.  Implementations that now support 
+  destructuring can continue to do so as an extension.
+
+Cost to Users:
+
+  None for either proposal.  Code that relies on destructuring 
+  with DEFTYPE is already not portable, but on the other hand
+  adding destructing support shouldn't break code that doesn't
+  use it.
+
+Cost of non-adoption:
+
+  Continuing vagueness in this part of the language specification.
+
+Performance impact:
+
+  Probably insignificant.
+
+Benefits:
+
+  This part of the language specification is made more clear.
+
+Esthetics:
+
+  Seems to be a matter of personal taste.
+
+Discussion:
+-------

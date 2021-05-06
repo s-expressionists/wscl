@@ -1,0 +1,88 @@
+Forum:		Cleanup
+Issue:		DEFMACRO-BLOCK-SCOPE
+References:	Issue FLET-IMPLICIT-BLOCK
+Category:	CLARIFICATION
+Edit History:   V1, 24 Oct 1989, Sandra Loosemore
+
+
+Problem Description:
+
+Does the scope of the implicit BLOCK that surrounds the body of
+DEFMACRO, MACROLET, DEFINE-SETF-METHOD, DEFTYPE, and
+DEFINE-COMPILER-MACRO (the forms that define functional objects that
+also support destructuring) include the bindings of the variables in
+the destructuring pattern?  In other words, is the BLOCK visible
+during the evaluation of initialization forms included in the lambda
+list?
+
+It seems clear that in forms such as DEFUN which do not support
+destructuring, the BLOCK surrounds only the body and includes none of
+the lambda-variable binding forms.
+
+There are two proposals, INCLUDES-BINDINGS and EXCLUDES-BINDINGS.
+
+
+Proposal (DEFMACRO-BLOCK-SCOPE:INCLUDES-BINDINGS):
+
+Clarify that the scope of the implicit BLOCK in the functions defined
+by the forms listed above does include the initialization forms within
+the lambda list as well as the body forms.
+
+  Rationale:
+
+  One can view the destructuring code which binds the variables in the
+  lambda list as part of the body of the function (for example, as 
+  equivalent to a LET* or DESTRUCTURING-BIND construct), which would
+  be inside the scope of the BLOCK in an ordinary function-defining form.
+  Some users might find this behavior marginally more useful than the
+  other alternative.
+
+
+Proposal (DEFMACRO-BLOCK-SCOPE:EXCLUDES-BINDINGS):
+
+Clarify that the scope of the implicit BLOCK in the functions defined
+by the forms listed above includes only the body forms and not the
+initialization forms within the lambda list.
+
+  Rationale:
+
+  One can view the destructuring code which binds the variables in the
+  lambda list as part of the ordinary lambda-list processing (for example,
+  as equivalent to binding &AUX variables), which would be outside the
+  scope of the BLOCK in an ordinary function-defining form.  Some people
+  might find this to be more consistent with the scoping of the BLOCK 
+  in the non-destructuring cases.
+
+
+Current Practice:
+
+Lucid CL, Utah CL, and CMU Common Lisp currently implement proposal
+INCLUDES-BINDINGS.  Kyoto CL implements proposal EXCLUDES-BINDINGS.
+
+
+Cost to implementors:
+
+Probably not too much effort involved to fix it.
+
+
+Cost to users:
+
+Currently nonportable user programs that depend on this being done the
+other way will break, but this is a rather obscure point and it is
+unlikely that there would be many programs affected.
+
+
+Benefits:
+
+The specification of the language is made more precise.
+
+
+Discussion:
+
+Sandra Loosemore says:
+  I don't think this issue is worth spending a lot of time arguing over,
+  since both alternatives seem equally plausible to me.  I suggest we
+  just adopt whichever alternative that is closest to current practice.
+  I'm missing information on several implementations.
+-------
+

@@ -1,0 +1,154 @@
+Status: Parts 1 and 2 of this proposal (ADD-CONTROLS) passed
+  Jun89 X3J13. (Parts 3,4,5 tabled "indefinitely")
+
+Issue:         FLOAT-UNDERFLOW
+References:    CLtL p.231
+Related issues:LEAST-POSITIVE-SINGLE-FLOAT-NORMALIZATION (not written up),
+               ERROR-CHECKING-IN-NUMBERS-CHAPTER
+Category:      ADDITION and CLARIFICATION
+Edit history:  Version 1, 9-May-89, by Moon (suggested in January, but
+                        the writeup was late)
+               Version 2, 23-May-89, by Moon (final cleanup for post-CLtL
+                        changes to Common Lisp)
+               Version 3, 18-Jun-89, by Moon (update based on discussion
+                        within the cleanup subcommittee)
+
+Problem description:
+  
+  In implementations with denormalized floating point numbers (as in IEEE
+  floating point), which are closer to zero than any non-zero normalized
+  floating point numbers, should the LEAST-POSITIVE- and
+  MOST-POSITIVE-XXX-FLOAT constants be the normalized or denormalized
+  values?  Which is preferred depends on the application.  Note that in
+  IEEE floating point, denormalized results are normally only produced
+  as a result of underflow.
+  
+  Also, there is no portable way to control what happens when a floating
+  point number underflows.  Sometimes this is an error, sometimes not.
+  Indeed there is no mention at all of underflow or overflow in CLtL.
+  Pending issue ERROR-CHECKING-IN-NUMBERS-CHAPTER does not mention floating
+  point overflow or underflow.  Draft ANSI Common Lisp specifies error
+  conditions named FLOATING-POINT-OVERFLOW and FLOATING-POINT-UNDERFLOW
+  but does not specify the circumstances in which they are signalled and
+  does not provide any way to suppress underflow checking.
+
+Proposal (FLOAT-UNDERFLOW:ADD-CONTROLS):
+  
+  1. Clarify that the existing LEAST-POSITIVE-XXX-FLOAT and
+  LEAST-NEGATIVE-XXX-FLOAT constants are literally as defined, and
+  therefore can be denormalized numbers in implementations that have
+  denormalized numbers.
+  
+  2. Add the following constants, whose values are the normalized floating
+  point numbers closest in value to (but not equal to) zero.  In
+  implementations that don't have denormalized numbers, the values of these
+  constants are the same as the values of the other constants.
+  
+    LEAST-NEGATIVE-NORMALIZED-DOUBLE-FLOAT [Constant]
+    LEAST-NEGATIVE-NORMALIZED-LONG-FLOAT [Constant]
+    LEAST-NEGATIVE-NORMALIZED-SHORT-FLOAT [Constant]
+    LEAST-NEGATIVE-NORMALIZED-SINGLE-FLOAT [Constant]
+    LEAST-POSITIVE-NORMALIZED-DOUBLE-FLOAT [Constant]
+    LEAST-POSITIVE-NORMALIZED-LONG-FLOAT [Constant]
+    LEAST-POSITIVE-NORMALIZED-SHORT-FLOAT [Constant]
+    LEAST-POSITIVE-NORMALIZED-SINGLE-FLOAT [Constant]
+  
+  3. Add the following macro:
+
+  WITHOUT-FLOATING-UNDERFLOW-TRAPS &body body                   [Macro]
+
+    Within the dynamic extent of the body, the result of a floating point
+    computation which would otherwise underflow is a denormalized number
+    (if they are supported in the implementation) or zero, whichever is
+    closest to the mathematical result.
+
+    The values of WITHOUT-FLOATING-UNDERFLOW-TRAPS are the values of the
+    last body form, or NIL if there are no body forms.
+
+  4. Clarify that outside the dynamic extent of
+  WITHOUT-FLOATING-UNDERFLOW-TRAPS, a floating point computation that
+  underflows should signal an error of type FLOATING-POINT-UNDERFLOW.  A
+  result that can only be represented in denormalized form is considered an
+  underflow in implementations that support denormalized floating point
+  numbers.
+
+  5. Clarify that a floating point computation that overflows should signal
+  an error of type FLOATING-POINT-OVERFLOW.
+
+Example: (not portable of course)
+
+  (expt 0.1 40) => FLOATING-POINT-UNDERFLOW error
+  
+  (describe (without-floating-underflow-traps (expt 0.1 40))) => 
+  1.0e-40 is a single-precision floating-point number.
+  Sign 0, exponent 0, 23-bit fraction 213302 (denormalized)
+
+Rationale:
+
+  The ANSI Common Lisp standard should be compatible with the widely used
+  IEEE Floating Point standard.
+
+  WITHOUT-FLOATING-UNDERFLOW-TRAPS is provided as a macro to allow
+  implementation flexibility.  It could expand into HANDLER-BIND for
+  FLOATING-POINT-UNDERFLOW, but in most implementations it will probably
+  expand into implementation-dependent code that sets a hardware mode bit.
+
+  Specifying "should signal" rather than "signals" or "might signal" for
+  floating-point overflows and underflows seems the best balance between
+  safety and implementation freedom.  It wouldn't harm the proposal to
+  change it to one of the other two phrases.
+
+Current practice:
+
+  The proposal exactly matches Symbolics Genera release 7 except for
+  the names of the conditions.
+
+  Lucid Common Lisp 3.0 implements parts 1, 2, 4, and 5 of the proposal.
+  Instead of point 3 of the proposal, Lucid Common Lisp 3.0 has a macro
+  (WITH-FLOATING-POINT-TRAPS enable-condition-list disable-condition-list
+  &body body) that enables and disables a variety of floating-point-related
+  conditions, a function ENABLED-FLOATING-POINT-TRAPS that returns a list
+  of condition names, a constant SUPPORTED-FLOATING-POINT-CONDITIONS whose
+  value is a list of condition names, and several additional condition
+  names (the exact set of condition names varies, depending on the
+  hardware).
+
+Cost to Implementors:
+
+  Adding the constants and the macro is easy.  Since it was never clarified
+  that floating point underflow is to be detected in safe code, implementors
+  who had not already implemented that might have to go to some expense.
+  In the laissez-faire spirit of floating point in Common Lisp, we could
+  relax the specification and say only that underflow might signal rather
+  than should signal.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Each Common Lisp implementation that uses IEEE Floating Point will have
+  to invent its own way to deal with underflow and denormalized numbers.
+
+Performance impact:
+
+  No effect on code optimized for speed rather than safety.
+
+Benefits:
+
+  Increased portability and correctness of floating point code.
+
+Esthetics:
+
+  Neutral.
+
+Discussion:
+
+  Maybe point 3 of the proposal should be replaced by the more complex
+  feature from Lucid.  This would allow re-enabling underflow checking
+  after it had been disabled, and would allow control over other traps such
+  as overflow and inexact result.  Moon would prefer to keep it simple,
+  but if others support the more general mechanism, he can accept it.
+  If the group cannot agree on this, Moon suggests dropping point 3 from
+  the proposal and passing points 1, 2, 4, and 5.

@@ -1,0 +1,102 @@
+Status: Proposal FIRST passed, Nov 89 X3J13
+
+Forum:		Cleanup
+Issue:		&ENVIRONMENT-BINDING-ORDER
+References:	CLtL p. 145-146, 63
+                Issue DEFMACRO-LAMBDA-LIST
+Category:	CLARIFICATION
+Edit History:   V1, 24 Oct 1989, Sandra Loosemore
+		V3, 02 Nov 1989, Sandra Loosemore (comments from Moon)
+
+
+Problem Description:
+
+Issue DEFMACRO-LAMBDA-LIST states that &ENVIRONMENT can appear once
+anywhere at top level of a macro lambda list, but doesn't say anything
+about the order in which the &ENVIRONMENT variable is bound relative
+to the other lambda-list variables.
+
+Some implementations treat &ENVIRONMENT as a mechanism for naming the
+second argument to the macro function, in which case it is bound
+before any of the variables in the actual destructuring pattern.
+Other implementations bind it with the other lambda parameters in the
+usual left-to-right order.
+
+The binding order of &WHOLE parameters is not an issue.  This is
+because a &WHOLE parameter must appear first in the lambda list, so
+there is no difference between binding it first or binding it
+left-to-right.  The relative binding order of &WHOLE and &ENVIRONMENT
+parameters is not an issue because neither one can include init forms
+where the binding of the other might be visible.
+
+There are two proposals, FIRST and LEFT-TO-RIGHT.
+
+
+Proposal (&ENVIRONMENT-BINDING-ORDER:FIRST):
+
+Clarify that the &ENVIRONMENT parameter is bound along with &WHOLE
+before any of other variables in the lambda list, regardless of where
+&ENVIRONMENT appears in the lambda list.
+
+  Rationale:
+
+  This proposal provides a convenient explanation for the special
+  treatment of &WHOLE and &ENVIRONMENT at top-level in a DEFMACRO-style
+  lambda list.  Basically, these two parameters are stripped out and
+  used to name the two arguments to the macro function, then the binding
+  of the remaining arguments is handled exactly the same as at
+  non-top-level or in a DESTRUCTURING-BIND.  It is also very
+  straightforward to implement this model (as opposed to having
+  special parsing code for destructuring top-level DEFMACRO lambda
+  lists).
+
+
+Proposal (&ENVIRONMENT-BINDING-ORDER:LEFT-TO-RIGHT):
+
+Clarify that the all lambda variables in a DEFMACRO-style lambda list
+are bound left-to-right, including the &WHOLE and &ENVIRONMENT parameters.
+
+  Rationale:
+
+  This is more consistent with the order in which variables in ordinary 
+  lambda lists are bound.
+
+
+Current Practice:
+
+Lucid CL, Utah CL, and KCL implement proposal FIRST.  CMU CL
+implements proposal LEFT-TO-RIGHT.
+
+Symbolics Genera implements proposal FIRST.  Specifically, &WHOLE is
+bound first, followed by &ENVIRONMENT, then the destructuring
+variables in the order listed.
+
+
+Cost to implementors:
+
+The changes are probably localized but potentially hairy.  It is
+possible that in some implementations it might be easier to completely
+replace the code which handles lambda-list parsing and destructuring
+than to try to patch it.  Proposal FIRST is probably easier to
+implement initially but the cost of converting an existing
+implementation is probably about the same for both proposals.
+
+
+Cost to users:
+
+There are probably few user programs that would be affected by a
+change in the binding order of &ENVIRONMENT parameters.
+
+
+Benefits:
+
+The language specification is made more precise.
+
+
+Discussion:
+
+Moon says:
+  I believe LEFT-TO-RIGHT is more clean, but I don't have strong feelings.
+  I am equally in favor of either of the two presented proposals or an
+  EXPLICITLY-VAGUE proposal.
+

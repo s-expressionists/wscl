@@ -1,0 +1,77 @@
+Status:	Passed, Jan 89 X3J13
+Issue:         SYMBOL-MACROLET-DECLARE
+
+References:    SYMBOL-MACROLET (88-002R page 2-81)
+               WITH-ACCESSORS (88-002R page 2-88)
+               WITH-SLOTS (88-002R page 2-92)
+
+Related Issues: SYMBOL-MACROLET-SEMANTICS
+               FLET-DECLARATIONS (passed)
+
+Category:      ADDITION
+
+Edit history:  Version 1, 12-Sep-88, Moon
+               Version 2,  9-Dec-88, Masinter
+                 (add cross reference, discussion)
+
+Problem description:
+
+It would be both natural and nice to be able to write
+
+  (with-slots (rho theta) point
+    (declare (single-float rho theta))
+    ...computation...)
+
+Proposal (SYMBOL-MACROLET-DECLARE:ALLOW):
+	  
+Allow declarations at the head of the body of SYMBOL-MACROLET, and hence
+in WITH-ACCESSORS and WITH-SLOTS.  Exactly the same declarations are
+allowed as for LET, with one exception: SYMBOL-MACROLET signals an error
+if a SPECIAL declaration names one of the symbols being defined as a
+symbol-macrolet.  A type declaration of one of these symbols is equivalent
+to wrapping a THE expression around the expansion of that symbol.
+
+Example:
+
+See problem description.
+
+Rationale:
+
+If SYMBOL-MACROLET is intended to resemble LET in syntax, it ought to
+allow declarations.  When writing a SYMBOL-MACROLET directly, the user
+could just as easily write a THE expression instead of a type
+declaration.  However, when invoking a macro such as WITH-SLOTS that
+expands into SYMBOL-MACROLET, the user does not have this option since
+the expansion is not supplied explicitly by the user.
+
+Current practice:
+
+SYMBOL-MACROLET was only tentatively added to Common Lisp 3 months ago.
+
+Cost to Implementors:
+
+Less than one man-hour.
+
+Cost to Users:
+
+None.
+
+Cost of non-adoption:
+
+Minor wart in the language.
+
+Benefits:
+
+More consistent language definition.
+
+Esthetics:
+
+More consistent language definition.
+
+Discussion:
+
+This issue is related to SYMBOL-MACROLET-SEMANTICS.
+
+"A macro-definition for SYMBOL-MACROLET would leave the issue of
+DECLARE open.  But the special-form version of SYMBOL-MACROLET
+really should address it."

@@ -1,0 +1,126 @@
+Status:		Passed, as amended, Jun89 X3J13
+
+Issue:        PATHNAME-PRINT-READ
+References:   File System Interface (pp409-427)
+Category:     CHANGE/ADDITION
+Edit history: 21-Oct-88, Version 1 by Pitman
+		3-Jul-89, Version 2 by Masinter
+
+Problem Description:
+
+  Although pathnames are required to print re-readably, there is no
+  standardized representation for pathnames and so no standardized
+  way in which they should print.
+
+  Further, it is common in programs to want pathnames to print in
+  their file-system specific format.
+
+Proposal (PATHNAME-PRINT-READ:SHARPSIGN-P):
+
+  Define the reader syntax #P"..." to be equivalent to 
+  #.(PARSE-NAMESTRING "...").
+
+  Define that when *PRINT-ESCAPE* is true, the syntax #P"..." is
+  how a pathname should be printed by WRITE (and hence by PRIN1,
+  PRINT, etc.). The "..." is the namestring representation of the
+  pathname.
+
+  Define that when *PRINT-ESCAPE* is NIL, WRITE writes a pathname
+  object P by writing (NAMESTRING p) instead.
+
+Test Case:
+
+  (PARSE-NAMESTRING "foo.lisp")
+  => #P"foo.lisp"
+
+  (FORMAT NIL "Written to ~A." #P"foo.bin")
+  => "Written to foo.bin."
+
+  (TYPEP #P"foo.bin" 'PATHNAME)
+  => T
+
+Rationale:
+
+  This satisfies the stated goals.
+
+  [For :ESCAPE T] It will not be possible to make the printed
+  pathname printed representation totally portable because of
+  variations in file systems, but for different Common Lisp
+  implementations on the same file system, or for Common Lisp
+  systems running on file systems having compatible syntax,
+  portability would be improved by this specification.
+
+  Also, some implementations (eg, Symbolics Genera) use
+  specialized representations for pathnames on different file
+  systems. Eg, an MSDOS pathname is of type MSDOS-PATHNAME,
+  not just type PATHNAME. #S(PATHNAME ...) is not only more
+  verbose than necessary but might be misleading to some users
+  because the object created will not have a TYPE-OF PATHNAME.
+
+  [For :ESCAPE NIL] Printing the namestring of a pathname is
+  a common operation and it is convenient to have a shorthand
+  for doing it. Further, some implementations may be able to
+  optimize the presentation of a pathname in this mode by
+  printing it without actually consing the string.
+
+Current Practice:
+
+  Symbolics Genera implements the proposed behavior.
+
+Cost to Implementors:
+
+  Fairly minor changes to the readtable and the printer.
+
+Cost to Users:
+
+  Users who now use the non-portable syntax #S(...) in order
+  to enter literal pathnames might have to change. [However,
+  implementations would be free to continue to support this
+  read syntax for compatibility.]
+
+Cost of Non-Adoption:
+
+  Portability of code and data involving pathnames within a
+  given file system (or between suitably similar file systems)
+  would be hampered needlessly.
+
+Benefits:
+
+  The cost of non-adoption would be avoided.
+
+Aesthetics:
+
+  The #P syntax is pretty and hides unimportant details.
+
+Discussion:
+
+  Pitman supports this change.
+
+-----
+Summary of discussion on CL-Cleanup:
+
+ EB noted that Lucid CL implements the proposed behavior and that there
+  is cost to users who define their own #P read macro. He weakly supports
+  the proposal but wishes someone had pursued a `generic pathnames' proposal.
+
+ Pierson noted that KCL uses #"...", but that this collides with proposed
+  syntax for Dick Waters' pretty printer. He also thinks #P is better
+  because it is already more widely used for that purpose.
+
+ Masinter noted that Envos Medley prints pathnames with the syntax
+  #.(pathname "asdf"), which he thinks is not as pretty as #P"asdf"
+  but currently more portable.
+
+ KMP and JonL raised the issues that #. has the disadvantage that it must
+  be parsed by the full Lisp engine, while #P can be parsed by something
+  simpler.  Permitting #. leaves a gaping hole for trojan horses, and
+  also requires the presence of the evaluator in a delivery system.
+
+ MLY, GSB, Peirson, and IIM argued for not using up an extra dispatch
+ character.
+
+ MLY suggested #S(PATHNAME namestring [optional-host]).
+
+ IIM noted they use #.(PATHNAME namestring host) because different file
+  systems have different parsing conventions. 
+

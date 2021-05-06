@@ -1,0 +1,352 @@
+Status:		Proposal NO-HOSTING passed Jan 89 X3J13
+Issue:         DECLARATION-SCOPE
+
+References:    Declaration Syntax (CLtL, Section 9.1, pp. 153-157)
+	       LAMBDA-Expressions (CLtL, Section 5.2.2, pp. 59-66)
+               Cleanup issue FLET-DECLARATIONS (accepted)
+               Cleanup issue DECLARE-TYPE-FREE (accepted)
+
+Category:      CHANGE/CLARIFICATION
+
+Edit history:  V1: Hornig@Symbolics.COM -- 5 January 1988
+               Version 2, Moon, 2-Feb-1988 (edits based on discussion)
+               Version 3, Moon, 18-Sep-88, for private discussion between JonL and Moon
+               Version 4, JonL, 15-Nov-88 add 2nd proposal; major rewrite.
+
+
+Problem description:
+
+The description of the scope of declarations made with DECLARE is 
+unclear (although unambiguous) and arguably a mistake.  At issue is
+whether the scope of some or all of the declarations at the head of
+a special form includes code appearing in any non-body part of that 
+special form.  CLtL p.155 attempts to address the issue by classifying 
+declarations into two classes -- "pervasive" and "non-pervasive" -- but 
+it does not succeed very well.
+
+A particular question of interest is whether the initial value forms for 
+LET, LET*, FLET, LABELS, DO, PROG etc. are included.  The rules of CLtL,
+on some cases, are clear enough to see that a declaration inside the 
+special form is "hoisted" up and around the whole form, so as to include 
+all the "initial value" forms (and "stepper" forms and "result" forms for 
+those constructs that have them).  This means that lexical argument 
+variable X in the following function is inaccessible inside the initial 
+value forms of the LET:
+  (defun bar (x y)	    ;[1] 1st instance of x
+    (let ((old-x x)	    ;[2] 2nd instance of x -- same as 1st instance?
+	  (x y))	    ;[3] 3rd instance
+      (declare (special x))
+      (list old-x x)))
+The declaration intended for the binding of X[3] also alters the
+scoping of the reference of X[2]; likely, this was not an intended 
+consequence. [This is a simplification of the example on CLtL p.155].
+
+In this discussion, the term "body" will include any "stepper" or 
+"result" forms, such as might be found in a DO or DO-mumble-SYMBOLS
+construct.  The reasoning for this is that such forms are always 
+included in the scope of all name bindings (if any) being established 
+by the special form.  They form an extended part of the "body".
+
+
+
+Proposal (DECLARATION-SCOPE:NO-HOISTING)
+
+Specify that the scope of a declaration located at the head of a special 
+form or lambda expression is as follows:
+  (1) it always includes the body forms [as well as any "stepper" or 
+      "result" forms]
+  (2) it also includes the scope of the name binding, if any, to which 
+      it applies [LET, LAMBDA, FLET, DO, etc. introduce "name bindings"; 
+      LOCALLY doesn't.];
+
+This very straightforward prescription depends on one rather subtle
+point, namely that the scope of name bindings is an already solved
+question.  Whether or not a particular declaration affects an initial
+value form (such as for LET or LET*) depends _solely_ on whether it is
+applied to a variable or function (name) being bound whose scope
+includes such forms.  In this sense, the above specification limits the
+scope of declarations for name bindings to be exactly the scope of the
+name binding itself -- i.e. "like variable".  Thus there would be no
+"hoisting" of the special declarations in the example cited in the
+problem description.  [See the Discussion section for a review of the 
+CL rules on variable/function-name scoping in special forms.]
+
+Those declarations not correlated with any name binding do not cover any
+of the initial-value forms; their scope simply includes the body (as well 
+as any "stepper" or "result" forms).  In a sense, the above specification 
+limits the scope of these kinds of declarations to be the same as an
+arbitrary name binding in a LET or FLET construct -- i.e. "like variable".
+[See also the issue DECLARE-TYPE-FREE.]
+
+Thus there is to be no "hoisting" for declarations in special forms or 
+lambda expressions; the only initial value forms affected by a declaration 
+will be those included indirectly, by the effect, if any, that a 
+declaration has on a name binding. 
+
+A question may arise as to what it means for a declaration to "apply to", 
+or "be correlated to" a name binding.  As stated above about variable
+scoping, this is an already solved question in Common Lisp; it is not 
+the purpose of this proposal to alter, clarify or in any other way bear 
+upon the basic _applicability_ rules of declarations in Common Lisp.  
+However, a few reminders about these rules will help one understand the 
+above specification:
+  --  SPECIAL and TYPE declarations never apply to function bindings;
+  --  INLINE and FTYPE declarations never apply to variable bindings; 
+  --  OPTIMIZE never applies to either kind of binding;
+  --  (<declaration> X) never applies to a binding of Y.
+The specific rules are for the most part distributed throughout the 
+individual declaration definitions.  The name-applicibility issue for 
+bindings must be specified independently of how the declaration scoping 
+issue is decided, and should not be confused with that scoping issue.
+
+
+
+Proposal (DECLARATION-SCOPE:LIMITED-HOISTING)
+
+Specify that the scope of a declaration located at the head of a special 
+form or lambda expression is as follows:
+  (1) it always includes the body forms [as well as any "stepper" or 
+      "result" forms]
+  (2) if the declaration is applicable to a name binding in that form,
+      then it is limited to exactly the scope of that name binding [LET, 
+      LAMBDA, FLET, etc. introduce "name bindings"; LOCALLY doesn't.];
+  (3) if the declaration is not applicable to a name binding in that form,
+      then it includes all the initial value forms, in addition to the
+      body forms.
+
+This very straightforward prescription depends on one rather subtle 
+point, namely that the scope of name bindings is an already solved 
+question.  This applies not only to LET and LET* variables, but to the 
+&optional, &key and &aux variables of LAMBDA-Expressions.  In this sense, 
+the above specification limits the scope of declarations for name bindings 
+to be exactly the scope of the name binding itself.  Thus there would be 
+no "hoisting" of the special declarations in the example cited in the
+problem description.
+
+Those declarations not correlated with any name binding act as if they
+were included in a new LOCALLY construct wrapped around the entire
+special form.  Thus they are not scoped like an arbitrary variable
+(or, "name binding") in that special form, but rather are "hoisted" up.
+
+Whether or not a declaration is "hoisted" up around the special form in 
+which it occurs depends on whether or not it is "captured en passant" by 
+a correlated name binding.
+
+A question may arise as to what it means for a declaration to "apply to", 
+or "be correlated to" a name binding.  As stated above about variable
+scoping, this is an already solved question in Common Lisp; it is not 
+the purpose of this proposal to alter, clarify or in any other way bear 
+upon the basic _applicability_ rules of declarations in Common Lisp.  
+However, a few reminders about these rules will help one understand the 
+above specification:
+  --  SPECIAL and TYPE declarations never apply to function bindings;
+  --  INLINE and FTYPE declarations never apply to variable bindings; 
+  --  OPTIMIZE never applies to either kind of binding;
+  --  (<declaration> X) never applies to a binding of Y.
+The specific rules are for the most part distributed throughout the 
+individual declaration definitions.  The name-applicibility issue for 
+bindings must be specified independently of how the declaration scoping 
+issue is decided, and should not be confused with that scoping issue.
+
+
+Examples:
+
+;;; The following example is from a common-lisp mailing list discussion
+;;;  (from code suggested by Pavel Curtis).   The question is whether or
+;;;  not the special declaration in FOO applies to the  (1+ x) form.
+
+(setf (symbol-value 'x) 6)
+(defun foo (x)				;a lexical binding of X
+  (print x)
+  (let ((x (1+ x)))			;is the second X special or not?
+    (declare (special x))		;`normal' declaration
+    (bar))
+  (1+ x))
+(defun bar () (print (locally (declare (special x)) x)))
+
+(foo 10)  will  printout of 10 and 11 by either proposal herein
+(foo 10)  will  printout of 10 and 7 by CLtL style "hoisting"
+
+
+;;; The following example is due to Jim Boyce, of Lucid Inc.  It shows how
+;;;  the "hoisting" of the declaration inadvertently causes it to act more
+;;;  like a proclamation than a declaration; namely, the declaration is
+;;;  applied to two different variables (which happen to have the same
+;;;  name) -- the first variable is the lexical one bound on line [1] and
+;;;  the second variables is bound on line [3].  Whereas lexical scoping
+;;;  rules would say that the reference in line [2] is to the variable
+;;;  bound on line [1], the effect of the "hoisted" declaration is to
+;;;  make the line [1]'s variable inaccessible in the initial value forms.
+
+(setf (symbol-value 'x) 6)
+
+(defun bar (x y)	    ;[1] 1st instance of x
+  (let ((old-x x)	    ;[2] 2nd instance of x -- same as 1st instance?
+        (x y))		    ;[3] 3rd instance
+    (declare (special x))
+    (list old-x x)))
+
+(bar 'first 'second)	==>  (first second)    ;by either proposal herein
+(bar 'first 'second)	==>  (6 second)        ;by "hoisting", a la CLtL.
+
+
+Rationale:
+
+These semantics are simpler to understand.  Almost everyone feels that
+the example of CLtL p.155 is very unnatural.  LIMITED-HOISTING is less 
+of a change to CLtL semantics; but NO-HOISTING seems more natural to 
+most people since it restores a closer equivalence between LET forms 
+and LAMBDA-expressions.  Also, several vendors report that customers 
+frequently seem to assume the semantics of NO-HOISTING.
+
+
+Current practice:
+
+Most implementations implement the rules in CLtL, as exemplified by
+the example on p.155.  Symbolics currently implements rules based on
+Zetalisp which are different from both this proposal and Common Lisp.
+Symbolics plans to change to Common Lisp rules in the future.
+
+
+Cost to Implementors:
+
+Modest; some minor fixes will be necessary to to compilers, interpreters 
+and "code walkers" that parse declarations.
+
+
+Cost to Users:
+
+Modest.  It is mostly moot since users tend to avoid the "hoisting"
+situations on special declarations.
+
+It is possible to mechanically examine a program to determine whether
+its behavior would change under the new rules.  This permits an
+implementation to provide a transition tool to ease conversion to the
+new definition.
+
+
+Cost of non-adoption:
+
+Serious non-portability of code, since not every implementor seems to 
+agree on how to read the disputed rules of CLtL pp. 153-157; continuing
+confusion in the user community.
+
+
+Performance impact:
+
+None.
+
+Benefits:
+
+Elimination of confusion; increase of portability between implementations.
+
+
+Esthetics:
+
+Simplifies the scoping issue; eliminates special-case scoping rules for
+SPECIAL declarations.
+
+
+
+Discussion:
+
+Only the SPECIAL declaration has semantic import for CL; both
+proposals specify an incompatible change for this case, to "retract"
+the expansive scope stated or implied in CLtL.  All other declarations
+are considered "advice" to an optimizing compiler, and should have
+no semantic effect on correct programs.  However, programmers making
+use of such declarations may notice a larger difference in the
+NO-HOISTING proposal, since some of their INLINE, OPTIMIZE, TYPE,
+etc. declarations will no longer apply to the initial-value forms.
+
+
+One idiom which will be adversely affected by both of these proposals is:
+   (let ((*a* *a*))
+     ;; rebind *a* to it's "old" value
+     (declare (special *a*))
+     ...)
+where *a* has not been proclaimed special.  This idiom would likely
+have to be written as:
+   (let ((*a* (locally (declare (special *a*)) *a*)))
+     ;; rebind *a* to it's "old" value
+     (declare (special *a*))
+     ...)
+or [preferably!] *a* should be proclaimed special.  Similar idiots 
+like this may be in use for LAMBDA-Expressions, or DEFUNs etc.
+
+
+On the other hand, the inadvertent "shadowing" which prevents the 
+following LET's initial value forms from referencing the input argument
+is handily solved by either proposal herein.  If neither of these 
+proposals is not adopted, then the intent of the code for BAR:
+  (defun bar (x y)	      ;[1] 1st instance of x
+    (let ((old-x x)	      ;[2] 2nd instance of x -- same as 1st instance?
+	  (x y))	      ;[3] 3rd instance
+      (declare (special x))
+      (list old-x x)))
+would likely have to be expressed by introducing new LET contours:
+  (defun bar (x y)	      ;[1] 1st instance of x
+    (let ((old-x x))	      ;[2] 2nd instance of x -- same as 1st instance?
+      (let ((x y))	      ;[3] 3rd instance
+        (declare (special x))
+        (list old-x x))))
+
+
+The source of additional confusion  has long been that TYPE declarations 
+had to be treated differently from all other declarations; this was because 
+of the prohibition found on p158 of CLtL.  Given the acceptance of the
+DECLARE-TYPE-FREE proposal, it no longer is necessary to make an exception 
+for it, nor to categorize declarations into "pervasive" and "non-pervasive", 
+or  "free" and "bound".
+
+
+It is not the purpose of this proposal to alter, clarify or in any 
+other way bear upon the scoping rules of variables in Common Lisp.
+However, a few reminders about these rules will help one understand 
+the above prescription.  Except LET*, PROG*, DO*, LABELS, and MACROLET,
+all the other special forms of CLtL p154 which admit declarations have 
+the property that the scope of the name binding does not include any
+initial value form.  As a review of these scopes, note:
+  -- for LET, FLET, MULTIPLE-VALUE-BIND, none of the initial value 
+     forms are included in the variables' (or functions') scope;
+  -- for DO-<mumble>-SYMBOLS, the initial value forms are not included,
+     but the optional result forms are included;
+  -- for DO, DOLIST, and DOTIMES, the initial value forms are not 
+     included, but the stepper forms and the optional result forms 
+     are included;
+  -- for LET*, PROG*, and DO*, a variable's scope also includes the 
+     remaining initial value forms, for subsequent variable bindings;
+  -- for LABELS and MACROLET, a function name's scope includes all the 
+     code forms for the functions being defined by the special form 
+     [a compiler writer must know how not to get into an infinite loop 
+     of substitutions when there are 'in-line' declarations on these 
+     mutually recursive names];
+  -- for a LAMBDA application, none of the explicit value forms are  
+     included in the bound variable scoping;  however, the 'initform'
+     code (if any) for &optional, &key, and &aux bindings are included 
+     in the same way as LET* does;
+  -- for DEFUN, DEFMACRO, DEFTYPE and DEFSETF follow the rules for
+     LAMBDA-Expressions (CLtL, Section 5.2.2, pp. 59-66).
+     
+Remember also that new name bindings "shadow" (after a fashion) any 
+higher level binding or declarations.  E.g., presuming that no 
+proclamations are in effect, consider the inner let bindings of:
+   (locally (declare (special x) (float y)) 
+     (let ((x 5) (y 10)) 
+       (print (+ x y))))
+then x is bound as local (not special); and y is bound with no particular
+type information [because the 'y' being bound is a different variable
+than the 'y' declared float in the outer scope].
+
+
+It has been suggested that compilers could be a bit more helpful in 
+detecting anomalous bindings, such as in the LET* following:
+  (defun bar (x y)
+    (let* ((old-x x)
+           (x y)
+           (new-x x))
+      (declare (special x))
+      (list old-x x new-x)))
+The collection of variables named X in the LET* binding and initial
+forms includes both local (lexical) and special ones.
+

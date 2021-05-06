@@ -1,0 +1,70 @@
+Status: Passed, march 88
+
+Issue: FORMAT-COLON-UPARROW-SCOPE
+
+References:    CLtL p. 406 and also p. 403
+
+Category:      CLARIFICATION
+
+Edit history:  version 1: Guy Steele, 30 November 1987
+	       version 2: Guy Steele, 18 January 1988
+	       version 3: Masinter,  5 February 1988
+
+Problem description:
+
+Implementations currently differ on the question of what is tested by the FORMAT command "~:^".  Some implementations test to see whether any arguments remain in the sublist for the current iteration step; others test to see whether any sublists remain.  The text on page 406 is not clear on this point.
+
+Proposal (FORMAT-COLON-UPARROW-SCOPE:TEST-FOR-REMAINING-SUBLISTS):
+
+~:^ may be used only if the command it would terminate is ~:{ or ~:@{. The entire iteration process is terminated if and only if the sublist that is supplying the arguments for the current iteration step is the last sublist (in the case of ~:{) or the last FORMAT argument (~:@{). Note that ~:^ is *not* equivalent to ~:#^; the latter terminates the entire iteration if and only if no arguments remain for the current iteration step.
+
+Example:
+
+(format nil "~:{~@?~:^...~}" '(("a") ("b")))
+
+Under this proposal, this yields "a...b", rather than "a".
+
+Rationale:
+
+This proposal is desirable because otherwise there is no way to test whether any sublists remain. The text on page 406 may be construed to hint at this proposal indirectly.  To quote Nick Gall:
+
+"If one thinks about the intent of the parenthetical `(because in the standard case it tests for remaining arguments of the current step only)', one should agree that "a...b" will be returned.  In referring to ~^ as the `standard case', which tests the arguments remaining in the current argument sublist, this parenthetical implies that there is an `other case', which tests `something else.'  The only `other case' discussed is ~:^, which therefore must test `something else.'  I claim that the parentheical makes no sense if we interpret ~:^ as testing the same condition as ~^.  If they both test the same condition, why have the parenthetical explanation?
+
+"If ~:^ doesn't test the same condition as ~^, then what does it test? I claim that the only test that makes sense is for ~:^ to test the only thing that affects the `entire iteration process:' the number of sublists.  When there are no more sublists, `the entire iteration process' is terminated."
+
+Current practice:
+
+Some implementations already have the proposed behavior, including Symbolics Common Lisp and TI Lisp.
+
+Many other implementations currently have a different interpretation: the test case returns "a", since ~:^ in those implementations test for the remaining arguments rather than remaining sublists. These currently include  Kyoto Common Lisp, Allegro Common Lisp, GCLISP, Xerox Common Lisp, Spice Lisp, and VAXLISP.
+
+Cost to Implementors:
+
+Many implementations will have to make a small change, probably a one-liner.
+
+Cost to Users:
+
+It is unlikely that much user code depends on the behavior of testing for remaining arguments, but it is possible.  The author of this writeup (Steele) judges it somewhat more likely that user code might depend on the behavior of testing for remaining sublists.
+
+Cost of non-adoption:
+
+Users would have to be warned not to use ~:^ in code that is meant to be portable.
+
+Benefits:
+
+Elimination of yet one more ambiguity. The proposed semantics allows greater semantic power (there are more things one can test).
+
+Esthetics:
+
+``Absolutely none.  We're talking about FORMAT here.'' -- Guy L. Steele Jr.
+
+Discussion:
+
+Guy Steele very strongly prefers the interpretation FORMAT-COLON-UPARROW-SCOPE:TEST-FOR-REMAINING-SUBLISTS.
+
+David Moon, Kent Pitman, Pavel Curtis, Dan Pierson, Rob Poor, Scott Fahlman and Nick Gall favor FORMAT-COLON-UPARROW-SCOPE:TEST-FOR-REMAINING-SUBLISTS.
+
+Kevin Layer and Rich Robbins have spoken in favor of an alternative proposal, to test for the remaining arguments.
+
+Historical note: Steele first implemented this "feature", in Zetalisp, and so the code in Symbolics Common Lisp is likely a direct descendant of the original code.  This might cause some to give weight to Steele's opinion. There are two arguments against such credence.  First, there is no reason why the original code should be regarded as part of the specification of Common Lisp any more than any other implementation; plainly, Steele botched the specification when he wrote the book.  Second, a professor of literature (I believe) once told Isaac Asimov concerning a short story of his (I quote from memory): "Tell me, Dr. Asimov, just because you wrote the story, what makes you think you know what it means?"
+

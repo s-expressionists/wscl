@@ -1,0 +1,101 @@
+Status: passed (unanimously) Jun-90 meeting
+(at which it was amended to rename READER-ERROR to PARSE-ERROR.)
+
+Forum:		Cleanup
+Issue:		READER-ERROR
+References:	Chapter 3, "Syntax"
+		Section 2.2, "Types"
+Category:	ADDITION, CHANGE
+Edit History:   V1, 23 Oct 1989, Sandra Loosemore
+		V2, 02 Nov 1989, Sandra Loosemore
+			(change supertypes, update discussion)
+                V3, 10 Jul 1990, David Moon (include amendment from meeting)
+
+
+Problem Description:
+
+Chapter 3 of the current draft is not consistent about the types of
+errors that must be signalled by the reader.  In most places where it
+specifies that an error is to be signalled, it does not indicate a
+particular type of error, but in at least one situation it requires
+the error to be of type PROGRAM-ERROR, and in other cases it requires
+the error to be of type ERROR.
+
+None of the ERROR subtypes described in section 2.2 really seem
+appropriate for syntactic errors detected by the reader.  In
+particular, the description of PROGRAM-ERROR implies that its purpose
+is for errors relating to program syntax which are detectable during
+evaluation or compilation rather than read-time errors.  It seems
+especially inappropriate to use PROGRAM-ERROR for this purpose since
+the reader can be used to read things other than programs.  Likewise,
+STREAM-ERROR appears to have been intended to be used for errors
+relating to character-level transactions on the stream rather than
+lexical analysis or parsing.
+
+
+Proposal (READER-ERROR:NEW-TYPE):
+
+Add a new type specifier, PARSE-ERROR.  This is a subtype of the
+types STREAM-ERROR, ERROR, SERIOUS-CONDITION, CONDITION, and T.  The
+type PARSE-ERROR consists of serious conditions that relate to
+lexical analysis (the building and interpretation of tokens) and
+parsing (errors in reader macro syntax) by the Lisp reader.
+
+Since PARSE-ERROR is a subtype of STREAM-ERROR, objects of this type
+inherit a STREAM slot, which can be accessed using the function
+STREAM-ERROR-STREAM.
+
+Change the discussion in chapter 3 to specify that the type of errors
+signalled by the reader is PARSE-ERROR.  There are numerous places
+that would be affected.
+
+
+Rationale:
+
+The general policy that has been followed in other areas of the
+language where errors must, should, or might be signalled is to
+specify a particular subtype of ERROR which covers that class of
+errors.  Doing the same for reader errors would be consistent with the
+overall policy, but none of the existing error types seem appropriate
+for reader-related errors.
+
+
+Current Practice:
+
+LispWorks (from Harlequin) reportedly already uses such a condition.
+
+
+Cost to implementors:
+
+Trivial.
+
+
+Cost to users:
+
+Probably no user programs rely on the reader signalling any particular
+type of error yet.
+
+
+Benefits:
+
+Increased consistency in the language design.
+Ability to set up handlers specifically for reader errors.
+
+
+Discussion:
+
+Pitman says:
+  Our later comments will show that i would like this condition to be
+  called PARSE-ERROR so that it doesn't seem to be useful only for 
+  READ-related problems but can in fact be used for other parser-style
+  applications (e.g., a FORTRAN parser, a user-written English-language
+  interface, etc.).
+
+The initial version of this proposal specified that PARSE-ERROR was
+disjoint from (rather than a subtype of) STREAM-ERROR.  This was
+changed because there was a suggestion that some conditions should be
+both a PARSE-ERROR and a STREAM-ERROR.  Making it a subtype also allows
+it to inherit the STREAM slot and the STREAM-ERROR-STREAM accessor.
+
+Prior to version 3 the condition PARSE-ERROR was named READER-ERROR.
+

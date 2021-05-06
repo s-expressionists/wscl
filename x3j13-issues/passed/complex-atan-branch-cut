@@ -1,0 +1,88 @@
+Status:		Passed, Jan 89 X3J13
+Forum:         Cleanup
+Issue:         COMPLEX-ATAN-BRANCH-CUT
+References:    CLtL p.208, 212
+Related issues: IEEE-ATAN-BRANCH-CUT
+Category:      CHANGE
+
+Edit history:  Version 1, 13-Dec-88, Steele
+
+Problem description:
+
+The formula that defines ATAN results in a branch cut that is at
+variance with the recommendations of Prof. W. Kahan and with the
+implementations of that function in many computing systems and
+calculators.
+
+Proposal (COMPLEX-ATAN-BRANCH-CUT:TWEAK):
+  
+Replace the formula
+
+	arctan z = - i log ((1+iz) sqrt (1/(1+z^2)))
+
+with the formula
+
+	arctan z = (log (1+iz) - log (1-iz)) / (2i)
+
+This leaves the branch cuts pretty much in place; the only change is
+that the upper branch cut (on the positive imaginary axis above i)
+is continuous with quadrant I, where the old formula has it continuous
+with quadrant II.
+
+Examples:
+
+(atan #c(0 2)) => #c(-1.57... 0.549...)	;Current
+(atan #c(0 2)) => #c(1.57... -0.549...)	;Proposed
+
+Note: 1.57... = pi/2, and 0.549... = (log 3)/2.
+
+Rationale:
+
+Compatibility with what seems to be becoming standard practice.
+
+  
+Current practice:
+
+(atan #c(0 2)) => #c(-1.57... 0.549...)	;Symbolics CL
+(atan #c(0 2)) => #c(-1.57... 0.549...)	;Allegro CL 1.1 (Macintosh)
+(atan #c(0 2)) => #c(-1.57... 0.549...)	;Sun-4 CL 2.1.3 of 10-Nov-88
+(atan #c(0 2)) => #c(1.57... -0.549...)	;Sun CL 2.0.3 of 30-Jun-87
+(atan #c(0 2)) => #c(1.57... 0.549...)	;KCL of 3-Jun-87
+
+Note that in KCL the upper branch cut is thus continuous with
+quadrant I, but its lower branch cut is continuous with quadrant III!
+
+Cost to Implementors:
+
+ATAN must be rewritten.  It is not a very difficult fix.
+
+Cost to Users:
+
+It is barely conceivable that some user code could depend on this.
+Note that the proposed change invalidates the identities
+	arctan i z = i arctanh z
+and	arctanh i z = i arctan z
+on the upper branch cut.
+
+The compatibility note on p. 210 of CLtL gave users fair warning that
+a change of this kind might be adopted.
+
+Cost of non-adoption:
+
+Incompatibility with HP calculators.
+
+Benefits:
+
+Numerical analystsmay find the new definition easier to use.
+
+Esthetics:
+
+A toss-up, except to those who care.
+
+Discussion:
+
+Steele has sent a letter to W. Kahan at Berkeley to get any last
+comments he may have on the matter.
+
+Paul Penfield of MIT, after whose article the Common Lisp branch
+cuts were originally patterned, endorses this change.

@@ -1,0 +1,98 @@
+Status: Passed (as amended) Jan 89 X3J13
+(And reaffirmed Jun 89 X3J13 that this was the version wanted)
+
+Forum:          Cleanup
+Issue:          FUNCTION-COMPOSITION
+References:     None
+Category:       ADDITION
+Edit history:   21-Jun-88, Version 1 by Pitman
+                05-Oct-88, Version 2 by Pitman
+                 7-Dec-88, Version 3 by Masinter
+                12-Dec-88, Version 4 by Masinter (additional comments)
+		10-Feb-89, Version 5 (as amended by X3J13 Jan 89)
+Related-Issues: TEST-NOT-IF-NOT
+
+Problem Description:
+
+  A number of useful functions on functions are conspicuously
+  absent from Common Lisp's basic set. Among them are functions
+  which return constant T, constant NIL, and functions which
+  combine functions in common, interesting ways.
+
+Proposal (FUNCTION-COMPOSITION:JAN89-X3J13):
+
+  Add the following functions:
+
+   COMPLEMENT function					[Function]
+
+    Returns a function whose value is the same as the NOT of the
+    given function applied to the same arguments.
+
+   CONSTANTLY value						[Function]
+
+    Returns a function whose value is always VALUE.
+
+Examples:
+
+  (MAPCAR #'(LAMBDA (X) (DECLARE (IGNORE X)) T) '(3 A 4.3))
+  ==
+  (MAPCAR (CONSTANTLY T) '(3 A 4.3))
+  => (T T T)
+
+  (FIND-IF-NOT #'ZEROP '(0 0 3))
+  ==
+  (FIND-IF (COMPLEMENT #'ZEROP) '(0 0 3))
+  => 3
+
+Rationale:
+
+  The presence of these functions will contribute to syntactic
+  conciseness in some cases. 
+
+Current Practice:
+
+  No Common Lisp implementations provide these functions,
+  but they do exist in the T language.
+
+Cost to Implementors:
+
+  A straightforward implementation is simple to cook up. The definitions
+  given here would suffice. Typically some additional work might be
+  desirable to make these open code in interesting ways.
+
+  (DEFUN COMPLEMENT (FUNCTION)
+    #'(LAMBDA (&REST ARGUMENTS)
+        (NOT (APPLY FUNCTION ARGUMENTS))))
+
+  (DEFUN CONSTANTLY (VALUE)
+    #'(LAMBDA (&REST ARGUMENTS) 
+        (DECLARE (IGNORE ARGUMENTS))
+        VALUE))
+
+Cost to Users:
+
+  None. This change is upward compatible.
+
+Cost of Non-Adoption:
+
+  (COMPLEMENT BENEFITS)
+
+Benefits:
+
+  Some code would be more clear. 
+  Some compilers might be able to produce better code.
+
+  Takes a step toward being able to flush the -IF-NOT functions
+  and the :TEST-NOT keywords, both of which are high on the list
+  of what people are referring to when they say Common Lisp is
+  bloated by too much garbage.
+
+Aesthetics:
+
+  In situations where these could be used straightforwardly, the
+  alternatives are far less perspicuous.
+
+Discussion:
+
+  Several additional functions (COMPOSE, CONJOIN) were
+ considered and rejected at the Jan 89 X3J13 meeting.

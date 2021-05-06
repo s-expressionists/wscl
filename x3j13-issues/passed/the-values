@@ -1,0 +1,154 @@
+Issue:                 THE-VALUES
+References:            THE special form, VALUES type specifier
+Related issues:        THE-AMBIGUITY
+Category:              CLARIFICATION
+Edit history:          v1, 24 Feb 1991, Sandra Loosemore
+Status: X3J13 passed v1:RETURN-NUMBER-RECEIVED on vote of 10-1, Mar-91
+
+Problem description:
+
+  Are the following forms valid, and if so how many values are returned 
+  in each case?
+
+  #1: (truncate 7 3)
+  #2: (the integer (truncate 7 3))
+  #3: (the (values integer) (truncate 7 3))
+  #4: (the (values integer integer) (truncate 7 3))
+  #5: (the (values integer integer symbol) (truncate 7 3))
+
+There are two proposals, RETURN-NUMBER-RECEIVED and STRICT-MATCHING.
+
+Proposal (THE-VALUES:RETURN-NUMBER-RECEIVED):
+
+  (1) Clarify that the THE special form returns the exact values as 
+      its subform.
+
+  (2) Clarify that it is not an error if the subform returns more values 
+      than what is specified by the type specifier, provided that the
+      values for which types are declared are indeed of those types.
+      (In particular, if the type specifier is not a VALUES type 
+      specifier, multiple values may still be returned.)
+
+  (3) Clarify that it is not an error if the subform returns fewer values
+      than what is specified by the type specifier.  Missing values are
+      treated as NIL for the purposes of checking their types.
+
+  Rationale for proposal RETURN-NUMBER-RECEIVED:
+
+    Point by point,
+  
+    (1) THE is supposed to act purely as a declaration.  It should not
+        change the number of values that are returned by its subform.
+  
+    (2) This is consistent with the way extra values are simply ignored
+        by MULTIPLE-VALUE-BIND and friends.
+  
+    (3) This is consistent with the way missing values are treated as NIL
+        by MULTIPLE-VALUE-BIND and friends.
+
+
+Proposal (THE-VALUES:STRICT-MATCHING):
+
+  (1) Clarify that the THE special form returns the exact values as 
+      its subform.
+
+  (2) Clarify that it is an error if the number and syntax of values 
+      returned by the subform do not match the given type specifier
+      exactly.  In particular, if the type specifier is not a VALUES
+      type specifier then only a single value may be returned.
+
+  Rationale for proposal STRICT-MATCHING:
+  
+    Point by point,
+  
+    (1) THE is supposed to act purely as a declaration.  It should not
+        change the number of values that are returned by its subform.
+
+    (2) This is consistent with the description of the VALUES type 
+        specifier as specifying the arguments of a function which could
+        capture the values via MULTIPLE-VALUE-CALL.  Since argument
+        mismatches are clearly "is an error" situations, this should be
+        too.  This is also apparently closer to current practice than
+        proposal RETURN-NUMBER-RECEIVED.
+
+Examples:
+
+  Under proposal RETURN-NUMBER-RECEIVED, all of the examples given in 
+  the problem description section are valid and return the values 2 and 1.
+
+  Under proposal STRICT-MATCHING, tests 2, 3, and 5 are in error.  Tests
+  1 and 4 are valid and return the values 2 and 1.
+  
+Current Practice:
+
+  Lucid CL version 4.0 signals an error in cases 3 and 5 (at least in the
+  interpreter).  It returns the values 2 and 1 in case 2.
+
+  Allegro CL version 3.1 signals an error in cases 2, 3, and 5.
+
+Cost to Implementors:
+
+  Probably small.  Neither proposal requires checking to be performed in
+  any situation.  However under proposal RETURN-NUMBER-RECEIVED, some 
+  implementations will have to be changed to not do some checks they 
+  currently do.
+
+Cost to Users:
+
+  Users may find the stricter error checking permitted by proposal 
+  STRICT-MATCHING helpful.  However, if implementations that currently
+  do not check these errors begin to do so, some programs that currently
+  work in those implementations to stop working.
+
+Cost of non-adoption:
+
+  Confusion about what the THE type specifier really means.
+
+Performance impact:
+
+  Probably small, but proposal STRICT-MATCHING might permit compilers
+  to be more aggressive about some kinds of type and multiple-value
+  optimizations.
+
+Benefits:
+
+  The cost of non-adoption is avoided.
+
+Esthetics:
+
+  Seems to depend on who you talk to.  In the best of all possible
+  worlds, MULTIPLE-VALUE-BIND and friends would have ordinary lambda-list
+  syntax and follow the same rules as for ordinary lambda-binding, so there 
+  wouldn't be the an inconsistency with MULTIPLE-VALUE-CALL to have to
+  resolve one way or the other.
+
+Discussion:
+
+
+  This issue was discussed on the common-lisp mailing list some time ago,
+  but never written up.  Here's the last message from that discussion:
+
+    Date: Thu, 20 Apr 1989 17:53 EDT
+    From: Kent M Pitman <KMP@STONY-BROOK.SCRC.Symbolics.COM>
+    
+        Date: Thu, 20 Apr 89 16:59:15 EDT
+        From: Guy Steele <gls@Think.COM>
+           ...
+           PROPOSAL:
+    
+           What it boils down to, is that THE should check only as many types
+           as requested (and pass back only as many).
+    
+        No, this is not cool.  THE is supposed to act purely as a declaration,
+        but you are changing it to require it to pass on only as many values
+        as the type specifer indicates.  This could change the semantics of
+        a suitably devious program.
+    
+        Better to say that it checks as many types as requsted, but passes on
+        exactly the values it receives.
+        --Guy
+    
+    Even though I agree with your position, I think it's worth our writing up
+    a clarification issue to make sure we're all agreed and that it's 100% 
+    clear in the ANSI spec.
+-------

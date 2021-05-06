@@ -1,0 +1,318 @@
+Status: passed, as amended, Jun 89 X3J13
+
+Issue:        READ-CASE-SENSITIVITY
+Forum:	      Cleanup
+References:   CLtL p 334 ff: What the Read Function Accepts,
+                especially p 337, step 8, point 1.
+              CLtL p 360 ff: The Readtable
+              COPY-READTABLE (CLtL, p 361)
+              *PRINT-CASE* (CLtL, p 372)
+
+Category:     ADDITION/CHANGE
+
+Edit history: Version 1, 15-Feb-89, by Dalton
+              Version 2, 23-Mar-89, by Dalton,
+                (completely new proposal after comments from
+                 Pitman, Gray, Masinter, and R.Tobin@uk.ac.ed)
+              Version 3, 16-Jun-89, by Dalton
+                (very minor changes in presentation
+                 and some additions to the discussion)
+              Version 4, 22-Jun-89, by Dalton
+                (removal of the FUNCTION proposal and a different
+                 specification for :INVERT after discussion with Moon)
+              Version 5, 23-Jun-89, by Dalton
+                (minor revisions in presentation and better test case,
+                 as suggested by Pitman; also fixed some errors)
+              Version 6, 24-Jun-89, by Dalton (small correction)
+	      Version 7, 2-Jul-89, by Masinter (as amended, Jun89X3J13)
+
+Problem Description:
+
+  The Common Lisp reader always converts unescaped constituent
+  characters to upper case.  (See CLtL, p 337, step 8, point 1.)
+  This behavior is not always desirable.
+
+  1.  Lisp applications often use the Lisp reader to read their data.
+  This is often significantly easier than writing input routines
+  from scratch, especially if the input can be structured as lists.
+  However, certain applications want to make use of case distinctions,
+  and Common Lisp makes this unreasonably difficult.  (You must define
+  every letter as a read macro and have the macro function read the
+  rest of the symbol, or else you must write a reader from scratch.)
+
+  2.  Some programming languages distinguish between upper and lower
+  case in identifiers, and useful conventions are often built around
+  such distinctions.  For example, in C, constants are often written
+  in upper case and variables in lower.  In Mesa(?) and Smalltalk(?),
+  a capital letter is used to indicate the beginning of a new word
+  in identifiers made up of several words.  In Edinburgh Prolog,
+  variables begin with upper-case letters and constant symbols do
+  not.  The case-insensitivity of the Common Lisp reader makes
+  it difficult to use conventions of this sort.
+
+Proposal (READ-CASE-SENSITIVITY:READTABLE-KEYWORDS)
+
+  Define a new settable function, (READTABLE-CASE <readtable>) to
+  control the reader's interpretation of case.  The following values
+  may be given: :UPCASE, :DOWNCASE, :PRESERVE, and :INVERT.
+
+    When the value is :UPCASE, unescaped constituent characters
+    are converted to upper-case, as specified by CLtL on page 337.
+
+    When the value is :DOWNCASE, unescaped constituent characters
+    are converted to lower-case.
+
+    When the value is :PRESERVE, the case of all characters remains
+    unchanged.
+
+    When the value is :INVERT, then if all of the unescaped letters
+    in the extended token are of the same case, those (unescaped)
+    letters are converted to the opposite case.
+
+  COPY-READTABLE copies the setting of READTABLE-CASE.  The value of
+  READTABLE-CASE for the standard readtable is :UPCASE.
+
+  The READTABLE-CASE of *READTABLE* also has significance when printing
+  The case in which letters are printed, when vertical-bar syntax is not
+  used, is determined as follows:
+
+    When READTABLE-CASE is :UPCASE, upper-case letters are printed
+    in the case specified by *PRINT-CASE*, and lower-case letters
+    are printed in their own case.
+
+    When READTABLE-CASE is :DOWNCASE, lower-case letters are printed
+    in the case specified by *PRINT-CASE*, and upper-case letters
+    are printed in their own case.
+
+    When READTABLE-CASE is :PRESERVE, all letters are printed in their
+    own case.
+
+    When READTABLE-CASE is :INVERT, the case of all letters in single-
+    case symbol names is inverted.  Mixed-case symbol names are printed
+    as-is.
+
+  The rules for escaping letters in symbol names are also affected by
+  the READTABLE-CASE.  If *PRINT-ESCAPE* is true, letters are escaped
+  as follows:
+
+    When READTABLE-CASE is :UPCASE, all lower-case letters must be
+    escaped.
+
+    When READTABLE-CASE is :DOWNCASE, all upper-case letters must be
+    escaped.
+
+    When READTABLE-CASE is :PRESERVE, no letters need be escaped.
+
+    When READTABLE-CASE is :INVERT, no letters need be escaped.
+    
+Rationale:
+
+  There are a number of different ways to achieve case-sensitivity.
+  This proposal is fairly simple but provides all of the functionality
+  that one could reasonably expect.
+
+  By using a property of the readtable, we avoid introducing a new
+  special variable.  Any code that wishes to control all of the
+  reader's parameters already takes *READTABLE* into account.  A new
+  special variable would require such code to change.
+
+  :DOWNCASE is included for symmetry with :UPCASE.  
+
+  :INVERT is included so that case conventions can be used in Common
+  Lisp code without requiring that the names of symbols in the "LISP"
+  package be written in upper case.  (Opinions vary as to whether is
+  is advisable to use such conventions, but this proposal leaves that
+  choice to the user.)
+
+  :INVERT has an effect only for single-case names so that mixed-
+  case names can be interpreted in a more straightforward way.
+
+  In order to avoid complex interactions between the case setting of
+  the readtable and *PRINT-CASE*, this proposal specifies a
+  significance for *PRINT-CASE* only when the case setting is :UPCASE
+  or :DOWNCASE.  The meaning of *PRINT-CASE* when the readtable
+  setting is :DOWNCASE was chosen for its simplicity and for symmetry
+  with :UPCASE while still being useful.
+
+Test Cases:
+
+  ;;; Test 1 -- reading
+
+  (defun test1 ()
+    (let ((*readtable* (copy-readtable nil)))
+      (format t "READTABLE-CASE  Input   Symbol-name~
+	       ~%-----------------------------------~
+	       ~%")
+      (dolist (readtable-case '(:upcase :downcase :preserve :invert))
+	(setf (readtable-case *readtable*) readtable-case)
+	(dolist (input '("ZEBRA" "Zebra" "zebra"))
+	  (format t "~&:~A~16T~A~24T~A"
+		  (string-upcase readtable-case)
+		  input
+		  (symbol-name (read-from-string input)))))))
+
+  The output from (TEST1) should be as follows:
+
+    READTABLE-CASE  Input   Symbol-name
+    -----------------------------------
+    :UPCASE         ZEBRA   ZEBRA
+    :UPCASE         Zebra   ZEBRA
+    :UPCASE         zebra   ZEBRA
+    :DOWNCASE       ZEBRA   zebra
+    :DOWNCASE       Zebra   zebra
+    :DOWNCASE       zebra   zebra
+    :PRESERVE       ZEBRA   ZEBRA
+    :PRESERVE       Zebra   Zebra
+    :PRESERVE       zebra   zebra
+    :INVERT         ZEBRA   zebra
+    :INVERT         Zebra   Zebra
+    :INVERT         zebra   ZEBRA
+
+  ;;; Test 2 -- printing
+
+  (defun test2 ()
+    (let ((*readtable* (copy-readtable nil))
+	  (*print-case* *print-case*))
+      (format t "READTABLE-CASE *PRINT-CASE*  Symbol-name  Output~
+	       ~%--------------------------------------------------~
+	       ~%")
+      (dolist (readtable-case '(:upcase :downcase :preserve :invert))
+	(setf (readtable-case *readtable*) readtable-case)
+	(dolist (print-case '(:upcase :downcase :capitalize))
+	  (dolist (symbol '(|ZEBRA| |Zebra| |zebra|))
+	    (setq *print-case* print-case)
+	    (format t "~&:~A~15T:~A~29T~A~42T~A"
+		    (string-upcase readtable-case)
+		    (string-upcase print-case)
+		    (symbol-name symbol)
+		    (prin1-to-string symbol)))))))
+
+  The output from (TEST2) should be as follows:
+
+    READTABLE-CASE *PRINT-CASE*  Symbol-name  Output
+    --------------------------------------------------
+    :UPCASE        :UPCASE       ZEBRA        ZEBRA
+    :UPCASE        :UPCASE       Zebra        |Zebra|
+    :UPCASE        :UPCASE       zebra        |zebra|
+    :UPCASE        :DOWNCASE     ZEBRA        zebra
+    :UPCASE        :DOWNCASE     Zebra        |Zebra|
+    :UPCASE        :DOWNCASE     zebra        |zebra|
+    :UPCASE        :CAPITALIZE   ZEBRA        Zebra
+    :UPCASE        :CAPITALIZE   Zebra        |Zebra|
+    :UPCASE        :CAPITALIZE   zebra        |zebra|
+    :DOWNCASE      :UPCASE       ZEBRA        |ZEBRA|
+    :DOWNCASE      :UPCASE       Zebra        |Zebra|
+    :DOWNCASE      :UPCASE       zebra        ZEBRA
+    :DOWNCASE      :DOWNCASE     ZEBRA        |ZEBRA|
+    :DOWNCASE      :DOWNCASE     Zebra        |Zebra|
+    :DOWNCASE      :DOWNCASE     zebra        zebra
+    :DOWNCASE      :CAPITALIZE   ZEBRA        |ZEBRA|
+    :DOWNCASE      :CAPITALIZE   Zebra        |Zebra|
+    :DOWNCASE      :CAPITALIZE   zebra        Zebra
+    :PRESERVE      :UPCASE       ZEBRA        ZEBRA
+    :PRESERVE      :UPCASE       Zebra        Zebra
+    :PRESERVE      :UPCASE       zebra        zebra
+    :PRESERVE      :DOWNCASE     ZEBRA        ZEBRA
+    :PRESERVE      :DOWNCASE     Zebra        Zebra
+    :PRESERVE      :DOWNCASE     zebra        zebra
+    :PRESERVE      :CAPITALIZE   ZEBRA        ZEBRA
+    :PRESERVE      :CAPITALIZE   Zebra        Zebra
+    :PRESERVE      :CAPITALIZE   zebra        zebra
+    :INVERT        :UPCASE       ZEBRA        zebra
+    :INVERT        :UPCASE       Zebra        Zebra
+    :INVERT        :UPCASE       zebra        ZEBRA
+    :INVERT        :DOWNCASE     ZEBRA        zebra
+    :INVERT        :DOWNCASE     Zebra        Zebra
+    :INVERT        :DOWNCASE     zebra        ZEBRA
+    :INVERT        :CAPITALIZE   ZEBRA        zebra
+    :INVERT        :CAPITALIZE   Zebra        Zebra
+    :INVERT        :CAPITALIZE   zebra        ZEBRA
+
+Current Practice:
+
+  While there may not be any current implementation that supports
+  exactly this proposal, several implementations provide some means
+  for changing case sensitivity.
+
+  Franz Inc's ExCL has a function, EXCL:SET-CASE-MODE, that sets both
+  the "preferred case" (the case of characters in the print names of
+  standard symbols such as CAR) and whether or not the reader is case-
+  sensitive.
+
+  In Symbolics Common Lisp, the function SET-CHARACTER-TRANSLATION
+  can be used to make the translation of a letter be that same letter,
+  thus achieving case-sensitivity.
+
+  Xerox Medley has a function for setting a readtable flag that
+  determines case sensitivity.
+
+Cost to Implementors:
+
+  Fairly small.  The reader will be slightly slower and readtables
+  will be slightly more complex.
+
+Cost to Users:
+
+  Slight.  Programmers must already take into account the possibility
+  that *READTABLE* will be a non-standard readtable.  Case-sensitivity
+  is no worse than character macros in this respect.
+
+Cost of Non-Adoption:
+
+  Applications that want to read mixed-case expressions will not
+  be able to use the Common Lisp reader to do so (except, perhaps,
+  by tortuous use of read macros).
+
+  Programming styles that rely on case distinctions (without escape
+  characters) will effectively be impossible in Common Lisp.
+
+Benefits:
+
+  Applications will be able to read mixed-case expressions.
+
+  Programmers will be able to make use of case distinctions.
+
+Aesthetics:
+
+  For the proposal: 
+
+    The language will have greater symmetry, because it will be
+    possible to control the treatment of case on both input and output
+    instead of only on output (as is now the case).
+
+    The language will look less old-fashioned.
+
+  Against the proposal:
+  
+    It is, perhaps, inconsistent to control case-sensitivity by a
+    readtable operation when other aspects of the reader, such as the
+    input base and the default float format (not to mention the
+    package), are controlled by special variables.  However, it can be
+    argued that character-level syntax is determined chiefly by the
+    readtable.  Case-sensitivity can be seen as analogous to character
+    macros in this respect.
+
+Discussion:
+
+  Dalton supports the proposal READTABLE-KEYWORDS.
+
+  Version 1 of the proposal suggested a new global variable rather
+  than a property of the readtable.  Pitman was strongly opposed to
+  that proposal and gave convincing arguments that it should be
+  dropped.  Gray suggested that the readtable property should be a
+  function.  Versions 2 and 3 included a FUNCTION proposal as well
+  as the KEYWORD one.  But at the March 1989 X3J13 meeting it was
+  felt that there should be only a single proposal and, since
+  opinion seemed to favor the KEYWORD proposal, the FUNCTION
+  proposal was dropped.
+
+  In earlier versions of the proposal, :INVERT worked a letter at
+  a time (rather than operating on extended tokens) so that, for
+  example, Zebra read as zEBRA.  However, the purpose of :INVERT
+  is to let the programmer get the standard internal case (ie,
+  upper case) by writing lower case rather than upper.  This
+  matters when referring to single-case symbols such as those
+  in the LISP package.  But, in most cases, mixed-case identifiers
+  will already have the right case.  For example, one would use
+  TheNextWindow to get TheNextWindow, not tHEnEXTwINDOW.
+

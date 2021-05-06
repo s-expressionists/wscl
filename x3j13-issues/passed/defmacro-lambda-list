@@ -1,0 +1,158 @@
+Status: Passed, as amended, Mar 89 X3J13
+
+Issue:        DEFMACRO-LAMBDA-LIST
+Forum:	      Cleanup
+References:   8.1 Macro Definition (CLtL pp144-151),
+	      Issue DESTRUCTURING-BIND
+Category:     CLARIFICATION/CHANGE
+Edit history: 30-Jan-89, Version 1 by Pitman
+			17-Mar-89, Version 2 by Masinter
+			 9-Apr-89, Version 3 by Masinter 
+				Incorporate amendments as per Mar 89 X3J13
+			10-Apr-89, V.4 Masinter (forgot an amendment)
+
+Problem Description:
+
+  The description of the DEFMACRO lambda list currently contains some 
+  mis-statements and leaves some ambiguities:
+
+  1. Can &BODY, &WHOLE, and &ENVIRONMENT appear at recursive levels of the
+     DEFMACRO lambda list?
+
+     The description of &WHOLE (p145) specifies that &WHOLE must occur ``first
+     in the lambda list,'' but the description of a lambda list says that 
+     ``a lambda may [recursively] appear in place of the parameter name.''
+     Consequently, the question arises whether &WHOLE should be permitted to
+     be a synonym for &REST at inner levels of a DEFMACRO lambda list.
+
+     The descriptions of &BODY and &ENVIRONMENT do not contain syntactic
+     restrictions on where they may appear.
+
+  2. Does using &WHOLE affect the pattern of arguments permitted by DEFMACRO.
+
+Proposal (DEFMACRO-LAMBDA-LIST:TIGHTEN-DESCRIPTION):
+
+  1. a. Specify that &BODY may appear at any level of a DEFMACRO lambda list.
+
+     b. Specify that &WHOLE may appear at any level of a DEFMACRO
+        lambda list. At inner levels, the &WHOLE variable is bound to
+		the corresponding part of the argument, as with &REST, but
+		unlike &REST, other arguments are also allowed.
+
+     c. Specify that &ENVIRONMENT may only appear at the top level of a
+	DEFMACRO lambda list.
+
+  2. Clarify that using &WHOLE does not affect the pattern of arguments
+     specified by DEFMACRO.
+
+  3. Clarify that  &ENVIRONMENT may appear anywhere in the top level
+     of a DEFMACRO lambda list, as in the following examples:
+
+        (&whole W &environment E A B)   ``After &Whole''
+        (&environment E &whole W A B)   ``Before &Whole''
+        (&whole W A B &environment E)   ``Last''
+        (&whole W A &environment E B)   ``Middle''
+
+   4. &ENVIRONMENT can only appear once in a DEFMACRO lambda list.
+
+Examples:
+
+  1. (DEFMACRO DM1A (&WHOLE FORM A B)  ...) is defined.
+     (DEFMACRO DM1B (A (&WHOLE B C &OPTIONAL D) E) ...) is defined.
+		It allows simultaneousaccess to the THIRD of the whole
+		form as B and to the destructuring of that list into
+		C and D.
+
+     (DEFMACRO DM1C (A B &ENVIRONMENT ENV) ...)     is defined.
+     (DEFMACRO DM1D (A (B &ENVIRONMENT ENV) C) ...) is undefined.
+
+     (DEFMACRO DM1E (A B &BODY X) ...)     is defined.
+     (DEFMACRO DM1F (A (B &BODY X) C) ...) is defined.
+
+  2. (DEFMACRO DM2A (&WHOLE X) `',X)
+
+     (MACROEXPAND '(DM2A))   => (QUOTE (DM2A))
+     (MACROEXPAND '(DM2A A)) is an error.
+
+     (DEFMACRO DM2B (&WHOLE X A &OPTIONAL B) `'(,X ,A ,B))
+     
+     (MACROEXPAND '(DM2B))       is an error.
+     (MACROEXPAND '(DM2B Q))     => (QUOTE ((DM2B Q) Q NIL))
+     (MACROEXPAND '(DM2B Q R))   => (QUOTE ((DM2B Q R) Q R))
+     (MACROEXPAND '(DM2B Q R S)) is an error.
+
+Rationale:
+
+  1. a. An example on p151 makes it clear that this was the intent.
+
+	b. There's no cogent reason to forbid &WHOLE at inner levels.
+     The example on p.150 uses &WHOLE in a non-top-level position.
+
+	This simplifies the implementation of DEFMACRO if we introduce a
+        DESTRUCTURING-BIND which does not understand &ENVIRONMENT.
+
+     c. The environment is never different at top level than embedded.
+	Permitting &ENVIRONMENT to occur embedded would only encourage
+	the misconception that there was a potential difference.
+
+	This simplifies the implementation of DEFMACRO if we introduce a
+        DESTRUCTURING-BIND which does not understand &ENVIRONMENT.
+
+  2. This allows useful syntax checking.
+
+     One can always trivially write
+	(DEFMACRO ... (&WHOLE FORM &REST IGNORE) ...)
+     to get around the error checking this forces.
+
+  3. <vote at Mar 89 X3J13>
+
+Current Practice:
+
+  1. a. Symbolics Genera permits &BODY at any level. This is compatible.
+     b. Symbolics Genera seems to permit &WHOLE at any level. When embedded,
+	it is treated as a synonym for &REST. 
+     c. Symbolics Genera does not permit &ENVIRONMENT except at top level.
+	This is compatible.
+
+  2. Symbolics Genera has this behavior when &WHOLE appears at top level,
+     but not at recursive levels (where &WHOLE is treated as a synonym for
+     &REST).
+
+Cost to Implementors:
+
+  This seems to be what CLtL intended and what most implementations
+  perform.
+
+Cost to Users:
+
+  We think this is possibly (probably) upward compatible with most
+  current practice.
+
+Cost of Non-Adoption:
+
+  Some fuzzy places in DEFMACRO continue to exist.
+
+  It's harder to introduce DESTRUCTURING-BIND because describing its relation
+  to DEFMACRO is difficult.
+
+Benefits:
+
+  The language is a little tighter.
+
+Aesthetics:
+
+  Negligible impact.
+
+Discussion:
+
+  Part 2 of this issue came up during the discussion of DOTTED-MACRO-FORMS
+  but was not pursued until now.
+
+  Pitman supports these clarifications.
+
+  A previous version disallowed &WHOLE at inner levels, because
+  of the mistaken impression that &WHOLE was equivalent to &REST.
+  However, additional arguments are not allowed after &REST,
+  while they are for &WHOLE.
+
+

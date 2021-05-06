@@ -1,0 +1,95 @@
+Issue:         SETF-MACRO-EXPANSION
+
+References:    DEFSETF, DEFINE-SETF-METHOD, SETF
+	       CLtL pages 97, 102, 105
+               ANSI CL spec 6-162 (Sep 89 version)
+
+Related issues: FUNCTION-NAME:LARGE
+
+Category:      CLARIFICATION
+
+Edit history:  29-Apr-90, Version 1 by Moon
+
+Problem description:
+  
+  CLtL is inconsistent because pages 102 and 105 say DEFSETF and
+  DEFINE-SETF-METHOD can be used with a function or a macro, while page 97
+  says that SETF expands macros before it looks for setf-methods.
+  
+  This is Symbolics issue #9.
+
+Proposal (SETF-MACRO-EXPANSION:LAST):
+  
+  Clarify that SETF (actually GET-SETF-METHOD-MULTIPLE-VALUE) only expands
+  macros after exhausting all other possibilities other than expanding into
+  a call to a function named (SETF reader).  Clarify that it expands macros
+  in the style of MACROEXPAND-1 rather than MACROEXPAND (this was point 11
+  of FUNCTION-NAME:LARGE and is repeated here for clarity only).
+
+Examples:
+
+  (defvar *foo-trace* nil)
+  
+  (defmacro foo (x y) `(aref ,x ,y))
+
+  (defun (setf foo) (z x y)	;wrong
+    (push `(,x ,y ,z) *foo-trace*)
+    (setf (aref x y) z))
+
+  (defsetf foo (x y) (z)	;right
+    `(progn
+       (push `(,,x ,,y ,,z) *foo-trace*)
+       (setf (aref ,x ,y) ,z)))
+
+  (macroexpand-1 '(setf (foo array i) (val)))
+
+  The last form should include a push onto *foo-trace*, rather than
+  first macroexpanding (foo array i) into (aref array i) and then
+  setf'ing that.
+
+  The defun form has no effect because SETF expands macros before expanding
+  into a call to such a function, so this function will not be used.
+
+Rationale:
+
+  In the absence of this clarification, the language specification is not
+  self-consistent.  The example given above will not work in implementations
+  that chose to believe CLtL page 97 rather than page 102.
+
+  The rationale for FUNCTION-NAME:LARGE point 11 suggests that we thought
+  we had exchanged the two bullets on page 97, so that SETF looks for setf
+  methods before it expands macros.  However there doesn't seem to be any
+  cleanup issue that explicitly addresses this.
+
+Current practice:
+
+  Symbolics Genera looks for setf methods before expanding macros, I didn't
+  check any other implementations.
+
+Cost to Implementors:
+
+  Trivial.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  The Common Lisp language will be a joke.
+
+Performance impact:
+
+  None.
+
+Benefits:
+
+  Consistency.
+
+Esthetics:
+
+  Consistency.
+
+Discussion:
+
+  None.

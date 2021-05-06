@@ -1,0 +1,193 @@
+Status:	Passed, Jan 89 X3J13
+Issue:        PEEK-CHAR-READ-CHAR-ECHO
+References:   READ-CHAR (p379), UNREAD-CHAR (p379), PEEK-CHAR (p379),
+	      MAKE-ECHO-STREAM (p330), Streams (p327-328),
+	      READ-PRESERVING-WHITESPACE (p376), 
+	      READ-DELIMITED-LIST (p377)
+Category:     CLARIFICATION/CHANGE
+Edit history: 06-Mar-87, Version 1 by Pitman
+              23-Jun-88, Version 2 by Pitman (remove interactive stuff)
+               8-Oct-88, Version 3 by Pitman & Masinter
+	      
+Problem Description:
+
+  The interaction between PEEK-CHAR, READ-CHAR and streams made by
+  MAKE-ECHO-STREAM is not made adequately clear about how many times
+  a particular character may be echoed and at what time such echo
+  is permissible.
+
+  For example, given:
+   (WITH-INPUT-FROM-STRING (STRING-STREAM "A")
+     (LET ((*STANDARD-INPUT* (MAKE-ECHO-STREAM STRING-STREAM
+					       *STANDARD-OUTPUT*)))
+       (LET ((CHAR NIL))
+	 (PEEK-CHAR)             (PRIN1 '---)
+	 (PEEK-CHAR)             (PRIN1 '---)
+	 (SETQ CHAR (READ-CHAR)) (PRIN1 '---)
+	 (UNREAD-CHAR CHAR)      (PRIN1 '---)
+	 (READ-CHAR))))
+  what is seen on the terminal? There are at least these possibilities:
+
+  [1] PEEK-CHAR is implemented by READ-CHAR/UNREAD-CHAR. The first time
+      a char is seen by READ-CHAR it's echoed, UNREAD-CHAR does not echo,
+      re-fetching the char by READ-CHAR doesn't echo.
+      A------------
+
+  [2] Characters are echoed whenever seen by PEEK-CHAR or READ-CHAR.
+      Characters are not unechoed by UNREAD-CHAR.
+      A---A---A---A---
+
+  [3] Characters are not echoed by PEEK-CHAR but are echoed by READ-CHAR.
+      No `unecho' action is done by UNREAD-CHAR.
+      ------A------A
+
+  [4] PEEK-CHAR is implemented by READ-CHAR/UNREAD-CHAR. READ-CHAR echoes
+      but UNREAD-CHAR does not `unecho'.
+      A---A---A------A
+
+  [5] PEEK-CHAR is implemented by READ-CHAR/UNREAD-CHAR. READ-CHAR echoes
+      but UNREAD-CHAR unechoes (a magic Erase character must be 
+      presupposed for display terminals, a file stream that can randomly
+      access during output and/or back up must be presupposed for files,
+      paper terminals just lose):
+      A<Erase>---A<Erase>---A---<Erase>---A
+
+  [6] PEEK-CHAR is implemented by peeking and does not echo. The first
+      time a char is seen by READ-CHAR it's echoed, UNREAD-CHAR does not
+      echo, re-fetching the char by READ-CHAR doesn't echo:
+      ------A------
+
+  This list is not believed to be exhaustive. It is only to illustrate
+  of the variety of possible ways in which the current specification can 
+  be implemented without technically being in conflict with the written 
+  word of CLtL. Obviously not all of these interpretations are considered 
+  useful by all people, but usefulness has not been determined to be 
+  criterial in satisfying the specification.
+
+  The description of streams (p327-328) is also [probably deliberately]
+  fuzzy on this issue as it relates to operating systems on which echoing 
+  is done by the operating system. That is, some systems are line-at-a-time
+  and all READ-CHAR and PEEK-CHAR operations happen after issues of echo
+  have long since been resolved by a system call that reads and echoes input 
+  a line at a time. Other systems are character-at-a-time and these issues 
+  hit home in a different way. It will probably be necessary to continue
+  leaving things slightly unspecified in order to accomodate the native 
+  style of the variety of operating systems now trying to support Common 
+  Lisp, but we should be more up front about the game we are playing. (For
+  example, code which must port between character-at-a-time and 
+  line-at-a-time systems must be more careful about whether it does 
+  newline-preceded or newline-terminated output than many CL programmers 
+  might realize given the current wording.) Additionally, though, we should
+  be on the lookout for less ambitious goals involving only partial
+  compatibility to improve the situation wherever we can find a way to.
+
+  Abstract functions READ-PRESERVING-WHITESPACE and READ-DELIMITED-LIST
+  are implicitly affected by any decisions made on this issue since their
+  descriptions involve the use of UNREAD-CHAR and PEEK-CHAR, respectively.
+
+Proposal (PEEK-CHAR-READ-CHAR-ECHO:FIRST-READ-CHAR):
+
+  Ammend the description of READ-CHAR to say that when the stream is
+  an echo stream (a stream created by MAKE-ECHO-STREAM), the character
+  will be echoed on the stream the first time those characters are seen.
+  (Characters which are not echoed by READ-CHAR are those which were
+  put there by UNREAD-CHAR and hence are assumed to have been echoed
+  already by a previous call to READ-CHAR.)
+
+  Ammend the description of UNREAD-CHAR to say that when the stream
+  is an echo stream (a stream created by MAKE-ECHO-STREAM), no attempt
+  will be made to undo any echoing of the character which might already
+  have been done on the stream. However, characters placed on the
+  stream by UNREAD-CHAR will be marked in such as way as to inhibit
+  later re-echo by READ-CHAR.
+
+  Ammend the description of PEEK-CHAR to say that when the stream is
+  an echo stream (a stream created by MAKE-ECHO-STREAM), characters
+  which are only peeked at are not echoed. Note however that in the
+  case that the PEEK-TYPE argument is not NIL, the characters which
+  are passed by PEEK-CHAR are treated as if by READ-CHAR, and so are
+  echoed unless they have been marked otherwise by READ-CHAR.
+
+  Ammend the description of abstract input functions 
+  READ-PRESERVING-WHITESPACE and READ-DELIMITED-LIST to acknowledge
+  that they are implicitly affected by these new echoing rules of 
+  READ-CHAR, UNREAD-CHAR, and PEEK-CHAR.
+
+  Note: This is consistent with behavior [6] in the problem description.
+
+  Clarify that the echo behavior of interactive streams such as
+  *TERMINAL-IO* continues to be implementation dependent.
+
+Rationale:
+
+  Although this is not known to be in use in any particular system,
+  nothing prevents its use. It proposes a more rational interpretation
+  of the echoing behavior of UNREAD-CHAR which might make it possible
+  for programmers concerned about echo behavior not to have to shy
+  away from UNREAD-CHAR. (It would probably also improve the behavior
+  of READ-PRESERVING-WHITESPACE with regard to echoing, since its
+  description mentions using UNREAD-CHAR.)
+
+  Correct echoing behavior is important to programs which do batch
+  processing, parsing, etc. Allowing multiple or premature echoing
+  is clearly unsatisfactory.
+
+Current Practice:
+
+  A wide variety of behaviors are in use.
+
+Cost to Implementors:
+
+  Unknown.
+
+  The code to implement the proposed change itself is probably fairly
+  localized.
+
+  In some operating systems, there may be echoing constraints which
+  are overlooked here. 
+
+  In some cases, there may be second order effects in the system 
+  itself which would also require a somewhat less predictable amount 
+  of work to fix. 
+
+Cost to Users:
+
+  Any change is effectively upward compatible since the previous
+  behavior is so ill-specified.
+
+  Most users probably naively expect (perhaps even without realizing
+  it explicitly) that echoing will take care of itself. That is, they
+  probably expect that echoing will occur at the time of the
+  READ-CHAR and probably do not give a lot of thought to the effect
+  of PEEK-CHAR. As such, FIRST-READ-CHAR probably best supports most 
+  of their naive intuitions.
+
+Cost of Non-Adoption:
+
+  The streams returned by MAKE-ECHO-STREAM would continue to be
+  significantly hard to use portably.
+
+Benefits:
+
+  A number of applications involving of parsers, batch script
+  interpreters, and such would be possible to implement
+  straightforwardly and portably.
+
+Aesthetics:
+
+  ?
+
+Discussion:
+
+  Pitman supports PEEK-CHAR-READ-CHAR-ECHO:FIRST-READ-CHAR because
+  he feels it is more practically coherent. However, he says he has
+  only mental exercises and no actual personal experience upon which
+  to base that belief.
+
+  Version 1 of this proposal treated interactive streams on par
+  with echo streams, but while people agreed that this issue is
+  a severe portability problem, some considered that the treatment
+  of interactive streams got involved in operating system issues
+  that were beyond the scope of the standard, so that part of the
+  text was removed.
+ 

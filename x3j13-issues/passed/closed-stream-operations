@@ -1,0 +1,135 @@
+Status: Passed Jan 89 X3J13 with amendment to specify that CLOSE on a
+closed stream returns NIL. At Mar 89 X3J13, amendment was withdrawn;
+this version stands.
+
+Forum:          Cleanup
+Issue:          CLOSED-STREAM-OPERATIONS
+References:     CLOSE (CLtL p 332)
+Category:       CLARIFICATION
+Edit history:   26-Aug-88, Version 1 by Chapman
+                 8-Oct-88, Version 2 by Masinter
+                13-Oct-88, Version 3 by van Roggen
+                 1-Dec-88, Version 4 by Pitman
+                 5-Dec-88, Version 5 by Masinter (separate other issues)
+Related Issues: STREAM-ACCESS, STREAM-INFO, INPUT-STREAM-P-CLOSED,
+			CLOSE-CONSTRUCTED-STREAMS, PATHNAME-STREAM
+ 
+Problem Description:
+ 
+ The description of CLOSE is not completely clear about the functions
+ which are allowed to be performed on a closed stream.
+ 
+ On p332 it says:
+
+  ``The stream is closed. No further Input/output operations may be
+    performed on it. However, certain inquiry operations may still
+    be performed, ...''
+
+  but the list of inquiry operations is not specified.
+ 
+Proposal (CLOSED-STREAM-FUNCTIONS:ALLOW-INQUIRY)
+ 
+ Clarify the behavior of the following functions on closed streams:
+
+  * STREAMP is unaffected by whether its stream argument is open or closed.
+ 
+  * If CLOSE is called on a stream which is open, it will return T.
+    However, if CLOSE is called on a stream which is closed, it
+    will succeed without error but the return value is not specified.
+ 
+  * PATHNAME is valid on either an open or closed stream. Since some
+    implementations cannot provide the truename of a file until the
+    file is closed, it would in principle be possible for PATHNAME in
+    some implementations to return more specific information after the
+    stream is closed. For consistency, however, PATHNAME is prohibited
+    from doing this. PATHNAME must return the same pathname after a
+    file is closed as it did before. (The passed proposal in issue
+    PATHNAME-STREAM still stands.)
+ 
+  * TRUENAME is valid on either an open or closed stream. Since some
+    implementations cannot provide the truename of a file until the
+    file is closed, it is permissible TRUENAME to return more specific
+    information after the stream is closed.
+ 
+  * MERGE-PATHNAMES, PATHNAME-HOST, PATHNAME-DEVICE, PATHNAME-DIRECTORY,
+    PATHNAME-NAME, PATHNAME-TYPE, PATHNAME-VERSION, NAMESTRING, 
+    FILE-NAMESTRING, DIRECTORY-NAMESTRING, HOST-NAMESTRING, 
+    ENOUGH-NAMESTRING, and OPEN are valid on either open or closed streams.
+    For any of these operations, using a stream, S, as an argument 
+    where appropriate is equivalent to using (PATHNAME s). See the
+    description of PATHNAME above to understand the consequences of this.
+ 
+  * PROBE-FILE and DIRECTORY are valid on either open or closed streams.
+    For either of these operations, using a stream, S, as an argument 
+    where appropriate is equivalent to using (PATHNAME s). See the
+    description of PATHNAME above to understand the consequences of this.
+    In this case of these operators however, closed stream may well be the
+    most reliable arguments in some cases, since treatment of open streams
+    to the file system may vary considerably between implementations.
+    For example, in some operating systems, open files are written under
+    temporary names and not renamed until close and/or are held invisible
+    until a close is performed. In general, any code with an intent to be
+    highly portable should tread lightly when using PROBE-FILE or
+    DIRECTORY.
+ 
+Rationale:
+ 
+ One can consider many characteristics of a stream to be independent of
+ the ability to do I/O.  Being able to determine a stream's direction and
+ its name is often useful for debugging.  A number of the descriptions in
+ CLtL imply (weakly) the ability to work on closed streams.  Functions
+ such as OPEN and DIRECTORY don't really depend on the stream, but on
+ the name of the stream.
+ 
+Current Practice:
+ 
+ At least two implementations differ in which functions are allowed to be
+ performed on a closed stream.
+ 
+Cost to Implementors:
+ 
+ Unknown, but likely to be small in most implementations.
+
+ A nontrivial amount of work may be necessary if the pathname information
+ is held  externally and is normally deleted when the stream is closed. 
+ The implementation will have to copy the information at some time for later
+ inquiries.
+
+Cost to Users:
+
+ Likely to be small; users of an implementation forced to change
+ by this proposal might have to make some modifications to make their
+ programs portable.
+ 
+Benefits:
+ 
+ These clarifications will assist users in writing portable code.
+ 
+Aesthetics:
+ 
+ Most people will probably see these clarifications as an improvement
+ in aesthetics.
+ 
+Discussion:
+
+ There are some separate, but related, issues regarding what CLOSE
+ should do on composite streams or constructed streams such as
+ created by MAKE-BROADCAST-STREAM. These issues will be addressed
+ in a separate issue (CLOSE-CONSTRUCTED-STREAMS).
+
+ There was some discussion on whether INPUT-STREAM-P and OUTPUT-STREAM-P
+ should return "false" on a stream that had been closed. The issue
+ STREAM-ACCESS contains a proposal to add a function OPEN-STREAM-P
+ which might be useful for the same purpose. This issue was separated
+ out into a separate issue (INPUT-STREAM-P-CLOSED).
+
+ The other functions in proposal STREAM-ACCESS:PROVIDE should
+ work on closed streams.
+
+ The functions in STREAM-INFO:ONE-DIMENSIONAL-FUNCTIONS should
+ not be requred to work on closed streams.
+
+
+
+
+     ----- End Forwarded Messages -----

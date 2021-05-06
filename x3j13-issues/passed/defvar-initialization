@@ -1,0 +1,48 @@
+Status: passed, Jun 87
+Issue:        DEFVAR-INITIALIZATION
+References:   DEFVAR (p68)
+Category:     CLARIFICATION/CHANGE
+Edit history: Version 1 by Pitman 02/26/87
+              Version 2 by cleanup committee 15-Mar-87 14:45:18
+              Version 3 by Masinter (format) 15-Mar-87 18:34:28
+              Version 4 by Masinter  5-Jun-87
+
+Problem description:
+
+The description of DEFVAR on p.68 is not adequately clear on what happens if an initialization value is not provided, as in (DEFVAR FOO). Does this initialize the variable?
+
+Proposal (DEFVAR-INITIALIZATION:CONSERVATIVE):
+
+If the one-argument form of DEFVAR is used, the value (or lack of value) of the variable is not changed.
+
+Rationale:
+
+In parent languages to CL, such behavior was documented. The omission of clear documentation in CL is presumably an accident.
+
+Current Practice:
+
+Most implementations already do not initialize the variable. Some implementations, however, assume that the missing initial value defaults to NIL and assume that the variable is always to be initialized if unbound.
+
+Adoption Cost:
+
+Some implementations suffer a minor incompatible change.  The modification to systems is presumably trivial.
+
+Benefits:
+
+It's sometimes useful to have the ability to declare a variable without initializing it. More importantly, though, DEFVAR is used by lots of users in every implementation and it deserves uniform treatment.
+
+Conversion Cost:
+
+It's stylistically poor to be relying on the variable to be initialized without writing the initial value explicitly anyway. Except for very rare situations where a conditional action is taken based on a BOUNDP test of the variable, user programs are unlikely to be affected in practice.
+
+Very few user programs are likely to be affected. The incidence rate is probably sufficiently low that the issue of automatic tools for conversion is irrelevant.
+
+Aesthetics:
+
+No significant issues are obvious.
+
+Discussion:
+
+The cleanup committee generally supports this clarification.
+
+[Version 3 was distributed at the last X3J13 meeting. This version has changed only to bring it in line with the current proposal format.]

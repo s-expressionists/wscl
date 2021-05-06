@@ -1,0 +1,95 @@
+Status:	Passed, Mar 89 X3J13
+Issue:		LOOP-AND-DISCREPANCY
+
+References:	Loop Facility document X3J13/89-004
+
+Related issues: 
+
+Category:	CHANGE CLARIFICATION
+
+Edit history:	Version 1, 15-Mar-88 by Steele
+
+Problem description:
+
+The treatment of the AND conjunction in FOR/AS and WITH clauses is not
+consistent.  Examples of the use of WITH are also not consistent in this
+respect.
+
+Page 2-5 implies by example that when AND is used to join two
+FOR/AS clauses, the word FOR or AS must occur after the word AND.
+
+Page 2-31 has formal syntax specifying that when AND is used to join two
+WITH clauses, the word WITH must *not* occur after the word AND.  Examples
+on that page are consistent with this specification.
+
+Page 2-41 has an example in which WITH is repeated after AND.
+
+
+Proposal (LOOP-AND-DISCREPANCY:NO-REITERATION):
+
+Let stand the formal syntax for WITH.
+
+Change the description of FOR/AS clauses to specify that when
+two or more such clauses are joined with AND, clauses after the
+first do not have FOR or AS before them.
+
+The complete formal syntax for FOR/AS may be described as follows:
+
+for-as ::= {FOR | AS} for-as-subclause {AND for-as-subclause}*
+
+for-as-subclause ::= for-as-arithmetic | for-as-in-list
+		   | for-as-on-list | for-as-equals-then
+		   | for-as-across | for-as-hash | for-as-package
+
+for-as-arithmetic ::= var [type-spec] ...
+
+and so on.
+
+Examples:
+
+> (loop for x from 1 to 10		;Corrected from X3J13/89-004, page 2-5
+        and y = nil then x
+        collect (list x y))
+((1 NIL) (2 1) (3 2) (4 3) (5 4) (6 5) (7 6) (8 7) (9 8) (10 9))
+
+> (loop with (a b) float = '(1.0 2.0)	;Corrected from X3J13/89-004, page 2-41
+        and (c d) integer = '(3 4)
+        and (e f)
+        return (list a b c d e f))
+(1.0 2.0 3 4 nil nil)
+
+
+Rationale:
+
+The treatment of AND should be internally consistent.  There is no reason
+to repeat the FOR/AS keyword.  Not repeating the keyword emphasizes that
+the subclauses are functionally linked under the heading of WITH or FOR.
+(Compare to the third use of AND in LOOP, to link clauses controlled
+by WHEN/IF/UNLESS.  One does not repeat the WHEN; rather, the clauses
+grouped by AND are controlled by a single WHEN.)
+
+
+Current practice:
+
+Symbolics LOOP allows FOR to be included or omitted after AND,
+with identical meanings.  WITH may not be repeated after AND.
+
+
+Cost to Implementors: Small?
+
+Cost to Users: Possible incompatibility with existing implementors' extensions.
+
+Cost of non-adoption:  Utter confusion.
+
+Performance impact:  None.
+
+Benefits:  Consistent treatment of AND within LOOP.
+
+Esthetics:
+
+Absolutely none.  We're talking about LOOP here.
+
+Discussion:
+
+Steele supports this proposal.  It is a reversal of his previous
+suggestion on the topic, thanks to feedback from Moon.

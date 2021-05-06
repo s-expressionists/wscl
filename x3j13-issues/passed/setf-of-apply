@@ -1,0 +1,93 @@
+Issue:               SETF-OF-APPLY
+References:          SETF
+Related issues:      SETF-FUNCTIONS-AGAIN
+Category:            CLARIFICATION
+Edit history:        V1, 10 May 90, Sandra Loosemore
+                     V2, 29 May 90, Sandra Loosemore (forgot BIT & SBIT)
+
+
+Problem description:
+
+CLtL requires that (SETF (APPLY #'foo ...)) can be used only for
+places "foo" whose SETF expansion is implemented in such a way that
+the last subform of the accessing form appears as the last
+argument of the storing call.  The discussion and example imply that
+the SETF method for AREF is required to implemented in this way.  Are 
+there any other SETF places defined in the standard that are
+required to be usable with APPLY?
+
+This is Loosemore's issue #28.
+
+Proposal (SETF-OF-APPLY:ONLY-AREF-AND-FRIENDS):
+
+  Require that (SETF (APPLY #'<place> ...) ...) work for the standard
+  <place>s AREF, BIT, and SBIT, but document that the consequences of
+  using any of the other standard SETF <place>s with APPLY are
+  undefined.  
+
+  This proposal does not change the behavior of (SETF (APPLY ...)) 
+  with user-defined SETF methods; any SETF methods that are defined 
+  by the user in such a way that the last subform of the accessing 
+  form appears as the last argument of the storing call continue
+  to work with SETF of APPLY.
+
+Rationale:
+
+  Of all the standard SETF places, AREF, BIT, and SBIT appear to be 
+  the only functions that are defined with &REST arguments and where 
+  one might have a real need to use them with APPLY.  Not requiring 
+  (SETF (APPLY #'AREF ...) ...) to work might be seen as an
+  incompatible change to the language since CLtL implies that it
+  is legitimate.  BIT and SBIT are very similar to AREF.  Requiring 
+  other SETF places to work with APPLY might be seen as putting 
+  unnecessary restrictions on implementors.
+
+Current Practice:
+
+   Unknown.
+
+Cost to Implementors:
+
+   Probably small.  At most, you'd have to provide a new
+   definition for the SETF method for AREF and friends, or write some
+   special-case handling for these places in the SETF method for APPLY.
+
+Cost to Users:
+
+   Probably none.  Any programs that rely on using SETF of APPLY
+   with other standard SETF places are almost certainly
+   nonportable anyway.
+
+Cost of non-adoption:
+
+   The language specification is unclear on this point.
+
+Performance impact:
+
+   Probably none.
+
+Benefits:
+
+   The language specification is made more clear.
+  
+Esthetics:
+
+   Ugly.
+
+Discussion:
+
+Loosemore isn't really satisfied with proposal ONLY-AREF-AND-FRIENDS.
+It is probably closest to the status quo, but it seems like an overly
+complicated and messy way of dealing with a few special cases.
+
+From a purely esthetic point of view, it would be much cleaner
+to require that the SETF method for AREF be implemented by a 
+function (SETF AREF) and then either remove the SETF-of-APPLY
+feature completely or redefine it so that
+    (SETF (APPLY #'<name> . <args>) <value>)
+is equivalent to
+    (APPLY #'(SETF <name>) <value> . <args>)
+except for preserving the left-to-right order of evaluation of
+the original call.  This kind of change might be seen as too much
+of a restriction on implementors and too major to be considered
+at this point, however.  See issue SETF-FUNCTIONS-AGAIN.

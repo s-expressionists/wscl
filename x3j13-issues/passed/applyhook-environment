@@ -1,0 +1,76 @@
+Status:         Passed, Jan 89 X3J13
+Forum:         Cleanup
+Issue:         APPLYHOOK-ENVIRONMENT
+
+References:    APPLYHOOK (CLtL p. 323)
+
+Category:      CHANGE
+
+Edit history:  Masinter,  6-Jan-89, Version 1
+               Masinter, 10-Jan-89, Version 2
+
+Problem description:
+
+The function APPLYHOOK is documented to take an optional environment
+argument. CLtL says "Furthermore, the env argument is used as the lexical
+environment for the operation; env defaults to the null environment." 
+
+However, there is no way that the lexical environment can effect the way in
+which APPLYHOOK processes its arguments; it merely calls the specified
+function, and function call is not affected by lexical environments. (The
+"function" argument to APPLYHOOK is a function object.)
+
+This has been regularly a source of confusion for programmers encountering
+APPLYHOOK.
+
+The comments also apply to functions bound to *APPLYHOOK*, i.e., under the
+description of *APPLYHOOK* on p.322, the following
+
+"The non-NIL value of *APPLYHOOK* should be a function that takes
+three arguments, a function, a list of arguments and an
+environment..."
+
+Proposal (APPLYHOOK-ENVIRONMENT:REMOVE-ENV): 
+
+Remove the optional "ENV" argument to APPLYHOOK. Specify
+that the non-NIL value of *APPLYHOOK* should be a function that takes
+two arguments, a function and a list of arguments.
+
+Rationale:
+
+Removes a very minor wart.
+
+Current practice:
+
+Most implementations accept an extra argument and then ignore it.
+
+Cost to Implementors:
+
+Remove optional ENV argument from APPLYHOOK and any code that passes one to
+APPLYHOOK.
+
+Cost to Users:
+
+Remove any ENV argument passed to APPLYHOOK. Fix any *APPLYHOOK* 
+functions to only take two arguments (or to make the third argument optional.)
+
+Cost of non-adoption:
+
+Continued confusion.
+
+Performance impact:
+
+None
+
+Benefits:
+
+Removes a wart.
+
+Esthetics:
+
+Minor improvement.
+
+Discussion:
+
+This was discussed on the Common Lisp mailing list several years ago, but
+slipped through the cracks.

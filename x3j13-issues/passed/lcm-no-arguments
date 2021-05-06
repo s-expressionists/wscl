@@ -1,0 +1,57 @@
+Status:	Passed, Jan 89 X3J13
+Forum:         Cleanup
+Issue:         LCM-NO-ARGUMENTS
+
+References:    CLtL p. 202
+
+Category:      ADDITION
+
+Edit history:  Version 1, Guy Steele 10/17/88
+
+Problem description:
+
+   CLtL incorrectly states that (lcm) should return infinity, and
+   therefore specifies that giving lcm no arguments is an error.
+
+   In point of mathematical fact, 1 is the identity for the lcm operation.
+
+Proposal (LCM-NO-ARGUMENTS:1): 
+
+Define (lcm) to return the integer 1.
+
+Examples: 
+
+  (lcm) => 1
+
+  Currently the behavior in this case is implementation-dependent.
+
+Rationale:  
+
+  Doing what is mathematically right.
+
+Current practice:
+
+   KCL signals an error.
+   Lucid Lisp returns 1.
+   Symbolics Common Lisp returns 1.
+
+Cost to Implementors:  
+   Pretty small (one-line fix).
+
+Cost to Users:  
+   None.
+
+Cost of non-adoption:  
+   Continued embarassment for Steele.
+
+Performance impact:  
+    Negligible.
+
+Benefits:  
+    Correct handling of a seldom-used boundary case.
+
+Esthetics:  
+    Mild improvement.
+
+Discussion:  
+    Mentioned in Steele's December 1985 "clarifications".

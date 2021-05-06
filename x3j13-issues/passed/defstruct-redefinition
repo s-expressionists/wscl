@@ -1,0 +1,128 @@
+Status:	Passed (as amended) Jan 89 X3J13
+Issue:          DEFSTRUCT-REDEFINITION
+References:     DEFSTRUCT (CLtL pp 305-320)
+Related-issues: DEFSTRUCT-ACCESS-FUNCTIONS-INLINE
+Category:       CLARIFICATION
+Edit history:   Version 1 by Skona Brittain 07/26/88
+		Version 2 by Larry Masinter  7-Jan-89
+		Version 3 by Masinter 6-Feb-89 as per Jan 89 X3J13 amendment
+
+Problem Description:
+
+The case of a structure type being redefined is not discussed in CLtL. Is
+it legal to redefine a DEFSTRUCT? What happens to DEFSTRUCTS that :INCLUDE
+the one defined. What things might be "wired in" in compiled code that
+refered to the previous DEFSTRUCT?
+
+Proposal: (DEFSTRUCT-REDEFINITION:ERROR):
+
+The results of redefining a DEFSTRUCT structure are undefined.
+
+Rationale:
+
+DEFSTRUCT is intended as "the most efficient" structure class. DEFCLASS
+allows much more flexible structures to be defined. Thus, implementations
+should be free to "wire in" much of the behavior of a DEFSTRUCT into
+compiled code.
+
+The issue of redefinition should be addressed since there are always
+consequences that affect use of the structures.
+
+Current Practice:
+
+None of KCL, Lucid, & Symbolics detect a redefinition.
+
+Envos Medley goes to some effort to detect if a new structure is
+"compatible" with the old -- e.g., slots might change names, initial
+values, but, since the space allocated in an instance is determined by the
+:TYPE, an incompatible set of :TYPE forms would cause old instances to be
+marked "obsolete". (The TYPE-OF an old instance changes to **OBSOLETE**,
+for example.)
+
+Cost to Implementors:
+
+This proposal attempts to be consistent with current practice.
+
+Cost to Users:
+
+It is doubtful that any current programs actually define structures more
+than once. Thus, constraints on DEFSTRUCT redefinition primarily affect the
+debugging environment.
+
+Cost of Non-Adoption:
+
+Confusion.
+
+Benefits:
+
+Clarity.
+
+Aethetics:
+
+Something that is not well-defined and leads to erratic behavior should be
+explicitly considered an error.
+
+Discussion: 
+
+Common implementation techniques may cause the following behavior if a
+DEFSTRUCT is redefined:
+
+If the new DEFSTRUCT is identical to the old DEFSTRUCT except for the
+initialization forms for slots,  previous structure objects probably can
+continue to be accessed with previously compiled slot accessors. DEFSTRUCT
+constructor, test functions are proclaimed INLINE, and if these have
+changed, previously compiled occurrences of them may behave unpredictably.
+
+If any change is made to the definiton of the slots (either in number,
+name, or :TYPE), attempting to execute a slot accessor of the old
+definition may behave unpredictably: if a slot name of the old definition
+also names a slot of the new definition, any "compiled" code might use the
+old definition instead. 
+ 
+DEFSTRUCT constructor, test functions may also be proclaimed INLINE, and
+may behave unpredictably if previously compiled. In particular, a compiled
+occurance of a constructor might have the previously slot initial values
+"wired in".
+
+If the new DEFSTRUCT differs from the old in any aspect other than the
+initialization forms for slots, the results of attempting to access any old
+instance might result in unspecified behavior. For example, if the size of
+the structure became considerably shorter, an old accessor might "access
+off the end" of an instance of a new object; it might signal an error or
+have other unpredictable results.
+
+Masinter supports this proposal.  If users want more flexibility than
+DEFSTRUCT allows, they should use DEFCLASS.
+
+Some felt strongly that  just saying it's an error to redefine a structure
+but not requiring the error to be signalled will cause users to be confused
+by the differing seemingly erratic behavior and code. 
+
+Programming environments are allowed, encouraged, etc. to allow such
+redefinition, perhaps with warning messages. It is beyond the scope of the
+language standard to define those interactions, except to note that they
+are not portable. 
+
+Here's an example where reexecuting an EQUAL DEFSTRUCT might result in
+different behavior:
+
+(defvar *token-counter* 0)
+(defstruct token (cookie '("unique-string")) (counter (incf
+*token-counter*)))
+
+(defvar *first-token* (make-token))
+
+(eql (token-cookie *first-token*) (token-cookie (make-token))) => true
+
+(defstruct token (cookie '("unique-string")) (counter (incf
+*token-counter*)))
+ 
+(eql (token-cookie *first-token*) (token-cookie (make-token))) => false
+
+I.e., even though the second DEFSTRUCT is EQUAL to the first, the
+structures are not EQL.
+
+This is related to the compiler issue QUOTE-MAY-COPY, but is not the same
+issue, since that proposal isn't proposing that QUOTE might copy its value
+*every time* it is executed.
+

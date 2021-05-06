@@ -1,0 +1,88 @@
+Status:		passed, Jan 89 X3J13
+Forum:         Cleanup
+Issue:         EXPT-RATIO
+
+References:    CLtL pages 204 and 211
+
+Category:      CLARIFICATION
+
+Edit history:  Version 1, 4-Oct-88, by Aspinall and Moon
+               Version 2,  6-Oct-88, Masinter (very minor discussion)
+               Version 3, 31-Oct-88, Masinter (fix typo)
+
+Problem description:
+
+  The comment (page 204, 2nd para) that "... an implementation [of expt]
+  might choose to compute (expt x 3/2) as if it had been written
+  (sqrt (expt x 3))" disagrees with the principal value definition on
+  page 211.  See the example below for a case where the two disagree.  We
+  believe the principal value definitions are consistent and reasonable,
+  therefore the implementation comment is wrong.
+
+Proposal (EXPT-RATIO:P.211):
+
+  Clarify that (sqrt (expt x 3)) is not equivalent to (expt x 3/2)
+  and that page 211 rules.
+
+Examples:
+
+  (defvar x (exp (/ (* 2 pi #c(0 1)) 3)))         ;exp(2.pi.i/3)
+  (expt x 3) => 1 (except for round-off error)
+  (sqrt (expt x 3)) => 1 (except for round-off error)
+  (expt x 3/2) => -1 (except for round-off error)
+  
+  There can be no question that 
+          (expt x 3) ==> 1
+  because expt is single-valued with an integer second argument, and
+          (sqrt 1) ==> 1
+  definitely follows the principal branch of the square root function.
+  
+  But (expt x 3/2) is defined as (exp (* (log x) 3/2)) (page 211).
+          (log x) ==> 2.pi.i/3
+  according to the definition of the logarithm's branch cuts on page 211
+  (which really comes down to the branch cuts of phase - page 210), so
+          (* (log x) 3/2) ==> pi.i
+  and
+          exp(pi.i) is -1.
+
+Rationale:
+
+  We believe the principal value definitions are consistent and
+  reasonable, therefore the implementation comment is wrong.
+
+Current practice:
+
+  Symbolics Genera 7.3 currently returns the wrong answer, following page
+  204 rather than page 211.  Lucid Common Lisp, and 
+  Envos Medley implement the proposal.
+
+Cost to Implementors:
+
+  The obvious code changes in complex expt.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Self-contradictory language specification.
+
+Benefits:
+
+  Users can better predict the branch cuts in expt.
+
+Discussion:
+
+  Mathematical Explanation:  When the expt function returns a complex result
+  in CL (Cartesian) form, the phase of the complex number is effectively
+  canonicalized.  Information is lost, and that information is necessary to
+  specify upon which branch of the sqrt function the final result should lie.
+  
+  Another way to put it would be that although
+          sqrt(expt(x,3)) = expt(x,3/2)
+  where expt and sqrt are the mathematical multi-valued functions, it is not
+  true that:
+          pvsqrt(pvexpt(x,3)) = pvexpt(x,3/2)
+  where pvexpt and pvsqrt denote the principal value versions of those functions.
+

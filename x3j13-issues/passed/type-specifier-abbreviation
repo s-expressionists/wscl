@@ -1,0 +1,93 @@
+***** There were amendments to the following when it passed. *****
+
+Issue:            TYPE-SPECIFIER-ABBREVIATION
+References:       CLtL chapter 4
+Related issues:
+Category:         CLARIFICATION, CHANGE
+Edit history:     V1, 10 May 90, Sandra Loosemore
+
+
+Problem description:
+
+Does it make sense for the type specifiers AND, MEMBER, MOD, NOT,
+OR, SATISFIES, and VALUES (which are documented as list form type
+specifiers in CLtL but omitted from table 4-1) to be abbreviated
+to their atomic form?  What about the EQL type specifier?
+
+Proposal (TYPE-SPECIFIER-ABBREVIATION:ONLY-MOD):
+
+  Clarify that the arguments to the AND, EQL, MEMBER, NOT, OR, 
+  SATISFIES, and VALUES type specifier lists may not be omitted 
+  or be given as *.  Clarify that these symbols are not standard 
+  type specifier symbols.
+
+  Clarify that the argument to MOD may be omitted or given as *, and 
+  that (MOD *) or simply MOD is equivalent to (INTEGER 0 *)
+  (which also happens to be the same as UNSIGNED-BYTE).  Add MOD to 
+  the list of standard type specifier symbols.
+
+   Rationale for proposal ONLY-MOD:
+
+     It's not clear what the abbreviated forms of AND, EQL,
+     MEMBER, NOT, OR, SATISFIES, and VALUES would mean.
+
+     CLtL defines MOD in terms of the INTEGER type specifier,
+     which already has a well-defined meaning when given
+     unspecified arguments.  Also, MOD is the only type specifier 
+     listed in the section "Type Specifiers That Abbreviate" that 
+     is not now a standard type specifier symbol, and treating
+     all abbreviating type specifiers consistently seems better
+     than making a pointless exception for MOD.
+
+
+Proposal (TYPE-SPECIFIER-ABBREVIATION:NONE):
+
+  Clarify that the arguments to the AND, EQL, MEMBER, MOD, NOT, OR, 
+  SATISFIES, and VALUES type specifier lists may not be omitted 
+  or be given as *.  Clarify that these symbols are not standard 
+  type specifier symbols.
+
+   Rationale for proposal NONE:
+
+     It's not clear what the abbreviated forms of AND, EQL,
+     MEMBER, NOT, OR, SATISFIES, and VALUES would mean.
+
+     While MOD could be assigned a reasonable meaning, adding it
+     to the list of standard type specifier symbols is a
+     pointless change to the language.
+     
+Current Practice:
+
+  Unknown.
+
+Cost to Implementors:
+
+  Trivial.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Part of the language specification will be vague and
+  confusing.
+
+Performance impact:
+
+  None.
+
+Benefits:
+
+  Part of the language specification will be made more precise.
+
+Esthetics:
+
+  Seems to be a matter of personal taste.
+
+Discussion:
+
+  Loosemore likes proposal ONLY-MOD but other people have said
+  "yuck!" about it.  Is getting rid of MOD altogether a practical
+  alternative?
+-------

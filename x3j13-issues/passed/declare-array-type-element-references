@@ -1,0 +1,117 @@
+Status:	Passed, Jan 89 X3J13
+
+Issue: DECLARE-ARRAY-TYPE-ELEMENT-REFERENCES
+
+References:    Array type specifiers, pp. 45-46
+
+Related issues: ARRAY-TYPE-ELEMENT-TYPE-SEMANTICS, DECLARE-TYPE-FREE,
+                SYMBOL-MACROLET-DECLARE
+
+Category:      CHANGE
+
+Edit history:  Version 1,  7-Oct-88, Pierson
+               Version 2, 13-Jan-89, Pierson (Moon and JonL comments)
+    	       Version 3, 13-Jan-89, Pierson (Pitman comments)
+
+Problem description:
+
+In principle, array type specifiers could be used both for declaring
+the storage format of the array and for implicitly declaring the types
+of the elements held by those arrays. Unfortunately, the current 
+definition of the meaning of array type specifiers does not explicitly
+specify that the latter use of these declarations is legitimate.
+
+Proposal (DECLARE-ARRAY-TYPE-ELEMENT-REFERENCES:RESTRICTIVE):
+
+Within the lexical scope of an array type declaration, all references
+to array elements are assumed to satisfy the exact declared element
+type.  It is an error if this is ever violated.  A compiler may treat
+the code within the scope of the array type declaration as if each
+access of an array element was surrounded by an appropriate THE form.
+
+Examples:
+
+(DEFVAR *ONE-ARRAY* (MAKE-ARRAY 10 :ELEMENT-TYPE '(SIGNED-BYTE 5)))
+(DEFVAR *ANOTHER-ARRAY* (MAKE-ARRAY 10 :ELEMENT-TYPE '(SIGNED-BYTE 8)))
+
+(DEFUN FROB (AN-ARRAY)
+  (DECLARE (TYPE (ARRAY (SIGNED-BYTE 5) 1) AN-ARRAY))
+  (SETF (AREF AN-ARRAY 1) 31)		; OK
+  (SETF (AREF AN-ARRAY 2) 127)		; Should signal an error
+  (SETF (AREF AN-ARRAY 3) (* 2 (AREF AN-ARRAY 3))) ; Run-time decision needed
+  (LET ((FOO 0))
+    (DECLARE (TYPE (SIGNED-BYTE 5) FOO))
+    (SETF FOO (AREF AN-ARRAY 0))))	; Declared to be safe
+
+(FROB *ONE-ARRAY*)			; Legal call, should signal an error
+(FROM *ANOTHER-ARRAY*)			; Is probably an undetectable error
+
+Note that the above definition of FROB is equivalent to:
+
+(DEFUN FROB (AN-ARRAY)
+  (DECLARE (TYPE (ARRAY (SIGNED-BYTE 5) 1) AN-ARRAY))
+  (SETF (THE (SIGNED-BYTE 5) (AREF AN-ARRAY 1) 31))
+  (SETF (THE (SIGNED-BYTE 5) (AREF AN-ARRAY 2) 127))
+  (SETF (THE (SIGNED-BYTE 5) (AREF AN-ARRAY 3))
+	(* 2 (THE (SIGNED-BYTE 5) (AREF AN-ARRAY 3))))
+  (LET ((FOO 0))
+    (DECLARE (TYPE (SIGNED-BYTE 5) FOO))
+    (SETF FOO (THE (SIGNED-BYTE 5) (AREF AN-ARRAY 0)))))
+
+Given an implementation in which fixnums are 29 bits but fixnum arrays
+are upgraded to signed 32-bit arrays, the following should be compiled
+with all fixnum arithmetic:
+
+(DEFUN BUMP-COUNTERS (COUNTERS)
+  (DECLARE (TYPE (ARRAY FIXNUM *) BUMP-COUNTERS))
+  (DOTIMES (I (LENGTH COUNTERS))
+    (INCF (AREF COUNTERS I))))
+
+Test Cases:
+
+TBS
+
+Rationale:
+
+This mandates a useful and commonly expected behavior.  It complements
+proposal ARRAY-TYPE-ELEMENT-TYPE-SEMANTICS, which deals with array
+type specifiers as they refer to arrays as a whole.  
+
+This proposal is consistent with SYMBOL-MACROLET-DECLARE:ALLOW and
+DECLARATION-SCOPE:LEXICAL.
+
+Current practice:
+
+???
+
+Cost to Implementors:
+
+TBS
+
+Cost to Users:
+
+Probably none; while this is technically a change, code that declares
+an array to contain one thing and depends on it containing something
+else is blatantly buggy.
+
+Cost of non-adoption:
+
+Users will continue to expect declaration syntax to be more useful
+than it really is.
+
+Performance impact:
+
+None.
+
+Benefits:
+
+Array type declarations will behave in a more useful and intuitive way.
+
+Aesthetics:
+
+Improved because the meaning of type declarations will coincide more
+clearly with their appearance.
+
+Discussion:
+
+Pierson and Pitman support this proposal.

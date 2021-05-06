@@ -1,0 +1,64 @@
+Status:	Passed, Mar 89 X3J13
+Issue:         COMMON-TYPE
+
+References:    CLtL p.35, p.76
+
+Category:      CHANGE
+
+Edit history:  Version 1, 20-Mar-89, by Moon
+
+Problem description:
+  
+  The type COMMON is defined in a very peculiar way and does not seem to
+  be useful for anything.  It can be extended by users using DEFSTRUCT,
+  but not DEFTYPE nor DEFCLASS, but it cannot be extended by implementations.
+  Whether certain types such as NUMBER and ARRAY are subtypes of COMMON
+  is implementation-dependent.  The goal of having the COMMON type was
+  probably to improve portability, but it is unclear how it could actually
+  be used in that way.
+
+Proposal (COMMON-TYPE:REMOVE):
+
+  Remove COMMON and COMMONP from the language.
+
+Rationale:
+  
+  Keeping the definition of COMMON accurate in the new specification, in
+  the face of changes elsewhere in the language such as the introduction
+  of CLOS and the possible introduction of character registries, is
+  difficult when no one is sure what COMMON is for.  If no one uses COMMON,
+  it would be less work to just get rid of it.
+
+Current practice:
+  
+  Every implementation probably implements COMMON.  Moon has never seen it
+  used except in a program to test whether its implementation matched CLtL.
+
+Cost to Implementors:
+
+  None.
+
+Cost to Users:
+
+  None unless they are actually using COMMON.
+
+Cost of non-adoption:
+  
+  Implementors would have to maintain COMMON.  Users would have to try to
+  understand it, or figure out that they didn't care about it.
+
+Performance impact:
+
+  None.
+
+Benefits:
+
+  Simpler language.
+
+Esthetics:
+
+  Simpler language.
+
+Discussion:
+
+  None.

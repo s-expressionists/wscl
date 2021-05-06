@@ -1,0 +1,112 @@
+Status:		Passed, Jan 89 X3J13
+Forum:        Cleanup
+Issue:        DECLARE-FUNCTION-AMBIGUITY
+
+References:   CLtL pp 43 (Table 4-1), 158-159
+		Issue FUNCTION-TYPE (passed X3J13/June 1988)
+
+Category:     CHANGE
+
+Edit history: #1, 21 Sept 1988, Walter van Roggen
+              #2, 29 Sept 1988, Walter van Roggen (renamed; lessened ambiguity)
+              #3, 30-Sep-88, Masinter
+              #4,  5-Dec-88, Masinter (append Oct x3j13 comments)
+
+Problem description:
+
+CLtL permits confusing and ambiguous FUNCTION declarations.  One can say
+  (DECLARE (FUNCTION F (VECTOR INTEGER) T))
+to indicate that the function binding for F is of a certain type.  Yet
+one can also say
+  (DECLARE (FUNCTION X Y Z))
+to indicate that the variables X, Y, and Z have values which are functions.
+
+The former is an abbreviation for
+  (DECLARE (FTYPE (FUNCTION (VECTOR INTEGER) T) F))
+The latter is an abbreviation for
+  (DECLARE (TYPE FUNCTION X Y Z))
+
+The ambiguity arises in a case like
+  (DECLARE (FUNCTION F NIL STRING))
+However, it would be an error to declare the type of the constant NIL to be a
+FUNCTION, so technically there is no ambiguity--there is just a peculiar
+special case.
+
+Using the same declaration for two completely different purposes can lead
+ to confusion among people writing or reading such code.
+
+It is now more useful to declare that variables have a value which
+is of type FUNCTION, since the type FUNCTION has a more well-specified
+meaning.
+
+Proposal (DECLARE-FUNCTION-AMBIGUITY:DELETE-FTYPE-ABBREVIATION)
+
+The declaration (FUNCTION name argtypes valtypes) is no longer permitted
+to be an abbreviation for (FTYPE (FUNCTION argtypes valtypes) name).
+
+The declaration (FUNCTION var1 var2) would just be an abbreviation for
+(TYPE FUNCTION var1 var2).
+
+Rationale:
+
+Continuing to allow all the predefined atomic type specifiers as declaration
+abbreviations for (TYPE type var1 var2 ...) is simpler for users to understand.
+In other words, all the normal type declarations describe variable bindings;
+only the FTYPE declaration describes function bindings.  This is a more
+uniform solution than making an exception to table 4-1.
+
+Since the old use of the FUNCTION declaration for function bindings was just
+an abbreviation for the FTYPE declaration, no expressivity is lost.
+Furthermore one is able to say that a variable's value is of type FUNCTION,
+something that hadn't been clearly possible without using the TYPE declaration.
+
+Current Practice:
+
+Many current implementations treat FUNCTION declarations 
+only as abbreviations for FTYPE declarations, primarily because
+the proposal FUNCTION-TYPE has not been widely implemented.
+
+Cost to Implementors:
+
+Likely to be small to those implementations that heed these kinds of
+declarations; none for those that don't.
+
+Cost to Users:
+
+Existing uses of the FUNCTION declaration for function bindings will need
+to be changed to FTYPE declarations.
+
+Cost of Non-Adoption:
+
+People will continue to be confused by function declarations.
+
+Benefits:
+
+A simpler language.
+
+Esthetics:
+
+
+Discussion:
+
+Making it clear that only FTYPE declarations describe function bindings will
+make it easier to add new kinds of declarations that support incremental or
+additional descriptions, as is needed for describing methods.
+
+Since all cases can be disambiguated after all, compatibility considerations
+might deem this proposal to be unnecessary.  However, making declarations
+simpler and less confusing is possibly more important than compatibility.
+
+There is no consensus on the cleanup committee.
+
+Comments from October 1988 X3J13 meeting:
+
+...    opposed but not vehemently--the incompatible change is gratuitous
+...    prefer to document the
+	 issue rather than change it."
+...    a number of implementations accidentally implement
+   	 this incorrectly. They first check the type table and then handle
+	 the elaborate function declaration style. But, as it happens,
+	 they never reach the code for the second case because function is
+	 in the type table!
+...    Having both styles is worse than having either one or the other.

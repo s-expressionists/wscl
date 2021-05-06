@@ -1,0 +1,61 @@
+Issue:         ERROR-TERMINOLOGY-WARNING
+
+References:    ANSI CL spec (Jul 20, 1989 draft) p.1-12
+
+Category:      CHANGE (to terminology only)
+
+Edit history:  1-Feb-90, Version 1 by Moon
+               4-May-90, Version 2 by Moon (fix critical typo)
+
+Problem description:
+
+  Page 1-12 of the draft defines the phrase "a warning should be issued"
+  in a way that is not consistent with "an error should be signalled."
+  The latter "should" refers to the safety level, but the former
+  "should" just means "might" (depending on the implementation).
+
+  To use this term is to muddy the otherwise clear conceptual relation
+  between "should" and "high safety".
+
+  This is Symbolics issue #1.
+
+Proposal (ERROR-TERMINOLOGY-WARNING:MIGHT):
+
+  Change the term to "a warning might be issued" and update all uses of
+  the term throughout the document.
+
+Rationale:
+  
+  It's important for the document to be consistent in its terminology.
+  
+Current practice:
+
+  People are sloppy in their terminology.
+
+Cost to Implementors:
+
+  None.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  The specification document will be more difficult to understand.
+
+Performance impact:
+
+  None.
+
+Benefits:
+
+  The specification document will be less difficult to understand.
+
+Esthetics:
+
+  The specification document will be less difficult to understand.
+
+Discussion:
+
+  None.

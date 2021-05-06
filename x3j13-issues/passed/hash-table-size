@@ -1,0 +1,74 @@
+Status: Passed, as amended here, Jun 89 X3J13
+Issue:         HASH-TABLE-SIZE
+References:    CLtL p.283
+Category:      CLARIFICATION
+Edit history:  Version 1, 20-Mar-89, by Moon
+		Version 2, 1-Jul-89, by Masinter (per Jun89 X3J13 amendments)
+ 
+Problem description:
+  
+  CLtL contradicts itself on the meaning of the :SIZE argument to
+  MAKE-HASH-TABLE.  At the top of p.283, it says that the size is "the
+  maximum number of entries it can hold.  Usually the actual capacity of
+  the table is somewhat less."  At the bottom of the page it says "this
+  argument serves as a hint to the implementation of approximately how
+  many entries you intend to store."  So does the :SIZE intended to be the
+  actual capacity of the table, or the amount of storage allocated to hold
+  the table.  For example, if the implementation of hash tables is
+  designed for a loading of 65%, and the user specifies :SIZE 100, does
+  the table returned have space allocated for 100 entries, so that it
+  overflows and becomes bigger when 65 entries are inserted, or does the
+  table have space allocated for 154 entries, so that it overflows and
+  becomes bigger when 100 entries are inserted?
+
+Proposal (HASH-TABLE-SIZE:INTENDED-ENTRIES):
+
+  Believe the bottom of p.283 rather than the top.  The :SIZE argument
+  is approximately the number of entries that can be inserted without
+  the table having to grow.
+
+  Keep the first and last sentences of the definition of :REHASH-THRESHOLD
+  (CLtL p. 284.) Replace the rest with:
+  "This can be a REAL between 0 and 1, inclusive, which is a hint to the
+  implementation of the maximum desired hash table occupancy level. An
+  implementation is permitted to ignore this argument."
+
+Editorial consequences:
+  Remove the second complete paragraph of CLtL p. 283. It's too implementa-
+  tion-dependent. Clarify the implementation is not necessarily an actual
+  hash table of any particular hashing technique.
+
+Rationale:
+  
+  The bottom of p.283 is user-oriented, the top is implementation-oriented.
+  User-oriented seems more appropriate.
+
+Current practice:
+  
+  Symbolics Genera 7.4 adheres to HASH-TABLE-SIZE:INTENDED-ENTRIES.
+  Other implementations were not surveyed.
+
+Cost to Implementors:
+
+  At worst adding a multiplication to MAKE-HASH-TABLE.
+
+Cost to Users:
+
+  Probably none, but it is hard to predict.
+
+Cost of non-adoption:
+  
+  Implementations will probably vary in which of the two interpretations
+  they believe.  The language standard will not be self-consistent.
+
+Performance impact:
+
+  None of any significance.
+
+Benefits/Esthetics:
+
+  More self-consistent language.
+
+Discussion:
+
+  None.

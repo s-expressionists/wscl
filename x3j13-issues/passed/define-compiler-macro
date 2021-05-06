@@ -1,0 +1,321 @@
+Forum:          Cleanup
+Issue:          DEFINE-COMPILER-MACRO
+Related Issues: Issue DEFINE-OPTIMIZER
+                Issue SYNTACTIC-ENVIRONMENT-ACCESS
+                Issue LISP-SYMBOL-REDEFINITION
+                Issue DEFINING-MACROS-NON-TOP-LEVEL
+                Issue EVAL-WHEN-NON-TOP-LEVEL
+References:     CLtL p. 151, p. 152
+Category:       ADDITION
+Edit-History:   28-Jun-89, Version 1 by JonL White and Steve Haflich
+                12-Jul-89, Version 2 by Loosemore
+                24-Oct-89, Version 3 by Loosemore
+                19-Oct-90, Version 4 by Loosemore
+Status:         Version 2 (proposal NEW-FACILITY) passed at June 89 meeting
+                Version 4 (proposal X3J13-NOV89) passed at Nov 89 meeting
+                    (replaces proposal NEW-FACILITY)
+
+
+Problem Description:
+
+Occasionally one would like to define a macro which is expanded only
+"in the compiler", but which would not normally affect the actions of
+the interpreter.  For example, the OSS/Generator proposal has several
+functions for which it would like to specify some alternative source
+code sequences for the compiler to compiler, rather than just
+compiling a closed-call to the function.
+
+Also, it is occasionally desirable for a macro expansion to be
+different based on the various compiler optimization qualities (e.g.,
+SPEED, SAFETY, and so on); but if the expansion is for the interpreter
+rather than the compiler, then such variation based on compiler
+optimizers is not needed.
+
+So-called "compiler optimizers" are just a special case of macro-like
+expansions, which are limited to being done "in the compiler" and
+which are generally required to produce semantically equivalent code
+to replace an apparent function call.  There is a need for a facility
+that at least covers this capability.
+
+
+
+
+Proposal: (DEFINE-COMPILER-MACRO:X3J13-NOV89):
+
+Add the concept of "compiler macros" to the language, along with the
+defining macro DEFINE-COMPILER-MACRO and accessor function
+COMPILER-MACRO-FUNCTION.
+
+
+(1) What compiler macros are
+
+  The purpose of this facility is to permit selective source-code
+  transformations as optimization advice to the compiler.  When a
+  nonatomic form is being processed (as by the compiler), if the
+  operator names a compiler macro then that compiler macro may be
+  invoked on the form, and the resulting expansion recursively processed
+  in preference to performing the usual processing on the original form
+  according to its normal interpretation as a function or macro call.
+
+  A compiler macro function, like an ordinary macro function, is a
+  function of two arguments: the entire call form and the environment.
+  Unlike an ordinary macro, a compiler macro can decline to provide an
+  expansion merely by returning a value that is EQL to the original
+  form.  The consequences are undefined if a compiler macro function
+  destructively modifies any part of its form argument.
+
+  The form passed to the compiler macro function can either be a list
+  whose CAR is the function name, or a list whose CAR is FUNCALL and
+  whose CADR is a list (FUNCTION <name>); note that this affects
+  destructuring of the form argument by the compiler macro function.
+  DEFINE-COMPILER-MACRO arranges for destructuring of arguments to be
+  performed correctly for both possible formats.
+
+
+(2) Naming of compiler macros
+
+  Compiler macros may be defined for function names that name macros as
+  well as functions.  It is not permitted to define a compiler macro for
+  names which are external symbols in the COMMON-LISP package; see issue
+  LISP-SYMBOL-REDEFINITION.
+
+  Compiler macro definitions are strictly global.  There is no provision
+  for defining local compiler macros in the way that MACROLET defines
+  local macros.  Lexical bindings of a function name shadow any compiler
+  macro definition associated with the name as well as its global
+  function or macro definition.
+
+  Note that the presence of a compiler macro definition does not affect
+  the values returned by FUNCTION-INFORMATION, or other accessors such
+  as FBOUNDP or MACROEXPAND.  Compiler macros are global and the function
+  COMPILER-MACRO-FUNCTION is sufficient to resolve their interaction
+  with other lexical and global definitions.
+
+
+(3) When compiler macros might/must/must not be used
+
+  The presence of a compiler macro definition for a function or macro
+  indicates that it is desirable for the compiler to use the expansion
+  of the compiler macro instead of the original function call or macro
+  call form.  However, it is not required for any language processor
+  (compiler, evaluator, or other code walker) to actually invoke compiler
+  macro functions, or to make use of the resulting expansion.
+
+  There two situations in which a compiler macro definition must not be
+  applied by any language processor:
+
+      - The global function name binding associated with the compiler
+        macro is shadowed by lexical rebinding of the function name.
+
+      - The function name has been declared or proclaimed NOTINLINE and
+        the call form appears within the scope of the declaration.
+
+  When a compiler macro function is called as part of processing by the
+  evaluator or compiler, it is invoked by calling the function that is
+  the value of *MACROEXPAND-HOOK*.
+
+  When COMPILE-FILE chooses to expand a top-level compiler macro call,
+  the expansion is also treated as a top-level form for the purposes of
+  EVAL-WHEN processing, in the same way as the expansion of an ordinary
+  macro.
+
+
+
+(4) Specification of DEFINE-COMPILER-MACRO
+
+  DEFINE-COMPILER-MACRO name lambda-list
+        [[ {declaration}* | doc-string ]] {form}*                [macro]
+
+  DEFINE-COMPILER-MACRO is the normal mechanism for defining a compiler
+  macro function.  Its syntax resembles that of DEFMACRO.  The function
+  is defined in the lexical environment in which the DEFINE-COMPILER-MACRO
+  form appears; see issue DEFINING-MACROS-NON-TOP-LEVEL.
+
+  The <name> must be a function name.
+
+  The <lambda-list> supports destructuring and may include &ENVIRONMENT
+  and &WHOLE, in the same way as a DEFMACRO lambda-list.  The &WHOLE
+  argument is bound to the form argument that is passed to the compiler
+  macro function.  The remaining lambda-list parameters are specified
+  as if this form contained the function name in the CAR and the actual
+  arguments in the CDR, but if the CAR of the actual form is the symbol
+  FUNCALL, then the destructuring of the the arguments will actually be
+  performed using its CDDR instead.
+
+  When a call to DEFINE-COMPILER-MACRO appears at top-level in a file
+  being compiled by COMPILE-FILE, the compiler macro definition is made
+  known to the file compiler (analagous to the way top-level DEFMACRO
+  calls are handled).
+
+
+
+
+(5) Specification of COMPILER-MACRO-FUNCTION
+
+  COMPILER-MACRO-FUNCTION name &optional env                       [function]
+
+  This is the accessor for the compiler macro definition associated
+  with a given name.
+
+  The <name> argument must be a function name.  If there is a compiler
+  macro definition associated with that name in the given environment
+  <env>, COMPILER-MACRO-FUNCTION returns that function; otherwise it
+  returns NIL.
+
+  If there is a local function or macro named <name> defined in the
+  environment <env>, this definition shadows any global compiler macro
+  definition for that <name> and COMPILER-MACRO-FUNCTION must return
+  NIL.
+
+  SETF may be used with COMPILER-MACRO-FUNCTION to install a compiler
+  macro function for the name <name>, analogously to using SETF on
+  MACRO-FUNCTION.  The value must be a function of two arguments, as
+  described above.  It is also permissible to provide a value of NIL to
+  remove any existing compiler macro definition.  The <env> argument to
+  COMPILER-MACRO-FUNCTION must be omitted when it appears as a SETF
+  place.
+
+
+
+
+Proposal: (DEFINE-COMPILER-MACRO:NEW-FACILITY):
+
+Introduce a new facility by additions as follows:
+
+Macro:
+
+DEFINE-COMPILER-MACRO name lambda-list {doc-string} {declarations}* {form}*
+
+  This is just like DEFMACRO except the definition isn't stored in the
+  symbol function cell of 'name', and isn't seen by MACROEXPAND-1 (but
+  is seen by COMPILER-MACROEXPAND-1 -- see below).  Like DEFMACRO, the
+  lambdalist may include &ENVIRONMENT and &WHOLE.  The definition is
+  "global"; there is no explicit provision for defining local compiler
+  macros in the way that MACROLET defines local macros.
+
+  A toplevel call to DEFINE-COMPILER-MACRO in a file being compiled by
+  COMPILE-FILE has an effect on the compilation environment similar to
+  what a call to DEFMACRO would have, except it is noticed as a
+  "compiler macro".
+
+
+Function:
+
+COMPILER-MACRO-FUNCTION name &OPTIONAL env
+
+  If 'name' is a symbol that has been defined as a compiler macro, then
+  calling COMPILER-MACRO-FUNCTION on it returns the macro expansion
+  function; otherwise it returns NIL.  'name' must be a symbol.  The
+  local lexical environment may override a global definition for 'name'
+  by defining a local function or local macro (such as by FLET,
+  MACROLET, etc.), in which case NIL is returned; the optional argument
+  'env' is provided so that clients may pass in &environment objects for
+  this purpose.
+
+  SETF may be used with COMPILER-MACRO-FUNCTION to install a function as
+  the expansion function for the compiler macro 'name', analogously to
+  using SETF on MACRO-FUNCTION.  SETF'ing to NIL removes any existing
+  compiler macro definition.  Like MACRO-FUNCTION, the SETF value (if not
+  NIL) must be a function of two arguments:  the entire macro call, and
+  the environment.  The second argument to COMPILER-MACRO-FUNCTION must
+  be omitted when it is SETFed.
+
+
+Functions:
+
+COMPILER-MACROEXPAND form &OPTIONAL env
+COMPILER-MACROEXPAND-1 form &OPTIONAL env
+
+  This is just like MACROEXPAND and MACROEXPAND-1 (see CLtL p.151)
+  except that the expander function is obtained as if by a call to
+  COMPILER-MACRO-FUNCTION on the CAR of 'form' rather than by a call to
+  MACRO-FUNCTION.  There are three cases wherein no expansion happens:
+
+    (1) There is no compiler macro definition for the CAR of 'form';
+    (2) There is such a definition but there is also a NOTINLINE
+        declaration, either globally or in the lexical environment 'env';
+    (3) A global compiler macro definition is shadowed by a local
+        function or macro definition (such as by FLET, LABELS, or MACROLET).
+
+  Note that if there is no expansion, the original form is returned as
+  the first value, and NIL as the second value.
+
+  When COMPILER-MACROEXPAND-1 discovers that there is to be an expansion
+  it does it by calling the function in *MACROEXPAND-HOOK* (see CltL p.152).
+
+
+The purpose of this facility is to permit selective source-code
+transformations based on whether the compiler is processing the code.
+When the compiler is about to compile a nonatomic form, it first calls
+COMPILER-MACROEXPAND-1 repeatedly until there is no more expansion
+(there might not be any to begin with).  Then it continues its
+remaining processing, which may include calling MACROEXPAND-1 etc.
+
+The compiler is required to expand compiler macros; it is unspecified
+whether the interpreter does so.  The intention is that only the
+compiler will do so, but the range of possible "compiled-only"
+implementation strategies precludes any firm specification.
+
+Note that a compiler macro may decline to provide any expansion merely
+by returning the original form; this is useful when using the facility
+to put "compiler optimizers" on various function names.  For example,
+here is a compiler macro that "optimizes" the 0- and 1-argument cases of
+a function called PLUS:
+
+    (define-compiler-macro plus (&whole form &rest args)
+        (case (length args)
+            (0 0)
+            (1 (car args))
+            (t form)))
+
+The issue LISP-SYMBOL-REDEFINITION precludes user definition of any
+compiler macros for symbols external in the Lisp package that have a
+definition as a function, macro, or special form.
+
+Note that compiler macros do not appear in information returned by
+FUNCTION-INFORMATION; they are global, and their interaction
+with other lexical and global definitions can be reconstructed by
+COMPILER-MACRO-FUNCTION.  It is up to code-walking programs to decide
+whether to invoke compiler macro expansion.
+
+
+  Rationale:
+
+  Many implementations have it.  Many users have requested a way to add
+  source-code "optimizers" to the compiler.
+
+  Other than INLINE declarations for functions there is no other way to
+  customize how calls to a specific function are compiled.  DEFMACRO is
+  not usable for this purpose since it requires use of the
+  symbol-function cell, which would prevent the functional definition
+  from being active in the compilation environment.
+
+
+
+Current Practice:
+
+Lucid, Franz, and Symbolics have very similar facilities.  Hunoz about
+the others?
+
+
+Cost to Implementors:
+
+Minor: implement a method for storing named expansion functions, and
+tweak the compiler in one or two places.
+
+
+Cost to Users:
+
+None.  This is an upward-compatible addition.
+
+
+Benefits:
+
+Increased portability for clients of the existing facilities.
+
+
+Discussion:
+
+There has been extensive discussion under the issue DEFINE-OPTIMIZER.
+-------
+

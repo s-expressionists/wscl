@@ -1,0 +1,149 @@
+Status:	Passed, Jun 89 X3J13
+Issue:         SETF-MULTIPLE-STORE-VARIABLES
+
+References:    CLtL, pp.93-107
+               Lisp Pointers, v2n2, pp.27-41
+
+Category:      ADDITION
+
+Edit history:  Version 1,  5-Dec-88, Pavel
+               Version 2, 22-Mar-89, Moon, simplify, update from discussion
+
+Problem description:
+  
+  The description of GET-SETF-METHOD-MULTIPLE-VALUE on page 107 of CLtL
+  states that there are no cases in Common Lisp that allow multiple values
+  to be stored into a generalized variable.  This is seen by some as an
+  arbitrary decision in light of the fact that a very reasonable semantics
+  exists for multiple values being assigned by several Common Lisp macros,
+  including SETF.  The rationale on page 103 of CLtL suggests that this
+  decision might be changed in the future.
+
+Proposal (SETF-MULTIPLE-STORE-VARIABLES:ALLOW):
+
+  Extend the semantics of the macros SETF, PSETF, SHIFTF, ROTATEF, and
+  ASSERT to allow "places" whose SETF methods have more than one "store
+  variable".  In such cases, the macros accept as many values from the
+  newvalue form as there are store variables.  As usual, extra values
+  are ignored and missing values default to NIL.
+
+  Extend the long form of DEFSETF to allow the specification of more
+  than one "store variable", with the obvious semantics.
+
+  Clarify that GET-SETF-METHOD signals an error if there would be more
+  than one store-variable.
+
+Test Cases/Examples:
+  
+  (defstruct region width height)
+  
+  (defun region-size (region)
+     (values
+        (region-width region)
+        (region-height region)))
+  
+  (defsetf region-size (region) (width height)
+     `(values
+         (setf (region-width ,region) ,width)
+         (setf (region-height ,region) ,height)))
+  
+  (setf my-reg (make-region :width 10 :height 20))
+  => #S(REGION :WIDTH 10 :HEIGHT 20)
+  
+  (region-size my-reg)
+  => 10
+     20
+  
+  (setf (region-size my-reg) (values 30 40))
+  => 30
+     40
+  
+  (region-size my-reg)
+  => 30
+     40        
+
+Rationale:
+  
+  This change removes an artificial restriction on the semantics of
+  several Common Lisp macros, allowing a broader set of contexts in
+  which generalized variables can be used.  For example, it is not
+  difficult to write a reasonable SETF method for the VALUES function,
+  yielding a powerful MULTIPLE-VALUE-SETF form:
+
+        (setf (values (car a) (gethash b 'c) (aref d 13))
+              (some-hairy-computation))
+
+  In the language as currently defined, this example would have to be
+  written:
+
+        (multiple-value-bind (x y z)
+                             (some-hairy-computation)
+           (setf (car a)        x
+                 (gethash b 'c) y
+                 (aref d 13)    z))
+
+  Many other (perhaps more compelling) examples of generalized variables
+  holding more than one value can easily be imagined.  Their use,
+  however, is severely discouraged by Common Lisp as defined in CLtL,
+  since none of the built-in macros will accept them.
+
+  The clarification of GET-SETF-METHOD makes explicit what is implied
+  by CLtL (CLtL uses the word "guarantee", whose relationship to
+  signalling of errors is unclear).
+
+Current practice:
+
+  I do not know of any implementations that allow all of this extension.
+  Xerox Lisp does not signal an error, but this is probably due to a bug
+  in GET-SETF-METHOD.  Lucid signals an error in GET-SETF-METHOD.
+  Symbolics Genera supports the proposal in SETF and PSETF, but not in
+  SHIFTF, ROTATEF, and ASSERT.
+
+Cost to Implementors:
+
+  A relatively minor fix to each of the affected macros suffices.  For
+  example, to fix SETF itself, one need only call
+  GET-SETF-METHOD-MULTIPLE-VALUE instead of GET-SETF-METHOD and emit a
+  MULTIPLE-VALUE-BIND instead of a LET for binding the store variables.
+
+Cost to Users:
+
+  This is an upward-compatible change; no user code must change.
+
+Cost of non-adoption:
+
+  Yet another non-uniformity in the language, yet another piece of
+  mechanism without a clear use (GET-SETF-METHOD-MULTIPLE-VALUE).
+
+Benefits:
+
+  Wider applicability of a reasonably nice abstraction, the removal of
+  an artificial prohibition.
+
+Aesthetics:
+
+  People may disagree about whether this is a simplification or not.  I
+  am firmly on the side that believes that such removal of
+  non-uniformities is a simplifying force in the language.
+
+Discussion:
+
+  Pavel supports this proposal.
+
+  Moon supports this proposal except he is not sure about the
+  inclusion of ASSERT.
+
+  GSB suggests that this is a clarification rather than an addition,
+  because the lack of any predefined setf-methods that use multiple
+  store variables should not mean that SETF, etc. should not work with
+  such a setf-method if the user defined one.  The problem is that CLtL
+  examples such as the ones for SHIFTF on p.98 and the simplified
+  definition for SETF on p.107 contradict this proposal, and might have
+  been taken as specifications, rather than simplified examples, by
+  some readers.
+
+  Predefined SETF methods for such functions as VALUES, CONS, and VECTOR
+  could have been proposed, but we refrained.  This proposal is necessary
+  to allow the user to write such methods for himself, but if this
+  proposal is adopted those setf-methods are very easy to write in
+  a portable fashion.

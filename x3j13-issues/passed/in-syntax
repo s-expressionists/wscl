@@ -1,0 +1,75 @@
+Status: Passed, Mar 89 X3J13
+
+Issue: IN-SYNTAX
+Edit History: 21-Oct-88, Version 1 by Pitman
+		Version 2, KMP 3/30/89
+		Version 3,  9-Apr-89, Masinter
+			(Include discussion from Version 1)
+
+Problem Description:
+
+  There is no way to bind read syntax within a file.
+
+  As a result, applications which require extended syntax of some sort
+  tend to globally modify the lisp readtable at compile and load time,
+  sometimes interfering with other modules and/or user interaction.
+
+  Conscientious developers often avoid the creation of any stylized
+  syntax because of its likely effect on parts of the environment which
+  don't really belong to the application developer. This need for
+  paranoia is probably contrived and the result of what amounts to
+  an oversight in the design of Common Lisp.
+
+
+Proposal (IN-SYNTAX:MINIMAL):
+
+    Define that COMPILE-FILE and LOAD bind *READTABLE* to its current value.
+
+Rationale:
+
+   This allows portable programs to do
+
+     (IN-PACKAGE "FOO")
+     (EVAL-WHEN (EVAL LOAD COMPILE)
+       (SETQ *READTABLE* FOO:MY-READTABLE))
+
+   at the top of a file without globally side-effecting the
+   environment.
+
+   Currently, there is no portable way to change the syntax only for
+   the duration of a file, which in turn makes customized syntax
+   difficult to use safely.
+
+   Programs that want to side effect the environment can instead
+   continue to modify *READTABLE*.
+
+    This is enough of a foothold to implement a more elaborate facility
+    for using readtables in a localized way.
+
+
+Current Practice:
+
+   mixed
+
+Cost to Implementors:
+
+  Very small.
+
+Cost to Users:
+
+small
+
+Cost of Non-Adoption:
+
+  Readtables would continue to be hard to use in a clean way.
+
+Benefits:
+
+  If people could use readtables safely, we might see more interesting
+  experimentation with read syntax.
+
+Aesthetics:
+
+  A slight improvement to aesthetics by controlling what was formerly
+  an unbounded side-effect (modification to the global readtable).
+

@@ -1,0 +1,84 @@
+Status:	Passed, Jan 89 X3J13
+Issue:         SPECIAL-TYPE-SHADOWING
+
+References:    CLtL pages 156, 158
+
+Related issues: DECLARE-TYPE-FREE
+
+Category:      CLARIFICATION
+
+Edit history:  Version 1, 04-Nov-88 by David Gray
+
+Problem description:
+
+  A Common Lisp user raised the question of whether something like the
+  following is legal:
+
+    (PROCLAIM '(TYPE NUMBER *X*))
+    (DEFVAR *X*)
+    (DEFUN FOO ()
+      (LET ((*X* T))
+        (DECLARE (TYPE SYMBOL *X*))
+        (BAR)))
+
+  Page 156 of CLtL says that a proclamation is "always in force unless
+  locally shadowed" and page 158 says type declarations "only affect
+  variable bindings", which might be interpreted to mean that the DECLARE
+  locally shadows the PROCLAIM.  However, that interpretation would make
+  the global type proclamation useless because it could not be relied on
+  when compiling a function such as BAR. 
+
+Proposal SPECIAL-TYPE-SHADOWING:CLARIFY
+  
+  Clarify that if there is a local type declaration for a special
+  variable, and there is also a global type proclamation for that same
+  variable, then the value of the variable within the scope of the local
+  declaration must be a member of the intersection of the two declared
+  types.
+
+Rationale:
+
+  Some restriction on local type declarations for special variables is
+  needed in order for type proclamations to be meaningful.  The wording
+  used here was chosen for consistency with proposal DECLARE-TYPE-FREE.
+
+Current practice:
+
+  The TI, Symbolics, and Lucid implementations do not report any error
+  on the example above, but it isn't clear that they really do anything
+  with type declarations for special variables anyway.
+
+Cost to Implementors:
+
+  This is unlikely to require a change in any current implementation.
+
+Cost to Users:
+
+  Anyone who has written code like the example above would have to
+  modify it if compilers started enforcing this restriction.
+
+Cost of non-adoption:
+
+  A minor ambiguity in the language specification that could confuse
+  users.
+
+Performance impact:
+
+  None.
+
+Benefits:
+
+  A clearer definition of the meaning of type declarations for special
+  variables.
+
+Discussion:
+
+  This is obviously very closely related to issue DECLARE-TYPE-FREE, but
+  this is an ambiguity in the existing language that should be resolved
+  even if the language extension of proposal DECLARE-TYPE-FREE is not
+  accepted.  Note also that DECLARE-TYPE-FREE makes no mention of type
+  proclamations.
+
+  Other possible resolutions of the ambiguity would be to either rule
+  out use of local type declarations for special variables, or to say
+  that the local type must be a subtype of the global type.

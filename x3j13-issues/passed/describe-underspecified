@@ -1,0 +1,154 @@
+Status: Passed, as amended, Mar 89 X3J13
+
+Forum:		Cleanup
+Issue:		DESCRIBE-UNDERSPECIFIED
+References:	CLtL p441-2
+		88-002R, DESCRIBE function
+Category:	CHANGE, ADDITION
+Edit history:	Version 1, 10-Mar-89, Kim A. Barrett
+              Version 2,  9-Apr-89, Masinter (as per Mar 89 X3J13)
+
+Problem description:
+
+ The CLOS Specification (X3J13 Document 88-002R) changes the definition of the
+ function DESCRIBE, making it a generic function.  However, it does not specify
+ any of the protocol needed to make user-defined methods interact properly to
+ produce some of the effects mentioned in CLtL.  For example, CLtL says that
+ sometimes the method for describing an object will involve describing
+ something that it finds inside the object, and that such recursive
+ descriptions are indented appropriately.  How do user-written methods achieve
+ this indentation?  Must they arrange for the indentation explicitly, or is
+ there some automatic mechanism that handles it?
+
+ The new specification does not easily lend itself to certain kinds of features
+ which some implementations have included in their versions of DESCRIBE, such
+ as analogues to the printer's depth limits (*PRINT-DEPTH*) and circular
+ structure detection during recursion (*PRINT-CIRCLE*).
+
+ In addition, DESCRIBE does not take a stream argument, instead always doing
+ output to *STANDARD-OUTPUT*.  This means that a program which wants to use
+ DESCRIBE to output some information to a particular stream must rebind
+ *STANDARD-OUTPUT* around the call to DESCRIBE.  This is a nuisance, and is
+ also potentially a bad idea in implementations which have interrupts and such.
+
+Proposal DESCRIBE-UNDERSPECIFIED:DESCRIBE-OBJECT:
+
+ Remove the section of 88-002R which specifies that DESCRIBE is a generic
+ function.  Modify DESCRIBE to accept an optional second stream argument, which
+ defaults to *STANDARD-OUTPUT*, and which is handled in the same way as the
+ stream argument to PRINT (that is, permitting arguments of NIL and T).
+ The value of this argument is the stream which output will be directed to. 
+ Specify that DESCRIBE is implemented in terms of the generic function
+ DESCRIBE-OBJECT, described below.
+
+ DESCRIBE-OBJECT object stream				[Generic Function]
+
+  The generic function DESCRIBE-OBJECT writes a description of an object to a
+  stream.  The function DESCRIBE-OBJECT is called by the DESCRIBE function; it
+  should not be called by the user.
+
+  Each implementation is required to provide a method on the class
+  STANDARD-OBJECT and methods on enough other classes so as to ensure that
+  there is always an applicable method.  Implementations are free to add
+  methods for other classes.  Users can write methods for DESCRIBE-OBJECT for
+  their own classes if they do not wish to inherit an implementation-supplied
+  method.
+
+  ARGUMENTS:
+
+   The first argument is any Lisp object.  The second argument is a stream; it
+   cannot be T or NIL.
+
+  VALUES:
+
+   The values returned by DESCRIBE-OBJECT are unspecified.
+
+  REMARKS:
+
+   Methods on DESCRIBE-OBJECT may recursively call DESCRIBE.  Indentation,
+   depth limits, and circularity detection are all taken care of automatically,
+   provided that each method handles exactly one level of structure and calls
+   DESCRIBE recursively if there are more structural levels.
+
+   If this rule is not obeyed, the results are undefined.
+
+   In some implementations the stream argument passed to a DESCRIBE-OBJECT
+   method is not the original stream, but is an intermediate stream that
+   implements parts of DESCRIBE.  Methods should therefore not depend on the
+   identity of this stream.
+
+Rationale:
+
+ This proposal was closely modeled on the CLOS description of PRINT-OBJECT,
+ which was well thought out and provides a great deal of functionality and
+ implementation freedom.  The same implementation techniques applicable to
+ PRINT-OBJECT will be applicable to DESCRIBE-OBJECT.
+
+ The reason for making the return values for DESCRIBE-OBJECT unspecified is to
+ avoid forcing users to include explicit (VALUES) in all their methods.
+ DESCRIBE will take care of that.
+
+Current practice:
+
+ Probably nobody does precisely what this proposal suggests.
+
+Cost to Implementors:
+
+ A fair amount of work may be required, since every method/subfunction of
+ DESCRIBE in an implementation may need at least some fixing to be in line with
+ this proposal.  On the other hand, that work may already be needed in order to
+ conform to 88-002R, and this proposal may make the conversion easier by
+ simplifying the translation of an existing implementation of DESCRIBE.
+
+Cost to Users:
+
+ Any users who are using an implementation which supports the current CLOS
+ specification of DESCRIBE and have defined their own methods will have to
+ change them.  CLOS is sufficiently recent that this probably isn't a big
+ problem.
+
+ Those users who have made use of implementation-specific hooks into DESCRIBE
+ to define their own methods will likely have to change, but that was already
+ the case.
+
+ Users who are currently binding *STANDARD-OUTPUT* around calls to DESCRIBE may
+ wish to change their code.
+
+Cost of non-adoption:
+
+ Portable DESCRIBE methods may be difficult to write because the protocol they
+ must follow is insufficiently specified.
+
+Benefits:
+
+ The constraints on DESCRIBE methods are better specified, making it easier to
+ write such methods properly.
+
+Aesthetics:
+
+ Minimal.
+
+Discussion:
+
+ An additional change which is not included in the present proposal would be to
+ make the syntax of DESCRIBE and DESCRIBE-OBJECT be
+
+  DESCRIBE object &optional stream &key
+  DESCRIBE-OBJECT object stream &key
+
+ allowing implementation-specific extensions to the arguments.  A possible
+ standard keyword argument is :VERBOSE, which might be used to specify how much
+ output to produce.
+
+ It might be desirable to define some new describe control variables analogous
+ to the printer control variables, ie. *DESCRIBE-LEVEL* and *DESCRIBE-CIRCLE*,
+ and possibly *DESCRIBE-LENGTH*.
+-------
+
+
+
+     ----- End Forwarded Messages -----
+
+
+
+     ----- End Forwarded Messages -----

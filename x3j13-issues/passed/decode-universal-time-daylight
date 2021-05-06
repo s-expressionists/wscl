@@ -1,0 +1,85 @@
+Status:		Passed, Jan 89 X3J13
+Issue:        DECODE-UNIVERSAL-TIME-DAYLIGHT
+References:   DECODE-UNIVERSAL-TIME (p445)
+Category:     CLARIFICATION
+Edit history: 20-Jun-88, Version 1 by Pitman
+		30-Sep-88, Version 2 by Masinter
+
+Problem Description:
+
+  The description of DECODE-UNIVERSAL-TIME does not say what happens with
+  TIME-ZONE. Since the description of ENCODE-UNIVERSAL-TIME mentions that
+  its behavior differs depending on whether a time zone is explicitly passed,
+  some implementors may have assumed that DECODE-UNIVERSAL-TIME should do
+  likewise.
+
+  Even if all implementations did the same thing, it should still be clarified
+  whether an implementation were permitted to return dsp=NIL tz=n rather than
+  dsp=T tz=n+1 for time zones in which daylight savings time was believed to
+  be (or known to be) in effect. Currently, you cannot tell whether "NIL" for
+  daylight-savings-time-p means "daylight savings time is in effect" or
+  just "daylight savings time is not known to not be in effect".
+
+  These tools appear to be more portable than they are.
+
+Proposal (DECODE-UNIVERSAL-TIME-DAYLIGHT:LIKE-ENCODE):
+
+  Specify that, like ENCODE-UNIVERSAL-TIME, DECODE-UNIVERSAL-TIME ignores
+  daylight savings information if a timezone is explicitly specified.
+
+Rationale:
+
+  This makes things consistent with ENCODE-UNIVERSAL-TIME.
+
+Test Case:
+
+  ;; ### This test case relies on time zone not changing in real
+  ;; ###   time, in defiance of warning in note at bottom
+  ;; ###   of p445.
+
+  (LET* ((HERE (NTH 8 (MULTIPLE-VALUE-LIST (GET-DECODED-TIME)))) ;Time zone
+	 (RECENTLY (GET-UNIVERSAL-TIME))
+	 (A (NTHCDR 7 (MULTIPLE-VALUE-LIST (DECODE-UNIVERSAL-TIME RECENTLY))))
+	 (B (NTHCDR 7 (MULTIPLE-VALUE-LIST (DECODE-UNIVERSAL-TIME RECENTLY HERE)))))
+    (LIST A B (EQUAL A B)))
+
+Under this proposal, this would return ((T 5) (NIL 5) NIL) in EDT, for example. 
+
+Current Practice:
+
+ Symbolics Genera, Symbolics Cloe, Lucid 3.0 and Envos Medley seem to 
+ implement this proposal. Some other implementations do not.
+
+Cost to Implementors:
+
+  The cost of changing this should be trivial.
+
+Cost to Users:
+
+  This feature is already not well-defined since no portable program can rely
+  on the current behavior, so the cost is small.
+
+Cost of Non-Adoption:
+
+  The time primitives are considerably less useful if this point is not
+  clearly spelled out.
+
+Benefits:
+
+  The cost of non-adoption would be avoided.
+
+Aesthetics:
+
+  Anything that improves the intelligibility of language primitives improves
+  language aesthetics.
+
+Discussion:
+
+  An alternative would be to specify that, unlike ENCODE-UNIVERSAL-TIME,
+  DECODE-UNIVERSAL-TIME treats daylight savings information the same
+  regardless of whether a time zone argument is explicitly or not. This seems 
+  actually to be what was intended originally.
+
+  This problem arose while trying to port Macsyma between different
+  Common Lisp implementations. The cleanup committee does not have
+  a strong opinion on this matter, as long as the behavior is specified.

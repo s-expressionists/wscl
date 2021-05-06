@@ -1,0 +1,358 @@
+This is KMP's plain-text transcription of the issues which comprise
+the Character Proposal.  This isn't what was voted on, but it may be
+easier to use than the one that was, since it's not full of TeX codes.
+================================================================================
+
+Proposal 2.0.1: [Passed 03/89]
+
+ The terminology introduced in this proposal will be included
+ in the language specification at the discretion of the editor.
+
+Proposal 2.1.1: [Alternative A, Passed as Modified 03/89]
+
+ Remove all discussion of attributes from
+ the language specification.  Add the following discussion:
+   ``Earlier versions of Common LISP incorporated FONT and BITS as
+     attributes of character objects.  These and other supported
+     attributes are considered implementation-defined attributes and
+     if supported by an implementation effect the action of selected
+     functions.''
+ All types, constants and functions dealing with the BITS and
+ FONT attributes are either removed or modified as follows:
+
+   * Modify CHAR-=: If two characters differ in any implementation-defined
+     attributes, then they are not CHAR-=.
+
+   * Modify CHAR-<: If two characters have identical implementation-defined
+     attributes, then their ordering by CHAR< is consistent with the
+     numerical ordering by the predicate < on their code. (Similarly for
+     CHAR>, CHAR>= and CHAR<=.)
+
+   * Modify CHAR-EQUAL: The effect, if any, on CHAR-EQUAL of each 
+     implementation-defined attribute has to be specified as part of the
+     definition of that attribute (and similarly for CHAR-NOT-EQUAL,
+     CHAR-LESSP, CHAR-GREATERP, CHAR-NOT-GREATERP, CHAR-NOT-LESSP).
+
+   * Modify CHAR-UPCASE and CHAR-DOWNCASE: The effect of CHAR-UPCASE and
+     CHAR-DOWNCASE is to preserve implementation-defined attributes.
+
+   * Modify READ: It is implementation dependent which attributes are
+     removed from symbol names. It is implementation dependent which
+     attributes are removed from characters within double quotes.
+
+   * Modify INTERN: It is implementation dependent which 
+     implementation-defined attributes are removed. 
+
+   * Modify DIGIT-CHAR: remove the optional FONT argument.
+
+   * Modify CODE-CHAR: remove the optional FONT and BIT arguments.
+
+   * Remove CHAR-FONT-LIMIT
+
+   * Remove CHAR-BITS-LIMIT
+
+   * Remove INT-CHAR
+
+   * Remove CHAR-INT
+     <<This removal is later rescinded by 2.1.2. See below. -kmp 2-Aug-89>>
+
+   * Remove CHAR-BITS
+
+   * Remove CHAR-FONT
+
+   * Remove MAKE-CHAR
+
+   * Remove CHAR-CONTROL-BIT
+
+   * Remove CHAR-META-BIT
+
+   * Remove CHAR-SUPER-BIT
+
+   * Remove CHAR-HYPER-BIT
+
+   * Remove CHAR-BIT
+
+   * Remove SET-CHAR-BIT
+
+   * Remove STRING-CHAR and STRING-CHAR-P
+
+   * Modify readtable: If implementation-defined attributes are supported,
+     an implementation need not (but may) allow for such characters to have
+     syntax descriptions in the readtable. Otherwise, all characters are
+     representable in the readtable.
+
+Proposal 2.1.2: [Alternative B, Passed as Modified 03/89]
+
+ This is identical to all of Alternative A (above) except that the function
+ CHAR-INT is retained. CHAR-INT returns a non-negative integer encoding the
+ character object.  The manner in which the integer is computed is 
+ implementation dependent. In contrast to SXHASH, the result is not
+ guaranteed independent of the particular "incarnation" or "core image".
+
+Proposal 2.2.1: [Passed 03/89]
+
+ The discussion of standard characters is replaced by the following:
+
+  Common LISP requires all implementations to support and document
+  a STANDARD character subrepertoire.  The Common LISP standard character
+  subrepertoire consists of a newline, #\Newline; the graphic space
+  character #\Space; and the following additional ninety-four graphic
+  characters or their equivalents:
+
+  Note: #\Space and #\Newline are omitted.  Graphic labels and 
+   descriptions are from ISO 6937/2.  The first letter of the
+   graphic Id categorizes the character as follows:
+   L - Latin, N - Numeric, S - Special.
+
+  Id   Glyph    Name or description     Id   Glyph    Name or description
+
+  LA01   a      small a                 ND01   1      digit 1
+  LA02   A      capital A               ND02   2      digit 2
+  LB01   b      small b                 ND03   3      digit 3
+  LB02   B      capital B               ND04   4      digit 4
+  LC01   c      small c                 ND05   5      digit 5
+  LC02   C      capital C               ND06   6      digit 6
+  LD01   d      small d                 ND07   7      digit 7
+  LD02   D      capital D               ND08   8      digit 8
+  LE01   e      small e                 ND09   9      digit 9
+  LE02   E      capital E               ND10   0      digit 0
+  LF01   f      small f                 SC03   $      dollar sign
+  LF02   F      capital F               SP02   !      exclamation mark
+  LG01   g      small g                 SP04   "      quotation mark
+  LG02   G      capital G               SP05   '      apostrophe
+  LH01   h      small h                 SP06   (      left parenthesis
+  LH02   H      capital H               SP07   )      right parenthesis
+  LI01   i      small i                 SP08   ,      comma
+  LI02   I      capital I               SP09   _      low line
+  LJ01   j      small j                 SP10   -      hyphen or minus sign
+  LJ02   J      capital J               SP11   .      full stop, period
+  LK01   k      small k                 SP12   /      solidus
+  LK02   K      capital K               SP13   :      colon
+  LL01   l      small l                 SP14   ;      semicolon
+  LL02   L      capital L               SP15   ?      question mark
+  LM01   m      small m                 SA01   +      plus sign
+  LM02   M      capital M               SA03   <      less-than sign
+  LN01   n      small n                 SA04   =      equals sign
+  LN02   N      capital N               SA05   >      greater-than sign
+  LO01   o      small o                 SM01   #      number sign
+  LO02   O      capital O               SM02   %      percent sign
+  LP01   p      small p                 SM03   &      ampersand
+  LP02   P      capital P               SM04   *      asterisk
+  LQ01   q      small q                 SM05   @      commercial at
+  LQ02   Q      capital Q               SM06   [      left square bracket
+  LR01   r      small r                 SM07   \      reverse solidus
+  LR02   R      capital R               SM08   ]      right square bracket
+  LS01   s      small s                 SM11   {      left curly bracket
+  LS02   S      capital S               SM13   |      vertical bar
+  LT01   t      small t                 SM14   }      right curly bracket
+  LT02   T      capital T               SD13   `      grave accent
+  LU01   u      small u                 SD15   ^      circumflex accent
+  LU02   U      capital U               SD19   ~      tilde
+  LV01   v      small v
+  LV02   V      capital V
+  LW01   w      small w
+  LW02   W      capital W
+  LX01   x      small x
+  LX02   X      capital X
+  LY01   y      small y
+  LY02   Y      capital Y
+  LZ01   z      small z
+  LZ02   Z      capital Z
+
+Proposal 2.3.1: [Passed as Modified 03/89]
+
+ The following type definitions are added:
+
+ Define BASE-CHARACTER as (UPGRADED-ARRAY-ELEMENT-TYPE 'STANDARD-CHAR)
+ and EXTENDED-CHARACTER as type (AND CHARACTER (NOT BASE-CHARACTER)).
+ Characters of type BASE-CHARACTER are referred to as ``base characters''.
+ Characters of type EXTENDED-CHARACTER are referred to as 
+ ``extended characters.''
+
+Proposal 2.3.2: [Passed 03/89]
+
+ The STRING type is defined as a union type.  More precisely, a string
+ is a specialized vector whose elements are of type CHARACTER or a
+ subtype of CHARACTER.  STRING used as a type specifier for object 
+ creation means (VECTOR CHARACTER).
+
+Proposal 2.3.3: [Passed as Modified 03/89]
+
+ The following string subtypes are distinguished with standardized names.
+   * BASE-STRING is equivalent to (VECTOR BASE-CHARACTER).
+     Strings of type BASE-STRING are referred to as ``base strings.''
+   * BASE-STRING is valid as a type specifier that abbreviates.
+
+Proposal 2.3.4: [Passed as Modified 03/89]
+
+ Define SIMPLE-STRING as a union type.  A simple string is a specialized
+ simple one dimensional array whose elements are of type CHARACTER or a
+ subtype of CHARACTER.  SIMPLE-STRING used as a type specifier for object
+ creation means (SIMPLE-ARRAY CHARACTER size).
+
+Proposal 2.3.5: [Passed as Modified 03/89]
+
+ The following simple string subtypes are distinguished with standardized
+ names:
+  * SIMPLE-BASE-STRING is equivalent to (SIMPLE-ARRAY BASE-CHARACTER (*)).
+    SIMPLE-BASE-STRING is a subtype of BASE-STRING.
+  * SIMPLE-BASE-STRING is valid as a type specifier that abbreviates.
+
+Proposal 2.3.6: [Passed 03/89]
+
+ Extend the MAKE-STRING function to allow an ELEMENT-TYPE keyword argument:
+  * MAKE-STRING size &KEY :initial-element :element-type   [Function]
+    This returns a simple string of length SIZE, each of whose characters
+    has been initialized to the :INITIAL-ELEMENT argument.  If an
+    :INITIAL-ELEMENT argument is not specified, then the string will be
+    initialized in an implementation-dependent way.  The :ELEMENT-TYPE
+    argument names the type of the elements of the string; a string is
+    constructed of the most specialized type that can accommodate elements
+    of the given type.  If :ELEMENT-TYPE is omitted, the type CHARACTER
+    is the default.
+
+Proposal 2.4.1: [Passed 03/89]
+
+ Common LISP character codes are composed from a character script and
+ a character label.  The convention by which a character label and
+ character script compose a character code is implementation dependent.
+
+Proposal 2.4.2: [Passed as Modified 06/89]
+
+ An implementation must document the scripts it supports. For each script
+ supported the documentation must include at least the following:
+
+  * Character Labels, Glyphs, and Descriptions.  Character labels must
+    be uniquely named using only Latin capital letters A-Z, hyphen and
+    digits 0-9.
+
+  * Effect of CHAR-UPCASE and CHAR-DOWNCASE.
+
+  * Reader canonicalization and format directives.
+    Note: Any mechanisms by which the READ function treats distinct
+          characters as equivalent.
+
+  * Effect of character predicates. In particular,
+    - CHAR-EQUAL and other case-insensitive character predicates.
+    - ALPHA-CHAR-P
+    - LOWER-CASE-P
+    - UPPER-CASE-P
+    - BOTH-CASE-P
+    - GRAPHIC-CHAR-P
+    - ALPHANUMERICP
+
+  * Interaction with File I/O.  In particular, the coded character
+    sets (e.g., ISO8859/1-1987) and external encoding schemes 
+    supported are documented.
+
+Proposal 2.4.3: [Passed as Modified 06/89]
+
+ Every character repertoire name is a type specifier and a subtype of
+ type CHARACTER.
+
+Proposal 2.5.2: [Passed as Modified 06/89]
+
+ Add an additional keyword argument to OPEN and a new function to query
+ external file format:
+
+   * :EXTERNAL-FORMAT keyword argument on OPEN which specifies an 
+     implementation recognized scheme for representing characters in files.
+
+     The default value is :DEFAULT and is implementation defined but must
+     support the base characters.
+
+     If the argument is not recognized by the implementation, an error is
+     signalled. This argument is provided for input, output, and bidirectional
+     streams.  It is an error to write a character which cannot be represented
+     using the given file format. (This excludes the #\Newline character.
+     Implementations must provide appropriate line division behavior for all
+     character streams.)
+
+   * STREAM-EXTERNAL-FORMAT stream   [Function]
+
+     STREAM-EXTERNAL-FORMAT returns the implementation recognized format of
+     the specified file.
+
+Proposal 2.5.4: [Alternative A, Passed 06/89]
+
+ The default for the :ELEMENT-TYPE argument of OPEN is CHARACTER.
+
+Proposal 2.5.6: [Passed as Modified 06/89]
+
+ Modify the following functions:
+
+   * WITH-OUTPUT-TO-STRING.  A new keyword argument :ELEMENT-TYPE is added
+     which defaults to CHARACTER. If a string argument is provided, the
+     :ELEMENT-TYPE argument is ignored. A string argument of NIL means
+     no initial string argument is provided. If no string argument is
+     provided, produces a stream that accepts all characters of the
+     indicated type and returns a string of the indicated element type.
+
+   * MAKE-STRING-OUTPUT-STREAM.  A new keyword argument :ELEMENT-TYPE is
+     added which defaults to CHARACTER. MAKE-STRING-OUTPUT-STREAM returns
+     an output stream that accepts all characters of the indicated type
+     and returns (via GET-OUTPUT-STREAM-STRING) a string of the indicated
+     type.
+
+Proposal 2.5.7: [Passed as Modified 06/89]
+
+ Add the following function:
+   * FILE-STRING-LENGTH file-stream object  [Function]
+
+     FILE-STRING-LENGTH returns a non-negative integer which represents
+     the difference between what (FILE-POSITION file-stream) would be
+     after writing the OBJECT and its current value, or NIL if this cannot
+     be determined.  OBJECT must be a string or character.
+
+     This return value depends on the current state of the stream, that
+     is, two calls to FILE-STRING-LENGTH with the same stream and object
+     may return different values.
+
+
+Misc effects on CLtL...
+
+Proposal 2.6.1: [Passed 03/89]
+
+ Chapter 2 Data Types (Page 12)
+
+  Replace:
+     provides for a
+     rich character set, including ways to represent characters of various
+     type styles.
+  with:
+     provides support for international language characters as well
+     as characters used in specialized arenas, eg. mathematics.
+
+Proposal 2.6.2: [Passed as Modified 03/89]
+
+ Chapter 2 Symbols (Page 25)
+
+  Clarify:
+     A symbol may have any character in its print name.
+
+Proposal 2.6.3: [Passed 03/89]
+
+ Chapter 10 Symbols (Page 163)
+
+  Replace:
+     It is ordinarily not permitted to alter a symbol's print name.
+  with:
+     It is an error to alter a symbol's print name.
+
+Proposal 2.6.4: [Passed 03/89]
+
+ Chapter 10 The Print Name (Page 168)
+
+  Replace:
+     It is an extremely bad idea to modify a string being used
+     as the print name of a symbol.
+  with:
+     It is an error to modify a string being used
+     as the print name of a symbol.
+
+Proposal 2.6.5: [Passed 03/89]
+
+ Chapter 14 Simple Sequence Functions (Page 249, make-sequence)
+
+  Append:
+     If type STRING is specified, the result is equivalent to MAKE-STRING.

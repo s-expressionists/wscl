@@ -1,0 +1,87 @@
+Issue:         REDUCE-ARGUMENT-EXTRACTION
+References:    REDUCE (pp. 251-252), :KEY arguments (p. 246), 
+               the astronaut structure (pp. 312-313)
+Category:      ADDITION
+Edit history:  Version 1 by Pierson 5-Dec-87
+               Version 2 by Pierson 30-Dec-87
+               Version 3 by Masinter 13-Feb-88
+
+Problem description:
+
+REDUCE is the only one of the Common Lisp functions that modify or
+search lists and sequences which does not accept a :KEY argument.
+This complicates many uses of REDUCE.
+
+Proposal (REDUCE-ARGUMENT-EXTRACTION:KEY):
+
+Change the definition of REDUCE to take a :KEY keyword described as
+follows: 
+
+If a :KEY argument is supplied, its value must be a function of one
+argument which will be used to extract the values to reduce.  The :KEY
+function will be applied exactly once to each element of the sequence
+in the order implied by the reduction order but not to the value of
+the :INITIAL-VALUE argument, if any.
+
+Example:
+
+Using REDUCE to obtain the total of the ages of the possibly empty
+sequence of astronauts ASTROS, would currently require:
+
+    (REDUCE #'+ (MAP 'LIST #'PERSON-AGE ASTROS))
+
+If this proposal is adopted, the same result could be obtained without
+creating a new list by: 
+
+    (REDUCE #'+ ASTROS :KEY #'PERSON-AGE)
+
+Rationale:
+
+This proposal makes many common situations where REDUCE would be useful
+much less cumbersome.
+
+Current practice:
+
+We know of no implementation which currently supports this feature.
+
+Cost to Implementors:
+
+This will require most implementations to make a trivial modification
+to REDUCE.  Implementations which wish to use this as an opportunity to
+further optimize compiled calls to REDUCE will have to undertake more
+work (which would be much more difficult today).
+
+Cost to Users:
+
+None, this is an upward compatible extension.
+
+Cost of non-Adoption:
+
+REDUCE will continue to be more difficult to use than other sequence
+functions on sequences of complex objects.
+
+Benefits:
+
+REDUCE will become easier to use on sequences of complex objects.  It
+will be easier for compilers to convert some calls to REDUCE into
+efficient loops.
+
+Aesthetics:
+
+Slightly damaged in one way.  All :KEY arguments are currently defined
+to be used for predicates, this proposal will implicitly broaden :KEY
+to support general extraction for any purpose.
+
+Slightly improved in another way. Many common situations where REDUCE
+could be used would be easier to write and easier to later read.
+
+Discussion:
+
+Several members of the committee feel that the increased functionality
+outweighs the damage to the definition of :KEY.  No one has objected
+to this change in the recent round of discussions.
+
+There is some controversy over whether the "definition" of :KEY
+arguments on page 246 of CLtL really constitutes a definition or just
+an "unwritten rule".
+

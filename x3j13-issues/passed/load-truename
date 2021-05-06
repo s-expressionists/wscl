@@ -1,0 +1,183 @@
+Status: Passed, Jun 89 X3J13
+
+Issue:        LOAD-TRUENAME
+Forum:	      Cleanup
+References:   LOAD (p426), PROVIDE (p188), REQUIRE (p188),
+	      Issue REQUIRE-PATHNAME-DEFAULTS
+Category:     ADDITION
+Edit history: 13-Mar-89, Version 1 by Pitman
+	      29-Mar-89, Version 2 by Moon (add -PATHNAME vars)
+	      10-Apr-89, Version 3 by Pitman (clarify v2)
+	      11-Apr-89, Version 4 by Pitman (merge Moon's v3 comments)
+
+Problem Description:
+
+ It is difficult to construct sets of software modules which work
+ together as a unit and which port between different implementations.
+
+ REQUIRE and PROVIDE were intended to provide this level of support
+ but have `failed' to be portable in practice.
+
+ Typical user configurations involve a `system definition' file which
+ loads the modules of a `system' (collection of software modules).
+
+ Among the specific problems which arise are:
+
+  - File system types may vary. Different file syntax must be used for
+    each site.
+
+  - Even with the same Lisp implementation and host file system type,
+    the directory in which a software system resides may differ from
+    delivery site to delivery site.
+
+  - Multiple `copies' of the same system may reside in different
+    directories on the same machine.
+
+Proposal (LOAD-TRUENAME:NEW-PATHNAME-VARIABLES):
+
+ Introduce new variables:
+
+   *LOAD-TRUENAME*					[Variable]
+
+   This special variable is initially NIL, but is bound by LOAD to
+   hold the truename of the pathname of the file being loaded.
+
+   *COMPILE-FILE-TRUENAME*				[Variable]
+
+   This special variable is initially NIL, but is bound by 
+   COMPILE-FILE to hold the truename of the pathname of the file
+   being compiled.
+   
+   *LOAD-PATHNAME*					[Variable]
+  
+   This special variable is initially NIL but is bound by LOAD
+   to hold a pathname which represents the filename given as the
+   first argument to LOAD merged against the defaults.
+   That is, (PATHNAME (MERGE-PATHNAMES arg1)).
+  
+   *COMPILE-FILE-PATHNAME*				[Variable]
+  
+   This special variable is initially NIL but is bound by COMPILE-FILE
+   to hold a pathname which represents the filename given as the
+   first argument to COMPILE-FILE merged against the defaults.
+   That is, (PATHNAME (MERGE-PATHNAMES arg1)).
+
+Example:
+
+ ------ File SETUP ------
+ (IN-PACKAGE "MY-STUFF")
+ (DEFMACRO COMPILE-TRUENAME () `',*COMPILE-FILE-TRUENAME*)
+ (DEFVAR *MY-COMPILE-TRUENAME* (COMPILE-TRUENAME) "Just for debugging.")
+ (DEFVAR *MY-LOAD-PATHNAME* *LOAD-PATHNAME*)
+ (DEFUN LOAD-MY-SYSTEM ()
+   (DOLIST (MODULE-NAME '("FOO" "BAR" "BAZ"))
+     (LOAD (MERGE-PATHNAMES MODULE-NAME *MY-LOAD-PATHNAME*))))
+ ------------------------
+
+ (LOAD "SETUP")
+ (LOAD-MY-SYSTEM)
+
+Rationale:
+
+ This satisfies the most common instances of the frequently reported
+ problem in the Problem Description.
+
+ The ...-TRUENAME* variables are useful to tell the real file being
+ loaded.
+
+ The ...-PATHNAME* variables are useful to find information about
+ the original link names or logical device names mentioned in the
+ pathname to be opened but no longer reflected in the truename.
+
+ Note that it is not adequate to just have the -PATHNAME* variables
+ since TRUENAME on these pathnames might not yield the value of the
+ -TRUENAME* variables if the file has been deleted or protected
+ since the open occurred (in some implementations).
+
+Current Practice:
+
+ Wide variation.
+
+ In some implementations, calling LOAD binds or sets 
+ *DEFAULT-PATHNAME-DEFAULTS* so that pathnames named in a file being
+ LOADed will default to being `nearby.'
+
+ Some implementations provide special variables that are similar or
+ identical to one or both of those proposed.
+
+ Some implementations have a way to represent the pathname for the
+ current working directory, and make the default pathname default
+ to that, so that loading without specifying a default again tends to
+ get `nearby' files.
+
+ None of these techniques is portable, unfortunately, because there
+ is no agreement.
+
+Cost to Implementors:
+
+ Very small.
+
+Cost to Users:
+
+ None. This change is upward compatible.
+
+Cost of Non-Adoption:
+
+ Continued difficulty for anyone trying to put a system of modules
+ in a form where they can be conveniently delivered using portable code.
+
+Benefits:
+
+ The cost of non-adoption is avoided.
+
+Aesthetics:
+
+ Negligible.
+
+Discussion:
+
+ Touretzky raised the issue most recently on Common-Lisp. A number
+ of people immediately jumped on the bandwagon, indicating it was
+ important to them, too.
+
+ Pitman made three suggestions in response, of which the above is
+ the first. The others included:
+  2. Variables *LOAD-TRUENAMES* and *COMPILE-FILE-TRUENAMES* which hold
+     lists of the truenames of all files being loaded or compiled,
+     respectively, during the dynamic invocation of LOAD and COMPILE-FILE.
+ 
+  3. Variable *LOAD-OR-COMPILE-FILE-TRUENAMES* which holds a list like
+    ((LOAD truename) (COMPILE-FILE truename) ...)
+    during the dynamic invocation of LOAD and COMPILE-FILE.
+ 
+ Touretzky responded:
+ ``I like KMP's proposals.  I like the second one best: have separate
+   variables for files being loaded and files being compiled, and use
+   them to maintain a stack so we can see the nesting of loads within
+   files.''
+
+ Pitman ultimately chose to present the first rather than the second
+ because it seemed simpler, easier to explain, and more likely to
+ pass at this late date.
+
+ Other suggestions which were considered discarded were:
+  a. Provide just variables *LOAD-STREAM* and *COMPILE-FILE-STREAM*.
+     Then PATHNAME and TRUENAME could be used to yield the 
+     information contained in the -PATHNAME* and -TRUENAME* variables
+     of the proposal above.
+  b. Like (a), but call both variables *STANDARD-INPUT*. That is,
+     say that LOAD and COMPILE-FILE bind *STANDARD-INPUT* to the
+     stream being loaded.
+ There were a number of pitfalls with this approach which all center
+ around the way it invites the user to do other operations besides
+ PATHNAME and TRUENAME.  Not only would some people be confused by
+ the difference between the characteristics of *LOAD-STREAM* for
+ compiled and interpreted files, but also even with interpreted 
+ streams, the actual position of the stream pointer at the time of
+ execution of the forms contained in the file could vary between
+ implementations in a way that became a lurking portability barrier.
+ Since the observed user need which spawned this discussion was for
+ a way to tell what file was being loaded and not for a way to 
+ manipulate the stream, it seemed best to just go with the variables
+ that addressed that specific need--fewer pitfalls and more perspicuous
+ code are likely to result.

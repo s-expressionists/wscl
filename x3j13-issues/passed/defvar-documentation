@@ -1,0 +1,48 @@
+Status: Passed, March 1988
+Issue:        DEFVAR-DOCUMENTATION
+References:   DEFVAR, DEFPARAMETER, DEFCONSTANT (pp68-9)
+Category:     CLARIFICATION
+Edit history: 30-Jun-87, Version 1 by Pitman
+              23-Nov-87, Version 2 by Masinter
+
+Problem Description:
+
+CLtL is not explicit about whether the documentation part of DEFVAR, DEFPARAMETER, and DEFCONSTANT special forms is evaluated.
+
+Proposal (DEFVAR-DOCUMENTATION:UNEVALUATED):
+
+Clarify that the documentation part of DEFVAR, DEFPARAMETER, and DEFCONSTANT special forms is not evaluated. That is, it must be a literal string, not a form which evaluates to a string.
+
+Examples:
+
+(DEFVAR *MY-VARIABLE* (CONSTRUCT-INITIAL-VALUE) "A documentation string")  ; OK
+(DEFVAR *MY-VARIABLE* (CONSTRUCT-INITIAL-VALUE) GENERIC-DOCUMENTATION-STRING)  ; would be an error
+
+Rationale:
+
+To ensure portability, implementations must agree on whether or not this position is evaluated. Specifying that the position is unevaluated is the conservative thing to suggest, and consistent with the (unevaluated) documentation strings in DEFUN, DEFSTRUCT.
+
+Current Practice:
+
+Some implementations evaluate this position. Others do not. 
+
+Cost to implementors:
+
+Implementations that did not already check might usefully add a check in the macro expansion for DEFVAR, DEFPARAMETER and DEFCONSTANT to assert that the DOCUMENTATION, if supplied, was a string. The change is likely trivial.
+
+Cost to users:
+
+Code which uses other than a literal string is not portable, so no portable programs will be broken. Some non-portable programs which rely on a particular vendor's interpretation would have to be rewritten. Automatic tools to detect most offending cases could trivially be constructed. (We know of no current uses.)
+
+Benefits:
+
+Code portability would be improved. Some programming environment tools might assume that documentation strings were determinable without evaluation.
+
+Aesthetics:
+
+Slight improvement; this implies consistent treatment for documentation strings in all defining forms.
+
+Discussion:
+
+We think this is a good idea.
+

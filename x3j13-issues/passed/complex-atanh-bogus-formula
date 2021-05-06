@@ -1,0 +1,130 @@
+Status:	 Passed, Nov 89 X3J13
+Forum:         Cleanup
+Issue:         COMPLEX-ATANH-BOGUS-FORMULA
+References:    CLtL pp. 209, 212, 213
+	       Penfield, P. "Principal Values and Branch Cuts in
+		Complex APL", Proc. APL 81 Conference Proceedings,
+		Association for Computing Machinery, 1981
+	       Kahan, W. "Branch Cuts for Complex Elementary
+		Functions, or Much Ado About Nothing's Sign Bit"
+		in Iserles and Powell (eds.) "The State of the Art
+		in Numerical Analysis", pp. 165-211, Clarendon
+		Press, 1987
+Related issues: COMPLEX-ATAN-BRANCH-CUT, IEEE-ATAN-BRANCH-CUT
+Category:      CHANGE
+
+Edit history:  Version 1, 20-SEP-89, Steele
+
+
+Problem description:
+
+The formula that defines ATANH in CLtL is incorrect, apparently
+because of a mistranscription of a formula from Penfield's article.
+
+CLtL has:   arctanh z = log ((1+z) sqrt(1 - (1 / z^2)))
+
+Should be:  arctanh z = log ((1+z) sqrt(1 / (1 - z^2)))
+
+However, given the change to ATAN in issue COMPLEX-ATAN-BRANCH-CUT,
+it seems simpler to follow Kahan's recommendation and define
+
+	arctanh z = (log(1+z) - log(1-z))/2
+
+thereby preserving the identity  i arctan z = arctanh iz .
+
+Kahan also notes that Penfield's formula for arccosh (CLtL p. 213)
+
+	arccosh z = log(z + (z + 1) sqrt((z-1)/(z+1)))
+
+has a gratuitous removable singularity at z=-1 and recommends
+
+	arccosh z = 2 log(sqrt((z+1)/2) + sqrt((z-1)/2))
+
+which has the same values and is also well-defined at z=-1.
+
+Finally, Kahan recommends a different defining formula for acos
+that is more similar to that of acosh (but less similar to that
+of asin).
+
+
+Proposal (COMPLEX-ATANH-BRANCH-CUT:TWEAK-MORE):
+  
+(1) Replace the erroneous formula
+
+	arctanh z = log ((1+z) sqrt(1 - (1 / z^2)))
+with
+	arctanh z = (log(1+z) - log(1-z))/2
+
+(2) Note that  i arctan z = arctanh iz .
+
+(3) Replace the gratuitously singular formula
+
+	arccosh z = log(z + (z + 1) sqrt((z-1)/(z+1)))
+with
+	arccosh z = 2 log(sqrt((z+1)/2) + sqrt((z-1)/2))
+
+(4) Adopt the formula (already in CLtL)
+
+	arccos z = (pi / 2) - arcsin z
+
+as the official definition of arccos, and also note that the
+formulas
+
+	arccos z = -i log(z + i sqrt(1 - z^2))
+
+(already in CLtL) and
+
+	arccos z = 2 log(sqrt((1+z)/2) + i sqrt((1-z)/2)) / i
+
+(recommended by Kahan) are equivalent.
+
+
+
+Rationale:
+
+Compatibility with what seems to be becoming standard practice.
+
+  
+Current practice:
+
+Implementations I have checked have a correct implementation
+of ATANH rather than slavishly following the bogus CLtL formula.
+
+
+Cost to Implementors:
+
+ATANH must be rewritten.  It is not a very difficult fix.
+
+Possibly ACOSH must be rewritten.  It is not a very difficult fix.
+
+
+Cost to Users:
+
+The compatibility note on p. 210 of CLtL gave users fair warning that
+a change of this kind might be adopted.
+
+
+Cost of non-adoption:
+
+Possible incorrect implementations of ATANH.
+
+Incompatibility with HP calculators.
+
+
+Benefits:
+
+Numerical analysts may find the new definition easier to use.
+
+
+Esthetics:
+
+A toss-up, except to those who care.
+
+
+Discussion:
+
+Kahan's article not only discussed formulas but also gives specific
+implementation techniques for use with IEEE 754 arithmetic.
+
+
+

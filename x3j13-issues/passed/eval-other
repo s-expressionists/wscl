@@ -1,0 +1,95 @@
+Status: Passed, Oct-88
+Issue:        EVAL-OTHER
+References:   5.1.1 Self-Evaluating Forms (p55)
+Category:     ADDITION/CLARIFICATION
+Edit history: 07-Mar-88, Version 1 by Pitman
+		   8-Jun-88, Version 2 by Masinter (correct typo, add to discussion)
+
+Problem Description:
+
+  CLtL does not specify what the evaluation behavior of some data types.
+
+Proposal (EVAL-OTHER:SELF-EVALUATE):
+
+  Standard data types (those mentioned by CLtL) other than those for which
+  a more explicit evaluation rule exists would be defined to self-evaluate.
+  Such data types include, for example, structures, arrays, vectors, and
+  pathnames.
+
+  Structure types defined by users using DEFSTRUCT should also self-evaluate
+  unless an explicit implementation type for the structure is given in the
+  DEFSTRUCT, in which case the rule for evaluation of that type should be
+  used. (This is important in the case of type LIST.)
+
+Test Case:
+
+  (LET ((TEMP (MAKE-PATHNAME)))  (EQ TEMP (EVAL TEMP))) => T
+  (LET ((TEMP (MAKE-ARRAY NIL))) (EQ TEMP (EVAL TEMP))) => T
+
+Rationale:
+
+  There are numerous possible positions that could be taken, from
+  requiring that an error be signalled for all of these cases to
+  requiring that these all have some useful behavior.
+
+  By making implementations agree, code portability is enhanced.
+  By biasing the decision away from the "signal
+  an error" end of the choice spectrum, the least interruption is
+  caused to implementations which already have working code.
+
+  There is still some chance that implementations will have some other
+  behavior than either signalling an error or self-evaluating, but there
+  are probably few if any.
+
+Current Practice:
+
+  In many implementations, the other data types besides those mentioned in
+  CLtL will self-evaluate.
+
+Cost to Implementors:
+
+  The cost is probably small. This is probably an "upward compatible"
+  change for most or all implementations -- a few lines of change in the
+  interpreter and/or compiler. Some code walkers may be affected as well.
+
+Cost to Users:
+
+  None, if they are not exploiting implementation-dependent features of
+  some implementation that is being forced to make an incompatible change.
+
+  There should be no performance impact since the evaluator's test for these
+  new data types can simply be made to follow other tests already in place,
+  so existing code will not be slowed.
+
+Cost of Non-Adoption:
+
+  Implementations will continue to differ in this relatively
+  user-visible way.
+
+Benefits:
+
+  Portability will be enhanced because implementations will tend to agree
+  in places where they have traditionally not always agreed.
+
+Aesthetics:
+
+  Some fans of 3LISP may find this invasive to their sense of distinction
+  between objects and the notation used to describe objects. In general,
+  however, this is a fairly picky detail that is not likely to trouble the
+  average programmer.
+
+Discussion:
+
+This idea for this proposal was suggested by the Japanese community.
+Pitman drafted the formal proposal and supports EVAL-OTHER:SELF-EVALUATE.
+
+Fahlman: "... I do remember the original design discussions.  It was
+proposed that everything but lists and symbols evaluate to themselves,
+but at the time (this was quite early in the process) some people felt
+that this might close out interesting parts of the design space that
+might turn out to be useful for something.  This hasn't happened, and
+I think it would be reasonable to close this door now.  Some users do
+find it confusing that you have to quote vectors but not strings."
+
+There has been some additional discussion of this proposal (for example,
+an explaination of why a similar proposal in Scheme might be a bad design.)

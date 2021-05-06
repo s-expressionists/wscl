@@ -1,0 +1,59 @@
+Status: passed, 1988 (not sure which meeting)
+Issue:        ASSOC-RASSOC-IF-KEY
+References:   ASSOC-IF (p280), ASSOC-IF-NOT (p280), RASSOC-IF (p281),
+              RASSOC-IF-NOT (p281)
+Category:     ENHANCEMENT
+Edit history: 22-Apr-87, Version 1 by Pitman
+              20-Nov-87, Versions 2,3 by Masinter
+              23-Nov-87, Version 4 by Masinter
+
+Problem Description:
+
+The descriptions of ASSOC-IF, ASSOC-IF-NOT, RASSOC-IF, and RASSOC-IF-NOT do not mention a :KEY option, although ASSOC and RASSOC have one. 
+
+This is often reported as an inconsistency in Common Lisp.
+
+Proposal (ASSOC-RASSOC-IF-KEY:YES):
+
+Allow a :KEY keyword for ASSOC-IF, ASSOC-IF-NOT, RASSOC-IF, and RASSOC-IF-NOT. If not supplied, it should default to #'IDENTITY as do the :KEY keywords for other -IF and -IF-NOT functions. The function, as with the :KEY argument for ASSOC and RASSOC, is applied to the CAR of the pair in the association list for ASSOC-IF and ASSOC-IF-NOT and the CDR of the pair for RASSOC-IF and RASSOC-IF-NOT.
+
+Documentation impact:
+
+A better description of the intent might be to say that the car /contains/ the key of the association, and by default the car /is/ the key of the association.
+
+Example:
+
+(assoc-if #'zerop pathnames :key #'pathname-version)
+
+could be used to search a list indexed by pathnames finding one with zero version. 
+
+Rationale:
+
+This is an inconsistency in the language that is simple to fix.
+
+Current Practice:
+
+Symbolics implements :KEY for the -IF and -IF-NOT assoc functions. Others follow the book and allow :KEY only for ASSOC.
+
+Cost to Common Lisp implementors:
+
+A small amount of additional code is necessary to support this in implementations not already offering it as an extension.
+
+Cost to Common Lisp users:
+
+The change is essentially upward compatible with user code.
+
+Benefits:
+
+This would make the set of -IF and -IF-NOT functions be more regular in their calling conventions.
+
+Aesthetics:
+
+All the other -IF and -IF-NOT variations of list operations omit the :TEST and :TEST-NOT keywords, but allow :KEY. For example, consider the family of MEMBER, MEMBER-IF, and MEMBER-IF-NOT. Although this introduces additional mechanism, it does so in a way that probably makes it easier to think about which functions do what, so it would likely be seen as a simplification.
+
+Discussion:
+
+The omission of :KEY in this situation in CLtL was probably an oversight.
+
+The cleanup committee supports this proposal.
+

@@ -1,0 +1,74 @@
+Issue:         DISASSEMBLE-SIDE-EFFECT
+References:    DISASSEMBLE (p. 439), COMPILE (p. 439)
+Category:      CLARIFICATION
+Edit history:  Version 2 by Pierson 12/30/87
+               Version 3 by Pierson  1/21/88
+	       Version 4 by Pierson  6/10/88 correct VAX Lisp practice
+Status:        Ready For Release?
+
+Problem description:
+
+The definition of DISASSEMBLE says that "if the relevant function is
+not a compiled function, it is first compiled.".  The definition of
+COMPILE says that "If name is a non-nil symbol, then the
+compiled-function is installed as the global function definition of
+the symbol...".  Several implementations have taken this to mean that
+if DISASSEMBLE is passed a symbol which has an uncompiled function
+definition, then it has the side-effect of (COMPILE 'symbol).
+
+Proposal (DISASSEMBLE-SIDE-EFFECT:DO-NOT-INSTALL):
+
+Clarify that when DISASSEMBLE compiles a function, it will never
+install the newly compiled function.
+
+Test Cases/Examples:
+
+    (DEFUN F (A) (1+ A))
+    (EQ (SYMBOL-FUNCTION 'F)
+	(PROGN (DISASSEMBLE 'F)
+	       (SYMBOL-FUNCTION 'F)))
+
+This code will return T if this proposal is adopted.  Some current
+implementations will return T, some will return NIL.
+
+Rationale:
+
+Several current implementations of DISASSEMBLE have surprising side
+effects, especially for new users.
+
+Current practice:
+
+Allegro CL installs the compiled definition.  Lucid, Symbolics, Xerox,
+VAX Lisp, and KCL don't install it.
+
+Cost to Implementors:
+
+Some implementations will have to make a simple change.
+
+Cost to Users:
+
+Very little.  DISASSEMBLE is really part of the environment and is
+probably not called by much, if any user code.
+
+Cost of non-Adoption:
+
+DISASSEMBLE will continue to surprise less experienced users.
+
+Benefits:
+
+DISASSEMBLE will become the predictable debugging function it was
+meant to be.
+
+Aesthetics:
+
+Some who worried that DISASSEMBLE was supposed to install the compiled
+function may find that the language has become a little cleaner.
+
+Discussion:
+
+DISASSEMBLE is an environment feature; some question has been raised
+as to the place and force of environment features in the standard.
+However, this proposal stands if DISASSEMBLE is part of the standard
+language.
+
+

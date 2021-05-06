@@ -1,0 +1,162 @@
+Status:	Passed, Jan 89 X3J13
+Issue:        TAILP-NIL
+References:   TAILP (p275)
+Category:     CLARIFICATION/CHANGE
+Edit History: 13-Sep-88, version 1 by Walter van Roggen,
+              13-Sep-88, version 2 by Pitman
+              18-Oct-88, version 3 by van Roggen (just one proposal)
+              01-Dec-88, version 4 by Pitman (minor edits per discussion)
+               9-Dec-88, Version 5 by Masinter (clarify EQL)
+
+Problem Description:
+ 
+  CLtL (p275) specifies TAILP as:
+ 
+    TAILP sublist list				[Function]
+ 
+    This predicate is true if SUBLIST is a sublist of LIST (i.e.,
+    one of the conses that makes up LIST); otherwise, it is false.
+    Another way to look at this is that TAILP is true if
+    (NTHCDR n list) is SUBLIST, for some value of N. See LDIFF.
+ 
+  Two implementations of this definition might be:
+ 
+   (defun tailp (sublist list)			;Definition "A"
+     (do ((list list (cdr list)))
+	 ((endp list) nil)
+       (if (eql sublist list)
+	   (return t))))
+ 
+   (defun tailp (sublist list)			;Definition "B"
+     (do ((list list (cdr list)))
+	 ((atom list) (eql list sublist))
+       (if (eql sublist list)
+	   (return t))))
+ 
+  They differ only in their treatment of the atomic case.
+ 
+  At issue is the fact that () is a list, and hence some would
+  argue that it is a sublist of all other lists. On the other hand,
+  the definition of TAILP seems to imply that being a cons is a
+  necessary precondition of being a "sublist".
+
+  Also at issue is the question of whether dotted lists are permissible
+  second arguments.
+
+Proposal (TAILP-NIL:T):
+ 
+  Strike any text in the definition of TAILP which suggests that a
+  sublist must be a cons.
+ 
+  Clarify that (TAILP sublist list) returns true iff (NTHCDR n list) is
+  sublist for some value of n, and false otherwise.
+
+  Note, however, that since the list may be dotted, so the end test
+  used by TAILP must be ATOM, not ENDP. That is, if (TAILP x l)
+  returns true, it means there was n such that (NTHCDR n list) would
+  return x; however, it doesn't follow that if TAILP returns false,
+  it is safe to go blithely NTHCDR's into the list looking for it, 
+  since the list might be dotted and NTHCDR might hit bad data.
+
+  Note that TAILP uses EQL or  equivalent to compare
+  sublist to list in the case where sublist is a number, etc.
+
+Rationale:
+ 
+  This is more consistent with the definition of LDIFF, which
+  gives a useful meaning to arbitrary atomic SUBLIST arguments.
+ 
+  This gives a more elegant definition of SUBLIST, allowing it to
+  refer to any list -- including the empty list -- which is a
+  part of another list.
+ 
+  Some reasons for preferring an ATOM check to ENDP include:
+   - The name TAILP suggests tails, not sublists. Some users might
+     expect this distinction to mean that data more general than
+     proper sublists.
+   - Making TAILP require lists limits its usefulness. If we did
+     not make this choice, some users would end up having to write
+     their own extended TAILP which we could just as well have
+     provided compatibly.
+   - TAILP is not considered to be used frequently enough in code
+     that the minor loss in speed to an ATOM check is worth the
+     lost functionality. Indeed, expanding the scope of its 
+     capabilities may lead to more uses for TAILP.
+   - Other operators (eg, APPEND) have recently been extended to
+     treat dotted lists in an interesting way because users have
+     expressed a desire for this. As such, this change is 
+     culturally consistent.
+   - Some implementations already support this feature, and the 
+     wording in CLtL is sufficiently ambiguous that some users
+     might think it appropriate to depend on the feature. In the
+     absence of compelling efficiency reasons to the contrary,
+     we should lean toward extending some implementations rather
+     than tightening others in our efforts to achieve cross-dialect
+     consistency.
+
+Examples:
+ 
+ #1: (LET ((X '(B C))) (TAILP X (CONS 'A X)))
+     should return T in all implementations.
+ 
+ #2: (TAILP '(X Y) '(A B C))
+     should return NIL in all implementations.
+ 
+ #3: (TAILP '() '(A B C))
+     returns T under this proposal.
+ 
+ #4: (TAILP 3 '(A B C))
+     returns NIL under this proposal.
+ 
+ #5: (TAILP 3 '(A B C . 3))
+     returns T under this proposal.
+ 
+ #6: (TAILP '(X Y) '(A B C . 3))
+     returns NIL under this proposal.
+ 
+Current Practice:
+ 
+  Symbolics Genera is consistent with TAILP-NIL:T.
+
+  Neither Lucid nor VAX LISP currently implements TAILP-NIL:T.
+
+  VAX LISP effectively implements definition "A" from the 
+  Problem Description above.
+
+Cost to Implementors:
+ 
+  An implementation of TAILP-NIL:T is given as Definition "B" in the
+  problem description.
+ 
+  Some implementations might have compiler optimizers for these definitions
+  as well, so a slight amount of additional effort might be required.
+ 
+Cost to Users:
+ 
+  Given that current practice varies widely on the disputed case,
+  this is unlikely to have a practical effect on existing portable code.
+ 
+Benefits:
+ 
+  Avoids unnecessary incompatibilities between implementations.
+ 
+Non-Benefits:
+
+  Slows down TAILP slightly in some implementations because ENDP is
+  potentially faster than ATOM.
+
+Discussion:
+ 
+  This issue was first raised in ">GLS>clarifications.text" of 12/06/85.
+  It recommended an earlier proposal, TAILP-NIL:NIL, which is effectively
+  equivalent to Definition "A" from the Problem Description.
+
+  Pitman introduced TAILP-NIL:T as an alternative, arguing that the
+  definition TAILP-NIL:NIL offered no practical value to programmers
+  in the disputed situations, while TAILP-NIL:T was of arguable usefulness.
+
+  Pitman and van Roggen support TAILP-NIL:T.
+
+  It was suggested more than once by more than one cleanup 
+  committee member that we remove TAILP from the language
+  "since almost nobody uses it". 

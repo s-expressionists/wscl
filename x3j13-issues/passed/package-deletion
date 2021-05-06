@@ -1,0 +1,205 @@
+Status:	Passed, Jan 89 X3J13
+Forum:	Cleanup
+Issue:        PACKAGE-DELETION
+References:   Packages (pp171-192), PACKAGE-NAME (p184), PACKAGEP (p76)
+Category:     ADDITION
+Edit history: 30-Sep-88, Version 1 by Pitman
+	      01-Oct-88, Version 2 by Pitman
+	      04-Oct-88, Version 3 by Pitman
+		(provide for correctable errors in some cases)
+	      07-Oct-88, Version 4 by JonL
+		21-Nov-88, Version 5 by Masinter
+
+
+Problem Description:
+
+  There is no way to get rid of a package in Common Lisp.
+
+  This absence makes interactive development work tricky in some
+  implementations. If a package is accidentally built incorrectly, the
+  user must either rename the package to another package or start over
+  by reloading his program in a fresh lisp image.
+
+  Some programs need to create and destroy packages at runtime.
+  Without such a facility, some clumsy combination of RENAME-PACKAGE,
+  UNINTERN, and UNUSE-PACKAGE is usually made to work. However, it is
+  easy for a casual programmer to forget to undo some of the 
+  bookkeeping, leading to unwanted effects.
+
+Proposal (PACKAGE-DELETION:NEW-FUNCTION):
+
+  Introduce the function DELETE-PACKAGE, described as follows:
+
+  DELETE-PACKAGE package                                 [Function]
+
+   Deletes PACKAGE from all package system data structures. PACKAGE may
+   be either a package or the name of a package.
+
+   If PACKAGE is a package name (i.e., not type PACKAGE) which does not
+   currently name a package, a correctable error is signalled. If
+   continued, no deletion action is attempted. Instead, DELETE-PACKAGE
+   immediately returns NIL.
+
+   If PACKAGE is a package object (i.e., an object of type PACKAGE)
+   which has already been deleted, no error is signalled and no further
+   deletion action is attempted. Instead, DELETE-PACKAGE immediately
+   returns NIL.
+
+   If the designated package is used by other packages, a correctable
+   error is signalled. If continued, the effect of UNUSE-PACKAGE is
+   done to remove any dependencies, causing its external symbols to stop
+   being accessible to those packages. Once this is done, DELETE-PACKAGE
+   goes on to delete the package just as it would had there been no 
+   packages that used it.
+
+   After this operation completes, the contents of the symbol-package  
+   slot of any symbol homed in the deleted package is unspecified; for 
+   those symbols not homed in that package, the contents remain unchanged.
+   Except for this, symbols in the deleted package are not modified in
+   any other way.  
+
+   The effect of DELETE-PACKAGE is that the name and
+   nicknames of the designated package cease to be recognized package
+   names.   The package object is still a package -- PACKAGEP is true
+   of it -- but  PACKAGE-NAME will return NIL.  The effect of any other 
+   package operation on PACKAGE once it has been deleted is undefined.
+   In particular, FIND-SYMBOL, INTERN and other functions that
+  look for a symbol name in a package will have unspecified results if
+  called with *PACKAGE* bound to the deleted package or with the
+  deleted package as an argument.
+
+   DELETE-PACKAGE returns T if the deletion attempt was successful
+   and NIL otherwise.
+
+Examples:
+
+  (SETQ *FOO-PACKAGE* (MAKE-PACKAGE "FOO" :USE NIL))
+  (SETQ *FOO-SYMBOL*  (INTERN "FOO" *FOO-PACKAGE*))
+  (EXPORT *FOO-SYMBOL* *FOO-PACKAGE*)
+
+  (SETQ *BAR-PACKAGE* (MAKE-PACKAGE "BAR" :USE '("FOO")))
+  (SETQ *BAR-SYMBOL*  (INTERN "BAR" *BAR-PACKAGE*))
+  (EXPORT *FOO-SYMBOL* *BAR-PACKAGE*)
+  (EXPORT *BAR-SYMBOL* *BAR-PACKAGE*)
+
+  (SETQ *BAZ-PACKAGE* (MAKE-PACKAGE "BAZ" :USE '("BAR")))
+
+  (SYMBOL-PACKAGE *FOO-SYMBOL*)        => #<Package "FOO">
+  (SYMBOL-PACKAGE *BAR-SYMBOL*)        => #<Package "BAR">
+
+  (PRIN1-TO-STRING *FOO-SYMBOL*)       => "FOO:FOO"
+  (PRIN1-TO-STRING *BAR-SYMBOL*)       => "BAR:BAR"
+
+  (FIND-SYMBOL "FOO" *BAR-PACKAGE*)    => FOO:FOO, :EXTERNAL
+
+  (FIND-SYMBOL "FOO" *BAZ-PACKAGE*)    => FOO:FOO, :INHERITED
+  (FIND-SYMBOL "BAR" *BAZ-PACKAGE*)    => BAR:BAR, :INHERITED
+
+  (PACKAGEP *FOO-PACKAGE*)             => T
+  (PACKAGEP *BAR-PACKAGE*)             => T
+  (PACKAGEP *BAZ-PACKAGE*)             => T
+
+  (PACKAGE-NAME *FOO-PACKAGE*)         => "FOO"
+  (PACKAGE-NAME *BAR-PACKAGE*)         => "BAR"
+  (PACKAGE-NAME *BAZ-PACKAGE*)         => "BAZ"
+
+  (PACKAGE-USE-LIST *FOO-PACKAGE*)     => ()
+  (PACKAGE-USE-LIST *BAR-PACKAGE*)     => (#<Package FOO>)
+  (PACKAGE-USE-LIST *BAZ-PACKAGE*)     => (#<Package BAR>)
+
+  (PACKAGE-USED-BY-LIST *FOO-PACKAGE*) => (#<Package BAR>)
+  (PACKAGE-USED-BY-LIST *BAR-PACKAGE*) => (#<Package BAZ>)
+  (PACKAGE-USED-BY-LIST *BAZ-PACKAGE*) => ()
+
+  (DELETE-PACKAGE *BAR-PACKAGE*)
+  Error: Package BAZ uses package BAR.
+  If continued, BAZ will be made to unuse-package BAR,
+	        and then BAR will be deleted.
+  Type :CONTINUE to continue.
+  Debug> :CONTINUE
+  				       => T
+
+  (SYMBOL-PACKAGE *FOO-SYMBOL*)        => #<Package "FOO">
+  (SYMBOL-PACKAGE *BAR-SYMBOL*)        is unspecified
+
+  (PRIN1-TO-STRING *FOO-SYMBOL*)       => "FOO:FOO"
+  (PRIN1-TO-STRING *BAR-SYMBOL*)       is unspecified
+
+  (FIND-SYMBOL "FOO" *BAR-PACKAGE*)    is undefined
+
+  (FIND-SYMBOL "FOO" *BAZ-PACKAGE*)    => NIL, NIL
+  (FIND-SYMBOL "BAR" *BAZ-PACKAGE*)    => NIL, NIL
+
+  (PACKAGEP *FOO-PACKAGE*)             => T
+  (PACKAGEP *BAR-PACKAGE*)             => T
+  (PACKAGEP *BAZ-PACKAGE*)             => T
+
+  (PACKAGE-NAME *FOO-PACKAGE*)         => "FOO"
+  (PACKAGE-NAME *BAR-PACKAGE*)         => NIL
+  (PACKAGE-NAME *BAZ-PACKAGE*)         => "BAZ"
+
+  (PACKAGE-USE-LIST *FOO-PACKAGE*)     => ()
+  (PACKAGE-USE-LIST *BAR-PACKAGE*)     is undefined
+  (PACKAGE-USE-LIST *BAZ-PACKAGE*)     => ()
+
+  (PACKAGE-USED-BY-LIST *FOO-PACKAGE*) => ()
+  (PACKAGE-USED-BY-LIST *BAR-PACKAGE*) is undefined
+  (PACKAGE-USED-BY-LIST *BAZ-PACKAGE*) => ()
+
+Rationale:
+
+  This facility corrects the deficiency described in the problem description.
+
+Current Practice:
+
+  Symbolics has a function PKG-KILL which satisfies the proposed behavior
+  except that an error is not signalled if the package is used.
+  When a package is killed by PKG-KILL, the home package of all symbols
+  in that package are left undisturbed (i.e., local symbols pointing to
+  the killed package); this aspect is compatible with the stated proposal.
+
+  Procyon Common Lisp has a function called DELETE-PACKAGE already. It
+  returns the name   of the package so deleted (as a string). [Perhaps it also
+  differs in the correctability of the errors it signals?]
+
+  Lucid Common Lisp implements DELETE-PACKAGE, except that the continuation
+  option for a name that doesn't name a package is different.
+
+Cost to Implementors:
+
+  The cost of providing this facility is probably small.
+
+Cost to Users:
+
+  Very slight to none. This change is essentially compatible.
+
+  Some code which cached packages in variables might have to be slightly
+  more cautious, but experience in the Symbolics implementation suggests
+  that it's really the responsibility of the person doing the DELETE-PACKAGE
+  to take care of worrying about the effects of having deleted the package:
+  normal programs need not bother testing a package for validity (using
+  PACKAGE-NAME) before using it.
+
+Cost of Non-Adoption:
+
+  Getting rid of a package would continue to be difficult to do portably.
+
+Benefits:
+
+  Better control of storage usage would be available portably.
+
+Aesthetics:
+
+  No significant effect.
+
+Discussion:
+
+  This was discussed as part of a larger bulk issue of how to undo all
+  sorts of definitions. Since that proposal has not gone anywhere 
+  (perhaps bogged down under its own weight), this subtopic has been
+  broken off for separate discussion.
+
+  Note that if a symbol's package component is modified as a result
+  of being "unintern'd" from a delete packaged, then it is unspecified
+  as to how it will  be printed.
+

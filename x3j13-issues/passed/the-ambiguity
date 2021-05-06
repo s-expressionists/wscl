@@ -1,0 +1,133 @@
+Status: proposal FOR-DECLARATION passed, Jun 89 X3J13
+
+Forum:        cleanup
+Issue:        THE-AMBIGUITY
+References:   THE (page 161)
+Category:     CLARIFICATION
+Edit history: 21-Oct-88, version 1 by Rees
+              11-Jan-89, version 2 by Masinter (fix typos)
+
+Problem description:
+
+  CLtL does not explicitly say whether the type specifier in a THE
+  form may be any type specifier or must be a type specifier suitable
+  for discrimination.  Although THE is decsribed as a "declaration"
+  form, some CL implementations have assumed that the specifier must
+  be for discrimination, and disallow e.g.,
+
+    (THE (FUNCTION (T T) CONS) #'CONS)
+
+  We should either say that the implementations are right, or
+  explicitly say that they are wrong, since this case is easily
+  overlooked.
+
+Proposal (THE-AMBIGUITY:FOR-DECLARATION):
+
+  Clarify that the type specifier in
+
+	(THE type exp)
+
+  may be any valid type specifier.  In the case that exp returns one
+  value and type is not a VALUES type specifier, (THE type exp) is
+  equivalent to
+
+	(LET ((g exp))
+	  (DECLARE (TYPE type g))
+	  g)
+
+  where "g" is a gensym.
+  
+Proposal (THE-AMBIGUITY:FOR-DISCRIMINATION):
+
+  Clarify that the type specifier in
+
+	(THE type exp)
+
+  must be a valid type for discrimination, as for TYPEP, or it must
+  be of the form (VALUES type*) where type* are all valid for discrimination.
+
+Current practice:
+
+  The Symbolics Genera and VAX LISP V2.2 interpreters signal errors for
+
+	(THE (FUNCTION (T T) CONS) #'CONS),
+
+  but this may not be intentional.  CLtL would seem to allow it.
+
+Test case:
+
+  (THE (FUNCTION (T T) CONS) #'CONS),
+
+  should return the CONS function under FOR-DECLARATION,
+  and should be an error under FOR-DISCRIMINATION.
+
+Cost to implementors:
+
+  Trivial cost for THE-AMBIGUITY:FOR-DISCRIMINATION; this is a compatible
+  restriction.
+
+  For THE-AMBIGUITY:FOR-DECLARATION, implementations that do not
+  already allow arbitrary type specifiers but which want to check that
+  the type in a THE is satisfied would have to create an internal
+  version of TYPEP which could manage not to signal invalid-type-specifier
+  errors in those situations where TYPEP would because the type is a
+  declaration-only one.
+
+Cost to users:
+
+  Users of implementations that support THE-AMBIGUITY:FOR-DECLARATION
+  might have to remove or change some uses of THE in their code if the
+  opposing alternative is adopted.
+
+Benefits:
+
+  Either way, an ambiguity in the language specification would be clarified.
+
+Aesthetics:
+
+  THE-AMBIGUITY:FOR-DECLARATION would seem to be more consistent with
+  DECLARE and with the intent of THE, which is supposed to be a way to
+  provide information for documentation and for the benefit of compilation.
+
+Discussion:
+
+  Rees supports THE-AMBIGUITY:FOR-DECLARATION.
+
+  Appropriate error situation terminology must be chosen for the
+  situation that a THE declaration (or other declaration) is
+  unsatisfied, but that must be done regardless of this proposal.
+
+  This proposal would suggest that a function should be added to CL to
+  do the checking that THE would want to do:
+
+	  (PROBABLY-TYPEP object type-spec)
+
+  [terrible name of course] returns multiple values a la SUBTYPEP: T T
+  if the object definitely has the type, NIL T if it definitely
+  doesn't, and T NIL (or NIL NIL?) otherwise.  Assuming that an
+  interpreted THE-expression actually checks types, you could almost
+  define this function using the condition system and EVAL.  (Ugh!)
+  Without PROBABLY-TYPEP, a meta-circular interpreter is more
+  difficult to write.
+
+  If a suitable name was found for this function, the additional
+  functionality could be suggested as an independent proposal, since
+  regardless of the outcome of this issue, the functionality is still
+  useful for checking DECLARE's.
+
+  Various implementation mechanisms were discussed for dealing
+  with THE checking.
+
+  Are there any remaining type specifiers beyond the list form
+  of the FUNCTION type that differ between "declaration" and
+  "discrimination"?
+
+  "I support FOR-DECLARATION.  Lucid CL has the same bug in
+  the interpreter as the others (a "bug" assuming FOR-DECLARATION).
+  TYPEP is used to check the legality of the type specifier in THE."
+
+  In considering possible ways in which the type-checking logic
+  for THE and DECLARE might work, don't forget things like
+	(the (not (function (t t) integer)) 7),
+  which you would want to signal an error.  I don't think this can be
+  done with only TYPEP and conditions.

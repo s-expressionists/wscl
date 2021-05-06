@@ -1,0 +1,229 @@
+Status:	Proposal MAY-SHARE passed, Jan 89 X3J13
+Forum:         Cleanup
+Issue:         REST-LIST-ALLOCATION
+
+References:    CLtL pp 107-108 (APPLY)
+
+Related issues: DYNAMIC-EXTENT
+
+Category:      CLARIFICATION
+
+Edit history:  8-Dec-88, Version 1 by Masinter
+               9-Dec-88, Version 2 by Clinger (add rationale, more discussion)
+               12-Dec-88, Version 3 by Clinger (delete bogus examples)
+
+Problem description:
+
+In the special case of calling a function with an &REST list via APPLY,
+Common Lisp fails to specify whether a new copy of the list is freshly
+allocated.  For example, given
+
+ (DEFVAR *MY-LIST* '(A B C))
+
+ (DEFUN FOO (&REST X) (EQ X *MY-LIST*))
+
+does 
+(APPLY #'FOO *MY-LIST*)
+return T?
+
+This issue is different from the question of the extent of "rest lists" in
+the case when they *are* newly allocated which is indefinite; the issue
+DYNAMIC-EXTENT also contains some proposals about extent.
+
+
+Proposal (REST-LIST-ALLOCATION:NEWLY-ALLOCATED): 
+
+Specify that &REST lists are newly allocated in the case when the function
+is called via APPLY.
+
+Proposal (REST-LIST-ALLOCATION:MAY-SHARE): 
+
+Specify that the value of an &REST parameter is permitted, but not required,
+to share (top-level) structure with the last argument to APPLY.
+
+Proposal (REST-LIST-ALLOCATION:MUST-SHARE)
+
+Specify that the value of an &REST parameter is required
+to share (top-level) structure with the last argument to APPLY.
+
+>> this needs better spec about how the args match << 
+
+Examples:
+
+ (DEFVAR *MY-LIST* '(A B C))
+
+ (DEFUN FOO (&REST X) (EQ X *MY-LIST*))
+
+ (APPLY #'FOO *MY-LIST*) => T ;on Symbolics systems and probably
+			      ; many stock hardware implementations
+
+This implies that
+
+ (DEFUN BAR (&REST X) (RPLACA X 'D))
+
+ (APPLY #'BAR *MY-LIST*)
+
+ *MY-LIST* => (D B C) ;on Symbolics systems and probably many stock
+		      ; hardware implementations
+
+Another example: which of the following have the same semantics?
+
+    (setq x '(1 2 3))
+
+    [1] (apply #'foo 1 2 3 NIL)
+    [2] (apply #'foo 1 2 (cddr x))
+    [3] (apply #'foo 1 (cdr x))
+    [4] (apply #'foo x)
+    [5] (funcall #'foo 1 2 3)
+
+Under REST-LIST-ALLOCATION:NEWLY-ALLOCATED:
+  [1]-[5] are equivalent.
+Under REST-LIST-ALLOCATION:MAY-SHARE:
+  Any answer to the question is correct for some conceivable implementation.
+  Abstracting over implementations, this means that [1]-[5] are pairwise
+  non-equivalent.
+Under REST-LIST-ALLOCATION:MUST-SHARE:
+  [1]-[4] are pairwise non-equivalent in all implementations.  This proposal
+  leaves open the question of whether [1] is equivalent to [5].
+
+And finally:
+
+Should     (defun foo (&rest x) ...)
+    
+     behave (aside from efficiency) as if it were defined:
+    
+(defun foo (&rest G0047)     ;Gensym really
+      (let ((x (copy-list G0047)))
+         ...))
+    
+
+Rationale:
+
+The semantics of APPLY is unclear.  In consequence it is impossible
+to write portable code that relies on &REST arguments sharing structure
+with the last argument to APPLY.  Portable code can rely on &REST arguments
+*not* sharing structure with the last argument to APPLY, but only by
+performing an explicit COPY-LIST on all &REST arguments; this is redundant
+and inefficient in implementations where &REST arguments are newly
+allocated anyway.
+
+Current practice:
+
+Some implementations always share. Some implementations never share.
+A few may share interpreted and not share compiled, or vice versa.
+
+Cost to Implementors:
+
+None for MAY-SHARE, since that is the status quo.  Both of the other
+proposals entail a significant cost for some implementations.
+If MUST-SHARE is adopted, then implementations that don't share structure
+may be nearly impossible to convert.  If NEWLY-ALLOCATED is adopted, then
+implementations that do share will have to insert a call to COPY-LIST
+inside either APPLY or &REST list handling, which will slow things down
+and may be difficult as well.
+
+Cost to Users:
+
+No matter what, somebody gets hurt.  MAY-SHARE means you have to
+write awkward and inefficient code if you care.  (This is already
+the case for portable code.)  MUST-SHARE means you have to add
+explicit calls to COPY-LIST to code that assumes the contrary.
+NEWLY-ALLOCATED means you have to rewrite code that assumes sharing.
+
+Cost of non-adoption:
+
+Great confusion over the issue.  A certain amount of awkwardness and
+inefficiency would remain inevitable if you want to write portable code.
+
+Performance impact:
+
+MUST-SHARE costs least in consing, but might slow down function call 
+for some implementations.  MAY-SHARE lets implementations pick, has
+least impact.  NEWLY-ALLOCATED requires consing in cases where it
+didn't before.
+
+Benefits:
+
+Less confusion.  Improved portability.
+
+Esthetics:
+
+Differing, strongly held opinions.
+
+Discussion:
+
+The Revised3 Report on Scheme specifies that the equivalent of a
+&REST argument must be a newly allocated list, to avoid precisely this
+problem.
+
+The argument for MUST-SHARE is that copying is inefficient, so
+&REST should never cause copying of a list passed to it from APPLY.
+Functions that desire a new copy can just call COPY-LIST.
+
+Two arguments for MAY-SHARE are:
+
+1. In no other place does Common Lisp automatically unshare structure,
+except when the user is explicitly modifying the structure (as in REMOVE).
+Making APPLY automatically unshare would be a semantic wart.
+
+2. If APPLY copies its last argument, recursive programs that receive an
+&REST argument and pass it to APPLY become inefficient.  A linear time
+algorithm can change to a quadratic time algorithm.  While the efficiency
+could be regained through compiler flow analysis in many cases, it's
+better not to put the inefficiency into the language in the first place.
+
+The DYNAMIC-EXTENT proposal would allow &REST lists
+that were "newly allocated" to have dynamic extent if they were
+to be passed down via APPLY.  This puts the burden in the
+right place.
+
+Two (closely related) arguments for NEWLY-ALLOCATED:
+
+1. The programmer's model of function calling is simpler: functions
+take arguments, and any two calls that pass the same arguments to the
+same function are equivalent.  The MAY-SHARE and MUST-SHARE proposals
+require a model in which functions generally take their arguments in
+the form of a list, and the extent to which that list shares structure
+with other lists in the system becomes an important part of the
+semantics of a function call.
+
+2.  It's not only smashing a &rest argument that's a problem, it's
+smashing any list that has been given as the last argument to APPLY as
+well.  Consider the following in an implementation that doesn't copy
+the last argument to APPLY when it is passed as a &rest argument:
+
+> (defvar *message*)
+*MESSAGE*
+> (defun set-message (&rest mess)
+    (setq *message* mess))
+SET-MESSAGE
+> (let ((winner (list 'a 'winner)))
+    (apply #'set-message winner)
+    (setf (cdr winner) (list 'loser))
+    winner)
+(A LOSER)
+
+Is *message* (A WINNER) or (A LOSER)?  (It might be
+(#<DTP-LOCATIVE 76123756> #<DTP-ODD-PC 12313453> ...)
+but that's a different problem.)  This suggests that once a list has
+been given as the last argument to APPLY it is no longer OK to modify
+it.
+
+Gail Zacharias talked about the common idiom of simply doing a COPY-LIST
+on every &rest argument, to insure some normalcy.  Her reasoning seems
+to bolster the case for those who claim that the current CL semantics
+(MAY-SHARE) are deficient:
+
+    Subject: &REST Lists
+    Date: 24 Mar 88 12:23:15 EST (Thu)
+    From: gz@spt.entity.com (Gail Zacharias)
+    . . . 
+    If Common Lisp doesn't require unshared &rest lists, then I think
+    it must provide a declarative version of this idiom so the COPY-LIST can
+    be portably avoided when it's redundant.  Seems to me that the fact that
+    this is a common case where users find a need for conditionalization
+    indicates a real deficiency in Common Lisp's specification.
+    . . . 
+
+So we have a responsibility to resolve the very thorny issue
+of REST-LIST-ALLOCATION.

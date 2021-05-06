@@ -1,0 +1,222 @@
+Forum:		Cleanup
+Issue:		DEFSTRUCT-CONSTRUCTOR-SLOT-VARIABLES
+References:	DEFSTRUCT; CLtL p. 309
+                Issue DEFSTRUCT-CONSTRUCTOR-KEY-MIXTURE (passed)
+Category:	CLARIFICATION, CHANGE
+Edit History:   V1, 11 Oct 1989, Sandra Loosemore
+		V2, 02 Nov 1989, Sandra Loosemore (update discussion)
+
+
+Problem Description:
+
+Must the symbols which name DEFSTRUCT slots be bound as lambda
+variables by the default keyword constructor function?  Normally it
+would not matter, but if any of these symbols have been proclaimed
+SPECIAL it will affect the dynamic environment in which the slot init
+forms are evaluated.
+
+There are three proposals, BOUND, NOT-BOUND, and VISIBLY-BOUND.
+
+
+Background:
+
+CLtL requires each default slot init form to be evaluated "in the
+lexical environment of the DEFSTRUCT form in which it appeared".  This
+means that the obvious technique of supplying the init forms as the
+defaults for the keyword arguments in the lambda list of the
+constructor function is incorrect, unless care is taken to avoid
+shadowing any variable bindings of the symbols which correspond to
+those arguments.
+
+For example, given
+    (defstruct foo
+        (a <a-init>)
+        (b <b-init>)
+        (c <c-init>))
+
+Generating the constructor as
+    (defun make-foo (&key (a <a-init>) (b <b-init>) (c <c-init>)) ...)
+may not evaluate <b-init> and <c-init> in the correct lexical environment
+as specified in CLtL.  Proposal VISIBLY-BOUND would change the specification
+to make this the correct behavior.
+
+One alternative is to wrap the init forms in closures named with gensyms:
+    (flet ((#:g1 () <a-init>)
+           (#:g2 () <b-init>)
+           (#:g3 () <c-init>))
+        (defun make-foo (&key (a (#:g1)) (b (#:g2)) (c (#:g3))) ...))
+Under proposal BOUND, this would be the correct way to implement the
+constructor function.
+
+Another alternative is to make the lambda variables themselves gensyms:
+    (defun make-foo (&key ((:a #:g4) <a-init>)
+                          ((:b #:g5) <b-init>)
+                          ((:c #:g6) <c-init>)) ...)
+Under proposal NOT-BOUND, this would be the correct way to implement the
+constructor function.
+
+(Of course, it's possible that DEFSTRUCT could produce a simplified
+expansion in many cases by examining the init forms and/or lexical
+environment.)
+
+Issue DEFSTRUCT-CONSTRUCTOR-KEY-MIXTURE implies that BOA constructors
+do bind the symbols which name slots as lambda variables, since these
+variables can be referenced in the init forms for subsequent
+arguments.
+
+
+Proposal (DEFSTRUCT-CONSTRUCTOR-SLOT-VARIABLES:BOUND):
+
+Clarify that the symbols which name slots must be bound as lambda
+variables by the keyword constructor function, in the order in which
+the slots are specified in the DEFSTRUCT form.  Variables for
+inherited slots are bound before variables for explitly specified
+slots, in the order in which they were specified in the definition of
+the inherited structure.  Special bindings of these variables will be
+visible during the evaluation of the default init forms for subsequent
+slots.  The slot default init forms are still evaluated in the 
+lexical environment in which the DEFSTRUCT form itself appears.
+
+  Rationale:
+
+  This appears to be closest to the intent of CLtL.
+
+
+Proposal (DEFSTRUCT-CONSTRUCTOR-SLOT-VARIABLES:NOT-BOUND):
+
+Clarify that the symbols which name slots must *not* be bound as
+lambda variables by the keyword constructor function.  The slot
+default init forms are evaluated in the lexical environment
+in which the DEFSTRUCT form itself appears and the dynamic environment
+in which the call to the constructor function appears.
+
+  Rationale:
+
+  This avoids the overhead of creating and invoking closures to compute
+  the default values of the slots for the default keyword constructor.
+
+
+Proposal (DEFSTRUCT-CONSTRUCTOR-SLOT-VARIABLES:VISIBLY-BOUND):
+
+Clarify that the symbols which name slots must be bound as lambda
+variables by the keyword constructor function, in the order in which
+the slots are specified in the DEFSTRUCT form.  Variables for
+inherited slots are bound before variables for explitly specified
+slots, in the order in which they were specified in the definition of
+the inherited structure.  Special bindings of these variables will be
+visible during the evaluation of the default init forms for subsequent
+slots.  
+
+Remove the requirement that the slot default init forms be evaluated
+in the lexical environment in which the DEFSTRUCT form itself appears.
+Instead, require that they be evaluated in a lexical environment that
+contains bindings for the previous lambda variables of the constructor
+function.  This applies to both the default keyword constructor function
+and BOA constructors.
+
+  Rationale:
+
+  This alternative corresponds most closely to current practice.  It
+  avoids the overhead of creating and invoking closures to compute the
+  default values of the slots for both the default keyword constructor
+  and BOA constructors.
+
+
+Example/Test Cases:
+
+(defvar x 'global-x)
+(let ((y  'local-y))
+    (defstruct baz (x 'x-init) (y x) (z y)))
+(make-baz)
+
+Under proposal BOUND,
+    slot X is initialized to X-INIT
+    slot Y is initialized to X-INIT
+        (since the init form X is evaluated in the dynamic environment
+        containing the binding to X-INIT)
+    slot Z is initialized to LOCAL-Y
+        (since the init form Y is evaluated in the lexical environment in
+        which the DEFSTRUCT appears)
+
+Under proposal NOT-BOUND,
+    slot X is initialized to X-INIT
+    slot Y is initialized to GLOBAL-X
+        (since the constructor does not rebind the special variable X)
+    slot Z is initialized to LOCAL-Y
+
+Under proposal VISIBLY-BOUND,
+    slot X is initialized to X-INIT
+    slot Y is initialized to X-INIT
+        (since the special binding of X made by the constructor is visible)
+    slot Z is initialized to X-INIT
+        (since the lexical binding of Y made by the constructor is visible)
+       
+
+Current Practice:
+
+Most implementations (including Lucid CL, HPCL-I, KCL, CMU Common Lisp)
+appear to implement proposal VISIBLY-BOUND even though it is in conflict
+with what is required by CLtL.
+
+Utah Common Lisp currently implements proposal NOT-BOUND.
+
+
+Cost to implementors:
+
+For proposal BOUND, the cost of implementing the proposal correctly is
+fairly small.  The cost of implementing it both correctly and efficiently
+is potentially much larger.
+
+For proposal NOT-BOUND, the implementation cost is again fairly small, 
+but it still requires essentially the same work as in proposal BOUND to
+handle BOA constructors correctly.
+
+Proposal VISIBLY-BOUND has the least implementation cost, since this
+is what most implementations already do and is the least complicated
+of the alternatives.
+
+
+Cost to users:
+
+Adopting any of these proposals would improve the situation faced by
+users now.
+
+Users may find proposal VISIBLY-BOUND to be marginally more useful
+than the other alternatives since it allows the values of slots to be
+referenced in the subsequent default init forms.
+
+
+Benefits:
+
+An area of confusion in the language is removed.
+
+
+Discussion:
+
+Loosemore doesn't care much about which of these alternatives we
+adopt, but thinks that leaving this unspecified would be a mistake.
+
+Margolin says:
+  By the way, I prefer this proposal [NOT-BOUND].  I think lexical
+  environments should be captured (I think we've fixed everything so
+  that init-forms are always evaluated in the appropriate lexical
+  environment), but I don't like making the order of slots significant
+  by allowing init forms to reference other slots.  Order of slots is
+  often constrained by other requirements (such as the :INCLUDE
+  hierarchy, or using :TYPE to match a pre-existing structure), so they
+  shouldn't have an effect on the semantics of the structure.
+
+Moon says:
+  Surely the default constructor function and "BOA constructors" must work
+  compatibly.  Unspecified initforms for optional and keyword arguments in
+  a "BOA constructor" default from the slot initform rather than NIL, so
+  "BOA constructors" face the same issue as default constructors.
+
+  VISIBLY-BOUND seems semantically wrong.
+
+  I would go with BOUND, assuming we can't just get rid of DEFSTRUCT
+  entirely.  I don't care about the supposed efficiency issue, which is
+  easily gotten around or ignored.
+
+-------
+

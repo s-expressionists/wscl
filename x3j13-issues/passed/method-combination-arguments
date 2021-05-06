@@ -1,0 +1,193 @@
+Issue:         METHOD-COMBINATION-ARGUMENTS
+
+References:    Draft ANSI CL specification p.6-71
+               88-002R p.2-34
+
+Category:      CLARIFICATION
+
+Edit history:  29-Apr-90, Version 1 by Moon
+               30-Apr-90, Version 2 by Moon (rewrite more clearly)
+               1-May-90, Version 3 by Moon (minor wording improvements)
+               4-May-90, Version 4 by Moon (update current practice)
+               6-Jun-90, Version 5 by Moon (add &WHOLE, update current practice)
+               8-Jun-90, Version 6 by Moon (include one-word amendment to &WHOLE
+                                            that was passed by X3J13 meeting)
+
+Problem description:
+
+  The :ARGUMENTS option to DEFINE-METHOD-COMBINATION is not specified very
+  clearly.  In particular, different generic functions using the type of
+  method combination being defined might accept different argument
+  patterns, so the lambda-list in the :ARGUMENTS option is unlikely to be
+  congruent to the generic function's lambda-list; the behavior when they
+  are not congruent should be clearly specified.  Such mismatches often
+  occur in practice, as in the example on p.6-74 where the generic function
+  would typically have more than one argument.
+
+  88-002R says:
+
+    If lambda-list is not congruent to the generic function's lambda-list,
+    additional ignored parameters are automatically inserted until it is
+    congruent.  Thus it is permissible for lambda-list to receive fewer
+    arguments than the number that the generic function expects.
+
+  The current ANSI CL draft says:
+  
+    If the arguments supplied to the generic function do not match
+    lambda-list, extra arguments are ignored and missing arguments are
+    defaulted to nil.  Thus it is permissible for lambda-list to receive
+    fewer arguments than the number of required arguments for the generic
+    function.
+
+  This is Symbolics issue #10.
+
+Proposal (METHOD-COMBINATION-ARGUMENTS:CLARIFY):
+
+  Replace the sentences quoted above with the following sentences.  Note
+  that these sentences immediately follow "When this form is evaluated
+  during execution of the effective method, its value is the corresponding
+  argument to the generic function."
+
+    This correspondence is computed by dividing the :ARGUMENTS lambda-list
+    and the generic function lambda-list into three sections: the required
+    parameters, the optional parameters, and the keyword/rest parameters.
+    The arguments supplied to the generic function for a particular call
+    are also divided into three sections; the required arguments section
+    contains as many arguments as the generic function has required
+    parameters, the optional arguments section contains as many arguments
+    as the generic function has optional parameters, and the keyword/rest
+    arguments section contains the remaining arguments.  Each parameter in
+    the required and optional sections of the :ARGUMENTS lambda-list
+    accesses the argument at the same position in the corresponding section
+    of the arguments.  If the section of the :ARGUMENTS lambda-list is
+    shorter, extra arguments are ignored.  If the section of the :ARGUMENTS
+    lambda-list is longer, excess required parameters are bound to forms
+    that evaluate to NIL and excess optional parameters are bound to their
+    initforms.  The keyword/rest parameters in the :ARGUMENTS lambda-list
+    access the keyword/rest section of the arguments.  If the :ARGUMENTS
+    lambda-list contains &KEY, it behaves as if it also contained
+    &ALLOW-OTHER-KEYS.
+
+    In addition, &WHOLE <var> can be placed first in the :ARGUMENTS
+    lambda-list.  It causes <var> to be bound to a form that evaluates to
+    a list of all of the arguments supplied to the generic function.  This
+    is different from &REST because it accesses all of the arguments, not
+    just the keyword/rest arguments.
+
+Examples:
+
+  The example in both documents is:
+  
+    ;;; Example of the use of :arguments
+    (define-method-combination progn-with-lock ()
+            ((methods ()))
+      (:arguments object)
+      `(unwind-protect
+           (progn (lock (object-lock ,object))
+                  ,@(mapcar #'(lambda (method)
+                                `(call-method ,method))
+                            methods))
+         (unlock (object-lock ,object))))
+
+  This would be used as follows:
+
+    (defgeneric send (channel buffer &optional (start 0) end)
+      (:method-combination progn-with-lock))
+
+    where each channel class has an object-lock method.
+
+  A variation that uses non-required arguments in :arguments is:
+  
+    (define-method-combination progn-with-lock-2 ()
+            ((methods ()))
+      (:arguments &key lock)
+      `(unwind-protect
+          (progn (lock ,lock)
+                 ,@(mapcar #'(lambda (method)
+                               `(call-method ,method))
+                           methods))
+         (unlock ,lock)))
+
+  This would be used as follows:
+
+    (defgeneric send (channel buffer
+                      &optional (start 0) end
+                      &key lock character-set-translation)
+      (:method-combination progn-with-lock-2))
+
+  The :lock keyword argument comes from the third section of the arguments,
+  which for this generic function starts at the fourth argument.
+
+  To show how lambda-list mismatch works:
+
+    If (:ARGUMENTS a b c) meets DEFGENERIC (x y &optional z), the value of
+    the value of C will be NIL, not the value of Z.
+
+  To show the use of &WHOLE:
+
+    (define-method-combination progn-with-gf-lock ()
+            ((methods ()))
+      (:arguments &whole args)
+      (:generic-function gf)
+      `(unwind-protect
+           (progn (lock-gf-args ,gf ,args) 
+                  ,@(mapcar #'(lambda (method)
+                                `(call-method ,method))
+                            methods))
+         (unlock (unlock-gf-args ,gf ,args))))
+
+Rationale:
+
+  This seems the only useful way to allow lambda-list-keywords in the
+  :ARGUMENTS lambda-list while solving the congruency problems.  It's likely
+  that this is not a change from what was originally intended, but just a
+  more precise way of describing it.  The examples show why both &WHOLE and
+  &REST are needed; using &REST in the progn-with-gf-lock example is not
+  consistent with using &KEY in the progn-with-lock-2 example.
+
+Current practice:
+
+  Symbolics Genera 8.0.1 (to be released in a few months) will implement the
+  proposal, possibly omitting &WHOLE.  In Symbolics Genera 8.0 the :ARGUMENTS
+  option to DEFINE-METHOD-COMBINATION does not work at all (it produces
+  incorrect code that does not compile).
+
+  TI Explorer release 6 has :ARGUMENTS in DEFINE-METHOD-COMBINATION, but
+  its status relative to the proposed clarification is unknown at present.
+
+  Recent versions of PCL support :ARGUMENTS in DEFINE-METHOD-COMBINATION
+  but do not seem to conform to the proposal -- I think PCL just
+  effectively appends "&rest ignore" to the :arguments lambda-list.
+
+  I did not discover any other CLOS implementations that support
+  :ARGUMENTS.
+
+Cost to Implementors:
+
+  This does not make supporting :ARGUMENTS more difficult.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  :ARGUMENTS will be specified in a way that can't be understood.
+
+Performance impact:
+
+  None.
+
+Benefits:
+
+  :ARGUMENTS will be usable in the relatively rare circumstances where it
+  is needed.
+
+Esthetics:
+
+  A specification that can be understood is more esthetic than one that
+  cannot be.
+
+Discussion:
+
+  None.

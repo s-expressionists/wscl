@@ -1,0 +1,67 @@
+Issue:		PATHNAME-SYMBOL
+
+References:   	PATHNAME (p.413),
+                Derived references: PARSE-NAMESTRING (p.414),
+                MERGE-PATHNAMES (p.415), PATHNAME-HOST etc. (p.417),
+                NAMESTRING etc. (p.417), LOAD (p. 426), REQUIRE 
+                Cleanup issue PATHNAME-STREAM
+                Common LispCraft, Wilensky 1986, p 51
+
+
+Edit History:  Version 1 by Moon 11-May-87
+               Version 2 by Masinter 29-May-87
+               Version 3 by Masinter 23-Oct-87
+               Version 4 by Masinter 23-Nov-87
+               Version 5 by Masinter  5-Feb-88, fix minor typo
+
+
+Category:     	CHANGE
+
+Problem Description:
+
+Some Common Lisp functions are specified to accept a symbol where a pathname is expected.  Some others (OPEN, WITH-OPEN-FILE, DELETE-FILE, and RENAME-FILE) are not specified to accept a symbol.
+
+Proposal PATHNAME-SYMBOL:NO
+
+Never allow symbols where pathnames are expected. More specifically, PATHNAME, TRUENAME, PARSE-NAMESTRING, MERGE-PATHNAMES, PATHNAME-HOST, PATHNAME-DEVICE, PATHNAME-DIRECTORY, PATHNAME-NAME, PATHNAME-TYPE, PATHNAME-VERSION, NAMESTRING, FILE-NAMESTRING, DIRECTORY-NAMESTRING, HOST-NAMESTRING, ENOUGH-NAMESTRING, REQUIRE are changed by this proposal to not allow symbols for their pathname argument.
+
+Reiterate that OPEN, WITH-OPEN-FILE, LOAD, COMPILE-FILE, RENAME-FILE, DELETE-FILE, FILE-WRITE-DATE, FILE-AUTHOR do not allow symbols for their file or filename argument, and that DIRECTORY does not allow a symbol for its pathname argument. This is implied by the respective descriptions of those functions in CLtL, but not explicitly stated.
+
+Rationale:
+
+Allowing symbols for pathnames was based on an obsolete practice in MacLisp (which did not have strings) and causes much error-prone behavior.
+
+Current Practice:
+
+Varies.  Some implementations allow symbols here, some don't.  Symbolics doesn't allow symbols except in PARSE-NAMESTRING and MERGE-PATHNAMES, and allowing them there is probably a bug in the implementation. 
+
+Cost to implementors:
+
+It's easy to change implementations to stop accepting symbols.  Since this appears to be an "is an error" rather than "signals an error" situation, no implementation change is actually necessary.
+
+Cost to users:
+
+Some users might be using symbols as pathnames, in implementations where that works, and they would have to switch to using strings. For example, some users are used to typing interactively (LOAD 'FOO) to mean (LOAD "FOO"). This is not explicitly allowed in CLtL, so such behavior has not been portable. However, such use is probably widespread among users of implementations that allow it (e.g., Common LISPCraft gives this form in an example.)
+
+Benefits:
+
+Pathname functions will be more consistent.  In implementations that check the type of this argument, program error checking will be improved. In dealing with case-sensitive file systems, users won't do (load 'foo) and wonder why file "FOO" (rather than "foo") is not found.
+
+One example of the type of bug caused by this occurs when NIL is erroneously substituted for a pathname, perhaps because GETHASH or ASSOC didn't find a table entry that was expected to exist and returned -false-.  In systems that accept symbols as pathnames, this causes a reference to a file named "NIL" on some perhaps unexpected directory.
+
+Aesthetics:
+
+Improved by the change.
+
+Discussion:
+
+Some users have reported that they thought MERGE-PATHNAMES was in error because it accepted symbols.
+
+We believe that this feature was accidentally introduced as a historical artifact and that it has limited utility. It is likely that the feature of accepting a symbol was copied by Common Lisp from Zetalisp, which in turn copied it from Maclisp.  The reason Maclisp allowed a symbol here was that it did not have strings at all.  While the feature was removed from Zetalisp before Common Lisp was defined due to the poor state of Zetalisp documentation at the time the change was overlooked by the designers of Common Lisp.
+
+If a symbol can be coerced into a string, and a string can be coerced into a pathname, why can't a symbol be coerced into a pathname? An explicit decision was made early in the design of CL not to make all coercions transitive.  For example, symbols coerce to strings (for string functions), and strings are sequences (and so can be mixed with other sequence types), but symbols are not sequences.
+
+There is some sentiment for extending COERCE to allow explicit coersion of STRINGs to PATHNAMEs, as a separate cleanup item.
+
+A careful reading of CLtL indicates that it is possible for an implementation to allow a symbol to be a STREAM (there is no requirement that STREAM and SYMBOL be disjoint.) While there is some sentiment for making this requirement in a separate cleanup issue, it would otherwise prevent both symbol->pathname and stream->pathname to have consistent meaning.
+

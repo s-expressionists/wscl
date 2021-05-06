@@ -1,0 +1,303 @@
+Status: passed, as amended, Jun 89 X3J13
+Issue:          PATHNAME-SUBDIRECTORY-LIST
+References:     Pathnames (pp410-413), MAKE-PATHNAME (p416),
+                PATHNAME-DIRECTORY (p417)
+Related-issues: PATHNAME-COMPONENT-CASE, PATHNAME-COMPONENT-VALUE
+Category:       CHANGE
+Edit history:   18-Jun-87, Version 1 by Ghenis.pasa@Xerox.COM
+                05-Jul-88, Version 2 by Pitman (major revision)
+                28-Dec-88, Version 3 by Pitman (merge discussion)
+                22-Mar-89, Version 4 by Moon (fix based on discussion)
+                19-May-89, Version 5 by Moon (improve based on mail)
+                21-May-89, Version 6 by Moon (final cleanups)
+                17-Jun-89, Version 7 by Moon (add current practice
+                        and discussion; minor fixes based on discussion)
+                2-Jul-89, Version 8 by Masinter (add Jun89X3J13 amendment)
+
+Problem Description:
+
+  It is impossible to write portable code that can produce a pathname
+  in a subdirectory of a hierarchical file system. This defeats much of
+  the purpose of the pathname abstraction.
+
+  According to CLtL, only a string is a portable value for the directory
+  component of a pathname.  Thus in order to denote a subdirectory, the use
+  of punctuation characters (such as dots, slashes, or backslashes) would
+  be necessary. The very fact that such syntax varies from host to host
+  means that although the representation might be "portable", the code
+  using that representation is not portable.
+
+  This problem is even worse for programs running on machines on a network
+  that can retrieve files from multiple hosts, each using a different OS
+  and thus different subdirectory punctuation.
+
+  Related problems:
+
+  - In some implementations "FOO.BAR" might denote the "BAR" subdirectory
+    of "FOO", while in other implementations it would denote a top-level
+    directory, because "." is not treated as punctuation. To be safe,
+    portable programs must avoid all potential punctuation characters.
+
+  - Even in implementations where "." is used for subdirectories,
+    "FOO.BAR" may be recognized by some to mean the "BAR" subdirectory of
+    "FOO" and by others to mean `a seven character directory name with "."
+    as the fourth character.'
+
+  - In fact, CLtL does not even say whether punctuation characters are
+    part of the string. eg, is "foo" or "/foo" the directory component for
+    a unix pathname "/foo/bar.lisp". Similarly, is "[FOO]" or "FOO" the
+    directory component for a VMS pathname "[FOO]ME.LSP"?
+    PATHNAME-COMPONENT-VALUE:SPECIFY says punctuation characters are not
+    part of the string.
+
+Proposal (PATHNAME-SUBDIRECTORY-LIST:NEW-REPRESENTATION)
+
+  Remove the "structured" directory feature mentioned on CLtL p.412.
+  
+  Allow the value of a pathname's directory component to be a list.  The
+  car of the list is one of the symbols :ABSOLUTE or :RELATIVE.
+  Each remaining element of the list is a string or a symbol (see below).
+  Each string names a single level of directory structure.  The strings
+  should contain only the directory names themselves -- no punctuation
+  characters.
+
+  A list whose car is the symbol :ABSOLUTE represents a directory path
+  starting from the root directory.  The list (:ABSOLUTE) represents
+  the root directory.  The list (:ABSOLUTE "foo" "bar" "baz") represents
+  the directory called "/foo/bar/baz" in Unix [except possibly for
+  alphabetic case -- that is the subject of a separate issue].
+
+  A list whose car is the symbol :RELATIVE represents a directory path
+  starting from a default directory.  The list (:RELATIVE) has the same
+  meaning as NIL and hence is not used.  The list (:RELATIVE "foo" "bar")
+  represents the directory named "bar" in the directory named "foo" in the
+  default directory.
+
+  In place of a string, at any point in the list, symbols may occur to
+  indicate special file notations. The following symbols have standard
+  meanings.  Implementations are permitted to add additional objects of any
+  non-string type if necessary to represent features of their file systems
+  that cannot be represented with the standard strings and symbols.
+  Supplying any non-string, including any of the symbols listed below, to a
+  file system for which it does not make sense signals an error of type
+  FILE-ERROR.  For example, Unix does not support :WILD-INFERIORS in
+  most implementations.
+
+   :WILD           - Wildcard match of one level of directory structure.
+   :WILD-INFERIORS - Wildcard match of any number of directory levels.
+   :UP             - Go upward in directory structure (semantic).
+   :BACK           - Go upward in directory structure (syntactic).
+
+  :ABSOLUTE or :WILD-INFERIORS immediately followed by :UP or :BACK
+  signals an error.
+
+  "Syntactic" means that the action of :BACK depends only on the pathname
+  and not on the contents of the file system.  "Semantic" means that the
+  action of :UP depends on the contents of the file system; to resolve
+  a pathname containing :UP to a pathname whose directory component
+  contains only :ABSOLUTE and strings requires probing the file system.
+  :UP differs from :BACK only in file systems that support multiple
+  names for directories, perhaps via symbolic links.  For example,
+  suppose that there is a directory
+    (:ABSOLUTE "X" "Y" "Z")
+  linked to 
+    (:ABSOLUTE "A" "B" "C")
+  and there also exist directories
+    (:ABSOLUTE "A" "B" "Q")
+    (:ABSOLUTE "X" "Y" "Q")
+  then
+    (:ABSOLUTE "X" "Y" "Z" :UP "Q")
+  designates
+    (:ABSOLUTE "A" "B" "Q")
+  while
+    (:ABSOLUTE "X" "Y" "Z" :BACK "Q")
+  designates
+    (:ABSOLUTE "X" "Y" "Q")
+
+  If a string is used as the value of the :DIRECTORY argument to
+  MAKE-PATHNAME, it should be the name of a toplevel directory and should
+  not contain any punctuation characters.  Specifying a string, str, is
+  equivalent to specifying the list (:ABSOLUTE str).  Specifying the symbol
+  :WILD is equivalent to specifying the list (:ABSOLUTE :WILD-INFERIORS),
+  or (:ABSOLUTE :WILD) in a file system that does not support :WILD-INFERIORS.
+
+  The PATHNAME-DIRECTORY function always returns NIL, :UNSPECIFIC, or a
+  list, never a string, never :WILD.
+
+  The list returned is not guaranteed to be "freshly consed" -- the
+  consequences of modifying this list is undefined.
+ 
+  In non-hierarchical file systems, the only valid list values for the
+  directory component of a pathname are (:ABSOLUTE string) and
+  (:ABSOLUTE :WILD).  :RELATIVE directories and the keywords
+  :WILD-INFERIORS, :UP, and :BACK are not used in non-hierarchical file
+  systems.
+
+  Pathname merging treats a relative directory specially.  Let
+  <pathname> and <defaults> be the first two arguments to
+  MERGE-PATHNAMES.  If (PATHNAME-DIRECTORY <pathname>) is a list whose
+  car is :RELATIVE, and (PATHNAME-DIRECTORY <defaults>) is a list, then
+  the merged directory is the value of
+    (APPEND (PATHNAME-DIRECTORY <defaults>)
+            (CDR  ;remove :RELATIVE from the front
+              (PATHNAME-DIRECTORY <pathname>)))
+  except that if the resulting list contains a string or :WILD immediately
+  followed by :BACK, both of them are removed.  This removal of redundant
+  :BACKs is repeated as many times as possible.
+  If (PATHNAME-DIRECTORY <defaults>) is not a list or
+  (PATHNAME-DIRECTORY <pathname>) is not a list whose car is :RELATIVE, the
+  merged directory is
+    (OR (PATHNAME-DIRECTORY <pathname>) (PATHNAME-DIRECTORY <defaults>))
+
+  A relative directory in the pathname argument to a function such as
+  OPEN is merged with *DEFAULT-PATHNAME-DEFAULTS* before accessing the
+  file system.
+
+Test Cases/Examples:
+
+  (PATHNAME-DIRECTORY (PARSE-NAMESTRING "[FOO.BAR]BAZ.LSP")) ;on VMS
+  => (:ABSOLUTE "FOO" "BAR")
+
+  (PATHNAME-DIRECTORY (PARSE-NAMESTRING "/foo/bar/baz.lisp")) ;on Unix
+  => (:ABSOLUTE "foo" "bar")
+  or (:ABSOLUTE "FOO" "BAR")
+  If PATHNAME-COMPONENT-CASE:KEYWORD-ARGUMENT passes with a default of
+  :COMMON, the value is the second one shown.
+
+  (PATHNAME-DIRECTORY (PARSE-NAMESTRING "../baz.lisp")) ;on Unix
+  => (:RELATIVE :UP)
+
+  (PATHNAME-DIRECTORY (PARSE-NAMESTRING "/foo/bar/../mum/baz")) ;on Unix
+  => (:ABSOLUTE "foo" "bar" :UP "mum")
+
+  (PATHNAME-DIRECTORY (PARSE-NAMESTRING ">foo>**>bar>baz.lisp")) ;on LispM
+  => (:ABSOLUTE "FOO" :WILD-INFERIORS "BAR")
+
+  (PATHNAME-DIRECTORY (PARSE-NAMESTRING ">foo>*>bar>baz.lisp")) ;on LispM
+  => (:ABSOLUTE "FOO" :WILD "BAR")
+
+Rationale:
+
+  This would allow programs to deal usefully with hierarchical file
+  systems, which are by far the most common file system type.
+  This would allow a system construction utility that organizes programs
+  by subdirectories to be portable to all implementations that have
+  hierarchical file systems.
+
+  Discussion indicated that "Implementations are permitted to add
+  additional objects of any non-string type if necessary to represent
+  features of their file systems that cannot be represented with the
+  standard strings and symbols" is a necessary escape hatch for things like
+  home directories and fancy pattern matching.  Implementations should
+  limit their use of this loophole and use the standard keyword symbols
+  whenever that is possible.
+
+Current Practice:
+
+  Symbolics Genera implements something very similar to this. The main
+  differences are:
+   - In Genera, there is no :ABSOLUTE keyword at the head of the list.
+     This has been shown to cause some problems in dealing with root
+     directories. Genera represents the root directory by a keyword
+     symbol (rather than a list) because the list representation 
+     was not adequately general.
+   - Genera has no separate concepts of :UP and :BACK.  Genera
+     represents Unix ".." as :UP, but deals with :UP syntactically, not
+     semantically.
+
+  On the Explorer, the directory component is a list of strings, not yet
+  supporting the symbols specified in proposal PATHNAME-SUBDIRECTORY-LIST.
+
+  Macintosh Allegro Common Lisp 1.2.2 uses a string with punctuation
+  characters instead of a list for the directory.
+
+  Lucid Common Lisp 3.0.1 under Unix uses a list for directories of
+  somewhat different form from what is proposed in
+  PATHNAME-SUBDIRECTORY-LIST.  It uses :ROOT instead of :ABSOLUTE and uses
+  ".." instead of :UP.  It does use :RELATIVE.
+
+  Ibuki Common Lisp Release 01/01 uses a list for directories of somewhat
+  different form from what is proposed in PATHNAME-SUBDIRECTORY-LIST.  It
+  uses :ROOT instead of :ABSOLUTE, uses :PARENT instead of :UP, and omits
+  the leading keyword instead of using :RELATIVE.
+
+  IIM uses a list for directories of somewhat different form from what is
+  proposed in PATHNAME-SUBDIRECTORY-LIST.  It uses :ABSOLUTE-DIRECTORY
+  instead of :ABSOLUTE, uses :SUPER-DIRECTORY instead of :BACK, and omits
+  the leading keyword instead of using :RELATIVE.
+
+Cost to Implementors:
+
+  In principle, nothing about the implementation needs to change except
+  the treatment of the directory component by MAKE-PATHNAME and
+  PATHNAME-DIRECTORY. The internal representation can otherwise be left
+  as-is if necessary.
+
+  Implementations such as Genera, Explorer, Lucid, Ibuki, and IIM that
+  already have hierarchical directory handling will have to make an
+  incompatible change to switch to what is proposed here.
+
+  For implementations that choose to rationalize this representation
+  throughout their internals and any other implementation-specific
+  accessors, the cost will be necessarily higher.
+
+Cost to Users:
+
+  None for portable programs. This change is upward compatible with CLtL.
+  Nonportable programs will have to be changed if they use implementation
+  dependent hierarchical directory handling and the implementation
+  removes support for that when it adds support for this proposal.
+
+Cost of Non-Adoption:
+
+  Serious portability problems would continue to occur. Programmers would be
+  driven to the use of implementation-specific facilities because the need
+  for this is frequently impossible to ignore.
+
+Benefits:
+
+  The serious costs of non-adoption would be avoided.
+
+Aesthetics:
+
+  This representation of hierarchical pathnames is easy to use and quite
+  general. Users will probably see this as an improvement in the aesthetics.
+
+Discussion:
+
+  This issue was raised a while back but no one was fond of the particular
+  proposal that was submitted. This is an attempt to revive the issue.
+
+  The original proposal, to add a :SUBDIRECTORIES component to a
+  pathname, was discarded because it imposed an unnatural distinction
+  between a toplevel directory and its subdirectories. Pitman's guess is
+  the the idea was to try to make it a compatible change, but since most
+  programmers will probably want to change from implementation-specific
+  primitives to portable ones anyway, that's probably not such a big
+  deal. Also, there could have been some programs which thought the
+  change was compatible and ended up ignoring important information (the
+  :SUBDIRECTORIES component). Pitman thought it would be better if
+  people just accepted the cost of an incompatible change in order to
+  get something really pretty as a result.
+
+  Some people feel it is unnecessary to standardize the format of
+  pathname components such as the directory.
+
+  Moon doesn't like having both :UP and :BACK, but admits that some
+  file systems do it one way and some do it the other.  He still thinks
+  it would be simpler if we got rid of :BACK and just had :UP.
+
+  To keep it simple, we chose not to add to this issue the functions
+  DIRECTORY-PATHNAME-AS-FILE and PATHNAME-AS-DIRECTORY, which convert
+  the name of a directory from or to the directory component of a file
+  inferior to that directory.  This conversion is system-dependent, for
+  example TOPS-20 appends a type field and Unix does not.  Also in some
+  systems the root directory has a name and in others it doesn't.  Of
+  course these functions signal an error in non-hierarchical file
+  systems.  Examples (for Unix, assuming #P print syntax for pathnames):
+   (directory-pathname-as-file #P"/usr/bin/sh") => #P"/usr/bin"
+   (pathname-as-directory #P"/usr/bin") => #P"/usr/bin"/
+  These functions have not been proposed because they are mainly useful
+  in conjunction with additional functions for manipulating directories
+  (creating, expunging, setting access control) that have not been made
+  available in Common Lisp.

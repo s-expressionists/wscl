@@ -1,0 +1,208 @@
+Status: Proposal EXPLICITLY-VAGUE passed, Jun 89 X3J13
+
+Issue:        PATHNAME-SYNTAX-ERROR-TIME
+References:   File System Interface (pp409-427)
+Category:     CLARIFICATION
+Edit history: 07-Jul-88, Version 1 by Pitman
+
+Problem Description:
+
+  There exist conceivable pathnames for which there is no valid mapping in a
+  particular implementation. CLtL is not clear about the time at which this
+  error might be detected.
+
+  For example, on file systems which constrain pathname-types to be three
+  letters or fewer, the type "LISP" is not valid. The question arises: when
+  is this error detected?
+
+  In some implementations, the error might be detected while forming the
+  pathname. That is, (MAKE-PATHNAME :TYPE "LISP") signals an error.
+
+  In some implementations, the error might be detected while forming the
+  namestring. That is, (MAKE-PATHNAME :TYPE "LISP") succeeds, but
+  (NAMESTRING (MAKE-PATHNAME :TYPE "LISP")) signals an error.
+
+  In some implementations, validity checking might be done only by the host
+  operating system, so Lisp does not detect the error unless the operating
+  system complains. For example, (MAKE-PATHNAME :TYPE "LISP") succeeds,
+  and even (NAMESTRING (MAKE-PATHNAME :TYPE "LISP")) constructs a plausible
+  looking pathname, but (OPEN (NAMESTRING (MAKE-PATHNAME :TYPE "LISP"))) fails.
+
+  In some implementations, Lisp might make `friendly' corrections to the
+  pathname in order to form a namestring. For example,
+  (MAKE-PATHNAME :TYPE "LISP") might succeed, but 
+  (NAMESTRING (MAKE-PATHNAME :TYPE "LISP")) might produce a namestring with
+  an extension such as ".LIS" or ".LSP".
+
+  Similar issues might come up in file systems which don't allow wildcard
+  pathnames. Is :WILD allowed in a name or type slot and then disallowed
+  upon coercion to a pathname, or is :WILD complained about "up front"?
+
+  This phenomenon is a barrier to portability because if a program is
+  debugged in an implementation that does, for example, NAMESTRING-time
+  error checking, the programmer may be lulled into an expectation that
+  it is acceptable to construct and manipulate invalid pathnames as long
+  as the problem is caught before an attempt to call NAMESTRING is
+  attempted. On the other hand, another programmer may debug his code in
+  a Lisp which does early error checking of syntax and may assume that 
+  he is home free if the pathname gets constructed correctly.
+
+Proposal (PATHNAME-SYNTAX-ERROR-TIME:PATHNAME-CREATION):
+
+  Clarify that operations such as MAKE-PATHNAME and MERGE-PATHNMES which
+  construct new pathnames do plausibility checking of their arguments
+  and signal an error rather than construct a pathname for which NAMESTRING
+  would not produce a valid pathname.
+
+  Rationale:
+
+    This would identify clearly to the programmer where he should expect an
+    error to be signalled for a pathname.
+
+    This would mean that fully constructed pathnames could reliably
+    be converted to namestrings.
+
+  Cost to Implementors:
+  
+    Some implementors, especially those which rely on the operating system
+    to be the sole authority on pathname syntax, might have to introduce
+    some new syntax-checking facilities.
+
+    Implementations where this error checking is done later would have to be
+    changed both to do it earlier, and to not make the unwarranted assumption
+    that pathnames with no valid namestring representation are constructable.
+
+  Cost to Users:
+
+    The ability to represent non-viable pathnames for the purpose of merging
+    would be lost. This feature was not portably available, but was available
+    in some operating systems.
+
+    Some code which expected an error, but expected it at a different time
+    would have to be changed.
+
+Proposal (PATHNAME-SYNTAX-ERROR-TIME:NAMESTRING-COERCION):
+
+  Clarify that it was valid to create a pathname which could not be
+  converted to a namestring. Require NAMESTRING (and related functions,
+  such as ENOUGH-NAMESTRING or any internal functions that might be used
+  in place of NAMESTRING by functions like OPEN and PROBE-FILE) to signal
+  an error for pathnames which do not represent valid filenames in the
+  designated file system.
+
+  Rationale:
+
+    This would identify clearly to the programmer where he should expect an
+    error to be signalled for a pathname.
+
+    This would allow the construction of pathnames for the sole purpose of
+    merging without causing what might seem to some as gratuitous errors.
+
+  Cost to Implementors:
+  
+    Implementors who rely on the operating system to be the sole authority
+    on pathname syntax, might have to introduce some new syntax-checking
+    facilities.
+
+    Implementations where this error checking is done earlier would have to
+    be changed both to do it later, and to not make the unwarranted
+    assumption that any pathname has a valid namestring representation.
+
+  Cost to Users:
+
+    Early error checking of faulty pathnames would be lost.
+
+    Some code which expected an error, but expected it at a different time
+    would have to be changed.
+
+  Benefits:
+  
+    Macsyma, for example, has encountered a need for "hostless" pathnames
+    (in merging). The concept makes no sense if every pathname must have
+    a namestring, because a pathname with no host cannot have a namestring.
+    However, if it's NAMESTRING's responsibility to signal an error, then
+    hostless pathnames are still useful for merging. Consider:
+	(MERGE-PATHNAMES (MAKE-PATHNAME :NAME "FRED") MARY)
+    This will override both the NAME and the HOST field of MARY because you
+    must currently have a host in every pathname. But if MAKE-PATHNAME did
+    not force the host, or if one could explicitly say :HOST NIL, then
+    such pathnames would be considerably more useful for merging.
+
+Proposal (PATHNAME-SYNTAX-ERROR-TIME:EXPLICITLY-VAGUE):
+
+  Clarify that we were unable to reach agreement on this issue and that
+  the time at which this error detection occurs is not well-specified.
+
+  Advise the editorial group to warn users clearly about this known source
+  of program portability problems.
+
+  Rationale:
+
+    This implements the status quo.
+
+  Cost to Implementors:
+  
+    None.
+
+  Cost to Users:
+
+    No existing code must be modified, but there is an ongoing cost
+    associated with providing error checking at multiple points in a
+    program because implementations disagree as to where an error
+    might be signalled. In some cases, the effects of having to handle
+    this in multiple places may cause unpleasant modularity violations.
+
+Test Case:
+
+  See problem description.
+
+Current Practice:
+
+  Symbolics Genera signals an error at pathname construction time if a
+  pathname will be invalid. Once a pathname is successfully constructed,
+  it can generally be assumed that NAMESTRING will always succeed.
+
+Aesthetics:
+
+  Making this more well-defined would cause a definite aesthetic
+  improvement to some programs.
+
+Discussion:
+
+  Pitman prefers PATHNAME-SYNTAX-ERROR-TIME:NAMESTRING-COERCION but
+  believes that anything is an improvement over ...:EXPLICITLY-VAGUE.
+
+  CL pathname functions were not adequate for use in Macsyma because
+  they did not adequately represent to-be-merged-only pathnames (a
+  feature used very extensively in Macsyma), because errors could be
+  signalled at radically different times. To get around this, Pitman
+  had to create a data structure in Macsyma called an MPATHNAME which
+  was only trivially different than a PATHNAME but which made it
+  possible to deal portably with this issue of when errors occurred
+  and what kinds of errors occured. Unfortunately, since none of the
+  CL functions worked on MPATHNAMEs, a whole series of functions,
+  also only trivially different, had to be created: MAKE-MPATHNAME,
+  MNAMESTRING, MERGE-MPATHNAMES, MPATHNAME-NAME, MPATHNAME-TYPE, 
+  MOPEN, WITH-MOPEN-FILE, etc.
+
+------
+Summary of CL-Cleanup discussion:
+
+Most of the mail was endorsements for option PATHNAME-CREATION.
+Sandra brought up a tangential issue about truenames that eventually
+became a separate issue.
+
+I think I'm the only person pushing NAMESTRING-COERCION. I strongly
+believe it is the right thing, and that PATHNAME-CREATION is suboptimal,
+based on problems that have struck me with existing CL pathname system.
+However, even PATHNAME-CREATION would be an improvement from a
+portability standpoint and I am probably not going to push it because
+there are compatibility issues on the side of PATHNAME-CREATION (many
+implementations do this already), and because there are more important
+issues for us to spend time on at the meeting.
+
+[Please try to come prepared to vote yes on one or both of
+ PATHNAME-CREATION or NAMESTRING-COERCION so we don't have to fall back
+ on EXPLICITLY-VAGUE, which is a total loss for program portability.
+ -kmp]
+

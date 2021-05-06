@@ -1,0 +1,99 @@
+Issue:         DEFTYPE-KEY
+
+References:    CLtL p.50
+
+Related issues: DEFSTRUCT-CONSTRUCTOR-KEY-MIXTURE
+
+Category:      CLARIFICATION/ADDITION
+
+Edit history:  29-Apr-90, Version 1 by Moon
+               30-Apr-90, Version 2 by Moon (update current practice)
+               4-May-90, Version 3 by Moon (update from comment received)
+               9-May-90, Version 4 by Moon (revise according to comments
+                        received.  Specifically, remove references to
+                        &ENVIRONMENT, take no stand on destructuring, and
+                        correct the current practice.)
+
+Problem description:
+
+  CLtL p.50 only mentions &OPTIONAL and &REST as allowed lambda-list
+  keywords in DEFTYPE.  It doesn't say whether &KEY is allowed too.
+
+  This is Symbolics issue #18.
+
+Proposal (DEFTYPE-KEY:ALLOW):
+
+  Allow &OPTIONAL, &REST, &KEY, &ALLOW-OTHER-KEYS, and &AUX in the
+  lambda-list of DEFTYPE.
+
+  Clarify that unsupplied keyword arguments default to *, not NIL, the same
+  as unsupplied optional arguments, if no initform is specified in the
+  lambda-list.  &AUX parameters are initialized to NIL if no initform is
+  specified.
+
+Examples:
+
+  (deftype xarray (&key dimensions (rank '* rank-p) element-type)
+    (check-type rank (or (member *) (integer 0 *)))
+    (check-type dimensions (or (member *) list))
+    `(array ,element-type
+            ,(if rank-p rank dimensions)))
+
+  (check-type z (xarray :rank 2 :element-type double-float))
+
+  (define-presentation-type command (&key (command-table *command-table*))
+     ....)
+
+  define-presentation-type is similar to deftype but defines some
+  additional information about use of the type in user interfaces.
+
+Rationale:
+
+  Type specifiers with keyword arguments are used extensively in CLIM
+  and CLIM-based applications.
+
+  &AUX is allowed just for completeness.
+
+Current practice:
+
+  Symbolics Genera 8.0 supports the proposal.
+  Lucid 3.0.1 signals an error (&KEY not allowed) for this example.
+  Franz Allegro CL 3.1.beta.22 supports the proposal.
+  Other implementations were not surveyed.
+
+Cost to Implementors:
+
+  Should be small since this simply makes DEFTYPE support the same
+  lambda-list keywords as DEFUN and LAMBDA (which suggests an
+  implementation technique of inserting '* where an initform is not
+  specified for an &optional or &keyword argument and then making a
+  function that is applied to the cdr of the type specifier).
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  CLIM will not fit into Common Lisp as well.  DEFTYPE will be less
+  consistent with the rest of the language.
+
+Performance impact:
+
+  None.
+
+Benefits:
+
+  Cost of non-adoption will not be incurred.
+
+Esthetics:
+
+  DEFTYPE will be consistent with DEFUN, eliminating an arbitrary
+  restriction.
+
+Discussion:
+
+  There has been some discussion about whether DEFTYPE supports
+  destructuring.  It seems that CLtL pages 50 and 146 may contradict
+  each other on this point.  This issue explicitly does not address
+  the question of destructuring.

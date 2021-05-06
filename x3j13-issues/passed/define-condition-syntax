@@ -1,0 +1,113 @@
+Issue:		DEFINE-CONDITION-SYNTAX
+Forum:		Cleanup
+References:	Condition System, Version 18
+		CLOS Specification, 88-002R
+		Issue CLOS-CONDITIONS
+		Issue CONDITION-ACCESSORS-SETFABLE
+Category:	CHANGE/CLARIFICATION
+Edit History:	Version 1, 1/3/90 by Kim A. Barrett
+
+Problem Description:
+  Issue CLOS-CONDITIONS incompatibly changed the slot specification syntax
+  for DEFINE-CONDITION to match the slot specification syntax for DEFCLASS.
+  This leaves us with two defining macros whose general forms are very
+  similar but which have small idiosyncratic differences.
+
+Notes on voting:
+ Vote for just 1 of MORE-LIKE-DEFCLASS, INCOMPATIBLY-MORE-LIKE-DEFCLASS, or
+   MORE-LIKE-DEFINE-CONDITION.
+ In addition, vote yes or no to EMPHASIZE-READ-ONLY.
+
+Proposal (DEFINE-CONDITION-SYNTAX:MORE-LIKE-DEFCLASS):
+  Define the syntax for DEFINE-CONDITION to be
+
+    DEFINE-CONDITION name ({supertype}*) [({slot}*) {option}*]
+
+    option ::= (:DEFAULT-INITARGS initarg-list) |
+	       (:DOCUMENTATION string) |
+	       (:REPORT exp)
+
+  The :default-initarg option is defined in the same way as for DEFCLASS.  The
+  :documentation and :report options are unchanged.
+
+  If no supertypes are specified, then the condition being defined inherits
+  directly from CONDITION.
+
+Proposal (DEFINE-CONDITION-SYNTAX:INCOMPATIBLY-MORE-LIKE-DEFCLASS):
+  As DEFINE-CONDITION-SYNTAX:MORE-LIKE-DEFCLASS, but make the slot
+  specification list required.
+
+Proposal (DEFINE-CONDITION-SYNTAX:MORE-LIKE-DEFINE-CONDITION):
+  As DEFINE-CONDITION-SYNTAX:MORE-LIKE-DEFCLASS, but change the syntax of
+  DEFCLASS so that the slot specification list is optional.
+
+Proposal (DEFINE-CONDITION-SYNTAX:EMPHASIZE-READ-ONLY)
+  As either of the above proposals, but remove the :WRITER and :ACCESSOR
+  slot options.
+
+Rational:
+  This provides the added functionality provided by :DEFAULT-INITARGS, and
+  the convenience of not having to explicitly write CONDITION as the only
+  super for some conditions.
+
+  INCOMPATIBLY-MORE-LIKE-DEFCLASS makes the basic syntax identical, but at
+  the cost of an incompatible change, since the list of slot specifications
+  will no longer be optional.
+
+  EMPHASIZE-READ-ONLY emphasizes the point that it is an error to attempt
+  to assign a condition's slots using SETF.  Condition objects are supposed
+  to be at least conceptually read-only.
+
+Current Practice:
+  IIM supports the :DEFAULT-INITARGS option.  They may support the behavior
+  specified for an empty supertype list (if they don't, then they still
+  require at least one supertype).
+
+Cost to Implementors:
+  Supporting an empty supertype list in the specified way is probably fairly
+  trivial.  For an implementation of conditions which is not based on an
+  implementation of CLOS, adding the support for :default-initargs might not
+  be trivial.
+
+Cost to Users:
+  MORE-LIKE-DEFCLASS is upwardly compatible for the status quo.
+
+  The other two proposals will probably require some programs to be modified.
+  As an interim solution implementations could support MORE-LIKE-DEFCLASS and
+  issue warnings for cases which were incompatible with the other two
+  proposals.
+
+Benefits:
+  Programmers would need to remember fewer idiosyncratic differences in the
+  syntax of two very similar and important macros.
+
+Discussion:
+  Barrett supports MORE-LIKE-DEFINE-CONDITION.  He thinks that 
+  EMPHASIZE-READ-ONLY would be a good idea if there isn't too much concern
+  about the incompatibility issues.
+
+  Pitman supports MORE-LIKE-DEFCLASS but mostly because the CLOS crew are
+  a stubborn bunch and it seems more likely that we can bend the rest of the
+  spec to be like their polished piece of prose than vice versa.  
+  (i.e., MORE-LIKE-DEFINE-CONDITION is technically just as good to him.)
+  Pitman also supports EMPHASIZE-READ-ONLY.
+
+-----
+Additional comments in response to write-up:
+
+Moon (11 Jan 90):
+
+  This issue raises good points that I think were overlooked in past
+  discussions of unifying Conditions and CLOS.
+  
+  I am neutral among MORE-LIKE-DEFCLASS, INCOMPATIBLY-MORE-LIKE-DEFCLASS,
+  or MORE-LIKE-DEFINE-CONDITION.  The incompatibilities here (either making
+  the slot-specifier list optional where it's mandatory or mandatory where
+  it is optional) are of little concern since the adjustment is tiny.  Any
+  one of these would be a significant improvement over the status quo.
+  
+  I am definitely in favor of EMPHASIZE-READ-ONLY and not impressed by the
+  compatibility arguments.  An existing program that is incompatible with
+  this either actually modifies condition objects, in which case it can't
+  work, or it just accidentally says :ACCESSOR but only uses the reader,
+  in which case it is trivial to fix.

@@ -1,0 +1,104 @@
+Status:	Passed, Jan 89 X3J13
+Issue:         REQUIRE-PATHNAME-DEFAULTS
+References:    *MODULES*, PROVIDE, REQUIRE, pp 188-191
+               LOAD, pp 426-427
+Category:      CHANGE
+Edit history:  Version 1 by Pierson 9/13/88
+               Version 2 by Pierson 9/19/88, change PROVIDE stuff per comments
+               Version 3 by Pierson 10/17/88, remove PROVIDE locaction specs.
+               Version 4 by Pierson 10/31/88, remove from language
+               Version 5 by Pierson 11/15/88, cleanup, fix discussion
+               Version 6 by Pierson 12/9/88, remove *MODULES* as well
+
+Problem description:
+
+PROVIDE and REQUIRE are a dual-purpose pair of functions that attempt
+to provide multi-file Common Lisp programs with a single mechanism to
+detect and correct incorrect load sequences.  These functions were
+also designed to be used for general file inclusion in Common Lisp.
+Unfortunately, the file loading feature of REQUIRE is specified such
+that it is inherently non-portable and environment dependent.
+
+Proposal (REQUIRE-PATHNAME-DEFAULTS:ELIMINATE):
+
+Remove PROVIDE, REQUIRE, and *MODULES* from the Common Lisp standard.
+
+Test Cases/Examples:
+
+(PROVIDE 'fft)
+
+Would not be Common Lisp.
+
+(REQUIRE 'fft)
+
+Would not be Common Lisp.
+
+Rationale:
+
+The file loading feature of REQUIRE is non-portable.  The remaining
+functionality of PROVIDE and REQUIRE (pushing and testing *MODULES*)
+can easily be implemented by user code.  Since some implementations
+will retain the automatic module loading features of REQUIRE and some
+won't, use of REQUIRE will almost always make code less portable.
+
+Current practice:
+
+All implementations currently support some sort of file loading via
+single-argument REQUIRE.  In general, the Lisp Machine implementations
+invoke the system module building/loading facility while the Unix
+implementations simply try to load a file in the current directory.
+
+Cost to Implementors:
+
+Implementations will have to move PROVIDE and REQUIRE to their package
+for implementation extensions and change their documentation to
+indicate that PROVIDE and REQUIRE are non-standard.  This is a fairly
+small change.
+
+Cost to Users:
+
+Non-portable programs that rely on PROVIDE and REQUIRE will probably
+be unaffected since implementations will probably maintain their
+existing functionality.  Since the current behavior is decidedly
+non-portable, portable programs have to aviod or special-case PROVIDE
+and REQUIRE anyway.
+
+Cost of non-Adoption:
+
+PROVIDE and REQUIRE will continue as impediments to portability.
+
+Benefits:
+
+The non-portability of PROVIDE and REQUIRE will be made obvious.
+
+Aesthetics:
+
+This simplifies the language by removing an environment-dependent
+feature. 
+
+Discussion:
+
+The cleanup committee tried to come up with a proposal to restrict
+PROVIDE and REQUIRE to the portable subset of their functionality.
+This failed because several implementors objected that it compelled
+them to significantly reduce the functionality they provided users in
+order to create a trivial feature which any user could easily write
+for herself.
+
+Fahlman, Gregor, Grey, Loosemore, Moon, Pierson, Pitman, Steele, and
+Zacharias have expressed support for removing PROVIDE and REQUIRE from
+the language, at least as the lesser of several evils.
+
+JonL would much rather see PROVIDE and REQUIRE remain in the language
+as a safety net behind any implementation-specific system building
+facility.  Pierson likes the safety net idea, but doesn't think it's
+workable without forbidding REQUIRE from loading files.
+
+Pitman suggested that PROVIDE and REQUIRE should be depricated rather
+than removed entirely.  Pierson agrees, but notes that Larry wants us
+to deal with deprication versus elimination as a separate global topic.
+
+Several people have expressed a desire not to break existing user
+code.  If accepted, this proposal should not break existing code
+because all implementations are expected to retain their current
+PROVIDE and REQUIRE functionality as an extension to Common Lisp.

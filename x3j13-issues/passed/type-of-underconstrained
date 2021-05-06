@@ -1,0 +1,175 @@
+Status:	passed, Jun 89 X3J13
+
+Forum:	Cleanup
+Issue:      TYPE-OF-UNDERCONSTRAINED
+
+References: TYPE-OF (CLtL)
+            88-002R (Class-of)
+            88-005, p 43f, Condition system types
+Related issues: SUBTYPEP-TOO-VAGUE
+                DATA-TYPE-HIERARCHY-UNDERSPECIFIED
+                FUNCTION-TYPE
+                ARRAY-TYPE-ELEMENT-TYPE-SEMANTICS
+                COERCE-INCOMPLETE
+			
+
+Category:       CLARIFICATION/CHANGE
+
+Edit history:   Version 1,  1-Dec-88, Masinter
+		    Version 2,  9-Dec-88, Masinter
+		    Version 3, 12-Dec-88, Masinter (fix "egregious bug")
+		Version 4, 3-14-89 Steele
+		Version 5, 16-Mar-89, Masinter (add other amendments)
+		Version 6, 22-Jun-89, Masinter (fix as per Moon)
+
+Problem description:
+
+The specification of TYPE-OF in CLtL is so weak as to leave it 
+nearly useless, if any implementor actually took the specification
+seriously.In particular, there are almost no constraints on the
+value that TYPE-OF might return for any of the built in
+types. The only constraint placed is that for objects created by the
+constructor function of DEFSTRUCT, the result of TYPE-OF is the name of the
+defstruct.
+
+This means that implementations could return T for all other objects.
+
+Proposal (TYPE-OF-UNDERCONSTRAINED:ADD-CONSTRAINTS): 
+
+Specify that the result of TYPE-OF satisfies the following:
+
+(a) For any object for which (typep object built-in-type) is true when
+built-in-type is one of 
+
+INTEGER, RATIO, FLOAT, COMPLEX, NUMBER, NULL, SYMBOL, 
+STRING, BIT-VECTOR, VECTOR, ARRAY, RANDOM-STATE, SEQUENCE,CONS, 
+STREAM, PACKAGE, CHARACTER, FUNCTION, READTABLE, HASH-TABLE, PATHNAME,
+CONDITION, RESTART,
+RATIONAL, SHORT-FLOAT, LONG-FLOAT, SINGLE-FLOAT, DOUBLE-FLOAT
+
+the result of TYPE-OF will be a type specifier for which
+(subtypep (type-of object) built-in-type) returns T T, i.e., either the
+build-in-type or a subtype of it (a subtype that the 
+implementation's SUBTYPEP can recognize.)
+
+
+(b)  For all objects, (TYPEP object (TYPE-OF object)) will be true.
+(this implies that it will not be NIL, since no
+object is of type NIL.)
+
+(c) will not be T, or use SATISFIES, AND, OR, NOT or VALUES.
+
+(d) The type returned by TYPE-OF is always a subtype of the class
+returned by CLASS-OF, and is a subtype that the implementation's
+SUBTYPEP can recognize.
+
+(e) For objects of metaclass STRUCTURE-CLASS or STANDARD-CLASS,
+TYPE-OF returns the proper name of the class returned by CLASS-OF
+if it has a proper name, and otherwise returns the class itself.
+
+In particular, for objects created by the "constructor" function
+of a structure defined with DEFSTRUCT without a :TYPE option,
+TYPE-OF will return the structure name.
+
+This proposal is intended to be consistent with 88-002R, 
+and not to conflict with any of the definitions in that document.
+
+Examples:
+
+It is legal for (TYPE-OF "abc") to return (SIMPLE-STRING 3), or just
+STRING. It is legal for (TYPE-OF 112312) to return SI:MEDIUM-SIZE-FIXNUM,
+as long as (SUBTYPEP 'SI:MEDIUM-SIZE-FIXNUM 'INTEGER).
+
+ Given:
+
+   (defvar *foo* (make-array 5 :element-type t))
+   (class-name (class-of *foo*))  =>  SIMPLE-VECTOR
+  It is legal for
+   (type-of *foo*)                =>  (SIMPLE-VECTOR 5)
+
+
+Rationale:
+
+The original specification for "TYPE-OF" was written to allow
+implementation freedom, but the wording is in fact more vague than was
+intended. 
+
+Current practice:
+
+Most Common Lisp implementations seem to implement the proposal, at least
+for the types we've tried them on.
+
+Cost to Implementors:
+
+Even if there are implementations that do not currently implement the
+proposal, the required changes for them are likely to be minimal. 
+
+Cost to Users:
+
+Apparently none.
+
+Cost of non-adoption:
+
+TYPE-OF would remain potentially inconsistent.
+
+Performance impact:
+
+Likely none.
+
+Benefits:
+
+Bring the specification of TYPE-OF in like with its common
+implementation, while requiring it to be generally useful.
+
+Esthetics:
+
+Little effect.
+
+Discussion:
+
+Originally, TYPE-OF was concieved as being useful for information display.
+CLOS specified CLASS-OF far more precisely, in that it must return exactly
+the class of an object. Unless TYPE-OF is removed from the language, it
+seems reasonable to require it to be at least as precise as CLASS-OF.
+
+The accepted CLOS specification does not define CLASS-OF
+in terms of TYPE-OF, but an earlier draft did. 
+
+This proposal presumes the (passed) proposals
+DATA-TYPES-HIERARCHY-UNDERSPECIFIED:DISJOINT, FUNCTION-TYPE, and
+accomodates the Condition System (version 18) and CLOS.
+
+If ARRAY-TYPE-ELEMENT-TYPE-SEMANTICS does not pass, 
+and this proposal does pass, it may be that the only way an 
+implementation can satisfy (TYPEP array (TYPE-OF array))
+would be to have (TYPE-OF array) return VECTOR or ARRAY
+as appropriate, i.e., with no element type qualification.
+
+It is possible to constrain TYPE-OF further, e.g., to eliminate
+the possibility that it might return a non-portable 
+implementation-specific value. For example, 
+(TYPE-OF 112312) should not return SI:MEDIUM-SIZE-FIXNUM, but rather some
+thing like (SIGNED-BYTE 17) [if that's what SI:MEDIUM-SIZE-FIXNUM means.]
+
+We would like to make this as an implementation recommendation,
+however, rather than as a constraint, at this point.
+
+About part (c): the restriction on T is meaningless, since the CLASS-OF
+restriction dominates it. The restriction on MEMBER is OK, just to keep
+TYPE-OF from being the silly definition that (type-of x) = `(member ,x).  I
+think we're running out of good reasons to leave out SATISFIES, AND, OR,
+NOT, and VALUES; they're probably no more useful, but we're probably
+overspecifying for no good reason.
+
+Some types are left out of the list in (a), including:
+
+BIGNUM and FIXNUM were left out because their division was implementation
+dependent.
+
+KEYWORD was left out because under odd circumstances it is possible to
+dynamically change the 'type' (e.g., by UNINTERN).
+
+STANDARD-CHAR and STRING-CHAR were left out for the same reasons they
+aren't built-in classes.
+
+(These reasonas are not 100% compelling.)

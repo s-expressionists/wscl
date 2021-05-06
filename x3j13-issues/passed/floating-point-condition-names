@@ -1,0 +1,136 @@
+Forum:		Cleanup
+Issue:		FLOATING-POINT-CONDITION-NAMES
+References:	CLtL, Section 12.10 "Implementation Parameters" (for floats)
+		CLtL, P.448 "*features*"
+		IEEE Standard for Binary Floating-Point Arithmetic
+Related Issues:	FLOAT-UNDERFLOW
+		ERROR-CHECKING-IN-NUMBERS-CHAPTER
+Category:	ADDITION
+Edit History:   V1, 30 Oct 1989, JonL White
+	        V2, 4 Dec 1990, Kent M. Pitman (amendments per X3J13)
+
+Problem Description:
+
+The currently proposed error system contains names for three conditions
+related to floating-point operations: floating-point-underflow,
+floating-point-overflow, and division-by-zero.  Probably a majority
+of implementation will be running on machines that support the IEEE
+floating point standard; but there is no name for the remaining two out 
+of the five mandated trapping conditions, namely floating-point-inexact
+and floating-point-invalid-operation.
+
+Furthermore, even though the condition names may appear in an image,
+it is not clear that such traps are enabled at every point in time.
+The IEEE standard specifies that user-level programs ought to have
+the capability of selectively enabling or disabling its five traps;
+and other implementations may run on a variety of hardware configurations
+for which the traps possible vary from host to host.  However, there is
+no current way for user-code to ask (1) what conditions are in fact
+supporting floating-point traps, nor to ask (2) just what traps are 
+currently active
+
+Note that some very simple implementations might not be able to cause
+trapping even for floating-point-underflow;  and in other implementations,
+the relevant traps may vary on a host-to-host basic, depending on what
+particular optional hardware is available on that host.  For example,
+Sun3 workstations come  in three configurations: one with only software 
+floating-point support, one with a Motorola MC68881 attached co-processor, 
+and one with both an MC68881 and a Weitek Floating Point "Accelerator"; 
+the increasing hardware complement gives rise to an increasing number of 
+implementation-specific traps.  Even within the IEEE standard, it is 
+possible for a conforming implementation to make a refinement of the five 
+suggested traps [the MC68881 partitions one of the traps into three, 
+giving a total of eight]; so even though one knows that an implementation 
+is IEEE compatible, it still makes sense to ask what conditions are 
+supportable as floating-point traps.
+
+Proposal (FLOATING-POINT-CONDITION-NAMES:X3J13-NOV-89)
+
+  1. Add FLOATING-POINT-INVALID-OPERATION and FLOATING-POINT-INEXACT
+     as conditions which are sub-conditions of ARITHMETIC-ERROR.
+
+The intent is that if condition FOO is a currently enabled floating
+point trap, then whenever that particular situation arises the
+system will arrange to signal the Lisp condition FOO.  The means for
+enabling and disabling traps is not addressed in this proposal.
+
+Proposal (FLOATING-POINT-CONDITION-NAMES:ADD-MINIMAL-IEEE)
+
+  1. Add FLOATING-POINT-INVALID-OPERATION and FLOATING-POINT-INEXACT
+     as conditions which are sub-conditions of ARITHMETIC-ERROR.
+  2. Add a global parameter SUPPORTED-FLOATING-POINT-CONDITIONS which
+     is to contain a list of all the condition names that can, in that
+     implementation, be enabled as floating-point traps; this is to
+     be an "implementation revealing" parameter.
+  3. Add a function of no arguments ENABLED-FLOATING-POINT-TRAPS which
+     returns a list of condition names for all currently enabled
+     floating point trapping conditions.
+
+The intent is that if condition FOO is a currently enabled floating
+point trap, then whenever that particular situation arises the
+system will arrange to signal the Lisp condition FOO.  The means for
+enabling and disabling traps is not addressed in this proposal.
+
+
+Rationale:
+
+Many Common Lisp implementations do in fact run on hardware that
+supports the IEEE floating-point standard;  a minimal requirement
+for porting between these implementations is that they all use the
+same name for the five IEEE-mandated floating-point conditions.
+Since at least some implementations will provide means for selective
+enabling and disabling of various floating-point traps, then the 
+user must be able to query the system to find out what the current
+state is, and what states are supportable.
+
+
+Current Practice:
+
+Lucid Common Lisp supports this much; moreover, it uses SETF on
+(ENABLED-FLOATING-POINT-TRAPS) as the primary means to alter the
+currently-enabled traps.
+
+
+Cost to implementors:
+
+Trivial.
+
+
+Cost to users:
+
+None; this is an upward-compatible addition.
+
+
+Benefits:
+
+Portability of a greater amount of user code; portability of "skills",
+since IEEE support is so common.
+
+
+Aesthetics:
+
+It is better for all IEEE implementations to use the same names for
+these conditions, rather than have them vary from one to another.
+It is also probably better for non-IEEE implementations to use the
+IEEE condition names where appropriate, just to minimize the 
+conceptual overload.
+
+
+Discussion:
+
+If an implementation is to claim full IEEE support, then it ought to 
+provide some means of enabling and catching these five IEEE-mandated
+traps.  Then it would be appropriate to put :IEEE-FLOATING-POINT on
+the list *FEATURES* (see CLtL, P.448).
+
+Moon and JonL privately discussed some means for enabling and
+disabling various floating-point traps, back in June 1989 when the 
+float-underflow proposal was under discussion; they came to the 
+conclusion that "getting the design right and efficient" was more 
+than a few minutes worth of work, and so postponed further work on it.
+
+
+[The IEEE standard apparently goes by the name of ANSI-IEEE Std 754-1985; 
+my working copy is Draft 10.0 from 1982.  I don't think there are great 
+variances between them. -- JonL --]
+

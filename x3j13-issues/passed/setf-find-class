@@ -1,0 +1,69 @@
+Issue:         SETF-FIND-CLASS
+
+References:    FIND-CLASS in 88-002R
+
+Category:      CLARIFICATION
+
+Edit history:  29-Apr-90, Version 1 by Moon
+               30-Apr-90, Version 2 by Moon (update current practice)
+               2-May-90, Version 3 by Moon (remove incorrect reference
+                     to Loosemore issue #7 of 27 Feb 90)
+               4-May-90, Version 4 by Moon (update discussion and current
+                                            practice)
+
+Problem description:
+
+  Is (SETF (FIND-CLASS 'FOO) NIL) permitted as a way to break the link from
+  a name to a class?  I can't find anything in the CLOS spec for or against
+  this.
+
+  This is Symbolics issue #27.
+
+Proposal (SETF-FIND-CLASS:ALLOW-NIL):
+
+  Define (SETF (FIND-CLASS 'FOO) NIL) to cause FOO no longer to name a class.
+  If FOO already does not name a class, the operation has no effect.
+
+  This does not affect the class formerly named by FOO, if any, except that
+  if FOO was that class's proper name, the class no longer has a proper name.
+
+Rationale:
+
+  This is simpler than putting in a new function to break the association
+  between a name and a class.  When CMAKUNBOUND was removed from an early
+  draft of 88-002R, it was probably intended to add this SETF of FIND-CLASS
+  feature to replace it, but the document was accidentally not updated.
+
+Current practice:
+
+  Symbolics Genera 8.0, TI Explorer release 6.0, and Lucid 4.0.0 Beta-1
+  implement the proposal.  Other CLOS implementations were not surveyed.
+
+Cost to Implementors:
+
+  Easy.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  There will be no portable way to break the association between a name and
+  a class.
+
+Performance impact:
+
+  None.
+
+Benefits:
+
+  Adds a useful feature that was probably intended to be there all along.
+
+Esthetics:
+
+  More complete language.
+
+Discussion:
+
+  Gregor Kiczales says he supports SETF-FIND-CLASS:ALLOW-NIL.

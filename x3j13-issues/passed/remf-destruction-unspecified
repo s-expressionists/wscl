@@ -1,0 +1,290 @@
+Status: v6 accepted by X3J13 with amendments to fix typos (see v7) on 16-1 vote
+
+Issue:        REMF-DESTRUCTION-UNSPECIFIED
+References:   (SETF (GET ...) ...), REMPROP, (SETF (GETF ...) ...),
+	      REMF (pp165-167); NREVERSE (p248); DELETE, DELETE-IF,
+	      DELETE-DUPLICATES, NSUBSTITUTE, NSUBSTITUTE-IF (pp254-256); 
+	      NCONC, NRECONC (p269); NUNION, NINTERSECTION,
+	      NSET-EXCLUSIVE-OR (pp276-279).
+Category:     CLARIFICATION/CHANGE
+Edit history: 11-Feb-87, Version 1 by Dave Andre (DLA@Symbolics.COM)
+	      29-Oct-87, Version 2 by Pitman (flesh out proposals)
+	      28-Nov-88, Version 3 by Pitman (revised presentation)
+	      29-Nov-88, Version 4 by Pitman (slight editing per DLA)
+	      15-Mar-89, Version 5 by Margolin (amendments discussed in
+			 Hawaii, removed -NOT functions)
+	      17-Mar-89, Version 6 by Margolin (make NSUBSTITUTE* less vague)
+	      05-Apr-89, Version 7 by Pitman (typos corrected per X3J13)
+
+Problem Description:
+
+ Currently, the exact nature of the side-effect performed by list
+ modification routines is not specified.
+
+ Either the specific modifications allowed should be specified so that
+ programmers can rely on them and implementors can avoid accidentally
+ causing problems by introducing well-meaning optimizations, or else
+ the documentation should explicitly state that the effects are
+ unspecified so that programmers will not depend on them and 
+ implementors will feel comfortable about doing interesting optimizations.
+
+Proposal (REMF-DESTRUCTION-UNSPECIFIED:X3J13-MAR-89):
+
+ Clarify that the way in which the destructive behavior of the
+ operators below is achieved is explicitly vague in a number of ways,
+ in order to provide individual implementations the necessary
+ flexibility to do useful optimizations.
+
+ (SETF (GETF place indicator) value)
+  is permitted to either SETF place or to SETF any part, CAR or
+  CDR, of the top-level list structure held by that place.
+
+ (REMF place indicator)
+  is permitted to either SETF place or to SETF any part, CAR or
+  CDR, of the top-level list structure held by that place.
+
+ (SETF (GET symbol indicator) value)
+  is constrained to behave exactly the same as
+  (SETF (GETF (SYMBOL-PLIST symbol) indicator) value).
+
+ (REMPROP symbol indicator)
+  is constrained to behave exactly the same as
+  (REMF (SYMBOL-PLIST symbol) indicator).
+
+ (NREVERSE sequence)
+  when sequence is a list, is permitted to SETF any part, CAR or
+   CDR, of the top-level list structure in that sequence.
+  when sequence is an array is permitted to re-order the elements
+   of the given sequence in order to produce the resulting array.
+
+ (DELETE object sequence ...)
+  when sequence is a list, is permitted to SETF any part, CAR or
+   CDR, of the top-level list structure held in that sequence.
+  when sequence is an array is permitted to change the dimensions
+   of the array and to slide its elements into new positions without
+   permuting them to produce the resulting array.
+  
+ (DELETE-IF test sequence ...)
+  is constrained to behave exactly like
+  (DELETE NIL sequence
+	  :TEST #'(LAMBDA (IGNORE ITEM) (FUNCALL test ITEM))
+	  ...).
+
+ (DELETE-DUPLICATES sequence ...)
+  when sequence is a list, is permitted to SETF any part, CAR or
+   CDR, of the top-level list structure held in that sequence.
+  when sequence is an array is permitted to change the dimensions
+   of the array and to slide its elements into new positions without
+   permuting them to produce the resulting array.
+
+ (NRECONC list tail)
+  is constrained to have side-effect behavior equivalent to:
+  (NCONC (NREVERSE list) tail).
+
+ (NUNION list1 list2 ...)
+ (NINTERSECTION list1 list2 ...)
+ (NSET-EXCLUSIVE-OR list1 list2 ...)
+  is permitted to SETF any part, CAR or CDR, of the top-level of
+  any of the given lists.
+
+  Note, however, that since this side-effect is not required,
+  these functions should still not be used in for-effect-only
+  positions in portable code.
+
+ (NCONC . lists)
+  is defined using the following recursive relationship:
+
+    (NCONC) => NIL
+    (NCONC NIL . args) == (NCONC . args)
+    (NCONC arg) => arg
+    (NCONC arg1 arg2) has the side effect of (RPLACD (LAST arg1) arg2),
+		      and returns arg1 
+    (NCONC arg1 arg2 . args) == (NCONC (NCONC arg1 arg2) . args)
+
+  [If a previous cleanup issue prohibited NIL as a non-last argument
+   then ignore the (NCONC NIL . args) case.]
+
+ (NSUBSTITUTE new-object old-object sequence ...)
+ (NSUBSTITUTE-IF new-object test sequence ...)
+  is required to SETF any CAR (if SEQUENCE is a list) or AREF (if it's
+  a vector) of SEQUENCE which is required to be replaced with
+  NEW-OBJECT.  If SEQUENCE is a list, none of the CDRs of the
+  top-level list may be modified.  These functions, therefore, may be
+  used in for-effect-only positions in code (some may find this
+  stylistically distasteful, though).
+
+ Note: The above clarifications are not intended as complete functional
+ descriptions. They are intended to augment (rather than to replace)
+ other descriptions already in effect.
+
+Test Cases:
+
+ For GETF...
+
+    (SETQ FOO (LIST 'A 'B 'C 'D 'E 'F))    ==> (A B C D E F)
+    (SETQ BAR (CDDR FOO))                  ==> (C D E F)
+    (REMF FOO 'C)
+    BAR				           ==> ??
+
+    In Symbolics Common Lisp, BAR holds (C D E F).
+    CLtL allows other interpretations. eg, BAR might hold
+    (C), (NIL), (C NIL) or (C D).
+    Under this proposal, any of these interpretations (and others as well)
+    would still be valid
+
+ For DELETE...
+
+    (SETQ FOO (LIST 'A 'B 'C))   ==> (A B C)
+    (SETQ BAR (CDR FOO))         ==> (B C)
+    (SETQ FOO (DELETE 'B FOO))   ==> (A C)
+    BAR                          ==> ??
+    (EQ (CDR FOO) (CAR BAR))     ==> ??
+
+    In Symbolics Common Lisp, these last two expressions return ((C)) and T.
+    Under this proposal, either of these interpretations (and others
+    as well) would be valid.
+
+ For NCONC...
+
+    (SETQ FOO (LIST 'A 'B 'C 'D 'E)
+	  BAR (LIST 'F 'G 'H 'I 'J)
+	  BAZ (LIST 'K 'L 'M)) => (K L M)
+    (SETQ FOO (NCONC FOO BAR BAZ)) => (A B C D E F G H I J K L M)
+    FOO => (A B C D E F G H I J K L M)
+    BAR => (F G H I J K L M)
+    BAZ => (K L M)
+
+    (SETQ FOO (LIST 'A 'B 'C 'D 'E)
+	  BAR (LIST 'F 'G 'H 'I 'J)
+	  BAZ (LIST 'K 'L 'M)) => (K L M)
+    (SETQ FOO (NCONC NIL FOO BAR NIL BAZ)) => (A B C D E F G H I J K L M) 
+    FOO => (A B C D E F G H I J K L M)
+    BAR => (F G H I J K L M)
+    BAZ => (K L M)
+
+
+Rationale:
+
+ Implementations already vary widely on their implementation techniques
+ for these functions. This effectively clarifies the status quo, making
+ it more clear to programmers what they may rely upon in portable code.
+
+ In the case of NCONC, however, the precise definition is useful because
+ it is what users expect, it is how NCONC has been defined for many
+ years, and it is how current implementations generally work.  It may
+ not always be the most efficient way (e.g. it may result in invisible
+ pointers in CDR-coded implementations), but callers of NCONC probably
+ use it specifically for its precise side effects.
+
+ In the case of NSUBSTITUTE, this seems like the only reasonable
+ implementation mechanism, and there doesn't seem to be a reason not to
+ guarantee it.
+
+Current Practice:
+
+ All valid implementations are believed to comply with the vague
+ definitions.  Symbolics Genera 7.2 and Sun Common Lisp 2.1.3 appear to
+ conform to the NCONC spec.
+
+Cost to Implementors:
+
+ None. This is probably the status quo for most implementors.  If there
+ are any implementations that don't implement NCONC and NSUBSTITUTE as
+ above (which I doubt) they will have to be changed.
+
+Cost to Users:
+
+ This change would not affect programs coded with "good programming
+ practice".  That is, only programs which rely on currently undocumented
+ features would be in any danger of breaking.  In fact, those programs
+ are already in such danger, and this change to the documentation would
+ just publicize it.  The clarification would -encourage- good programming
+ practice by warning people to only obey the published contract of the
+ above-mentioned functions.
+
+ There is, however, no automatic technique for making this check for
+ programs already in error. Bugs due to unexpected side-effects are in
+ general among the hardest to reckon with.
+
+Cost of Non-Adoption:
+
+ Programmers may naively believe there is only one possible or reasonable
+ implementation of these functions. Some implementors may shy away from
+ reasonable optimizations out of a paranoid belief that deviating from 
+ some vague, unspoken rules will lead to programmer unrest. Making these
+ things explicitly vague clarifies the implementor's rights in a way that
+ permits numerous useful optimizations.
+
+Benefits: 
+
+ Users would be discouraged from taking advantage of subtle details
+ of these destructive operations because such details would be explicitly
+ not guaranteed to be portable.
+
+ Implementations can improve performance of many of the above-mentioned
+ functions when they are not under the constraint to implement them
+ in a highly constrained fashion. For example, in Symbolics systems,
+ DELETE of a cdr-coded list could use the implementation primitive
+ %CHANGE-LIST-TO-CONS rather than RPLACD to avoid creating forwarding
+ pointers.
+
+ Garbage collection effectiveness can also be improved. For example,
+ all of the destructive operations which remove objects (eg, REMF)
+ could remove CAR pointers to removed objects which are more volatile
+ than the list itself, assisting the garbage collector and thereby
+ improving memory usage and paging performance.
+
+ Tightening the definition of NCONC and NSUBSTITUTE permits users to
+ predict their programs' behavior more precisely.
+
+Non-Benefits:
+
+ Users who inadvertently depend on side-effect behavior may be rudely
+ surprised when moving between implementations.
+
+ Compatibility with older Lisp dialects is diminished.
+
+ Implementors have less flexibility in implementing NCONC efficiently.
+ This is true of NSUBSTITUTE, but this is less likely to cause problems.
+
+Performance Impact:
+
+ Metering in Symbolics test  systems have shown that there are substantial
+ performance gains to be had by allowing implementations flexibility in
+ these areas.
+
+ In the case of NCONC, this implementation flexibility, and hence
+ potential performance improvements, is sacrificed.
+
+ If anyone ever invents CAR-coding, the required implementation of
+ NSUBSTITUTE could be a performance hindrance.
+
+Aesthetics:
+
+ Most of these functions implement abstract operations. For example,
+ REMPROP implements an abstract operation on a "property list".
+ Proper language design should not encourage people to delve below the
+ level of abstraction into the nitty gritty.
+
+ NCONC is a "less abstract" function than the rest of the functions
+ described above.  It is usually used precisely because of the way it
+ interacts with list implementation.  Similarly for NSUBSTITUTE.
+
+Discussion:
+
+ Andre's original version of this proposal pushed for explicitly vague
+ descriptions of these functions' side-effect behavior.  He believes
+ that if users want more predictability from these functions, they
+ should write private variants that implement whatever predictability
+ they require. 
+
+ Pitman originally opposed this position because he weighed portability
+ a higher concern. Since the original discussion, however, his views on
+ how to resolve this priority have been refined, and he now believes
+ that leaving things vague is appropriate. As such, he now supports what
+ is effectively Andre's original proposal.
+
+ Pitman and Andre supported version 4.  [I don't know how they feel
+ about v6 -- Barmar].
+
+ Moon supports version 6.

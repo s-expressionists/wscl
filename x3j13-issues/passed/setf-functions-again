@@ -1,0 +1,93 @@
+Issue:              SETF-FUNCTIONS-AGAIN
+References:         SETF, FBOUNDP, FDEFINITION, DEFSTRUCT
+Related issues:     Issue FUNCTION-NAME
+                    Issue SETF-OF-APPLY
+Category:           CLARIFICATION
+Edit history:       V1, 13 May 90, Sandra Loosemore
+
+Problem description:
+
+The addition of SETF functions to the language has left some
+lingering questions:
+
+- Whether (FBOUNDP '(SETF <name>)) is supposed to be true of <name>s 
+that have SETF methods (as defined with DEFSETF or DEFINE-SETF-METHOD)
+defined, or only <name>s where there are globally defined
+functions named (SETF <name>).  (Issue #17 from Loosemore's
+list.)
+
+- Whether DEFSTRUCT is required to generate SETF functions, or required
+to generate SETF methods, or whether this is unspecified.  (Issue
+#19)
+
+- Whether SETF places defined in the standard are required to be
+implemented by SETF functions, by SETF methods, or whether this
+is unspecified.  (Issue #20)
+
+- Whether it is permissible for a <name> to have both a SETF
+method defined via DEFSETF or DEFINE-SETF-METHOD, and an associated
+SETF function at the same time.  
+
+
+Proposal (SETF-FUNCTIONS-AGAIN:MINIMAL-CHANGES):
+
+  (1) Clarify that (FBOUNDP '(SETF <name>)) must return true if and
+  only if there is a function named (SETF <name>) defined.  It must
+  return NIL if <name> has a SETF method defined but not a SETF
+  function.
+
+  (2) Clarify that it is unspecified whether DEFSTRUCT generates
+  SETF methods or SETF functions for non-:READ-ONLY slot accessors.
+
+  (3) Clarify that, unless a SETF function is explicitly documented
+  in the standard, it is unspecified whether SETF places defined in
+  the standard must be implemented as SETF methods or SETF functions.
+  In combination with item (1), this implies that it is unspecified
+  whether (SETF <name>) is FBOUNDP for these standard SETF
+  places.
+
+  (4) Clarify that it is possible, but generally not very useful, 
+  to have both a SETF method and a SETF function defined for the same
+  name.
+
+Rationale:
+
+  This proposal requires minimal changes for implementors.
+
+Current Practice:
+
+  Most implementations use SETF methods (and not SETF functions)
+  to implement DEFSTRUCT accessors and the standard SETF places.
+  In most implementations, the namespaces for SETF methods and
+  SETF functions are disjoint.
+
+Cost to Implementors:
+
+  Probably none.
+
+Cost to Users:
+
+  Probably none.
+
+Cost of non-adoption:
+
+  Imprecision in the language specification.
+
+Performance impact:
+
+  Probably not significant.
+
+Benefits:
+
+   The language specification is made more precise.
+
+Esthetics:
+
+  It would probably be better to specify whether standard SETF
+  places must be implemented as SETF functions or as SETF
+  methods, instead of leaving it explicitly vague.  See also
+  issue SETF-OF-APPLY for one particular case (AREF) where it
+  seems like a good idea to specify that the SETF place must be
+  implemented as a SETF function.
+
+Discussion:

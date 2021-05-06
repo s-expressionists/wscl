@@ -1,0 +1,47 @@
+Status: Passed, Jun 1987
+Issue:        DEFVAR-INIT-TIME
+References:   DEFVAR (p68)
+Category:     CLARIFICATION
+Edit history: 23-Apr-87, Version 1 by Pitman
+              29-Mar-87, Version 2 by Masinter
+
+
+Problem Description:
+
+The description of DEFVAR is not completely clear about the time at which the initialization occurs.
+
+On p68 it says ``VARIABLE is initialized to the result of evaluating the form INITIAL-VALUE unless it already has a value. The INITIAL-VALUE form is not evaluated unless it is used; this fact is useful if evaluation of the INITIAL-VALUE form does something expensive like create a large data structure.''
+
+At least one implementation interpreted the "unless it is used" to mean "unless the variable is used" rather than "unless the initial-value is to be used". The problem is that the "it" is ambiguous. Thus, DEFVAR was interpreted as a kind of lazy initialization that happened upon the variable's first unbound reference. (This interpretation appears to have been further supported by the additional wording in CLtL about not creating expensive structures that are not needed.)
+
+Proposal (DEFVAR-INIT-TIME:NOT-DELAYED):
+
+Clarify that the evaluation of the initial value and the initialization happen at DEFVAR execution time (if at all). The cause of the confusion is the statement that the initial value form is not evaluated unless "it is used".  Better to say that INITIAL-VALUE is evaluated if and only if the variable does not already have a value.  Then there would be no confusion about the time of evaluation.
+
+Rationale:
+
+This clarification follows the intent of the original Common Lisp designers.
+
+Current Practice:
+
+Nearly all implementations implement the proposed interpretation.
+
+Adoption Cost:
+
+None, for most implementations; very small for any the implementation that adopted delayed evaluation.
+
+Benefits:
+
+This clarification makes the semantics of an important primitive more well-defined.
+
+Conversion Cost:
+
+Most users presumably expect the behavior currently in practice in most dialects. There's not a lot of code where the difference comes into play anyway. Presumably the conversion cost is fairly trivial.
+
+Aesthetics:
+
+Being a clarification, this really doesn't have much aesthetic effect.
+
+Discussion:
+
+The cleanup committee supports this clarification.

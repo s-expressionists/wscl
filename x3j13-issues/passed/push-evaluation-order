@@ -1,0 +1,145 @@
+Issue:         PUSH-EVALUATION-ORDER
+References:    CLtL p. 99 (generalized variables)
+               p. 270 (PUSH)
+               All macros that manipulate generalized variables
+               (SETF, PSETF, GETF, REMF, INCF, DECF, PUSH, PUSHNEW,
+               POP, CHECK-TYPE, ASSERT, CTYPECASE, CCASE, SHIFTF,
+               ROTATEF, and all macros defined by DEFINE-MODIFY-MACRO).
+               Issue SETF-FUNCTION-VS-MACRO.
+Category:      CLARIFICATION
+Edit History:  Version 1, 15-Oct-87, Jeff Peck
+               Version 2, 23-Oct-87, Larry Masinter
+               Version 3, 8-Nov-87, David Moon 
+               Version 4, 14-Nov-87, Larry Masinter 
+               Version 5, 25-Nov-87, Larry Masinter
+
+Problem Description:
+
+In the form (PUSH (ref1) (CAR (ref2))) It is unclear whether (ref1) should be evaluated before (ref2). 
+
+CLtL, page 99, in a discussion of generalized variable macros, states: 
+
+"Macros that manipulate generalized variables must guarantee the `obvious' semantics: subforms of generalized-variable references are evaluated ... in exactly the same order as they appear in the *source* program. The expansion of these macros must consist of code that follows these rules or has the same effect as such code.  This is accomplished by introducing temporary variables bound to the subforms of the reference."
+
+This paragraph and a discussion of SETF on the previous pages may also be interpreted as requiring that *all* subforms of such macro calls should be evaluated once, in source order, left to right.
+
+However, CLtL, page 270 states:
+
+"The effect of (PUSH Item Place) is roughly equivalent to
+
+    (SETF Place (CONS Item Place))
+
+except that the latter would evaluate any subforms of Place twice while PUSH takes care to evaluate them only once."
+
+Place and Item appear in different order in the PUSH form and the indicated equivalent SETF form.  Should the PUSH form have primacy over the obvious SETF form with respect to the left-to-right evaluation?
+
+Are all subforms in a macro call guaranteed to be evaluated in order, or only those subforms representing generalized variable references?
+
+The same question arises for other forms which manipulate generalized variables, e.g., PUSHNEW, INCF, DECF, and those defined with DEFINE-MODIFY-MACRO.
+
+Proposal: PUSH-EVALUATION-ORDER:ITEM-FIRST
+
+This proposal is hard to state, although the intent is fairly clear: evalution proceeds from left to right whenever possible. The left-to-right rule does not remove the obligation on writers of macros and define-setf-method  to ensure left-to-right order, however. 
+
+In this proposal, a form is something whose syntactic use is such that it will be evaluated. A "subform" means a form that is nested inside another form -- not any object nested inside a form regardless of syntactic context. 
+
+(1) The evaluation ordering of subforms within a generalized variable reference is determined by the order specified by the second value returned by GET-SETF-METHOD. For all predefined generalized variable references (GETF, LDB), this order of evaluation is exactly left-to-right. When a generalized variable reference is derived from a macro expansion, this rule is applied *after* the macro is expanded to find the appropriate generalized variable reference. 
+
+This is intended to make it clear that if the user writes a DEFMACRO or DEFINE-SETF-METHOD that doesn't preserve order, the the order specified in the user's code holds; e.g., given 
+  (DEFMACRO WRONG-ORDER (X Y) `(GETF ,Y ,X))
+ that (PUSH <value> (WRONG-ORDER <place1> <place2>)).
+
+will evaluate <place2> first and then <place1> because that is the order they are evaluated in the macro expansion.
+ 
+(2) For the macros that manipulate generalized variables (PUSH, PUSHNEW, GETF, REMF, INCF, DECF, SHIFTF, ROTATEF, PSETF, SETF, POP, and those defined with DEFINE-MODIFY-MACRO) the subforms of the macro call are evaluated exactly once in left to right order, with the subforms of the generalized variable references evaluted in the order specified in (1).
+
+PUSH, PUSHNEW, GETF, REMF, INCF, DECF, SHIFTF, ROTATEF, PSETF, POP evaluate all subforms before modifying any of the generalized variable locations. SETF (in the case when the SETF macro has more than two arguments) performs its operation on each pair in sequence, i.e., in (SETF <place1> <value1> <place2> <value2> ...), the subforms of <place1> and <value1> are evaluated, the location specified by <place1> is modified to contain the value returned by <value1>, and then the rest of the SETF form is processed in a like manner.
+
+(3) For the macros CHECK-TYPE, CTYPECASE, and CCASE, subforms of the generalized variable reference are evaluted once as in (1), but may be evaluted again if the type check files in the case of CHECK-TYPE or none of the cases hold in CTYPECASE and CCASE.
+
+(4) For the macro ASSERT, the order of evaluation of the generalized variable references is not specified.  
+
+(Rules 2, 3 and 4 cover all macros defined in Common Lisp that manupulate generalized variable references.)
+
+Examples:
+
+(LET ((REF2 (LIST '())))
+ (PUSH (PROGN (PRINC "1") 'REF-1)
+       (CAR (PROGN (PRINC "2") REF2))))
+
+Under this proposal, this would be required to print 12 and not 21.
+
+(LET (X)
+   (PUSH (SETQ X (LIST 'A))
+         (CAR (SETQ X (LIST 'B))))
+    X)
+
+; the PUSH first evalutes (SETQ X (LIST 'A)) =>  (A)
+; then evaluates (SETQ X (LIST 'B)) => (B)
+; then modifies the CAR of (this latest value) to be ((A) . B).
+; The result is (((A) . B)). 
+
+
+Documentation impact:
+
+PUSH should more appropriately be described as:
+
+"(PUSH Item Place) is roughly equivalent to (SETF Place (CONS Item Place)) except that the subforms of Place are evaluated only once, and Item is evaluated before Place."
+
+The phase "subforms of the reference" which appears several times in CLtL should be made more specific to be "subforms of the macro call," referring to the entire form that calls the generalized-variable manipulating macro.
+
+Rationale:
+
+This is the unstated intention of the page 97-100 discussion of generalized-variable referencing macros, and indeed the intended definition of "obvious semantics" for all macros.
+
+Current practice:
+
+Many implementations do not currently follow this evaluation order. In the form (PUSH Item Place), Lucid, Franz, Kyoto and Xerox evaluate Place then Item. Symbolics evaluates Item then Place.
+
+
+For example, in Franz:
+
+(macroexpand '(push (ref1) (car (ref2))))
+
+    (LET* ((#:G8 (REF2))
+           (#:G7 (CONS (REF1) (CAR #:G8))))
+      (EXCL::.INV-CAR #:G8 #:G7)) 
+    
+In Symbolics Common Lisp, it returns:
+    
+    (LET* ((#:G5 (REF1))
+           (#:G4 (REF2)))
+      NIL
+      (SYS:RPLACA2 #:G4 (VALUES (CONS #:G5 (CAR #:G4)))))
+
+
+Cost to implementors:
+
+Minimal, PUSH etc. could simply be defined by the appropriate macros.
+
+Cost to users:
+
+No currently portable program should be affected. However, this is a minor incompatible change for some implementations. No serious performance impact is expected; while some macro expansions may appear to be more verbose, most compilers deal reasonably with the required order of evaluation.
+
+Benefits:
+
+The implementation and semantics of PUSH become more well specified. This removes a source of non-portability, abeit likely rare.
+
+Esthetics:
+
+Common Lisp defines order of evaluation as left-to-right; this clarification ensures consistency across the language. 
+
+Discussion:
+
+This seems to be the intent of most of the relevant language in CLtL.
+
+For example, the second to last paragraph on page 99
+
+"As an example of these semantic rules, in the generalized-variable reference (setf reference value), the value form must be evaluated after all the subforms of the reference because the value form appears to the right of them."
+
+makes it clear that in this context the phrase "generalized-variable reference" was meant to refer to the entire macro call, not just the Place, and that order of evaluation rules are not limited to subforms of Places.  We hope the specification should adopt more consistent terminology.
+
+Note that DEFINE-SETF-METHOD is immune to the exception specified about DEFMACRO and DEFINE-SETF-METHOD, because since CLtL p.103 says about DEFINE-SETF-METHOD: 
+
+"This binding permits the body forms to be written without regard for order-of-evaluation issues."
+

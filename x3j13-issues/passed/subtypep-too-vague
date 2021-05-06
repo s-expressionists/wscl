@@ -1,0 +1,138 @@
+Status:	Passed, as amended, Jun89 X3J13
+Issue:		SUBTYPEP-TOO-VAGUE
+References:	CLtL p. 72-73
+Category:	CLARIFICATION
+Edit History:   Version 1, 11 Jul 1988 (Sandra Loosemore)
+                Version 2, 19 Jul 1988 (Sandra Loosemore)
+                Version 3,  6-Oct-88 (Masinter)
+                Version 4,  7-Oct-88 (Masinter, per Moon's comments)
+		Version 5, 15-Mar-89 Steele
+		Version 6, 2-Jul-89 Masinter (as per Jun89X3J13)
+Problem Description:
+
+[From version 4]
+
+The description of SUBTYPEP allows it to return a second value of NIL
+when the relationship between the two types cannot be determined.  In
+some cases this is a reasonable thing to do because it is impossible
+to tell (if the SATISFIES type specifier is involved), and in other
+cases the relationships between types are not well-defined (for
+example, the VALUES type specifier or the list form of the FUNCTION
+type specifier). 
+
+Some implementations, however, have apparently interpreted this to
+mean that it is permissible for SUBTYPEP to "give up" and return a
+second value of NIL in some cases where it actually would be possible
+to determine the relationship.  This makes it difficult to depend on
+subtype relationships in portable code.
+
+[Addition for version 5]
+
+There are two problems with version 4.  First is that of the first three
+bulleted points in the version 4 proposal:
+
+    * Clarify that SUBTYPEP will return a second value of NIL
+    only when either of the type specifiers involves the SATISFIES, NOT, 
+    AND, OR, MEMBER. SUBTYPEP will not return a second
+    value of NIL when both arguments involve only the words in Table 4-1, or
+    names of DEFSTRUCT- or DEFCLASS-defined types, or user-defined deftypes
+    that expand into only those words and/or names.
+
+    * SUBTYPEP should signal an error when handed (for either argument)
+    a type specifier that involves VALUES or the list form of the FUNCTION
+    type.
+
+    * SUBTYPEP must always return values T T in the case where the two
+    type specifiers (or their expansions) are EQUAL.
+
+any two have significant overlap, and indeed all three can overlap;
+version 4 contained no indication of how this conflict should be resolved.
+
+Second is that version 4 calls for SUBTYPEP to signal an error (at least at
+high safety)even when the arguments are valid type specifiers, but this can
+make it harder to use SUBTYPEP.  These are cases that returning NIL NIL
+was supposed to cover.
+
+This version replaces the three bulleted points above with a single point
+and some observations about its consequences.  This version eliminates
+the requirement to signal an error.
+
+
+Proposal: SUBTYPEP-TOO-VAGUE:CLARIFY-MORE
+
+A type specifier "involves" a word like SATISFIES, MEMBER, NOT, etc.
+if it either contains it directly as a type specifier, 
+or as the result of expansion of a DEFTYPE  defined type specifier. 
+(While the type specifiers listed in CLtL Table 4-1 and names of
+DEFSTRUCT or DEFCLASS-defined types may, in some cases, be implemented
+in terms of DEFTYPE, they are to be regarded for this purpose as not
+being "user-defined". Therefore, SUBTYPEP must regard elements as
+primitive with respect to the question of returning NIL NIL.)
+
+* Clarify that SUBTYPEP is permitted to return NIL NIL only when
+  at least one argument involves SATISFIES, AND, OR, NOT, MEMBER,
+  VALUES, or the list form of FUNCTION.
+
+  Note that one consequence of this is that if neither argument
+  involves any of these type specifiers, then SUBTYPEP is obliged
+  to determine the relationship accurately.  In particular, SUBTYPEP
+  must return T T if the arguments are EQUAL and do not involve
+  any of the above-stated type specifiers.
+
+* Clarify that the relationships between types reflected by SUBTYPEP
+are those specific to the particular implementation.  For example, if
+an implementation supports only a single type of floating-point numbers,
+in that implementation (SUBTYPEP 'FLOAT 'LONG-FLOAT) would return T T
+(since the two types would be identical).
+
+Rationale:
+
+Specifying the behavior of SUBTYPEP makes it more useful. Otherwise,
+programs cannot rely on any more than NIL NIL as return values.
+
+It is generally conceded that it is impossible to determine the
+relationships between types defined with the SATISFIES specifier.
+MEMBER, AND, OR, and NOT are messy to deal with.   
+
+Current Practice:
+
+The implementation of SUBTYPEP in (the original) HPCL does not try to
+expand type specifiers defined with DEFTYPE and does not recognize
+EQUAL type specifiers as being equivalent.  Most other implementations
+appear to be substantially in conformance with the proposal.
+
+Cost to implementors:
+
+Some implementations will have to rewrite and/or extend parts of SUBTYPEP.
+
+Cost to users:
+
+Its hard to imagine a portable program that depends heavily
+on SUBTYPEP. This proposal does not require any implementation
+to "handle" fewer cases of SUBTYPEP.
+
+Benefits:
+
+An area of confusion in the language is cleared up.  Usages of SUBTYPEP
+will be more portable.
+
+Discussion:
+
+The handling of FLOAT and SINGLE-FLOAT  appeared to be the 
+consensus from a discussion on the common-lisp mailing list some
+ time ago.
+
+It would not be too onerous to require implementations to handle
+the cases where one but not the other type specifier involves
+OR, AND, NOT or MEMBER, but the specification becomes 
+cumbersome.
+
+A related issue is clarifying what kinds of type specifiers must be
+recognized by functions such as MAKE-SEQUENCE and COERCE.  For example,
+HPCL complains that (SIMPLE-ARRAY (UNSIGNED-BYTE *) (*)) is not a valid
+sequence type when passed to MAKE-SEQUENCE, although SUBTYPEP does
+recognize it to be a subtype of SEQUENCE.  Should this proposal be
+extended to deal with these issues, or is another proposal in order?
+
+The rules for comparing the various type specifiers (such as ARRAY)
+need to be spelled out in detail.

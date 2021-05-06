@@ -1,0 +1,26 @@
+The cleanup committee is open to members of X3J13  who want to
+work on it. I've generally discouraged passive observers. X3J13 is
+open to those who would join; I am less clear about the procedure
+for joining.
+
+Decisions are made by consensus when we can get it. Sometimes the only consensus
+is "we all agree that this writeup fairly presents the pros and cons of the
+issue". We've brought things for a vote to the general X3J13 where only one
+committee member was in favor of the proposal.  Do not assume that
+we endorse an issue unless the Discussion section says that we do.
+
+Once a cleanup item is released by the cleanup committee, it is brought
+for a vote at X3J13. Controversial issues are discussed, amended, tabled,
+and otherwise modified; some issues have been "sent back to committee"
+more that 6 times.
+
+Once a cleanup proposal has "passed", its only legal effect is to direct
+the editorial committee to incorporate the proposal body into the text
+of the draft being prepared; the examples, test cases, discussion do not
+form a part of the proposal.
+
+Once there is a draft standard, it will be available for public review by
+the user community at large; the ANSI and ISO process calls for a formal
+review process.
+
+

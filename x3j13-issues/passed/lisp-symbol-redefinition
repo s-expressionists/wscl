@@ -1,0 +1,147 @@
+Status:	       Version 8 passed (superseding version 6), 6/8/90
+
+Forum:         Cleanup
+Issue:         LISP-SYMBOL-REDEFINITION
+ 
+References:    Cleanup issue PACKAGE-CLUTTER
+               CLtL pp 67-69 Defining named functions
+	       CLtL pp 101-106 Generalized variables
+	       Cleanup issue FUNCTION-NAME
+	       Condition System, version 18
+	       CLOS specification, 88-002R
+ 
+Category:      CLARIFICATION
+ 
+Edit history:  Masinter, Version 1, 17-Sep-88 from (Kolb, 14-Aug-87)
+               Masinter, Version 2, 7-Oct-88
+               Masinter, Version 3,  7-Oct-88, fix typos
+               van Roggen, Version 4, 13-Oct-88, undefined, not unspecified
+               Masinter, Version 5, 22-Nov-88, add more cases
+	       Masinter, Version 6,  9-Apr-89, make Mar 89 X3j13 amendments
+	       Barrett, Version 7, 3-Jan-90, add more cases
+	       Barrett, Version 8, 9-Jan-90, make Jun 90 X3J13 ammendments
+ 
+Problem description:
+ 
+Is it legal to redefine Common Lisp functions? There is no explicit
+prohibition, and many implementations do allow redefinition of
+functions in the Lisp package.
+ 
+CLtL only says that special forms can not be redefined. But this doesn't 
+solve the general problem of redefining system functions.
+ 
+Proposal LISP-SYMBOL-REDEFINITION:MAR89-X3J13
+
+Except where explicitly allowed, the consequences are undefined if any of the
+following actions are performed on symbols exported from the COMMON-LISP
+package:
+
+1. Binding or altering its value (lexically or dynamically)
+2. Defining, undefining, or binding it as a function
+3. Defining, undefining, or binding it as a macro or compiler-macro
+4. Defining it as a type specifier (defstruct, defclass, define-condition,
+   deftype)
+5. Defining it as a structure (defstruct)
+6. Defining it as a declaration (declaration, define-declaration)
+7. Using it as a symbol macro
+8. Altering its print name (this may already be prohibited)
+9. Altering its package
+10. Tracing it
+11. Declaring or proclaiming it special
+12. Declaring or proclaiming its type or ftype
+13. Uninterning or unexporting it from the package COMMON-LISP
+14. Defining a setf method for it (defsetf, define-setf-method, defining,
+    undefining, or binding the function named (SETF symbol))
+15. Defining it as a method combination type
+16. Using it as the class-name argument to SETF of FIND-CLASS
+
+If such a symbol is not globally defined as a variable or a constant, it is
+allowed to lexically bind it as a variable or as a symbol-macro and declare the
+type of that binding.
+
+If such a symbol is not defined as a function, macro, or special form,
+it is allowed to (lexically) bind it as a function and to declare the
+ftype of that binding and to trace that binding.
+
+If such a symbol is not defined as a function, macro, or special form,
+it is allowed to (lexically) bind it as a macro.
+
+If such a symbol does not have a setf method defined for it, it is allowed to
+(lexically) bind the function named (SETF symbol).
+
+Examples:
+ 
+The behavior of the construct:
+ 
+(FLET ((OPEN (filename &key direction) (format t "Open called....") 
+			(OPEN filename :direction direction)))
+    (with-open-file (x "frob" :direction ':output) 
+		(format t "was Open called?")))
+ 
+is undefined; for example, the macro expansion of with-open-file might refer
+to the OPEN function and might not.
+ 
+(DEFUN CAR (X) (CDR X))
+ 
+might signal an error.
+ 
+Rationale:
+ 
+This proposal is the only simple resolution of the problem description that
+we can imagine that is consistent with current implementation techniques.
+ 
+Allowing arbitrary redefinition of symbols in the system would place
+severe restrictions on implementations not to actually use those symbols in
+macro expansions of other symbols, in function calls, etc. While some
+looser restrictions might do for any particular Common Lisp implementation,
+there seems to be no good way to distinguish between those symbols that are
+redefinable and those that are not.
+ 
+In general, programs can redefine functions safely by creating new symbols in
+their own package, possibly shadowing the name.
+ 
+Current practice:
+ 
+Many Lisp environments have some mechanism for warning about redefinition of
+Lisp symbols and preventing accidental redefinition while allowing it where
+necessary (e.g., to patch the Lisp system itself, fix a bug, add an
+optimization.)
+ 
+Fewer check for lexical redefinition, since such redefinition is not as
+dangerous. Certainly, there are some symbols that are never used in macro
+expansions of the standard Common Lisp macros. However, implementations do
+differ on the behavior of macro expansions.
+ 
+Cost to Implementors:
+ 
+This proposal clarifies the status quo -- that the consequences are undefined.
+It allows and encourages implementors to check for such redefinition, but does
+not require it.
+ 
+Cost to Users:
+ 
+This proposal clarifies that implementations are free to check for a condition
+that they might not have before, and may clarify that some current user code is
+non-portable.
+ 
+Benefits:
+ 
+This issue frequently arises. Adopting this proposal would clarify a frequent
+source of question about Common Lisp. 
+ 
+Cost of non-adoption:
+ 
+Continued questions.
+ 
+Esthetics:
+ 
+Disallowing all redefinition is the simplest way of disallowing the ones that
+really are trouble. 
+ 
+Discussion:
+ 
+At the March 89 X3j13 meeting, a proposed additional constraint 
+("Altering its property list") was removed. Presumably this means
+that conformal programs are allowed to alter the property list of
+ symbols in the COMMON-LISP package.
+

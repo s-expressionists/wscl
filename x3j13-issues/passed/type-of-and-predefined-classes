@@ -1,0 +1,374 @@
+Issue:          TYPE-OF-AND-PREDEFINED-CLASSES
+Forum:          Cleanup
+References:     Draft 8/29/89, sections 2.2 and 2.3
+                Draft 8/29/89, TYPE-OF
+                Issue TYPE-OF-UNDERCONSTRAINED
+                Issue DATA-TYPES-HIERARCHY-UNDERSPECIFIED
+                Issue FUNCTION-TYPE
+                Issue FLOATING-POINT-CONDITION-NAMES
+                Issue READER-ERROR
+                Condition System, Version 18
+Category:       Change
+Edit History:   Version 1, 1/2/90 by Kim A. Barrett
+                Version 2, 2/16/90 by Kim A. Barrett (from Moon's comments)
+
+Problem Description:
+
+ In the 8/29/89 Draft there are three different lists of built-in type
+ specifiers, all of which are slightly different.  Since some of the
+ differences seem to be simply oversights, it would probably be helpful if they
+ could be merged together. 
+
+ The locations of these lists in the Draft are (1) Section 2.2, in the
+ description of the type disjointness requirements in the subsection entitled
+ "Type Relationships", (2) Section 2.3, in Figure 2-13 "Classes that correspond
+ to pre-defined type specifiers", and (3) in the description of the function
+ TYPE-OF. 
+
+ The following table indicates which type names do not appear in all three
+ places.  The groupings were made to facilitate the discussion below. 
+
+                        (1)            (2)             (3)
+  Group 1
+  CONDITION             x                               x
+  LIST                  x               x
+  LOGICAL-PATHNAME
+  REAL                  x               x
+  RESTART               x                               x
+  Group 2
+  SHORT-FLOAT           special                         x
+  SINGLE-FLOAT          special                         x
+  DOUBLE-FLOAT          special                         x
+  LONG-FLOAT            special                         x
+  Group 3
+  BROADCAST-STREAM      x
+  CONCATENATED-STREAM   x
+  ECHO-STREAM           x
+  FILE-STREAM           x
+  STRING-STREAM         x
+  SYNONYM-STREAM        x
+  TWO-WAY-STREAM        x
+  Group 4
+  SIMPLE-BIT-VECTOR     x
+  SIMPLE-STRING         x
+  SIMPLE-VECTOR         x
+  Group 5
+  SERIOUS-CONDITION     x
+  SIMPLE-CONDITION      x
+  WARNING               x
+  Group 6
+  FIXNUM                x
+  BIGNUM                x
+
+Proposal (TYPE-OF-AND-PREDEFINED-CLASSES:UNIFY-AND-EXTEND)
+
+ 1. Make the following changes to the disjointness requirements specified in
+ Section 2.2, subsection Type Relationships.  This supersedes issue
+ DATA-TYPES-HIERARCHY-UNDERSPECIFIED and the corresponding sections of issue
+ FUNCTION-TYPE.
+
+ 1a. Change the third bullet to
+
+   "Among the types which correspond to predefined classes (listed in Figure
+    {insert figure number here, currently 2-13 }) only the subtype
+    relationships specified for those classes may exist.  Any type created by
+    DEFSTRUCT, DEFCLASS, or DEFINE-CONDITION is disjoint from any of the
+    listed types and from any other type created by these forms, except for
+    type relationships explicitly established by specifying superclasses in
+    DEFCLASS or DEFINE-CONDITION, or through the use of the :include option of
+    DEFSTRUCT."
+
+ 1b. Strike bullets 4-6 and 21 (since they now follow from bullet 3).
+
+ 2. Make the following changes to the constraints on TYPE-OF.
+
+ 2a. Change the first constraint on TYPE-OF to be
+
+   "For any object for which (TYPEP object type) is true when type is one of
+    the types for which there is a corresponding predefined class listed in
+    Figure { insert figure number here, currently 2-13 }, the result of
+    TYPE-OF is a type specifier for which (SUBTYPEP (TYPE-OF object) type)
+    returns T T, i.e., either the type or a subtype of it (a subtype that the
+    implementation's SUBTYPEP can recognize)."
+
+ 2b. Change the fifth constraint on TYPE-OF to also include condition types
+ defined with DEFINE-CONDITION and objects created with MAKE-CONDITION.
+
+ 3. Make the following additions to the set of predefined classes.
+
+ 3a. Add the following condition classes, with the specified class precedence
+ lists:
+
+  ARITHMETIC-ERROR (ARITHMENTIC-ERROR ERROR SERIOUS-CONDITION CONDITION T)
+  CELL-ERROR (CELL-ERROR ERROR SERIOUS-CONDITION CONDITION T)
+  CONDITION (CONDITION T)
+  CONTROL-ERROR (CONTROL-ERROR ERROR SERIOUS-CONDITION CONDITION T)
+  DIVISION-BY-ZERO (DIVISION-BY-ZERO ARITHMENTIC-ERROR ERROR SERIOUS-CONDITION
+                        CONDITION T)
+  END-OF-FILE (END-OF-FILE STREAM-ERROR ERROR SERIOUS-CONDITION CONDITION T)
+  ERROR (ERROR SERIOUS-CONDITION CONDITION T)
+  FILE-ERROR (FILE-ERROR ERROR SERIOUS-CONDITION CONDITION T)
+  FLOATING-POINT-INEXACT (FLOATING-POINT-INEXACT ARITHMENTIC-ERROR ERROR
+                        SERIOUS-CONDITION CONDITION T)
+  FLOATING-POINT-INVALID-OPERATION (FLOATING-POINT-INVALID-OPERATION
+                        ARITHMENTIC-ERROR ERROR SERIOUS-CONDITION CONDITION T)
+  FLOATING-POINT-OVERFLOW (FLOATING-POINT-OVERFLOW ARITHMENTIC-ERROR ERROR
+                        SERIOUS-CONDITION CONDITION T)
+  FLOATING-POINT-UNDERFLOW (FLOATING-POINT-UNDERFLOW ARITHMENTIC-ERROR ERROR
+                        SERIOUS-CONDITION CONDITION T)
+  PACKAGE-ERROR (PACKAGE-ERROR ERROR SERIOUS-CONDITION CONDITION T) 
+  PARSE-ERROR (PARSE-ERROR STREAM-ERROR ERROR SERIOUS-CONDITION CONDITION T)
+  PRINT-NOT-READABLE (PRINT-NOT-READABLE ERROR SERIOUS-CONDIITON CONDITION T)
+  PROGRAM-ERROR (PROGRAM-ERROR ERROR SERIOUS-CONDITION CONDITION T)
+  SERIOUS-CONDITION (SERIOUS-CONDITION CONDITION T)
+  SIMPLE-CONDITION (SIMPLE-CONDITION CONDITION T)
+  SIMPLE-ERROR (SIMPLE-ERROR SIMPLE-CONDITION ERROR SERIOUS-CONDITION
+                        CONDITION T)
+  SIMPLE-TYPE-ERROR (SIMPLE-TYPE-ERROR SIMPLE-CONDITION TYPE-ERROR ERROR
+                        SERIOUS-CONDITION CONDITION T)
+  SIMPLE-WARNING (SIMPLE-WARNING SIMPLE-CONDITION WARNING CONDITION T)
+  STORAGE-CONDITION (STORAGE-CONDITION SERIOUS-CONDITION CONDITION T)
+  STREAM-ERROR (STREAM-ERROR ERROR SERIOUS-CONDITION CONDITION T)
+  STYLE-WARNING (STYLE-WARNING WARNING CONDITION T)
+  TYPE-ERROR (TYPE-ERROR ERROR SERIOUS-CONDITION CONDITION T)
+  UNBOUND-SLOT (UNBOUND-SLOT CELL-ERROR ERROR SERIOUS-CONDITION CONDITION T)
+  UNBOUND-VARIABLE (UNBOUND-VARIABLE CELL-ERROR ERROR SERIOUS-CONDITION
+                        CONDITION T)
+  UNDEFINED-FUNCTION (UNDEFINED-FUNCTION CELL-ERROR ERROR SERIOUS-CONDITION
+                        CONDITION T)
+  WARNING (WARNING CONDITION T)
+
+ 3b. Add the class RESTART, with a class precedence list of (RESTART T).
+
+ 3c. Add the class LOGICAL-PATHNAME, with a class precedence list of
+ (LOGICAL-PATHNAME PATHNAME T).
+
+ 3d. Add the following classes with the specified class precedence lists:
+  BROADCAST-STREAM              (BROADCAST-STREAM STREAM T)
+  CONCATENATED-STREAM           (CONCATENATED-STREAM STREAM T)
+  ECHO-STREAM                   (ECHO-STREAM STREAM T)
+  FILE-STREAM                   (FILE-STREAM STREAM T)
+  STRING-STREAM                 (STRING-STREAM STREAM T)
+  SYNONYM-STREAM                (SYNONYM-STREAM STREAM T)
+  TWO-WAY-STREAM                (TWO-WAY-STREAM STREAM T)
+ Remove the 23rd bullet from Section 2.2, subsection Type Relationships,
+ which lists the above types as being disjoint subtypes of STREAM.
+
+ 3e. Add the following classes from the CLOS specification, with the specified
+ class precedence lists:
+  BUILT-IN-CLASS                (BUILT-IN-CLASS CLASS STANDARD-OBJECT T)
+  CLASS                         (CLASS STANDARD-OBJECT T)
+  GENERIC-FUNCTION              (GENERIC-FUNCTION FUNCTION T)
+  METHOD                        (METHOD T)
+  METHOD-COMBINATION            (METHOD-COMBINATION T)
+  STANDARD-CLASS                (STANDARD-CLASS CLASS STANDARD-OBJECT T)
+  STANDARD-GENERIC-FUNCTION     (STANDARD-GENERIC-FUNCTION GENERIC-FUNCTION
+                                        FUNCTION T)
+  STANDARD-METHOD               (STANDARD-METHOD METHOD STANDARD-OBJECT T)
+  STANDARD-OBJECT               (STANDARD-OBJECT T)
+  STRUCTURE-CLASS               (STRUCTURE-CLASS CLASS STANDARD-OBJECT T)
+  STRUCTURE-OBJECT              (STRUCTURE-OBJECT T)
+
+ 4. Allow implementations to modify the class precedence lists of classes
+ which are not specified to include either STANDARD-OBJECT or STRUCTURE-OBJECT
+ to include those classes, placed before the class T but after all of the
+ other specified classes.
+
+Proposal (TYPE-OF-AND-PREDEFINED-CLASSES:FLOAT-SUBCLASSES)
+
+ Add the following to TYPE-OF-AND-PREDEFINED-CLASSES:UNIFY-AND-EXTEND:
+
+ 3f. Add the following subclasses of FLOAT:  SHORT-FLOAT, SINGLE-FLOAT,
+ DOUBLE-FLOAT, LONG-FLOAT.  It is implementation-defined which among these
+ classes are pairwise disjoint.  If there are fewer than four internal
+ representations for floats, then some of these classes will not have proper
+ names.  Instead, the rules for handling fewer than four internal
+ representations (described in Section 2.2 subsection Data Type Definition) are
+ used to determine the principal type name, for which there will be a class
+ which has a proper name.  The other types which share the internal
+ representation will all share the principal class.  The class precedence list
+ for the properly named classes are 
+
+    (class-name FLOAT REAL NUMBER T)
+
+ where 'class-name' is the name of the class.  Thus we get the following rules
+ to handle a situation where there are fewer than four internal representations
+ of floats. 
+
+    1. If there is only one internal representation for floats, then there is
+    one class, named SINGLE-FLOAT.  (FIND-CLASS class-name) returns this class
+    for all four of the subclasses of FLOAT.  The class precedence list for
+    this class is (SINGLE-FLOAT FLOAT REAL NUMBER T).
+
+    2. If there are two internal representations for floats, then they can be
+    arranged in either of the following ways: 
+
+    * Two classes are provided, named SHORT-FLOAT and SINGLE-FLOAT.
+      (FIND-CLASS class-name) returns the class SINGLE-FLOAT for any of the
+      names SINGLE-FLOAT, DOUBLE-FLOAT, or LONG-FLOAT.  The class precedence
+      lists of these classes are:  
+
+        SHORT-FLOAT     (SHORT-FLOAT FLOAT REAL NUMBER T)
+        SINGLE-FLOAT    (SINGLE-FLOAT FLOAT REAL NUMBER T)
+
+    * Two classes are provided, names SINGLE-FLOAT and DOUBLE-FLOAT.
+      (FIND-CLASS class-name) returns the class SINGLE-FLOAT for either of the
+      names SHORT-FLOAT or SINGLE-FLOAT.  (FIND-CLASS class-name) returns the
+      class DOUBLE-FLOAT for either of the names DOUBLE-FLOAT or LONG-FLOAT.
+      The class precedence lists for these classes are: 
+
+        SINGLE-FLOAT    (SINGLE-FLOAT FLOAT REAL NUMBER T)
+        DOUBLE-FLOAT    (DOUBLE-FLOAT FLOAT REAL NUMBER T)
+
+    3. If there are three internal representations for floats, then they can be
+    arranged in either of the following ways:
+
+    * Three classes are provided, named SHORT-FLOAT, SINGLE-FLOAT, and
+      DOUBLE-FLOAT.  (FIND-CLASS class-name) returns the class DOUBLE-FLOAT for
+      either of the names DOUBLE-FLOAT or LONG-FLOAT.  The class precedence
+      lists for these classes are: 
+
+        SHORT-FLOAT     (SHORT-FLOAT FLOAT REAL NUMBER T)
+        SINGLE-FLOAT    (SINGLE-FLOAT FLOAT REAL NUMBER T)
+        DOUBLE-FLOAT    (DOUBLE-FLOAT FLOAT REAL NUMBER T)
+
+    * Three classes are provided, named SINGLE-FLOAT, DOUBLE-FLOAT, and
+      LONG-FLOAT.  (FIND-CLASS class-name) returns the class SINGLE-FLOAT for
+      either of the names SHORT-FLOAT or SINGLE-FLOAT.  The class precedence
+      lists for these classes are: 
+
+        SINGLE-FLOAT    (SINGLE-FLOAT FLOAT REAL NUMBER T)
+        DOUBLE-FLOAT    (DOUBLE-FLOAT FLOAT REAL NUMBER T)
+        LONG-FLOAT      (LONG-FLOAT FLOAT REAL NUMBER T)
+
+Proposal (TYPE-OF-AND-PREDEFINED-CLASSES:TYPE-OF-HANDLES-FLOATS)
+
+ Add the following to TYPE-OF-AND-PREDEFINED-CLASSES:UNIFY-AND-EXTEND:
+
+ 2c. Add the following additional constraint on TYPE-OF.
+
+  "For any object for which (TYPEP object type) is true when type is one of
+   the types SHORT-FLOAT, SINGLE-FLOAT, DOUBLE-FLOAT, or LONG-FLOAT, the
+   result of TYPE-OF is a type specifier for which (SUBTYPEP (TYPE-OF object)
+   type) returns T T, i.e, either the type or a subtype of it (a subtype that
+   the implementation's SUBTYPEP can recognize)."
+
+Rationale:
+
+ Changing the list of disjoint types and the first constraint on TYPE-OF to
+ reference the table of predefined classes merges three places with almost
+ identical information, resulting in simplification and improved cohesion.
+ Note that one effect of this is to remove the subtypes of FLOAT (SHORT-FLOAT,
+ SINGLE-FLOAT, DOUBLE-FLOAT, and LONG-FLOAT) from the list of type specifiers
+ mentioned in the first constraint on TYPE-OF (but see the subproposals
+ FLOAT-SUBCLASSES and TYPE-OF-HANDLES-FLOATS), and to add the types LIST
+ (which is not necessary, since CONS and NULL form an exhaustive partition of
+ LIST) and REAL (which is probably missing due to oversight).
+
+ Adding DEFINE-CONDITION to the third bullet brings it inline with the intent
+ of issue CLOS-CONDITIONS.
+
+ Adding DEFINE-CONDITION and MAKE-CONDITION to the fifth constraint brings it
+ inline with the intent of issue CLOS-CONDITIONS.
+
+ Adding classes for the predefined condition types matches up with the
+ disjointness requirements specified by the Condition System, and corresponds
+ to the intent of issue CLOS-CONDITIONS.  It could be argued that those two
+ places already mandate this addition, but this proposal ensures that we are
+ agreed on that.
+
+ Adding RESTART as a predefined class matches up with the disjointness
+ requirements specified by the Condition System.  It could be argued that
+ the Condition System already mandates the addition of this class, but this
+ proposal ensures that we are agreed on that.
+
+ Adding LOGICAL-PATHNAME as a predefined class seems inline with the
+ expressed intent for making it a type.  It is sufficiently new that it may
+ simply have not been propagated to all the places that should mention it.
+
+ Adding the stream subclasses seems reasonable, since we are already
+ requiring them to be disjoint subtypes of STREAM.
+
+ Adding the CLOS classes fixes an oversight.
+
+ Allowing implementations to add STANDARD-OBJECT or STRUCTURE-OBJECT to the
+ class precedence lists allows them to implement any of the predefined classes
+ using the standard metaclasses STANDARD-CLASS and STRUCTURE-CLASS.
+
+ The two subproposals, FLOAT-SUBCLASSES and TYPE-OF-HANDLES-FLOATS, are two
+ different ways we could undo the removal of the subtypes of FLOAT from the
+ list of types mentioned by the first constraint on TYPE-OF.
+
+Current Practice:
+
+ Up to some "bugs" because they haven't caught up with X3J13 on some of
+ these yet, IIM mostly implements this proposal.
+
+ Other implementations were not surveyed.
+
+Cost to Implementors:
+
+ Redirecting the disjointness requirements to reference the list of
+ predefined classes and modifying the constraints on TYPE-OF primarily
+ affects documentation, especially in the writing of the Standard.  The
+ requirements on implementors are largely unchanged.
+
+ The effect of adding the various classes are probably minimal.
+ Implementations which already have the STREAM subtypes as distinguished
+ types can probably easily support them as classes too, since they are
+ probably implemented using DEFSTRUCT, CLOS, FLAVORS, or some other similar
+ mechanism, and making TYPE-OF return the right type name in this case is
+ probably trivial.  Implementations which don't have these stream types
+ already have some work to do, and the necessary support for the types will
+ probably produce the necessary support for the other stuff.  Similarly for
+ CONDITION and its subtypes, LOGICAL-PATHNAME, RESTART, and the CLOS classes.
+
+Cost to Users:
+
+ Minimal.  Many of the types mentioned here are new.  The changes to TYPE-OF
+ would probably be an improvement for most users.
+
+Benifits:
+
+ Fewer distributed tables which need to be maintained while writing the
+ Standard.
+
+Discussion:
+
+ An alternative to the unification would be to fix TYPE-OF by adding REAL to
+ the list of built-in types referenced by the first constraint, to modify the
+ fifth constraint to mention DEFINE-CONDITION, and to modify the third bullet
+ of the type relationships to also mention DEFINE-CONDITION.
+
+ A consequence of this proposal is that the following type names do not have
+ associated classes.  Perhaps we should add a table to the standard which
+ lists these as specifically not required to have associated classes (though
+ they may be classes in some implementations).
+
+ Subtypes of INTEGER            Subtypes of CHARACTER
+   BIGNUM                         BASE-CHARACTER
+   BIT                            EXTENDED-CHARACTER
+   FIXNUM                         STANDARD-CHAR
+   SIGNED-BYTE
+   UNSIGNED-BYTE
+
+ Subtypes of ARRAY              Subtypes of FUNCTION            Other
+   BASE-STRING                    COMPILED-FUNCTION               ATOM
+   SIMPLE-ARRAY                                                   NIL
+   SIMPLE-BASE-STRING           Subtypes of SYMBOL
+   SIMPLE-BIT-VECTOR              KEYWORD
+   SIMPLE-STRING
+   SIMPLE-VECTOR
+
+ Subtypes of FLOAT (if FLOAT-SUBCLASSES is not adopted)
+   SHORT-FLOAT
+   SINGLE-FLOAT
+   DOUBLE-FLOAT
+   LONG-FLOAT
+
+ Barrett isn't entirely happy with the class precedence lists specified for
+ the CLOS classes.  He feels that they might be overly constrained in some
+ cases.  For example, it should be possible to have an implementation make
+ STRUCTURE-CLASS a trivial subclass of STANDARD-CLASS, define DEFSTRUCT
+ (without the :type option) in terms of DEFCLASS, and make STRUCTURE-OBJECT be
+ a subclass of STANDARD-OBJECT.

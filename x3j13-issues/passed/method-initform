@@ -1,0 +1,145 @@
+Date: Fri, 8 Jun 90 20:00 EDT
+From: David A. Moon <Moon@STONY-BROOK.SCRC.Symbolics.COM>
+Subject: Issue: METHOD-INITFORM (Version 5)
+To: X3J13@mcc.com
+Message-ID: <19900609000021.5.MOON@KENNETH-WILLIAMS.SCRC.Symbolics.COM>
+
+This version contains the corrections to current practice noted at
+the X3J13 meeting today.
+
+METHOD-INITFORM:ALLOW-CALL-NEXT-METHOD failed 0-11
+METHOD-INITFORM:FORBID-CALL-NEXT-METHOD passed 13-0
+
+Issue:         METHOD-INITFORM
+
+References:    88-002R p.2-12
+
+Category:      CLARIFICATION
+
+Edit history:  29-Apr-90, Version 1 by Moon
+               30-Apr-90, Version 2 by Moon (update current practice)
+               4-May-90, Version 3 by Moon (update discussion and current
+                                            practice)
+               5-Jun-90, Version 4 by Moon (update current practice)
+               8-Jun-90, Version 5 by Moon (update current practice)
+
+Problem description:
+
+  Should CALL-NEXT-METHOD and NEXT-METHOD-P be allowed in initforms for
+  optional and keyword parameters and &AUX variables of methods?  The
+  document currently allows them only in the body of a method, not in forms
+  embedded in the lambda-list, although it takes a close reading of the
+  document to discern this.
+
+  There are two proposals in this issue.
+
+  This is Symbolics issue #15.
+
+Proposal (METHOD-INITFORM:ALLOW-CALL-NEXT-METHOD):
+
+  Expand the lexical scope of CALL-NEXT-METHOD and NEXT-METHOD-P to include
+  all forms in a method, including forms embedded in the lambda-list.
+
+Rationale:
+
+  This seems more natural and consistent.
+
+Proposal (METHOD-INITFORM:FORBID-CALL-NEXT-METHOD):
+          
+  The lexical scope of CALL-NEXT-METHOD and NEXT-METHOD-P includes only
+  forms in the body of a method.
+
+Rationale:
+
+  This is the status quo and is easier to implement.
+
+Examples:
+
+  (defmethod foo ((x myclass) &aux (y (call-next-method)))
+    (if (null y)
+        (zzz)
+        (list ':baz y)))
+  ;is briefer than
+  (defmethod foo ((x myclass))
+    (let ((y (call-next-method)))
+      (if (null y)
+          (zzz)
+          (list ':baz y))))
+
+  (defmethod countem ((x myclass) &optional (local (not (next-method-p))))
+    (let ((accum (if local 0 (call-next-method))))
+      (dolist (y (frobs x))
+        (incf accum y))
+      accum))
+  ;is briefer than
+  (defmethod countem ((x myclass) &optional (local nil local-p))
+    (let ((accum (if (if local-p local (not (next-method-p)))
+                     0 (call-next-method))))
+      (dolist (y (frobs x))
+        (incf accum y))
+      accum))
+
+  (defmethod jack-of-confusion ((x myclass))
+     (defmethod ace-of-confusion ((x myclass)
+                                  &optional (y (call-next-method)))
+       (borf x y))
+     (ace-of-confusion x))
+  ;In METHOD-INITFORM:ALLOW-CALL-NEXT-METHOD, the default value for y
+  ;is the value returned by an ace-of-confusion method.
+  ;In METHOD-INITFORM:FORBID-CALL-NEXT-METHOD, the default value for y
+  ;is the value returned by a jack-of-confusion method.
+
+Current practice:
+
+  Symbolics Genera 8.0, Lucid 4.0.0 Beta-1, and recent versions of
+  PCL appear to implement METHOD-INITFORM:ALLOW-CALL-NEXT-METHOD.
+  TI Explorer release 6 does not.
+  Apple and IIM implement METHOD-INITFORM:FORBID-CALL-NEXT-METHOD.
+
+  The first example does not actually work in Genera due to a bug.
+
+  Other CLOS implementations were not surveyed.
+
+Cost to Implementors:
+
+  In METHOD-INITFORM:ALLOW-CALL-NEXT-METHOD, handling CALL-NEXT-METHOD and
+  NEXT-METHOD-P by simply wrapping a FLET or MACROLET around the body will
+  not work.  If they are called from forms in the lambda-list some
+  massaging of the lambda-list is necessary.  It's not very difficult,
+  though.
+
+  METHOD-INITFORM:FORBID-CALL-NEXT-METHOD has no cost to implementors.
+
+Cost to Users:
+
+  None for either proposal.
+
+Cost of non-adoption:
+
+  METHOD-INITFORM:FORBID-CALL-NEXT-METHOD forbids a programming technique
+  that users might find useful.  METHOD-INITFORM:ALLOW-CALL-NEXT-METHOD
+  requires a little more work for implementors, who might have thought
+  they had finished their CLOS implementations by now.
+
+Performance impact:
+
+  None.
+
+Benefits:
+
+  METHOD-INITFORM:FORBID-CALL-NEXT-METHOD avoids changing the status quo.
+  METHOD-INITFORM:ALLOW-CALL-NEXT-METHOD provides a programming technique
+  that users might find useful.
+
+Esthetics:
+
+  METHOD-INITFORM:ALLOW-CALL-NEXT-METHOD seems more uniform.
+
+Discussion:
+
+  Jeff Dalton suggests that the places where CALL-NEXT-METHOD is allowed
+  should be consistent with the places where RETURN from an implicit block
+  is allowed.  This probably supports FORBID-CALL-NEXT-METHOD.
+
+  Gregor Kiczales says he supports FORBID-CALL-NEXT-METHOD, but is not
+  adamant about it.  He thinks FORBID-CALL-NEXT-METHOD is more natural.

@@ -1,0 +1,175 @@
+Status: Issue:        DESTRUCTURING-BIND
+Forum:	      Cleanup
+References:   DEFMACRO (CLtL pp145-151),
+	      The LOOP Facility (X3J13/89-004)
+Category:     ADDITION
+Edit history: 24-Jan-89, Version 1 by Pitman
+	      25-Jan-89, Version 2 by Pitman
+	      29-Mar-89, Version 3, by Moon, amended based on poll
+
+Problem Description:
+
+  Common Lisp programmers have frequently complained that the
+  destructuring facility used by DEFMACRO is not made available
+  for use in ordinary programming situations involving list data.
+
+  The presence of a destructuring facility in the recently adopted
+  LOOP facility will be likely to make the absence of a separable
+  destructuring facility all the more apparent.
+
+  Prior to the introduction of LET into Maclisp, many people wrote
+  their own LET macros. A popular expansion was in terms of a DO
+  which did not iterate. eg,
+    (LET ((A 3)) (+ A A)) ==> (DO ((A 3)) () (RETURN (+ A A)))
+  While this practice `worked,' it was not perspicuous and contributed 
+  substantially to non-readability: not only were the macros hard to
+  understand, but the surface interface itself was not standardized
+  and varied in subtle ways. For example, some LET macros allowed GO
+  statements while others did not.
+
+  There is now considerable danger that a lot of people will write
+  DESTRUCTURING-BIND variants in terms of a LOOP expression that
+  immediately returns.
+    (DESTRUCTURING-BIND ((A B) C) (FOO) (LIST A B C))
+    ==> (LOOP FOR ((A B) C) ON (FOO) DO (RETURN (LIST A B C)))
+  Since the destructuring offered by LOOP is different in subtle ways
+  from the destructuring offered by DESTRUCTURING-BIND in implementations
+  offering that primitive natively, gratuitous headaches could result.
+
+Proposal (DESTRUCTURING-BIND:NEW-MACRO):
+
+  Provide a macro called DESTRUCTURING-BIND which behaves like the
+  destructuring bind in DEFMACRO. Specifically...
+
+  DESTRUCTURING-BIND lambda-list expression {decl}* {form}*   [Macro]
+
+   Binds the variables specified in LAMBDA-LIST to the corresponding
+   values in the tree structure resulting from evaluating EXPRESSION,
+   then evaluates the FORMS in the body.
+
+   Anywhere in the LAMBDA-LIST where a parameter name may appear, and
+   where ordinary lambda-list syntax (as described in CLtL section 5.2.2)
+   does not otherwise allow a list, a lambda-list may appear in place of
+   the parameter name. When this is done, then the argument form that
+   would match the parameter is treated as a (possibly dotted) list, to
+   be used as an argument forms list for satisfying the parameters in
+   the embedded lambda-list.
+
+   If any of the lambda list keywords &OPTIONAL, &REST, &KEY,
+   &ALLOW-OTHER-KEYS and &AUX appears in the lambda list, it is treated
+   as with any other lambda-list.
+
+   If the lambda list keyword &BODY appears, it is treated as a synonym
+   for &REST.
+
+   The lambda list keyword &ENVIRONMENT is not allowed.
+
+   If the lambda list keyword &WHOLE appears, it must be followed by a
+   single variable that is bound to the entire expression at the current
+   level. &WHOLE and its following variable should appear first in the
+   list, before any other parameter or lambda-list keyword.
+
+   It is also permissible for any level of the LAMBDA-LIST to be dotted,
+   ending in a parameter name. This situation is treaed exactly as if
+   the aprameter name that ends the list had appeared preceded by &REST
+   in a proper list. For example, the notation (X Y . Z) is equivalent
+   to (X Y &REST Z).
+
+   If the result of evaluating the expression does not match the 
+   destructuring pattern, an error should be signaled. 
+
+Test Case:
+
+  (DEFUN IOTA (N) (LOOP FOR I FROM 1 TO N COLLECT I)) ;helper
+
+  (DESTRUCTURING-BIND ((A &OPTIONAL (B 'BEE)) ONE TWO THREE)
+		      `((ALPHA) ,@(IOTA 3))
+    (LIST A B THREE TWO ONE))
+  => (ALPHA BEE 3 2 1)
+
+Rationale:
+
+  The proposal directly addresses the stated problem, and is current practice
+  in numerous implementations. Our charter effectively dictates that where
+  feasible we should try to head off the widespread development of uselessly
+  different variants of commonplace tools.
+
+   The intent of the specification is to make DESTRUCTURING-BIND lambda-lists
+   compatible with inner-list elements of a macro lambda-list.
+
+Current Practice:
+
+  Symbolics Genera, Envos Medley, TI Explorer, and Lucid CL all offer
+  DESTRUCTURING-BIND, though the details vary slightly.
+
+  The DESTRUCTURING-BIND offered by Symbolics Genera signals an error if
+  the pattern is not matched. The TI Explorer version does not.
+
+Cost to Implementors:
+
+  Very small. In most cases, it's a matter of renaming and/or exporting an
+  already existing symbol. In a few cases, a very small amount of 
+  `program interface' code would have to be written.
+
+Cost to Users:
+
+  None. This is an upward compatible change.
+
+Cost of Non-Adoption:
+
+  Loss of the Benefits and Aesthetics cited below.
+
+Benefits:
+
+  Users will get a powerful feature they have asked for on many occassions.
+
+  In implementations which `autoload' code, it would be better for this
+  support to be separable so that people could do DESTRUCTURING-BIND
+  without demand loading all other LOOP support.
+
+Aesthetics:
+
+  Defining this macro centrally for the Common Lisp community will reduce
+  subtle deviations, which will in turn have positive aesthetic impact.
+
+Discussion:
+
+  JonL observes that although LOOP does destructuring, it can't directly
+  make use of the DESTRUCTURING-BIND interface suggested here.
+
+  Pitman and Gray think a facility of this sort is a good idea, though
+  obviously the details may still need a little fleshing out before the
+  proposal is ready for vote.
+
+  To date, the excuse for not satisfying this request has been a
+  religious war between factions who want to destructure lists by
+  writing
+    (DESTRUCTURING-BIND (var1 var2 var3) exp . body)
+  and those who want to destructure lists by writing
+    (DESTRUCTURING-BIND (LIST var1 var2 var3) exp . body)
+
+  The advantage of the former approach is that it is notationally
+  concise for the common case of destructuring a list. The disadvantage
+  is that it is not extensible to accomodate abstract kinds of
+  destructuring.
+
+  The advantage of the latter approach is that it allows interesting
+  extensions that accomodate data-hiding, such as:
+    (DEFMACRO MAKE-FOO (&REST ELEMENTS) `(LIST ,@ELEMENTS))
+    (DESTRUCTURING-BIND (MAKE-FOO var1 var2 var3) exp . body)
+  and later the ability to change the representation of a FOO without
+  updating the associated binding forms. The disadvantage is that it
+  is more verbose in the common case of destructuring a list, and still
+  even more verbose for nested lists.
+
+  Although destructuring has always existed in DEFMACRO, this has not
+  been adequate precedence for deciding the outcome of the religious war
+  because DEFMACRO only needs to destructure programs, and programs are
+  generally made up only of lists -- not arbitrary user-defined abstract
+  data types.
+
+  The lambda-list form of DESTRUCTURING-BIND in this version is
+  not completely compatible with the destructuring done by LOOP
+  in three areas: LOOP allows NIL elements of a list to be ignored,
+  LOOP does not allow &-keywords, and LOOP destructuring ignores
+  extra elements in the list being matched.

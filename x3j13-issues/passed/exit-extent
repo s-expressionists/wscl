@@ -1,0 +1,365 @@
+Status: proposal MINIMAL, as amended, passed Mar 89 X3J13 by vote of 11-5.
+
+Issue:         EXIT-EXTENT
+
+References:    CATCH, THROW (p 142),
+               BLOCK, RETURN, RETURN-FROM,
+               TAGBODY, GO, UNWIND-PROTECT,
+               Dynamic extent (CLtL p.37),
+               Nested dynamic extents (CLtL p.38),
+               Blocks can only be exited once (CLtL p.120),
+               Catch is disestablished just before the values 
+               are returned (CLtL p.139).
+             
+Related issues: UNWIND-PROTECT-NON-LOCAL-EXIT is superseded
+                by this one.
+
+Category:      CLARIFICATION
+
+Edit history:  ... Version 5 of UNWIND-PROTECT-NON-LOCAL-EXIT, 23-May-88 ...
+               Version 1, 5-Sep-88, by Moon, for discussion
+               Version 2, 1-Oct-88, by Masinter, minor edits
+               Version 3, 7-Oct-88, by Moon, wording improvements
+               Version 4,  7-Dec-88, by Masinter, add MEDIUM from
+                                        UNWIND-PROTECT-NON-LOCAL-EXIT, discussion.
+               Version 5, 12-Dec-88, Masinter, clarify MINIMAL allows MEDIUM
+               Version 6,  8-Jan-89, Masinter, fix some bugs
+               Version 7,  4-Apr-89, Moon, amend per X3J13 Mar-89, and make
+                                rationale and examples consistent with that
+
+Problem description:
+
+CLtL does not specify precisely when the dynamic extent (lifetime)
+of a nonlocal exit such as a CATCH, BLOCK, or TAGBODY ends. 
+For example, at what point is it no longer possible to RETURN-FROM
+a particular BLOCK?
+
+An "exit" refers to a point from which control can be transferred.
+For a THROW or RETURN-FROM, the "exit" is the corresponding CATCH
+or BLOCK body. For a GO, the "exit" is the form within the TAGBODY
+which was being executed at the time the GO is performed.
+
+The extent of an exit is dynamic; it is not indefinite. The extent
+of an exit begins when the corresponding form (CATCH, BLOCK or TAGBODY
+clause) is entered.  When the extent of an exit has ended, it is no
+longer legal to return from it.
+
+The extent of an exit is not the same thing as the scope of the
+designator by which the exit is identified. For example, a BLOCK
+name has lexical scope but the extent of its exit is dynamic; the
+scope of a CATCH tag could differ from the extent of the CATCH's
+return point. (That's part of what is at issue here.)
+
+The ambiguity at issue arises for the case where there are transfers
+of control from the cleanup clauses of an UNWIND-PROTECT.
+
+When a transfer of control is initiated by GO, RETURN-FROM or THROW,
+a variety of events occur before the transfer of control is complete.
+In particular, 
+
+(a) the cleanup clauses of any intervening UNWIND-PROTECT clauses
+    are evaluated,
+
+(b) intervening dynamic bindings of special variables and catch tags
+    are undone,
+
+(c) intervening exits are "abandoned", i.e., their extent ends and it
+    is no longer legal to attempt to transfer control through them,
+
+(d) the extent of the exit being invoked ends,
+
+(e) control is finally passed to the target.
+
+The order of these events is not explicit in CLtL, however. The 
+implementation note on p.142 gives a clue about the interweaving
+of (a) and (b), but there are differing opinions about the times
+at which (c) and (d) may occur. In particular,
+
+Is it legal for an implementation to end the extent of all 
+intervening exits before processing the cleanup clauses of intervening 
+UNWIND-PROTECTs?
+
+What is the dynamic context at the time UNWIND-PROTECT clauses are 
+evaluated: how is the unwinding of dynamic bindings intertwined with 
+evaluation of UNWIND-PROTECT cleanup clauses? 
+
+Proposal (EXIT-EXTENT:MINIMAL):
+
+The extent of an exit being "abandoned" because it is being passed over
+ends as soon as the transfer of control is initiated. That is, the
+event (c) occurs at the beginning of the initiation of the transfer of
+control. In the language of the implementation note on p.142, the
+extent ends at the beginning of the second pass.  It is an error to
+attempt a transfer of control to an exit whose dynamic extent has
+ended.
+
+The event (d) occurs at the end of the transfer of control.
+
+Otherwise, events (a) and (b)--the undoing of dynamic binding of special
+variables and CATCH tags, and the execution of UNWIND-PROTECT cleanup
+clauses--are performed in the order corresponding to the reverse order
+in which they were established, as implied by the implementation note
+on p.142. The effect of this is that the cleanup clauses of an UNWIND-PROTECT
+will see the same dynamic bindings of variables and CATCH tags as were
+visible when the UNWIND-PROTECT was entered.
+
+This proposal is called "minimal" because it gives exits the smallest
+extent consistent with CLtL, except that event (d) occurs later than
+CLtL requires.  A program that presumed a longer extent would be in
+error. Implementations may support longer extents for exits than is
+required by this proposal; in particular, an implementation which
+allowed the larger extent of the MEDIUM proposal below would still
+conform.
+
+Proposal (EXIT-EXTENT:MEDIUM):
+
+The events of (a), (b), (c) and (d) are interwoven in the reverse 
+order in which they were established. In particular, the extent of 
+a passed-over exit ends when control reaches a frame that was 
+established before the exit was established.  
+
+In particular, it is legal, during the evaluation of an UNWIND-PROTECT 
+cleanup form executed because of a non-local transfer of control, to
+initiate a new transfer of control to an exit intervening between the 
+UNWIND-PROTECT and the original target; the original processing of 
+transfer of control is abandoned.  
+
+Examples:
+
+;; Error under either proposal: BLOCK exits normally before RETURN
+(funcall (block nil #'(lambda () (return))))
+
+;; Error under either proposal: normal exit before GO
+(let ((a nil)) 
+  (tagbody t (setq a #'(lambda () (go t))))
+  (funcall a))
+
+;; Error under either proposal: TAGBODY is passed over, before GO
+(funcall (block nil
+           (tagbody a (return #'(lambda () (go a))))))
+
+
+;;returns 2 under MEDIUM and MINIMAL, was error under MINIMAL version 6
+(block nil   
+  (unwind-protect (return 1)
+    (return 2)))
+
+;;returns 2 under MEDIUM, is error under MINIMAL
+(block a    
+  (block b
+    (unwind-protect (return-from a 1)
+      (return-from b 2))))
+
+;; returns 2 under MEDIUM and MINIMAL, was error under MINIMAL version 6
+(catch nil 
+  (unwind-protect (throw nil 1)
+    (throw nil 2)))
+
+;; returns 2 under MEDIUM, is error under MINIMAL
+;; because the catch of B is passed over by
+;; the first THROW, hence portable programs must assume its dynamic extent
+;; is terminated.  The binding of the catch tag is not yet disestablished
+;; and therefore it is the target of the second throw.
+(catch 'a
+  (catch 'b
+    (unwind-protect (throw 'a 1)
+      (throw 'b 2))))
+
+
+;; the following was an error under MINIMAL version 6; the extent of
+;; the inner catch terminates as soon as the THROW commences, even
+;; though it remains in scope. Thus, the THROW of :SECOND-THROW
+;; sees the inner CATCH, but its extent has ended.
+;; under MEDIUM and MINIMAL version 7,
+;; it prints "The inner catch returns :SECOND-THROW"
+;; and then returns :OUTER-CATCH.
+(catch 'foo
+        (format t "The inner catch returns ~s.~%"
+                (catch 'foo
+                    (unwind-protect (throw 'foo :first-throw)
+                        (throw 'foo :second-throw))))
+        :outer-catch))
+
+
+;; Following returns 10 under either proposal.  The inner
+;; CATCH of A is passed over, but because that CATCH
+;; is disestablished before the THROW to A is executed,
+;; it isn't seen.
+(catch 'a
+  (catch 'b
+    (unwind-protect (1+ (catch 'a (throw 'b 1)))
+      (throw 'a 10))))
+
+
+;; Following is an error under MINIMAL because the extent of
+;; the (CATCH 'BAR ...) exit ends when the (THROW 'FOO ...)
+;; commences.
+;; Under MEDIUM, the pending exit to tag FOO is discarded by the
+;; second THROW to BAR and the value 4 is transferred to
+;; (CATCH 'BAR ...), which returns 4. The (CATCH 'FOO ...)
+;; then returns the 4 because its first argument has returned
+;; normally.  XXX is not printed.
+
+    (CATCH 'FOO
+      (CATCH 'BAR
+          (UNWIND-PROTECT (THROW 'FOO 3)
+            (THROW 'BAR 4)
+            (PRINT 'XXX))))
+
+ 
+;; Following returns 4 under either proposal; XXX is not printed.
+;; The (THROW 'FOO ...) has no effect on the scope of the BAR
+;; catch tag or the extent of the (CATCH 'BAR ...) exit.
+(CATCH 'BAR
+    (CATCH 'FOO
+        (UNWIND-PROTECT (THROW 'FOO 3)
+          (THROW 'BAR 4)
+          (PRINT 'XXX))))
+
+
+;;The following are legal and print 5 under either proposal:
+    (block nil
+      (let ((x 5))
+        (declare (special x))
+        (unwind-protect (return)
+          (print x))))          
+
+    (block nil
+      (let ((x 5))
+        (declare (special x))
+        (unwind-protect
+            (if (test) (return))
+          (print x))))  
+
+
+Rationale:
+
+For MINIMAL: Giving exits the smallest extent consistent with CLtL
+maximizes freedom for implementations; there are few applications,
+if any, that require a longer extent.  Delaying event (d) until
+the transfer of control is completed allows multiple attempts to
+exit from a single exit, if the first attempt is interrupted,
+possibly by an error.
+
+For MEDIUM: Giving exits a longer extent has cleaner semantics.
+
+Current practice:
+
+Both implementations of Symbolics Genera (3600 and Ivory) end the extent
+of a target BLOCK or CATCH at the moment the values are returned, and
+end the extent of a passed-over exit at the moment the THROW, RETURN, or
+GO commences.  This choice of extent maximizes efficiency within the
+particular stack structure used by these implementations, by avoiding
+the need to retain the control information needed to use a passed over
+exit through the transfer of control.  Genera signals an error if an
+attempt is made to use an exit that has been passed over.
+
+In some implementations, it is possible for a throw or non-local exit
+to be effectively "stopped" by an UNWIND-PROTECT cleanup clause that
+performs a non-local transfer of control to a passed-over exit.
+
+Some implementations crash or otherwise generate garbage code for
+non-local exits from cleanup clauses of UNWIND-PROTECT.
+
+Cost to Implementors:
+
+No currently valid implementation will be made invalid by the MINIMAL
+proposal. Some implementors may wish to add error checks if they
+do not already have them.
+
+MEDIUM would have a high cost for those implementations that currently
+have shorter extent.
+
+Cost to Users:
+
+Most user programs don't do this, so there is likely little cost
+of converting existing code in any case. In any case, current implementations
+differ enough that this issue ostensibly does not
+affect current portable programs. Some users might have code that
+relies on the "unstoppable loops" that can be created with the MEDIUM
+proposal.
+
+Benefits:
+
+Either proposal would make Common Lisp more precisely defined.
+
+Cost of non-adoption :
+
+The semantics of exits will remain ambiguous.
+
+Esthetics:
+
+Precisely specifying the meaning of dynamic extent improves the language.
+Leaving implementations free to implement a longer extent if they choose
+can be regarded as unesthetic, but consistent with Common Lisp philosophy.
+Having a CATCH that is in scope even though its extent has ended may
+seem unesthetic, but it is consistent with how BLOCK behaves.
+
+Discussion:
+
+This issue is controversial. It was first discussed under the issue 
+named UNWIND-PROTECT-CLEANUP-NON-LOCAL-EXIT. The issue was recast as
+the more global one of "extent of exits" rather than the specific 
+one of "what happens if a cleanup in an UNWIND-PROTECT does a non-
+local exit", but the problem cases for both topics are the same.
+
+The goal of the MINIMAL proposal is to clarify the ambiguity in CLtL while
+minimizing changes to the current situation. The MEDIUM proposal
+defines the extent of an exit to end at the last moment possible
+within some particular reference implementation.  It has
+a cost to implementors whose implementation is not identical to the
+reference implementation.  Another alternative proposal, not considered
+here, would duck the issue by outlawing all non-local exits from UNWIND-PROTECT
+cleanup forms. That alternative would have a substantial cost to some users.
+
+Scheme is cleaner: it avoids this issue by specifying that the extent
+of an exit never ends.
+
+An argument for the MEDIUM proposal was made based on the example:
+
+  (block foo
+    (block bar
+      (unwind-protect
+          (return-from foo 'foo)
+        (return-from bar 'bar))))
+
+Since there is no reason for FOO and BAR not to be treated interchangeably,
+calling this an error would be inappropriate. 
+
+It was argued that the MINIMAL proposal is equivalent to practically
+outlawing non-local exits from UNWIND-PROTECT cleanup clauses, because
+there is no general way to determine the target of the non-local exit
+that caused the cleanup clause to be invoked. 
+
+The following example was offered as an argument against MINIMAL. Given:
+
+    (block nil
+      (handler-case
+          (unwind-protect (return)
+            (error "foo"))             ;probably an error, under the proposal
+        (error ()
+          (print "foo"))))
+
+If the ERROR handler has the same scope and extent a CATCH in the same place
+would have (and that seems reasonable, though I'm not certain that the
+condition system specifically requires that interpretation), then the handler
+will be apparent to the call to ERROR, but will no longer be a valid target
+(its extent was exited by the RETURN in the UNWIND-PROTECT body).
+
+The extent of an object with dynamic extent is the extent of the form 
+which created it.  Code which is executed "within" that form is within
+the extent of the object(s).  This applies to all dynamic objects, such
+as special variable bindings, not just exits.  Actually, I think the intent
+of the implementation note on p.142 is fairly clear and supports this
+interpretation.  The supposedly ambiguous use of "frame" should be read
+as something like "form which establishes a dynamic extent".  It might be
+clearer if the last sentence were changed to read something like:
+
+"On the second pass the stack is actually unwound.  Each form which establishes
+a dynamic extent is undone in reverse order of creation until the matching
+CATCH is reached.  The meaning of undoing a form depends on the type of form.
+For UNWIND-PROTECT, it means executing the cleanup forms.  For CATCH it means
+removing the CATCH tag.  For dynamic bindings it means undoing the binding,
+restoring the previous saved value. {This is not an exhaustive listing of the
+possibilities.}"
+

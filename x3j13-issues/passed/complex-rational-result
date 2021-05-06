@@ -1,0 +1,97 @@
+Status: Version 3 passed Jun89 X3J13
+ (Version 1 passed March 89, but had problems)
+
+Issue:         COMPLEX-RATIONAL-RESULT
+
+References:    CLtL p.203
+
+Category:      CLARIFICATION
+
+Edit history:  Version 1, 20-Mar-89, by Moon
+               Version 2, 08-Apr-89, by Steele
+               Version 3, 28-Apr-89, by Steele
+
+Problem description:
+  
+  Referring to irrational and transcendental functions, CLtL says:
+    
+    When the arguments to a function in this section are all rational and
+    the true mathematical result is also (mathematically) rational, then
+    unless otherwise noted an implementation is free to return either an
+    accurate result of type rational or a single-precision floating-point
+    approximation.  If the arguments are all rational but the result cannot
+    be expressed as a rational number, then a single-precision
+    floating-point approximation is always returned.
+
+  Referring to EXPT, CLtL says:
+
+    If the base-number is of type RATIONAL and the power-number is an
+    INTEGER, the calculation will be exact and the result will be of
+    type RATIONAL; otherwise a floating-point approximation may result.
+
+  What about arguments of type (complex rational)?
+
+Proposal (COMPLEX-RATIONAL-RESULT:EXTEND):
+
+  Extend the paragraph quoted above as follows to cover the components
+  of complex numbers.  If the arguments to a function are all of type
+  (OR RATIONAL (COMPLEX RATIONAL)) and the true mathematical result is
+  (mathematically) a complex number with rational real and imaginary
+  parts, then unless otherwise noted an implementation is free to return
+  either an accurate result of type (OR RATIONAL (COMPLEX RATIONAL)) or
+  a single-precision floating-point approximation of type SINGLE-FLOAT
+  (permissible only if the imaginary part of the true mathematical
+  result is zero) or (COMPLEX SINGLE-FLOAT). If the arguments are
+  all of type (OR RATIONAL (COMPLEX RATIONAL)) but the result cannot be
+  expressed as a rational or complex rational number, then the returned
+  value will be of type SINGLE-FLOAT (permissible only if the imaginary
+  part of the true mathematical result is zero) or (COMPLEX SINGLE-FLOAT).
+
+  For EXPT of a (COMPLEX RATIONAL) to an integer power, the
+  calculation must be exact and the result will be of type
+  (OR RATIONAL (COMPLEX RATIONAL)).
+
+Examples:
+
+[a]  (log #c(-16 16) #c(2 2)) => 3 or approximately #c(3.0 0.0)
+			           or approximately 3.0 (unlikely)
+[b]  (abs #c(3/5 4/5)) => 1 or approximately 1.0
+[c]  (expt #c(2 2) 3) => #c(-16 16)
+[d]  (expt #c(2 2) 4) => -64 
+
+Rationale:
+  
+  This seems most consistent with the treatment of real numbers.
+
+Current practice:
+  
+			[a]			[b]	[c]		[d]
+Symbolics Genera 7.4	#c(3.00... 1.40...e-7)	1	#c(-16 16)	-64
+Sun Common Lisp 3.0.1	#c(3.0 2.61...e-16)	1.0	#c(-16 16)	-64
+KCL of 9/16/86 on VAX	#c(3.0s0 -1.40...s-7)	1.0s0	#c(-16 16)	-64
+Allegro CL (Mac II)	#c(3.0 2.05...e-16)	1.0	#c(-16 16)	-64
+
+Cost to Implementors:
+
+  Only EXPT would have to change, since the type of the other results
+  is at the discretion of the implementation.
+
+Cost to Users:
+
+  Probably none, but it is hard to predict.
+
+Cost of non-adoption:
+  
+  Slightly less self-consistent language.
+
+Performance impact:
+
+  None of any significance.
+
+Benefits/Esthetics:
+
+  More self-consistent language.
+
+Discussion:
+
+  None.

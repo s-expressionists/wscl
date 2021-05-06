@@ -1,0 +1,376 @@
+Status:	Passed, Jan 89 X3J13
+Issue:         SETF-SUB-METHODS
+
+References:    CLtL pp. 95-96, 99, 105-106, 166
+               Issue: PUSH-EVALUATION-ORDER
+
+Category:      CLARIFICATION
+
+Edit history:  Version 1: JonL White & Ken D. Olum 12-Feb-88
+                   (based on problem originally called SETF-METHOD-FOR-SYMBOLS)
+               Version 2: JonL White 23-May-88 (fix references and spellings).
+               Version 3: JonL White 25-May-88 
+               Version 4: JonL White & Ken D. Olum 26-May-88 (final insights!)
+               Version 5: Masinter (respond to comments)
+
+
+Problem description:
+
+Implementations differ in the left-to-right order
+of evaluation in the following form:
+
+     (setq r '(a 1 b 2 c 3))
+     (setq s r)
+     (setf (getf r 'b) (progn (setq r nil) 6))
+
+In some implementations, the side-effect of the setq appears to happen before
+the evaluation of the place form (getf r 'b) which is necessary to fetch the 
+list being updated.   A typical result is 'r' = (B 6), 's' = (A 1 B 2 C 3)
+after the operation. 
+
+There is a similar problem with SETF's over LDB, MASK-FIELD, and CHAR-BIT.
+
+CLtL p99 is explicit about left-to-right order of evaluation.
+However, the specification is less clear about computations involved
+in "evaluation" of the subforms, and other computations that are implicit
+in the notion of "doing an access" or "doing a store".
+
+Proposal:	SETF-SUB-METHODS:DELAYED-ACCESS-STORES
+
+This proposal specifies more explicilty the behavior of SETF in the case  
+of access forms whose sub-forms are permitted to be generalized variable 
+references [and which thus need to call GET-SETF-METHOD during setf macro 
+expansion].
+
+Remember, first, that GET-SETF-METHOD returns the following:
+
+   -- Some temporary variables
+   -- A list of value-producing forms
+   -- A list of store-variables (normally one).
+   -- A storing form.
+   -- An accessing form.
+
+The code produced as the macro expansion of a SETF form that
+itself admits a generalized variable as an argument must essentially
+do the following major steps:
+
+  ** It evaluates the value-producing sub-forms, in left-to-right order, and 
+     binds the temporary variables to them.  This will be called "binding the 
+     temporaries."
+
+  ** It "reads the value" from the generalized variable using the supplied 
+     accessing form, to get the "old value";  this will be called "doing the
+     access."  [Note that this is done after all the evaluations of the 
+     preceeding step, including any side-effects they may have.]
+
+  ** It binds the store-variable to a new value, and then installs this
+     new value into the generalized variable using the supplied "storing 
+     form".   This will be called "doing the store."
+
+"Reading the value" of a generalized variable reference is not part of
+the series of evaluations  that must be done in left-to-right order. 
+
+The place-specifier forms listed at the top of CLtL p96 permit admit (other)
+place-specifiers as arguments; during the SETF expansion of these forms, it 
+is necessary to call GET-SETF-METHOD in order to figure out how the inner, 
+nested generalized variable must be treated.  This proposal requires GETF be 
+listed among these forms, since it must have a sub-recursive <place> specifier 
+[however, there is no Common Lisp function serving as a pseudo-update function
+for it, the way DPB serves for LDB].  
+
+For each place-specifier form with a sub-recursive place specifier, 
+ the information from GET-SETF-METHOD is used as follows.
+
+  CHAR-BIT:
+
+    In a form such as:
+
+        (SETF (CHAR-BIT <place-form> <bit-name>) <value-form>)
+
+    the place referred to by the <place-form> must always be both accessed 
+    and updated; note that the update is to the generalized variable 
+    specified by <place-form> -- not to a character object itself.
+
+    Thus this SETF should generate code to do the following:
+
+    1. Bind the temporaries for <place-form>
+    2. Evaluate <bit-name> (and bind into a temporary)
+    3. Evaluate <value-form> (and bind into the store variable)
+    4. Do the access to <place-form>
+    5. Do the store into <place-form>, with the given bit-name of the 
+       character fetched in step 4 changed to reflect the value from step 3.
+
+    If the evaluation of <value-form> in step 3 alters what is found in the 
+    given "place" -- such as setting a different "bit" of the character --
+    then the change of the bit denoted by <bit-name> will be to that altered
+    character, because the "access" step is done after the <value-form>
+    evaluation.  See example 1 in the test cases section.  Nevertheless, the 
+    evaluations required for binding the temporaries are done in steps 1 and 
+    2, and thus the expected left-to-right evaluation order is seen.
+
+
+  LDB: 
+
+    In a form such as:
+
+        (SETF (LDB <byte-spec> <place-form>) <value-form>)
+
+    the place referred to by the <place-form> must always be both accessed 
+    and updated;  note that the update is to the generalized variable 
+    specified by <place-form> -- not to any object of type integer.
+
+    Thus this SETF should generate code to do the following:
+
+    1. Evaluate <byte-spec> (and bind into a temporary)
+    2. Bind the temporaries for <place-form>
+    3. Evaluate <value-form>  (and bind into the store variable)
+    4. Do the access to <place-form>
+    5. Do the store into <place-form> with the given bit-field of the integer
+       fetched in step 4 replaced with the value from step 3.
+
+    If the evaluation of <value-form> in step 3 alters what is found in the 
+    given "place" -- such as setting a different bit-field of the integer --
+    then the change of the bit-field denoted by <byte-spec> will be to that 
+    altered integer, because the "access" step is done after the <value-form>
+    evaluation.  See example 2 in the test cases section.  Nevertheless, the 
+    evaluations required for binding the temporaries are done in steps 1 and 
+    2, and thus the expected left-to-right evaluation order is seen.
+
+
+  MASK-FIELD:
+
+   This case is the same as LDB in all essential aspects.
+
+
+  GETF:
+
+    In a form such as:
+
+        (SETF (GETF <place-form> <ind-form>) <value-form>)
+
+    the place referred to by the <place-form> must always be both accessed 
+    and updated;  note that the update is to the generalized variable 
+    specified by <place-form> -- not necessarily to the particular list
+    which is the property list in question.
+
+    Thus this SETF should generate code to do the following:
+
+    1. Bind the temporaries for <place-form> 
+    2. Evaluate <ind-form> (and bind into a temporary)
+    3. Evaluate the <value-form> (and bind into the store variable)
+    4. Do the access to <place-form>
+    5. Do the store into <place-form> with a possibly-new property list
+       obtained by combining the values from steps 2, 3, and 4.  
+
+    If the evaluation of <value-form> in step 3 alters what is found in the 
+    given "place" -- such as setting a different named property in the list,
+    then the change of the property denoted by <ind-form> will be to that 
+    altered list, because the "access" step is done after the <value-form>
+    evaluation.  See example 7 in the test cases section.  Nevertheless, the 
+    evaluations required for binding the temporaries are done in steps 1 and 
+    2,  and thus the expected left-to-right evaluation order is seen.
+
+    Note that this phrase "possibly-new property list" treats the 
+    implementation of property lists as a "black box"  -- it can mean that 
+    the former property list is somehow destructively re-used, or it can 
+    mean partial or full copying of it.  This is like the question of REMOVE
+    or DELETE -- do you copy or do you destructively alter.  Since the answer
+    could go either way, the treatment of the resultant value for the 
+    "possibly-new property list" must proceed as if it were a different copy
+    needing to be stored back into the generalized variable.
+
+The "read-modify-write" macros such as INCF, DECF, PUSH, POP, 
+and REMF, as well as PSETF, SHIFTF, and ROTATEF should be 
+specified to have the same evalauation order for the subforms of
+the "place" arguments; this would generally follow from their definition
+in terms of SETF.
+
+Test Cases:
+
+  1. (setq char (make-char #\A 1))         ==>  #\Control-A
+     (rotatef (char-bit char :control) 
+              (char-bit char :meta)) 
+     char  ==>  #\Meta-A
+     ;; It's as if you start with #\Control-A, and then first turn the
+     ;;  :control bit off, because the :meta bit was originally off; and
+     ;;  then to the resulting #\A,  you add the :meta bit since the
+     ;;  :control bit was originally on.
+
+     Note, however, that if an implementation doesn't support both of these
+     character 'bits', then this test case would have to be re-written to
+     reference two independent bits actually supported.  If an implementation
+     supports fewer than two independent character bits, then this test case
+     is entirely moot.
+
+  2. (setq integer #x69)                   ==>  #x69
+     (rotatef (ldb (byte 4 4) integer) 
+              (ldb (byte 4 0) integer))
+     integer  ==>  #x96
+     ;; This very-realistic example is simply trying to swap two
+     ;;  independent bit fields in an integer.  Note that the generalized
+     ;;  variable of interest here is just the (possibly local) program
+     ;;  variable 'integer'.
+
+  3a.(setq l1 (setq l2 (list #x69)))                ==>  (#x69)
+     (setf (ldb (byte 4 4) (car l1))
+	   (ldb (byte 4 0) (car (prog1 l1 
+                                  (setq l1 nil))))) 
+     l1 ==> nil
+     l2 ==> (#x99)
+     ;; Note that the (setq l1 nil) didn't affect the actions of the setf
+     ;;  at all, since l1 was evaluated and its value was saved away in a
+     ;;  temporary variable as part of the step "2. Bind the temporaries 
+     ;;  for <place-form>", and this was done before the evaluation of the
+     ;;  <value-form> which contains the (setq l1 nil).  Note also that the
+     ;;  step "4. Do the access to <place-form>" means fetching the CAR of
+     ;;  the saved (temporary) value of 'l1'; it does not mean doing a LDB
+     ;;  on anything like that.
+
+
+  3b.(setq l1 (setq l2 (list #x69)))                ==>  (#x69)
+     (setf (ldb (byte 4 4) (car l1))
+	   (ldb (byte 4 0) (car (rplaca l1 #x17))))
+     l1 ==> (#x77)
+     l2 ==> (#x77)
+     ;; Note that the (rplaca l1 #x17) altered the contents of what l1
+     ;;  was pointing to.  Thus even though l1 was evaluated and its  
+     ;;  value was saved away in a temporary variable as part of the step 
+     ;;  "2. Bind the temporaries for <place-form>", and even though this 
+     ;;  was done before the evaluation of the <value-form> which contains 
+     ;;  the rplaca, still the side-effect changes things because it alters
+     ;;  what will be fetched during the "do the access" step.
+
+  4. (setq integer #x69)
+     (setf (mask-field (byte 4 4) integer) (incf integer)) => #x6A
+     integer ==> #x6A
+
+  5. (setq integer #x6A)
+     (setf (mask-field (byte 4 4) integer) (ash (incf integer) 4)) => #x6B0
+     integer => #xBB
+
+  6. (setq s (setq r (list 'a 1 'b 2 'c 3)))         ==>  (a 1 b 2 c 3)
+     (setf (getf r 'b) 
+           (progn (setq r nil) 6))                   ==>  6
+     r ==> (b 6)
+     s ==> (a 1 b 2 c 3)
+     ;; Note that the generalized variable of concern here is the (degenerate?)
+     ;;  one of simply the program variable 'r'; it is not a property-list 
+     ;;  slot denoted by (getf r 'b).   At the time the step "4. Do the access
+     ;;  to <place-form>" is performed, the evaluation of the <value-form>
+     ;;  has already altered the generalized variable 'r', and thus a nil is
+     ;;  returned for this access; that is why a fresh property-list (B 6) is
+     ;;  created an stored back into 'r'.
+
+  7. (setq s (setq r (list (list 'a 1 'b 2 'c 3))))  ==>  ((a 1 b 2 c 3))
+     (setf (getf (car r) 'b) 
+           (progn (setq r nil) 6))                   ==>  6
+     r ==> nil
+     s ==> ((A 1 B 6 C 3))
+     ;; Note that the (setq r nil) does not affect the actions of the setf 
+     ;;  because the value of R had already been saved in a temporary variable
+     ;;  as part of the step "1. Bind the temporaries for <place-form>".  Only
+     ;;  the CAR of this value will be accessed, and subsequently modified 
+     ;;  after the value computation.
+
+
+Rationale:
+
+As a principle,
+
+    (setf (foo-a x) (progn (setf (foo-b x) ...)
+                           new-a-value))
+
+should always set both of the "slots" of 'x', even if these slots are 
+implemented as bit-fields, getf-properties, and so on.  Only by separating 
+out evaluation from "generalized variable access", and by specifying that
+the access is done after all the evaluations, can this correctly be done.
+
+Current Practice:
+
+Lucid Common Lisp already operates pretty much according to this proposal.
+Symbolics Genera 7.2 foolishly adopted an earlier proposal
+(SETF-METHOD-FOR-SYMBOLS) before it was officially approved by X3J13 and
+its parent standards organization.  This proposal is incompatible with
+that one, so Genera 7.2 does not implement the behavior described here,
+and fails test cases 1, 2, 4, 5, and 6.  Symbolics Genera 7.1
+is probably closer to this proposal. 
+
+Performance impact:
+
+Small. This proposal might slow down macro-expansion slightly,
+might cause some current optimizations not to work as well. However,
+the net effect is likely negligible.
+
+Cost to Implementors:
+
+In some implementations, this would require a careful revisiting of
+the handling of SETF and generalized variable modifiers.
+
+Cost to Users:
+
+Small; although this will impose an incompatible change on 
+implementations that don't behave as proposed, and might have
+an effect on (non-portable) code, we believe the effects
+are not widespread.
+
+Cost of non-adoption:
+
+SETF left-to-right order of evaluation will not be well specified;
+implementations will differ for no good reason.
+
+Benefits:
+
+Uniform semantics and portability in the face of recursive "place specifiers"
+for SETF.  Setf of (LDB ... <place>) and of (GETF <place> ...) will behave
+uniformly no matter the nature of the <place>.
+
+Anyone who has copied examples from p105 and p106 will continue to
+be able to use them.
+
+Esthetics:
+
+See "Cost of non-adoption"
+
+Discussion:
+
+This is a difficult proposal to specify.
+
+In the detailed descriptions for each access form, the phrase
+    "the place referred to by the <place-form> must always be both 
+     accessed and updated; note that the update is to the generalized 
+     variable specified by <place-form>"
+is not intended to prevent optimizations that could occur when the
+code "knows" that the new value will be EQ to the old one.  The only
+requirements is that the results be semantically equivalent.
+
+There is an interesting parallel between this case for GETF and the
+very common mistake made by Lisp programmers with respect to the 
+function DELETE.  How often the complaint is filed that DELETE didn't
+do anything when it should have; but in fact the filer simply forgot
+that delete, although permitted to destructively modify the original
+list, may also return some tail of the list originally give it, 
+whether or not an alteration occurs.
+
+      (setq l '(a a b c d)) ==> (a a b c d)
+      (delete 'a l)         ==> (b c d)
+      l 		    ==> (a a b c d)
+
+The unwary user thinks that because 'l' is still EQ to the original value 
+that "DELETE didn't do anything".  The temptation to ignore the resultant 
+value of DELETE parallels the temptation to forget about a need to perform
+a final update to <place-form> in the setf-of-getf case.
+
+In the (degenerate?) case when a generalized variable 
+is in fact simply a program variable, then there are no sub-forms to be
+considered "value-producing" forms; in fact, "doing the access" for such
+a generalized variable (i.e. a program variable) is functionally the
+same as evaluating it.  This explains why the behaviour in the "Problem 
+Description" is at first perplexing -- the "do the access" step has the same
+semantics as an evaluation step, even though it is done after all the
+prescribed evaluations.
+
+The issue PUSH-EVALUATION-ORDER is a clarification about just the point
+of the evaluation order for the various subforms to a PUSH;  thus there
+is a similarity to this issue, but the present issue has a much deeper
+problem because of the need to call GET-SETF-METHOD during setf macro
+expansion.

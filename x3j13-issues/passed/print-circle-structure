@@ -1,0 +1,116 @@
+Status: Passed, Jan 89 X3J13, as amended
+
+Issue:         	PRINT-CIRCLE-STRUCTURE
+References:    	pp. 370-371
+Category:      	CLARIFICATION
+Edit history:	Version 4, Masinter, 17-Mar-89 (as amended)
+		Version 3, Masinter 10/8/88 (minor cleanup)
+                  Version 2, Chris McConnell 10/05/88
+                  Version 1, Chris McConnell 09/20/88
+
+Problem description:
+
+When a lisp object is printed that points to a structure with a user
+defined print-function and there is a pointer back to the containing
+object, the printer will recurse infinitely even when *print-circle*
+is set to T.  This prevents printing circular structures that point to
+objects that cannot be printed and prevents the development of new
+printed representations that can be read by the reader.
+
+Proposal PRINT-CIRCLE-STRUCTURE:USER-FUNCTIONS-WORK: 
+
+When *print-circle* is T, a user defined print-function can print
+objects to the supplied stream using WRITE, PRIN1, PRINC, or FORMAT
+and expect circularities to be detected and printed using #n# syntax.
+If a user defined print-function prints to a stream other than the one
+that was supplied, then circularity detection starts over for that
+stream. This applies to methods on PRINT-OBJECT in addition to
+:PRINT-FUNCTION options.
+
+Test Cases/Examples:
+
+;;;
+;;; Define a structure that can be circular and that has a slot with a
+;;; value that cannot be printed.
+;;;
+(defstruct (TEST (:print-function print-test))
+  ptr
+  (function #'(lambda (x) 
+		(error "No function is defined."))))
+
+;;;
+;;; This print function generates a machine readable printed
+;;; representation for a structure with a slot that cannot be printed.
+;;;
+(defun PRINT-TEST (structure stream depth)
+  (format stream "#S(TEST PTR ~S)" (test-ptr structure)))
+
+;;;
+;;; Define two structures that point to each other.  If this
+;;; expression successfully evaluates at the top level, then the
+;;; printed result should look like:
+;;; #1=#S(TEST PTR #S(TEST PTR #1#))
+;;;
+;;; If it does not work then it will generate an infinite printed
+;;; representation. 
+(setf *print-circle* t
+      *a (make-test)
+      *b (make-test)
+      (test-ptr *a) *b
+      (test-ptr *b) *a)
+
+
+Rationale:
+
+Many structures are circular and point to complex data structures that
+may include things like closures that cannot be printed.  It should be
+possible to define a way to print these data structures such that they
+can be read back in.  Common LISP provides two mechanisms for these
+problems (*print-circle* and the :print-function option to defstruct),
+but they do not currently work together in most implementations.
+
+Current practice:
+
+Lucid 3.0 and the Genera do work on the test case.  (Previous versions
+did not.)  KCL, Coral and Franz do not work.
+
+Cost to Implementors:
+
+Lucid and Symbolics have done it, so they could give an idea of the
+difficulty.  Possible techniques include passing the printer state
+information by dynamic binding rather than by explicit parameters or
+by supplying an internal stream to the user print function.
+
+Cost to Users: None
+
+Cost of non-adoption: 
+
+Currently this problem causes an infinite recursion whenever a user
+print-function prints a lisp object that contains the structure that
+is being printed by the user print function.  If nothing is done, this
+error will remain and the whole effort to provide a portable printed
+representation of LISP structures is of minimal usefulness.  In almost
+any real application, there are circular structures with non printable
+objects such as closures and hash tables that need to be printed.  In
+addition the development of printers for new reader macros becomes
+much more of an effort then it should be since it requires
+reimplementing the complete circularity detection mechanism.
+
+Benefits:
+
+If the proposal is adopted, then it becomes easier to define new
+printed representations that are compact and that still capture the
+information needed to rebuild data structure instances.  It allows a
+printed representation to hide the actual details of how a data
+structure is implemented in terms of underlying LISP data structures.
+
+Esthetics: 
+
+This proposal increases the uniformity of the language by making
+*print-circle* work in all cases including where a user has defined a
+new print function.
+
+Discussion:
+
+At least three members of the cleanup committee read this and think
+it looks good.

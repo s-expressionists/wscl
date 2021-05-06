@@ -1,0 +1,161 @@
+Status:	Passed, Jan 89 X3J13
+Forum:        Cleanup
+Issue:        FUNCTION-TYPE-ARGUMENT-TYPE-SEMANTICS
+References:   CLtL pp 47-48, 158-159
+Category:     CHANGE
+Related-issues: DECLARE-TYPE-FREE
+Edit history: #1, 7 Sept 1988, Walter van Roggen
+              #2, 13 Sept 1988, Walter van Roggen (costs & proposal limitations)
+              #3,  7-Dec-88, Masinter
+
+
+Problem description:
+
+The current description of the specialized FUNCTION type specifier is not very
+useful to program analysis tools and is not very intuitive to programmers
+because the meaning of the argument type specifiers is not restrictive.
+
+Programmers find it useful to add information about the types of the arguments
+a function expects and about the type(s) that a function may return. This
+information is useful both to human readers of the code as well as to type
+checking programs such as compilers and cross referencers. The only apparent
+way of providing this information is with the FTYPE declaration
+or the FUNCTION type specifier.
+
+Furthermore, implementations may wish to provide additional optimizations based
+on avoiding type checking or different methods of argument passing. These
+optimizations require the same sort of information about the argument types.
+
+However, the current definition of FUNCTION type specifiers on pages 47-48 of
+CLtL states that a function such as CONS that is of type
+  (FUNCTION (T T) CONS)
+is also of type
+  (FUNCTION (FLOAT STRING) LIST).
+
+The problem is that the argument types aren't restrictive, so no interesting
+matching of types is possible.
+
+Proposal (FUNCTION-TYPE-ARGUMENT-TYPE-SEMANTICS:RESTRICTIVE)
+
+This proposal is written as if DECLARE-TYPE-FREE (Version 6, 06-Oct-88)
+is in effect.
+
+Specify that a declaration of the form
+   
+    (ftype (function (arg0-type arg1-type ...) val-type) f))
+
+implies that any call of the form (f arg0 arg1 ...) within the scope of
+the declaration can be treated as if it were
+
+  (the val-type (f (the arg0-type arg0) (the arg1-type arg1) ...))
+
+That is, it is an error for any of the arguments not to be of the specified
+types or the result not to be of the specified type. (In particular,
+If any argument is not of the correct type,  the result is not guaranteed 
+to be of the specified type.)
+
+Thus, an FTYPE declaration for a function describes calls to the function,
+not the actual definition of the function. 
+
+Similarly, specify that a declaration of the form
+    (type (function (arg0-type arg1-type ...) val-type) fn-valued-variable)
+
+has the interpretation that, within the scope of the declaration, it
+is an error to call the value of fn-valued-variable with arguments
+not of the specified type; assert that the value resulting from a valid
+call will be of type val-type.
+
+As with variable type declarations (cf DECLARE-TYPE-FREE), nested declarations
+imply intersections of types, as follows:
+
+If two (or more) declarations of the form "ftype" are in effect,
+(ftype (function (arg0-type1 arg1-type1 ...) val-type1) f))
+and
+(ftype (function (arg0-type2 arg1-type2 ...) val-type2) f))
+
+then within the shared scope of the declarations, calls to f can be
+treated as if it were declared
+(ftype (function ((and arg0-type1 arg0-type2) (and arg1-type1 arg1-type2 ...) ...)
+                 (and val-type1 val-type2)) 
+       f))
+
+(It is legitimate to ignore one or all of the declarations in force.)
+
+
+If two (or more) type declarations are in effect for a variable, and
+they are both FUNCTION declarations, the declarations combine similarly.
+
+This proposal does not alter the status (or lack thereof) of other issues
+related to FUNCTION type specifiers: what lambda-list keywords mean, what the
+VALUES type means, what implications there are w.r.t. argument counts, doing
+multiple PROCLAIMs, doing local DECLAREs that shadow other declarations or
+proclamations, describing generic functions incrementally, the result of TYPEP
+with a specialized FUNCTION type, or the nesting and scoping rules for 
+FTYPE declarations.
+
+Example:
+
+  (DEFUN FFF (F)
+    (DECLARE (TYPE (FUNCTION (FLOAT STRING) LIST) F))
+    ... (FUNCALL F (FOO ...) ...) ... )
+
+then #'CONS is a valid argument to be passed to FFF because the declared
+type of the argument is consistent with type (FUNCTION (T T) CONS).
+Within FFF, the declaration permits us, for example, to assume that FOO
+returns a FLOAT. 
+
+Rationale:
+
+The proposal seems most like what users expect.
+
+Current Practice:
+
+VAX LISP assumes and makes use of the semantics different than CLtL
+but not exactly what is specified here. Lucid
+has a RESTRICTIVE-FTYPE declaration with these semantics and ignores the
+standard FTYPE declaration. Gold Hill intends to use these declarations in this
+manner.  Many implementations don't make use of these declarations.  At least
+several users make use of declarations assuming the new semantics.
+
+Cost to Implementors:
+
+Since most implementations don't make use of function declarations, and since
+those known to do so can be changed easily, the cost should be minimal.
+
+Cost to Users:
+
+There may be some existing "imprecise" function declarations.  However, the
+natural tendency when providing these declarations is to be as "descriptive"
+(i.e., restrictive but complete) as possible, both for documentation purposes
+as well as for potential compiler benefits. There cannot have been any uses of
+the specialized FUNCTION type for discrimination. Thus most existing uses are
+probably compatible with this new definition.
+
+Cost of Non-Adoption:
+
+There already exists user code on many implementations that assume the
+proposed semantics.  Not adopting this proposal would continue to render
+such code incorrect or at least non-portable.
+
+Benefits:
+
+Better type checking and more compiler optimizations should be possible.
+
+Esthetics:
+
+This is the what most programmers expect the specialized FUNCTION type to
+mean, particularly those coming from other languages.
+
+Discussion:
+
+A declaration of
+ (FUNCTION (FIXNUM FIXNUM) CONS)
+is a not proper global declaration for CONS if any program might
+call CONS with arguments that are not FIXNUM.
+
+The list form of the FUNCTION type specifier is different from most
+type specifiers because it cannot be used for discrimination.
+Thus, the notion of "subtype" does not make sense, since assertions
+about the functional value of a variable are only partially
+about the actual value of the variable and mainly about the
+values that might be passed to the variables (function) value.

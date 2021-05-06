@@ -1,0 +1,175 @@
+Issue:        REAL-NUMBER-TYPE
+Forum:	      CLEANUP
+References:   Table 4-1.
+Category:     ADDITION
+Edit history: 04-JAN-89, Version 1 by Bob Cassels, Don Sakahara, Kent Pitman,
+                         and John Aspinall
+              08-JAN-89, Version 2 by Bob Cassels -- incorporate
+                         Masinter's suggestion and make REAL a CLOS class
+              13-JAN-89, Version 3 by Cassels and Aspinall -- incorporate Marc LeBrun's
+                         suggestions clarifying the relationship between CL
+                         numeric type names and mathematical names
+	      05-APR-89, Version 4 by Pitman (changes per X3J13)
+Status:	      Accepted v3 Mar-89 by X3J13 (on a 12-3 vote) with 
+	      amendments. The proposal as amended is v4.
+
+Problem Description:
+
+  There is no standard type specifier symbol for the CL type
+  '(OR RATIONAL FLOAT). 
+
+Proposal (REAL-NUMBER-TYPE:X3J13-MAR-89):
+
+  Make REAL be a CL data type:
+
+  p.13 "Numbers"
+
+    Add:     The NUMBER data type encompasses all of these kinds of
+             numbers.  For convenience, there are names for some
+             subclasses of numbers.  @i[Integers] and @i[ratios] are of
+             type RATIONAL.  @i[Rational numbers] and @[floating-point
+             numbers] are of type REAL.  @i[Real numbers] and @i[complex
+             numbers] are of type NUMBER.
+
+	     Although the names of these types were chosen with the
+	     terminology of mathematics in mind, the correspondences
+	     are not always exact.  Integers and ratios model the
+	     corresponding mathematical concepts directly.  Numbers
+	     of the FLOAT type may be used to approximate real
+	     numbers, both rational and irrational.  The REAL type
+	     includes all Common Lisp numbers which represent
+	     mathematical real numbers, though there are
+	     mathematical real numbers (irrational numbers)
+	     which do not have an exact Common Lisp representation.
+	     Only REAL numbers may be ordered using the <, >, <=,
+	     and >= functions.
+
+             Compatibility note:  The Fortran standard defines the term
+             "real datum" to mean "a processor approximation to the value
+             of a real number."  In practice the Fortran "basic real" type
+             is the floating-point data type Common Lisp calls
+             SINGLE-FLOAT.  The Fortran "double precision" type is
+             Common Lisp's DOUBLE-FLOAT.  The Pascal "real" data type is
+             an "implementation-defined subset of the real numbers."  In
+             practice this is usually a floating-point type, often what
+             Common Lisp calls DOUBLE-FLOAT.
+
+             A translation of an algorithm written in Fortran or Pascal
+             which uses "real" data usually will use some appropriate
+             precision of Common Lisp's FLOAT type.  Some algorithms may
+             gain accuracy and/or flexibility by using Common Lisp's
+             RATIONAL or REAL types instead.
+
+  p.33 "Overlap, Inclusion, and Disjointness of Types":
+
+    Remove:  The types RATIONAL, FLOAT, and COMPLEX are pairwise
+             disjoint subtypes of NUMBER.
+
+             Rationale: It might be thought that INTEGER and RATIO ...
+
+             Rationale: It might be thought that FIXNUM and BIGNUM ...
+
+    Add:     The types RATIONAL and FLOAT are pairwise disjoint subtypes
+             of REAL.
+
+             The types REAL and COMPLEX are pairwise disjoint subtypes
+             of NUMBER.
+
+             Rationale: It might be thought that FIXNUM and BIGNUM should 
+             form an exhaustive partition of the type INTEGER, that INTEGER
+             and RATIO should form an exhaustive partition of RATIONAL,
+             that RATIONAL and FLOAT should form an exhaustive partition of 
+             REAL, and that REAL and COMPLEX should form an exhaustive
+             partition of NUMBER.  These are all purposely avoided in order 
+             to permit compatible experimentation with extensions to the
+             Common Lisp number system, such as the idea of adding explicit 
+             representations of infinity or of positive and negative infinity.
+
+   p.43 Table 4-1 "Standard Type Specifier Symbols"
+
+    Add:     REAL
+
+   p.49 "Type Specifiers that Abbreviate"
+
+     Add:    (REAL low high)
+             Denotes the set of real numbers between low and high.  ...
+             [As with RATIONAL and FLOAT.]
+
+
+  Make REAL a built-in CLOS class.
+
+  Add a specific data type predicate REALP which tests for membership in
+  this type.  [By analogy with NUMBERP.]
+
+Test Case:
+
+  If a programmer wishes to test for "a number between 1 and 10", the
+  only current CL types would be '(or (rational 1 10) (float 1 10)) or
+  something like '(and numberp (not complexp) (satisfies range-1-10))
+  with (defun range-1-10 (real) (<= 1 real 10)).  Both of these are
+  likely less efficient, and certainly less expressive than '(real 1 10).
+
+Rationale:
+
+  Mathematics has a name for (OR RATIONAL FLOAT) -- it is "real".
+  This class is important because it is all the numbers which can be
+  ordered.
+
+  Throughout the "Numbers" chapter, the phrase "non-complex number" is
+  used.
+  MAX, MIN, p. 198 "The arguments may be any non-complex numbers."
+  CIS p. 207 "The argument ... may be any non-complex number."
+
+Current Practice:
+
+  Probably nobody does this.
+  
+Cost to Implementors:
+
+  Some work is necessary to add this name.  But since the underlying
+  type already exists the amount of work should be minimal.
+  
+Cost to Users:
+
+  Since this is an upward-compatible extension, it may be ignored by
+  users.
+
+Cost of Non-Adoption:
+
+  Occasional inconvenience and/or inefficiency.
+
+Benefits:
+
+  Mathematical clarity.
+
+  Ability to do CLOS method dispatch on the type.
+
+Aesthetics:
+
+  As mentioned under "rationale," this would be a more concise way to
+  express a common programming idiom.
+
+Discussion:
+
+  The name "non-complex number" is incorrect because future
+  implementations may wish to include numerical types which are neither
+  complex nor real.  [e.g. pure imaginary numbers or quaternions]
+  
+  The name "scalar" is incorrect because the mathematical concept of
+  scalar may indeed include complex numbers.
+
+  Fortran and Pascal use the name "real" to mean what CL calls
+  SINGLE-FLOAT.  That should cause no significant problem, since a Lisp
+  program written using the type REAL will do mathematically what the
+  equivalent Fortran program would do.  This is because Fortran's "real"
+  data-type is a subtype of the CL REAL type.  The only differences
+  might be that the Lisp program could be less efficient and/or more
+  accurate.
+
+  A survey of several Fortran and Pascal books shows that the distinction
+  between INTEGER and REAL is that REAL numbers may have fractional
+  parts, while INTEGERs do not.  Later discussions explain that REALs
+  cover a greater range.  Much later discussions cover precision
+  considerations, over/underflow, etc.  So the average Fortran or Pascal
+  programmer should be completely comfortable with the proposed Lisp
+  concept of REAL.

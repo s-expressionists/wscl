@@ -1,0 +1,118 @@
+Status:	Passed, Mar 89 X3J13
+Issue:         LOCALLY-TOP-LEVEL
+
+References:    None
+
+Related issues: EVAL-WHEN-NON-TOP-LEVEL, DECLARATION-SCOPE
+
+Category:      CLARIFICATION / ADDITION
+
+Edit history:  Version 1,  9-Mar-89, by Moon
+               Version 2, 16-Mar-89, by Moon, fix referenced proposal name
+
+Problem description:
+
+  It is desirable to be able to wrap LOCALLY around one or more
+  top-level forms and have them continue to be treated as top-level
+  forms.  Three examples of how this is useful:
+
+   - to put an OPTIMIZE or INLINE declaration into force around
+     several related forms.
+
+   - to put declarations into force around DEFCLASS, or any other
+     top-level form that lacks a syntax for embedded declarations.
+
+   - DECLARATION-SCOPE:NO-HOISTING, which passed in January,
+     removed the ability to use a DECLARE at the head of the body of a
+     DEFUN or DEFMACRO to make a declaration that applies to the entire
+     form, including the lambda-list.  We are supposed to use LOCALLY
+     instead, but forms in the body of LOCALLY are not top-level,
+     and that changes the semantics of DEFMACRO.
+
+  Issue EVAL-WHEN-NON-TOP-LEVEL could not define LOCALLY to treat
+  its body as top-level forms, because only a special form can do
+  that and LOCALLY is a macro.
+
+Proposal (LOCALLY-TOP-LEVEL:SPECIAL-FORM):
+          
+  Change LOCALLY from a macro to a special form, and change the
+  definition of compiler processing (in EVAL-WHEN-NON-TOP-LEVEL)
+  so that when a LOCALLY form appears at top level the forms in
+  its body are processed at top level.
+
+Examples:
+
+  (locally (declare (optimize (safety 3) (space 3) (speed 0)))
+    (defmacro frob (&environment e x y &optional (z (foo x y)))
+      (mumble x y z e)))
+
+  Without this proposal, this would have to be written
+
+  (defmacro frob (&environment e x y &optional (z (locally
+                                                    (declare
+                                                      (optimize
+                                                        (safety 3)
+                                                        (space 3)
+                                                        (speed 0)))
+                                                    (foo x y))))
+    (locally (declare (optimize (safety 3) (space 3) (speed 0)))
+      (mumble x y z e)))
+
+Rationale:
+
+  Wrapping LOCALLY around a form should not change its semantics except
+  as specified by the declarations, hence the body of a top-level
+  LOCALLY should be top-level.
+
+  A macro cannot have a top-level body unless it expands into a special
+  form that has a top-level body; otherwise the macro invocation and
+  the macro expansion would not have identical semantics as top-level
+  forms.  There is no available special form for LOCALLY to macroexpand
+  into (CLtL doesn't say, but presumably the intent was to expand into
+  a LET with an empty binding list).
+
+Current practice:
+
+  The Zetalisp equivalent of LOCALLY worked to surround top-level forms,
+  because it was a macro that expanded into COMPILER-LET (stashing the
+  declarations in a special variable the compiler would look at).  This
+  is of course the wrong way to do declarations, but it shows that the
+  idea was that you could wrap declarations around a bunch of top-level
+  forms.
+
+  Symbolics Genera 7.4.0 does not implement the proposal (but it does
+  not implement DECLARATION-SCOPE:NO-HOISTING either).  I did
+  not survey any other implementations.
+
+Cost to Implementors:
+
+  A half dozen lines of code in the compiler and a smaller amount
+  in the interpreter and any program-analyzing programs.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  See the horrible example above.
+
+Performance impact:
+
+  None.
+
+Benefits:
+
+  More consistent language.
+
+Esthetics:
+
+  Improved.
+
+Discussion:
+
+  None.
+
+
+
+     ----- End Forwarded Messages -----

@@ -1,0 +1,76 @@
+Status: Passed, March 88
+Issue:         FLET-DECLARATIONS
+
+References:    FLET, LABELS, MACROLET (CLtL p.113)
+	       X3J13 document 86-003 item 113
+	       Cleanup issue DECLARATION-SCOPE.
+	       Cleanup issue DECLARE-MACROS.
+
+Category:      ADDITION
+
+Edit history:  Version 1, Moon, 1 Jan 1988
+	       Version 2, Moon, 2 Feb 1988 (edits suggested by Masinter)
+
+Problem description:
+
+Declarations are not allowed before the body of FLET, LABELS, and MACROLET, even though Common Lisp allows declarations in other seemingly analogous places, such as LET.
+
+Proposal (FLET-DECLARATIONS:ALLOW):
+
+Change the syntax of FLET, LABELS, and MACROLET to allow declarations between the list of local function/macro definitions and the body forms.
+
+The scope of such declarations in FLET and LABELS includes the bodies of the locally defined functions, when the declarations are pervasive. Non-pervasive declarations have no effect on those bodies, except when LABELS includes the body in the scope of a function non-pervasively declared.  This paragraph follows directly from CLtL p.155 if the locally defined function bodies are treated like initialization forms. (This paragraph will be superseded by cleanup issue DECLARATION-SCOPE if it passes.)
+
+The scope of such declarations does not include the bodies of the macro expander functions defined by MACROLET.  This is consistent with the existing rule that the bodies of those functions are in the global environment, not the local lexical environment.
+
+If cleanup issue DECLARE-MACROS is not passed, in MACROLET an invocation of one of the macros locally defined by that MACROLET is permitted to expand into a DECLARE.
+
+Example:
+
+(defun example (y l)
+  (flet ((attach (x)
+	   (setq l (append l (list x)))))
+    (declare (inline attach))
+    (dolist (x y)
+      (unless (null (cdr x))
+	(attach x)))
+    l))
+
+(example '((a apple apricot) (b banana) (c cherry) (d) (e))
+	 '((1) (2) (3) (4 2) (5) (6 3 2)))
+ => ((1) (2) (3) (4 2) (5) (6 3 2) (a apple apricot) (b banana) (c cherry))
+
+The above function is erroneous in current Common Lisp.  With this proposal, it would have an intuitively obvious meaning.
+
+Rationale:
+
+This will make the syntax of FLET and LET consistent.  This will make it possible to attach declarations to function bindings; currently only variable bindings can have attached declarations.
+
+Current practice:
+
+Xerox Common Lisp implements FLET-DECLARATIONS:ALLOW. Symbolics Common Lisp does not allow declarations in this position.
+
+Cost to Implementors:
+
+The compilation and interpretation of three special forms will have to be changed, however the same techniques already developed for declarations in LET should be applicable.
+
+Cost to Users:
+
+No cost since this is an upward-compatible addition.
+
+Cost of non-adoption:
+
+Unnecessary inconsistency in the syntax of Common Lisp.
+
+Benefits:
+
+There is no major benefit but the language will be more consistent.
+
+Esthetics:
+
+Makes the language more consistent.
+
+Discussion:
+
+We need to resolve this for CLOS, because CLOS introduces two new special forms similar to FLET and LABELS and we need to make their syntax consistent with FLET and LABELS.
+

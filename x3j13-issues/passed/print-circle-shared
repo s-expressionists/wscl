@@ -1,0 +1,43 @@
+Status: proposal RESPECT-PRINT-CIRCLE passed, as amended, Jun 89 X3J13
+ (another proposal NEW-VALUE was passed and then reconsidered.)
+
+Issue: PRINT-CIRCLE-SHARED
+Edit history: Version 1, 		KMP 3/30/89
+	      Version 2, Masinter, 2 Jul 89, as amended Jun 89 X3J13
+
+Problem Description:
+
+ A label defined with #n= is valid for the rest of 
+ the top-level call to READ on input, permitting
+    '(#1=(A B) #1#)
+ to designate ((A B) (A B)), where the two lists
+ (A B) are EQ.  However, on output the implementations
+ are only required to detect circularities, not sharing,
+ when *PRINT-CIRCLE* is T.  That is
+    (PRINT '(#1=(A #1#) #1#))
+ may print as
+    (#1=(A #1#) #2=(A #2#))
+ or (#1=(A #1#) #1#)
+
+Proposal (PRINT-CIRCLE-SHARED:RESPECT-PRINT-CIRCLE):
+
+ Require the printer to use #n# to identify sharing
+ of EQL objects that would not READ to be EQL
+ when *PRINT-CIRCLE* is true, and not if false.
+
+Proposal (PRINT-CIRCLE-SHARED:NEW-VARIABLE):
+
+ Introduce *PRINT-SHARED*.  When *PRINT-CIRCLE*
+ and *PRINT-SHARED* are both true [rationale: 
+ check one variable first for efficiency], identify sharing 
+ with #n# in the printer. Otherwise, don't.
+
+Cost to Users:
+
+ Storage needed for detecting shared structure is slightly more.
+
+Current Practice:
+
+ Several implementations implement RESPECT-PRINT-CIRCLE.
+
+

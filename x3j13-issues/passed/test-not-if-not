@@ -1,0 +1,143 @@
+status: Passed, as amended, Jan 89 X3J13
+Note: some confusion in minutes as to whether COMPLEMENT was added
+	as part of TEST-NOT-IF-NOT or whether FUNCTION-COMPOSITION was
+	passed but with only COMPLEMENT preserved.
+	In any case: TEST-NOT-IF-NOT:FLUSH-ALL as stated here
+	passed with "Remove" -> "Deprecate". See issue
+	FUNCTION-COMPOSITION for more details.
+
+Forum: Cleanup
+Issue:          TEST-NOT-IF-NOT
+References:     Functions offering a :TEST-NOT keyword:
+                 ADJOIN (p276), ASSOC (p280), COUNT (p257), DELETE (p254),
+                 DELETE-DUPLICATES (p254), FIND (p257),
+                 INTERSECTION (p277), MEMBER (p275), MISMATCH (p257),
+                 NINTERSECTION (p277), NSET-DIFFERENCE (p278),
+                 NSET-EXCLUSIVE-OR (p278), NSUBLIS (p275), NSUBST (p274),
+                 NSUBSTITUTE (p256), NUNION (p276), POSITION (p257),
+                 RASSOC (p281), REMOVE (p253), REMOVE-DUPLICATES (p254),
+                 SEARCH (p258), SET-DIFFERENCE (p278), 
+                 SET-EXCLUSIVE-OR (p278), SUBLIS (p274), SUBSETP (p279),
+                 SUBST (p273), SUBSTITUTE (p255), TREE-EQUAL (p264),
+                 UNION (p276);
+                Functions with "-IF-NOT" in their name:
+                 ASSOC-IF-NOT (p280), COUNT-IF-NOT (p257),
+                 DELETE-IF-NOT (p254), FIND-IF-NOT (p257),
+                 MEMBER-IF-NOT (p275), NSUBST-IF-NOT (p274),
+                 NSUBSTITUTE-IF-NOT (p256), POSITION-IF-NOT (p257),
+                 RASSOC-IF-NOT (p281), REMOVE-IF-NOT (p253),
+                 SUBST-IF-NOT (p273), SUBSTITUTE-IF-NOT (p255);
+Related Issue:  FUNCTION-COMPOSITION
+Category:       CHANGE
+Edit history:   02-Oct-88, Version 1 by Pitman (just FLUSH-ALL)
+                05-Oct-88, Version 2 by Pitman (add option FLUSH-TEST-NOT)
+                01-Dec-88, Version 3 by Masinter (add discussion)
+                18-Mar-89, Version 4 by Masinter (as amended)
+
+Problem Description:
+
+  The -IF-NOT functions are functionally unnecessary.
+
+  The :TEST-NOT keywords are not only functionally unnecessary but
+  also problematic because it's not clear what to do when both :TEST
+  and :TEST-NOT are provided.
+
+  Many people think Common Lisp is more `bloated' than it needs
+  to be and these aspects of the language are commonly cited
+  specific examples.
+
+Proposal (TEST-NOT-IF-NOT:FLUSH-ALL):
+
+  Deprecate all -IF-NOT functions (named above) from Common Lisp.
+
+  Deprecate the :TEST-NOT keyword from the Common Lisp functions which 
+  currently provide them (named above).
+
+
+  Rationale:
+  
+    This makes the language a bit simpler.
+  
+    The removal of :TEST-NOT also makes the language easier to explain.
+  
+  Cost to Implementors:
+  
+    Very slight.
+  
+    Some symbols would disappear from the LISP package but could
+    still be offered in proprietary packages if deemed important
+    enough.
+  
+    Implementations could compatibly retain the :TEST-NOT keywords
+    for an interim period.
+  
+Current Practice:
+
+  Presumably no one has done this yet.
+
+Cost to Users:
+
+  Some rewrites would be needed.
+
+  Those rewrites, which are already fairly simple, would be even
+  more simple if some form of the FUNCTION-COMPOSITION issue is
+  voted in -- in particular, the COMPLEMENT function which it 
+  proposes would help enormously in this regard.
+
+Cost of Non-Adoption:
+
+  Common Lisp would continue to be what some people feel is
+  "bigger than it needs to be".
+
+Benefits:
+
+  The cost of non-adoption would be avoided.
+
+Aesthetics:
+
+  Presumably this makes the language easier to teach.
+
+Performance impact:
+
+  Very small; removing the :TEST-NOT keywords would
+  make the simple implementation of the functions that
+  used to have them slightly faster, but the resulting
+  code of the inner loop is likely to be much slower.
+
+Discussion:
+
+  Many people objected strongly to this proposals --
+  they might have been a nice idea five years ago, but are
+  gratuitous incompatibilities now: incompatible changes with
+  insufficient payback.
+
+  Some of those objections might be tempered if some additional
+  changes were made to Common Lisp: adding a COMPLEMENT
+  function, or if there were a strategy to declare some parts of the
+  language "obsolete". Since these conditions haven't been done,
+  their objections stand.
+
+  Steele noted that one main reservation to FLUSH-ALL is that
+  he uses REMOVE-IF-NOT much more than REMOVE-IF.
+
+  This issue is related to FUNCTION-COMPOSITION, but is not
+  dependent on it.  Some support the combination of  FLUSH-ALL and 
+  the NEW-FUNCTIONS part of FUNCTION-COMPOSITION in spite of
+  the incompatible change because of the aesthetic appeal.
+
+  Some people expressed their intention to vote for FLUSH-ALL
+  only if FUNCTION-COMPOSITION:NEW-FUNCTIONS.
+
+  It was noted that and
+  adding a #~ readmacro such that 
+      (FIND-IF-NOT #'ZEROP '(0 0 3))
+   == (FIND-IF (COMPLEMENT #'ZEROP) '(0 0 3))
+   == (FIND-IF #~ZEROP '(0 0 3))
+
+  The modification of these functions is moot for those who
+  prefer to use extended LOOP macro/iteration constructs
+  in lieu of the sequence functions.
+
+  Several alternative names for REMOVE-IF-NOT were
+  suggested: KEEP-IF, ABSTRACT, FILTER. We did not
+  pursue these suggestions.

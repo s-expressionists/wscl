@@ -1,0 +1,832 @@
+*DRAFT* Issue Status, 3-Dec-89
+
+ACCESS-ERROR-NAME
+Version 1, 
+
++ ADJUST-ARRAY-DISPLACEMENT
+Version 4, 23-Nov-87
+Status: passed, 1988
+
++ ADJUST-ARRAY-FILL-POINTER
+Version 1, 15-MAR-88
+Status: passed, 1988
+
++ ADJUST-ARRAY-NOT-ADJUSTABLE
+Synopsis: ADJUST-ARRAY on array made with :ADJUSTABLE NIL: "an error"?
+Version 4, 11-Jan-89, Released 12-Jan-89
+Status: Accepted with amendments Jan 89 X3J13
+Version 11, 23-Jun-89, released 23-Jun-89 
+Status: passed, Jun 89 X3J13
+
++ APPLYHOOK-ENVIRONMENT
+Synopsis: remove (useless) env argument to applyhook
+Version 2, 10-Jan-89, Released 10-Jan-89
+Status: Passed Jan-89 X3J13
+
++ AREF-1D
+synopsis: add ROW-MAJOR-AREF
+Version 7, 14-NOV-87
+Status: Passed, 1988
+
++ ARGUMENTS-UNDERSPECIFIED
+Synopsis: Clarify various ranges missing from CLtL
+Version 4, 21-Sep-88, Released 4 Dec 88
+Status: Passed Jan 89 X3J13
+
++ ARRAY-TYPE-ELEMENT-TYPE-SEMANTICS
+Synopsis: What do array element-type declarations mean?
+Version 9, 31-Oct-88, Released 5 Dec 88
+Status: Passed Jan 89 X3J13
+
++ ASSOC-RASSOC-IF-KEY
+Version 4, 23-NOV-87
+Status: Passed, 1988
+
+- BIT-ARRAY-FUNCTIONS
+Version 6, 19-Jun-89, released 19-Jun-89
+Status: failed (with amendments) Jun89 X3J13
+
+%+ BREAK-ON-WARNINGS-OBSOLETE
+Synopsis: deprecate BREAK-ON-WARNINGS because of BREAK-ON-SIGNALS
+Version 1, 07-Mar-89, Released 15-Mar-89
+Version 2,  8-Apr-89, (not mailed, on arisia)
+Status: Passed, as amended, Mar 89 X3J13
+
++ CLOS-CONDITIONS
+Version 4, 10-Mar-89, released 16-Mar-89
+Comments: define metaclass of conditions? Not here.
+Status: Passed, Mar 89 X3J13
+
++ CLOSE-CONSTRUCTED-STREAMS
+Synopsis: What does it mean to CLOSE a constructed stream?
+Version 2, 12-Jan-89, Released 12-Jan-89
+Status: Proposal ARGUMENT-STREAM-ONLY passed Jan 89 X3J13
+
++ CLOSED-STREAM-OPERATIONS
+Synopsis: What operations are legal on closed streams?
+Version 5, 5-Dec-88, released 5-Dec-88
+Status: amended at Jan 89 X3J13; amendment withdrawn Mar 89 X3J13;
+	version 5 stands
+
+- COERCE-INCOMPLETE
+Synopsis: Extend COERCE
+Version 3, 7-Mar-89, Released 14-Mar-89
+Status: motion died for lack of second; withdrawn
+
++ COLON-NUMBER
+Synopsis:  :123 is an error
+Version 1, 22-OCT-87
+Status: Passed, 1988
+
++ COMMON-TYPE
+Version 1, 20-Mar-89, released 21-Mar-89
+Status: passed, Mar 89 X3J13
+
++ COMPILER-WARNING-STREAM
+Version 6, 5-JUN-87
+Status: Passed, Jun-87 X3J13 
+
++ COMPLEX-ATAN-BRANCH-CUT
+Synopsis: tweak upper branch cut in ATAN formula
+Version 1, 13-Dec-88, Released 10-Jan-89
+Status: Passed Jan 89 X3J13
+
++ COMPLEX-ATANH-BOGUS-FORMULA
+Version 1, 20-Sep-89
+Status: Passed, Nov 89 X3j13
+
++ COMPLEX-RATIONAL-RESULT
+Version 1, 20-Mar-89, released 21-Mar-89
+Status: passed, Mar 89 X3J13
+Version 3, 28-Apr-89
+Status: passed, Jun 89 X3J13
+
++ CONDITION-RESTARTS
+Synopsis: can't know whether restart is associated with signalling
+Version 2, 26-Jun-89
+Status: passed, Jun 89 X3J13
+Version 3, 3-Dec-89
+Status: Passed, as amended, Nov 89 X3J13
+
++ CONTAGION-ON-NUMERICAL-COMPARISONS
+Version 1, 14-Sep-88, Released 6 Oct 88
+Status: passed, Jan 89 X3J13
+
++ COPY-SYMBOL-COPY-PLIST
+Version 1, 10-Jan-89, released 16-Mar-89
+Status: passed, Mar 89 X3j13
+
++ COPY-SYMBOL-PRINT-NAME
+Version 2, 15-Mar-89, released 16-Mar-89
+Status: passed, Mar 89 X3j13
+
++ DATA-IO
+Version 8, 23-Jun-89
+Status: passed, Jun89 X3J13
+
++ DATA-TYPES-HIERARCHY-UNDERSPECIFIED
+Version 2, 4-SEP-88, released 4-Sep-88
+Status: Passed, Aug 88 X3J13
+
++ DECLARATION-SCOPE
+Version 4, 15-Nov-88, Released 9-Dec-88
+Status: NO-HOISTING passed Jan 89 X3J13
+
++ DECLARE-ARRAY-TYPE-ELEMENT-REFERENCES
+Version 3, 13-Jan-89, released 3-Feb-89
+Status: passed, Jan 89 X3J13
+
++ DECLARE-FUNCTION-AMBIGUITY
+Version 4,  5-Dec-88, Released  5-Dec-88
+Synopsis: (DECLARE (FUNCTION ...)) no longer synonym for FTYPE
+Status: passed, Jan 89 X3J13
+
++ DECLARE-MACROS
+Version 3, 5-FEB-88 
+Status: Passed, 1988?
+
++ DECLARE-TYPE-FREE
+Version 10, 12-Jan-89
+Status: proposal LEXICAL passed Jan 89 X3J13
+Comments: (some clarifications from previous versions make intent clear.)
+	Editorial committee should deal with this.
+
++ DECODE-UNIVERSAL-TIME-DAYLIGHT
+Version 2, 30-Sep-88, Released 6 Oct 88
+Status: Passed, Jan 89 x3j13
+
+- DEFAULT-CASE
+Version 1, 16-Mar89
+Status: squashed by Cleanup Committee chairman
+
++ DEFINE-COMPILER-MACRO
+Comment: Was DEFINE-OPTIMIZER
+Version 2, 12-Jul-89
+Status: Passed, as amended, jun 89 X3J13
+    Some controversy as to whether this version captures what
+    was intended. Probably revisit in November.
+
+DEFINE-DECLARATION-RETURN-VALUE
+(Passed, Nov?)
+
+%+ DEFMACRO-LAMBDA-LIST
+Version 3, 9-Apr-89, released  9-Apr-89 (as amended)
+Version 4, 10-Apr-89 (left out an amendment; not released)
+Status: Passed, as amended, Mar 89 X3J13
+
++ DEFPACKAGE
+Version 7, 2-Nov-88, Released 5 Dec 88
+Comment: clarify "at variance" in editorial work?
+Status: Passed, Jan 89 X3J13
+
++ DEFSTRUCT-CONSTRUCTOR-KEY-MIXTURE
+Version 3, 8-Jan-89, Released 11-Jan-89
+Status: Passed, Jan 89 X3J13
+
++ DEFSTRUCT-DEFAULT-VALUE-EVALUATION
+Version 1, 5/13/88
+Status: Passed, Oct. 1988
+
++ DEFSTRUCT-PRINT-FUNCTION-INHERITANCE
+Version 3, 7 Dec 88, Released 12-Dec-88
+Status: Passed, Jan 89 X3J13
+
+%+ DEFSTRUCT-REDEFINITION
+Synopsis: what happens if you redefine a DEFSTRUCT?
+Version 1, 7/26/88, released 8-Oct-88
+Version 3, 6-Feb-89 (not released, on arisia)
+Status: Passed (as amended) Jan 89 X3J13
+
++ DEFSTRUCT-SLOTS-CONSTRAINTS-NAME
+Version 5, 12-Jan-89
+Status: Passed, Jan 89 X3J13
+
++ DEFSTRUCT-SLOTS-CONSTRAINTS-NUMBER
+Version 1, 5/13/88
+Status: Passed, 1988
+
++ DEFVAR-DOCUMENTATION
+Version 2, 23-NOV-87
+Status: Passed, Mar 1988
+
++ DEFVAR-INIT-TIME
+Version 2, 29-MAR-87
+Status: Passed, Jun-87
+
++ DEFVAR-INITIALIZATION
+Version 4 5-JUN-87
+Status: Passed, Jun-87
+
++ DESCRIBE-INTERACTIVE
+Version 4, 15-Nov-88, Released 7-Dec-88
+Synopsis: can DESCRIBE ask user a question?
+Status: Proposal NO passed Jan 89 X3J13
+
+%+ DESCRIBE-UNDERSPECIFIED
+Version 1, 10-Mar-89, Released 16-Mar-89
+Synopsis: making DESCRIBE generic was wrong; fix
+Version 2, 9-Apr-89 (not released, on arisia)
+status: passed, as amended, Mar 89 X3J13
+
+%+ DESTRUCTURING-BIND
+Version 2, 25-Jan-89, Released 16-Mar-89
+Synopsis: add DESTRUCTURING-BIND macro
+Version 3, Mar 89, (circulated at Mar 89 X3J13, not released, on arisia)
+Status: passed, Mar 89 X3J13
+
+- DIRECTORY-DOES-TO-MUCH
+Version 1
+Status: not on agenda Mar 89,  didn't get to; withdrawn
+
++ DISASSEMBLE-SIDE-EFFECT
+Version 3 1/21/88
+Status: Passed, 1988
+  *** KMP says that V4 passed, not V3
+
++ DO-SYMBOLS-DUPLICATES
+Version 3 23-NOV-87
+Status: Passed, 1988
+
++ DOTTED-MACRO-FORMS
+Version 3, 15-Nov-88, Released 7-Dec-88
+Status: passed, Jan 89 X3J13
+
++ DRIBBLE-TECHNIQUE
+Version 2, 14-FEB-88 
+Status: Passed, 1988
+
+%+ DYNAMIC-EXTENT
+Version 3, 11-Jan-89, released 16-Mar-89
+Version 4, 5-Apr-89, as amended (not released to X3j13, on arisia)
+Status: passed, as amended, Mar 89 X3J13
+
++ DYNAMIC-EXTENT-FUNCTION
+Version 2, 11-Jun-89, released 21-Jun-89
+Status: passed, Jun 89 X3J13
+
++ &ENVIRONMENT-BINDING-ORDER
+Version 3, 3-Nov-89
+Status: Proposal FIRST passed, Nov 89 X3J13
+**** NEED VERSION ON ARISIA ****
+
+- ENVIRONMENT-ENQUIRY
+Synopsis: "The environment inquiry functions (pp447-448) don't return a
+   value in consistent format across implementations. This makes
+   them virtually useless. I would like to constrain the values
+   enough so that implementors knew what to provide as return
+   values, and provide some examples of intended uses."
+Status: didn't get to; withdrawn
+
+%+ EQUAL-STRUCTURE
+Version 6, 11-Jan-89, Released 12-Jan-89
+Version 7, 15-Mar-89 (not released to X3j13, on arisia)
+Status: Passed Jan 89 X3J13 as amended.
+Version 8, 3-Jul-89, as amended Jun89 X3J13
+Status: Passed Jun 89 X3J13 as amended
+
+- EQUALP-GENERIC
+Version 1, 28-Feb-89
+Synopsis: make EQUALP generic function
+Status: withdrawn, Mar 89 X3J13
+
+* ERROR-CHECKING-IN-NUMBERS-CHAPTER
+Version 1, 6-Mar-89, released 25-Mar-89
+Synopsis: define 'should signal', 'might signal' for number fns
+Status:	*** Deferred to editorial committee: license to add
+ 
+- ERROR-NOT-HANDLED
+Version 1, 25-Sep-88, Released 6-Oct-88 and 14-Mar-89
+Status: withdrawn; made editorial advice
+
++ EVAL-OTHER
+8-JUN-88, Version 2
+Status: Passed, Oct 88
+
+%+ EXIT-EXTENT
+Version 6,  8-Jan-89, distributed Jan89 X3J13, Rereleased 16-Mar-89
+Version 7, 4-Apr-89, as amended (not released to X3j13, on arisia)
+Status: Passed, Mar 89 X3j13, as amended
+
++ EXPT-RATIO
+Version 3, 31-Oct-88, Released 7 Dec 88
+Status: passed, Jan 89 X3J13
+
+%+ FIXNUM-NON-PORTABLE
+Version 4, 7-Dec-88, Released 12-Dec-88
+Version 6, 17-Mar-89, as amended
+Status: Passed, Jan 89 X3J13, as amended
+
++ FLET-DECLARATIONS
+Version 2, 2 FEB 88
+Status: Passed, Mar 88
+
++ FLET-IMPLICIT-BLOCK
+Version 6, 5-JUN-87
+Status: Passed, Jun 87
+
++*  FLOAT-UNDERFLOW
+Version 3, 18-Jun-89, released 19-Jun-89
+Status: parts 1 & 2 of proposal ADD-CONTROL passed Jun89X3J13
+  (Parts 3,4,5 tabled indefinitely.)
+
++ FORMAT-ATSIGN-COLON
+Version 4, 5-JUN-87
+Status: Passed, Jun-87
+
++ FORMAT-COLON-UPARROW-SCOPE
+Version 3, 5 FEB 88
+Status: Passed, Mar 88
+
++ FORMAT-COMMA-INTERVAL
+Version 2, 15-JUN-87
+Status: Passed, March 1988
+
++ FORMAT-E-EXPONENT-SIGN
+Version 2, 2 Oct 88, Released 6 Oct 88
+Status: Passed, Jan 89 X3J13
+
++ FORMAT-OP-C
+11-JUN-87, Version 5
+Status: Passed, Jun-87
+
+- FORMAT-PLURALS
+Synopsis: remove ~P, add ~:@[singular~;plural~]
+Status: not submitted, will not be considered
+
++ FORMAT-PRETTY-PRINT
+Version 7, 15 Dec 88, Released 7 Dec 88
+Comments: passed, Jan 89 X3j13
+
++ FUNCTION-CALL-EVALUATION-ORDER
+Version 1, 22-MAR-88
+Status: Passed, 1988
+
+- FUNCTION-COERCE-TIME
+Synopsis: When does SYMBOL-FUNCTION happen in MAPCAR? 
+Version 2, 16-sep-88, Released 8-Oct-88 Re-released: 16-Mar-89 
+Status: withdrawn at Mar-89; voted to request editor to
+	rewrite as explicitly vague
+
++ FUNCTION-COMPOSITION
+Synopsis: Add new functions
+Version 5, 10-Feb-89 (not released to X3j13; on arisia)
+Status: Passed (as amended) Jan 89 X3J13
+	Confirming vote Jun89 X3J13 (because of confusion)
+
++ FUNCTION-DEFINITION
+Version 3, 10-Feb-89 (not released to X3J13, on arisia)
+Status: Passed (as amended) Jan 89 X3J13
+
++ FUNCTION-NAME
+Comment: renaming of SETF-FUNCTION-VS-MACRO, SETF-PLACES
+Version 1, 23-Jan-89, Released 16-Mar-89
+Status: FUNCTION-NAME:LARGE without 7, 8, and 9, passed Mar89
+
++ FUNCTION-TYPE
+Version 12, 4-SEP-88, released 4-sep-88
+Status: Passed, June 1988 X3J13, as amended
+Comment: (attempt to "back out" the change to COERCE was 
+	tabled at Jun89 meeting.)
+
++ FUNCTION-TYPE-ARGUMENT-TYPE-SEMANTICS
+Synopsis: Change semantics of argument types in function  decls
+Version 3, 7-Dec-88, Released  12-Dec-88
+Status: Passed, Jan 89 X3J13
+
++ FUNCTION-TYPE-KEY-NAME
+Version 3, 13-FEB-88 
+Status: Passed, 1988
+
++ FUNCTION-TYPE-REST-LIST-ELEMENT
+Version 5, 14-Nov-88, Released 8-Dec-88
+Status: Passed, Jan 89 X3J13
+
++ GENSYM-NAME-STICKINESS
+Synopsis: no side effects if optional arg supplied
+Version 3, 20-Mar-89, Released 23-Mar-89
+Status: passed, Mar 89 X3J13 
+
+%+ GET-MACRO-CHARACTER-READTABLE
+Version 3, 11-Feb-89 (not released; on arisia)
+Status: Passed (as amended) Jan 89 X3J13
+
++ GET-SETF-METHOD-ENVIRONMENT
+Version 5 13-JUL-87
+Status: Passed, 1988?
+
+%+ HASH-TABLE-ACCESS
+Synopsis: Add new accessors for hash-table properties
+Version 2, 13 Oct 88, released 16-Mar-89
+Version 3, 5-Apr-89 (not released to X3j13; on arisia from KMP)
+status: passed, as amended, Mar 89 X3J13 
+
++ HASH-TABLE-PACKAGE-GENERATORS
+Version 7, 8-Dec-88, Released 9-Dec-88
+Comments: The test-package-iterator example has the values
+ from the generator in  the wrong order.
+Status: passed, Jan 89 X3J13
+
+- HASH-TABLE-PRINTED-REPRESENTATION
+Version 2, 8-Jun-88
+Comments: Use #S(ARRAY ...), #S(HASH-TABLE...), #S(PATHNAME...)?
+Status: didn't get to it; withdrawn
+
++ HASH-TABLE-SIZE
+Version 2, 1-Jul-89
+Status: passed, as amended, Jun89 X3J13
+
++ HASH-TABLE-TESTS
+Version 2, 8-Dec-88, Released 8 Dec 88
+Status: passed Jan 89 X3J13
+
++ IEEE-ATAN-BRANCH-CUT
+Version 2, 11-Jan-89, Released 11-Jan-89
+Status: passed, Jan 89 X3J13
+
+- IGNORE-VARIABLE
+Synopsis: default (IGNORE IGNORE)
+Version 1, 6-Feb-89
+Status: didn't get to it by Mar 89; withdrawn
+
++ IMPORT-SETF-SYMBOL-PACKAGE
+Version 5, MAY-87
+Status: Passed, Jun-87
+
+%+ IN-PACKAGE-FUNCTIONALITY
+Version 8, 15-Mar-89, Released 15-Mar-89
+Version 9, 9-Apr-89, as amended Mar89 X3J13, (not released, on Arisia)
+Status: passed, as amended, Mar 89 X3J13
+
+%+ IN-SYNTAX
+Version 3,  9-Apr-89 (not released, on Arisia)
+Status: Version 2 (without cost/benefit analysis, but same proposal)
+	passed Mar 89 X3J13
+
++ KEYWORD-ARGUMENT-NAME-PACKAGE
+Version 8, 8-NOV-87
+Status: Passed, Mar 88
+
++ LAST-N
+12-MAR-88, Version 2
+Status: Passed, 1988?
+
++ LCM-NO-ARGUMENTS
+Version 1, 17 Oct 88, Released 8 Dec 88
+Status: passed, Jan 89 X3J13
+
+%+ LISP-PACKAGE-NAME
+Synopsis: change LISP to COMMON-LISP to avoid CLtL confusion
+Version 1, 22 Dec 88, Released 11-Jan-89
+Version 2,  9-Apr-89, as amended Mar 89 X3J13. Not released, on arisia
+Status: passed, as amended, Mar 89 X3J13
+
+%+ LISP-SYMBOL-REDEFINITION
+Version 5, 22-Nov-88, Released 8 Dec 88
+Version 6,  9-Apr-89, as amended Mar 89 X3j13 (not released to X3j13, on arisia)
+Status: passed, as amended, Mar 89 X3J13
+
+%+ LOAD-OBJECTS
+Synopsis: Provide a way to allow defstruct/defclass objects in compiled files
+Version 3, 9-Mar-89, released 16-Mar-89
+Version 4, 4-Apr-89, (not released to X3J13, on arisia)
+Status: passed, as amended, Mar 89 X3J13
+
++ LOAD-TRUENAME
+Synopsis: Make default pathname for LOAD inside LOAD same?
+Version 4, 11-Apr-89
+Status: Passed, Jun 89 X3J13
+
++ LOCALLY-TOP-LEVEL
+Version 2, 16-Mar-89, released 17-Mar-89
+Status: passed, Mar 89 X3J13
+
++ LOOP-AND-DISCREPANCY
+Version 1, 15-Mar-89, released 16-Mar-89
+status: passed, Mar 89 X3J13
+
++ MACRO-FUNCTION-ENVIRONMENT
+Version 2, 8-JUN-88
+Status: Passed, 1988
+
+- MACRO-SPECIAL-FORMS
+Synopsis: macros => implementation-dependent special forms doesn't work
+Status: (no proposal, not ready)
+
++ MAKE-PACKAGE-USE-DEFAULT
+Version 2, 8 Oct 88, Released 12-Dec-88
+Version 3, 16-Mar-89
+Status: Passed, Jan 89 X3J13 as amended 
+
+- MAKE-STRING-FILL-POINTER
+Synopsis: extend MAKE-STRING to take a fill-pointer?
+Version 1, 20-Oct-88, released 16-Mar-89
+Status: withdrawn by consensus Mar 89 meeting
+
++ MAP-INTO
+Version 3, 23-Jun-89, released 23-Jun-89
+Status: passed, Jun 89 X3J13
+
++ MAPPING-DESTRUCTIVE-INTERACTION
+Version 2, 09-Jun-88, Released 8 Oct 88
+Synopsis: [don't] define interaction of DELETE on MAPCAR'd list.
+Status: passed, Jan 89 X3J13
+
++ NTH-VALUE
+Version 4, 8-Dec-88, Released 8 Dec 88
+Comment: amended to clarify when index out of range
+Version 5, 17-Mar-89 (not released; on arisia)
+Status: passed, as amended, Jan 89 X3J13
+
++ PACKAGE-CLUTTER
+Version 6, 12-Dec-88, Released 12-Dec-88
+Comments: Accepted, with amendment
+Version 7, 17-Mar-89 (not released; on arisia)
+Status: Passed, Jan 89 X3J13, as amended
+
++ PACKAGE-DELETION
+Version 5, 21 nov 88, Released 8 Dec 88
+Status: passed, Jan 89 X3J13
+
++ PACKAGE-FUNCTION-CONSISTENCY
+Synopsis: allow strings for package arg everywhere uniformly
+Version 2, 12-Jan-89, Released 12-Jan-89
+Version 4, 17-Mar-89, released 18-Mar-89
+Status: passed, as amended, Jan 89 X3J13
+
+* PATHNAME-CANONICAL-TYPE
+Synopsis: allow canonical :SOURCE-LISP to MAKE-PATHNAME; add PATHNAME-CANONICAL-TYPE?
+Version 1, 07-Jul-88, released 23-Mar-89
+Status: tabled (indefinitely) Jun 89 X3J13
+
++ PATHNAME-COMPONENT-CASE
+Version 6, 1-Jul-89 
+Status: passed, as amended, Jun89 X3J13
+
++ PATHNAME-COMPONENT-VALUE
+Version 3, 16-Jun-89, released 16-Jun-89
+Status: passed, Jun89 X3J13
+
+- PATHNAME-EXTENSIONS
+Version 1, 28-Dec-88, released Mar 89
+Synopsis: add COMMON-PATHNAME-P
+Status: withdrawn at Jun89 X3J13
+
++ PATHNAME-LOGICAL
+Version 4, 23-Jun-89, released 23-Jun-89 
+Status: passed, Jun89 X3J13
+
++ PATHNAME-PRINT-READ
+Synopsis: Print pathnames like #P"asdf"?
+Version 2, 3-Jul-89
+Status: passed, as amended, Jun89 X3J13
+
++ PATHNAME-STREAM
+Version 6 14-NOV-87
+Status: Passed, March 1988
+
++ PATHNAME-SUBDIRECTORY-LIST
+Version 8, 2-Jul-89
+Status: Passed, as amended, Jun89 X3J13
+
++ PATHNAME-SYMBOL
+Version 5 5-FEB-88
+Status: Passed, Mar 1988
+
++ PATHNAME-SYNTAX-ERROR-TIME
+Synopsis: when are errors in pathnames detected?
+Version 1, 7-Jul-88, released 23-Mar-89
+Status: Proposal EXPLICITLY-VAGUE passed Jun 89 X3J13
+
+- PATHNAME-SYSTEM-TYPE
+Version 2, 17-Jun-89, released 17-Jun-89
+Status: failed, Jun 89 X3J13
+
+%+  PATHNAME-UNSPECIFIC-COMPONENT
+Synopsis: More extensions to :UNSPECIFIC
+Version 1, 29-Dec-88, Released 12-Jan-89
+Version 2, 17-Mar-89 (not released, on arisia)
+Status: Passed, Jan 89 X3j13, as amended
+
++ PATHNAME-WILD
+Version 7, 23-Jun-89, released 23-Jun-89
+Version 8, 2-Jul-89 (as amended Jun89 X3J13)
+Status: Passed, as amended, Jun89 X3J13
+
++ PEEK-CHAR-READ-CHAR-ECHO
+Synopsis:  PEEK-CHAR, READ-CHAR on streams made by MAKE-ECHO-STREAM
+Version 3, 8-Oct-88, Released 8 Oct 88
+Status: Passed, Jan 89 X3J13
+Version 4, 26-Jun-89, released at meeting
+Status: failed; version 3 stands
+
+* PRETTY-PRINT-INTERFACE
+Version 3, 15-Mar-89
+Synopsis: standardize interface to prettyprinter
+Status: agreed to adopt proposal as produced by drafting committee
+
++ PRINC-CHARACTER
+29-APR-87, Version 2
+Status: Passed, 1988?
+
++ PRINT-CASE-PRINT-ESCAPE-INTERACTION
+Version 1, 26-Jan-89
+Status: VERTICAL-BAR-RULE-NO-UPCASE passed, Jun 89 X3J13
+
++ PRINT-CIRCLE-SHARED
+Synopsis: does PRINT-CIRCLE cause shared structure to print with #=?
+Version 2, 2-Jul-89
+Status: passed, Jun89 X3J13, as amended
+
++ PRINT-CIRCLE-STRUCTURE
+Version 3, 20 Sep 88, Released 8 Oct 88
+Comments: Accepted, with amendment
+Version 4, 17-Mar-89 (not released, on arisia)
+Status: Passed, Jan 89 X3J13, as amended
+
+- PROCLAIM-LEXICAL
+Version 9, 8-Dec-88, Released 12-Dec-88
+Synopsis: add LEXICAL proclaimation
+Comments: lengthy mail; amendments at Jan meeting
+Status: amended, then failed, Mar 89 X3J13
+
++ PUSH-EVALUATION-ORDER
+Version 5, 25-NOV-87
+Status: Passed, 1988
+
++ RANGE-OF-COUNT-KEYWORDS
+Version 3, 9-Oct-88, Released 14-Oct-88
+Status: passed, Jan 89 X3J13
+
++ RANGE-OF-START-AND-END-PARAMETERS
+Version 1, 14-Sep-88, Released 7 Oct 88
+Status: passed, Jan 89 X3J13
+
++ READ-CASE-SENSITIVITY
+Synopsis: Allow readtables to be case sensitive
+Version 7, 2-Jul-89
+Status: passed, as amended, Jun89 X3J13
+
+- READ-DELIMITED-LIST-EOF
+Synopsis: eof in read deliminted list signals an error
+Status: awaiting submission
+
++ REAL-NUMBER-TYPE
+Synopsis: add REAL = (OR RATIONAL FLOAT) & range
+Version 3, 13-Jan-89, released 16-Mar-89
+Version 4, 5-Apr-89, as amended (not released, on arisia)
+Status: passed, as amended, Mar 89 X3j13
+
++ REDUCE-ARGUMENT-EXTRACTION
+Version 3 13-FEB-88
+Status: Passed, 1988
+
++ REMF-DESTRUCTION-UNSPECIFIED
+Synopsis: Specification of side-effect behavior in CL
+Version 7, 5-Apr-89 (not released, as amended, on arisia)
+Status: passed, as amended, Mar 89 X3J13
+
++ REQUIRE-PATHNAME-DEFAULTS
+Version 6, 9 Dec 88, Released 09 Dec 88
+Status: passed, Jan 89 X3j13
+   (Motion to retract failed Mar 89 X3J13)
+   (Motion to retract failed Jun 89 X3J13)
+
++ REST-LIST-ALLOCATION
+Version 3, 12-Dec-88, Released 12-Dec-88
+Status: proposal MAY-SHARE passed, Jan 89 X3J13
+
++ RETURN-VALUES-UNSPECIFIED
+Version 6, 9 Dec 88, Released  9-Dec-88
+Status: passed, Jan 89 X3J13
+
++ ROOM-DEFAULT-ARGUMENT
+Version 1, 12-Sep-88, Released 8 Oct 88
+Status: passed, Jan 89 X3J13
+
++ SEQUENCE-TYPE-LENGTH
+Version 1, 16-Jun-89 
+Status: passed, Jun89 X3J13
+
++ SETF-MULTIPLE-STORE-VARIABLES
+Synopsis: Allow multiple "places" in SETF stores
+Version 2, 22-Mar-89, released 22-Mar-89
+Status: passed, Jun89 X3J13
+
++ SETF-SUB-METHODS
+Version 5, 12-Feb-88, Released 8 Oct 88
+Synopsis: careful definition of order inside (SETF (GETF ...) ...) 
+Status: passed, Jan 89 X3J13
+
++ SHADOW-ALREADY-PRESENT
+Version 4 10-NOV-87
+Status: Passed, Mar 88
+
++ SHARPSIGN-PLUS-MINUS-PACKAGE
+Version 3 14-NOV-87
+Status: Passed, Mar 88
+
++ SPECIAL-TYPE-SHADOWING
+Synopsis: intersection of types when proclaimed special has local type
+declaration
+Version 1, 4-Nov-88, released 11-Jan-89
+Status: passed, Jan 89 X3J13
+
++ STANDARD-INPUT-INITIAL-BINDING
+Version 8, 8 Jul 88, Released 7 Oct 88
+Status: passed, Jan 89 X3J13
+
++ STEP-ENVIRONMENT
+Version 3, 20-Jun-88, Released  7 Oct 88
+Version 4, 17-Mar-89
+status: Passed, Jan 89 X3J13, as amended
+
++ STREAM-ACCESS
+Version 2, 30-Nov-88, Released  9 Dec 88
+Status: ADD-TYPES-ACCESSORS passed, Jan 89 X3J13
+
++ STREAM-CAPABILITIES
+Version 3, 12-May-89, released 19-Jun-89
+Status: passed, Jun 89 X3J13
+
+* STREAM-DEFINITION-BY-USER
+Version 1, 22-Mar-89, Released 17-Apr-89
+Comments: tabled (indefinitely, Jun89 X3J13)
+
++ STRING-COERCION
+Version 2, 9-May-89, released 19-Jun-89
+Status: passed, Jun89 X3J13
+
++ SUBSEQ-OUT-OF-BOUNDS
+29-MAR-88 Version 2 
+Status: Passed, 1988?
+
+- SUBTYPEP-ENVIRONMENT
+Version 1, 2-Jan-89
+Status: missing writeup, didn't get to, withdraw
+
++ SUBTYPEP-TOO-VAGUE
+Version 4,  7-Oct-88, Released 7 Oct 88
+Status: passed, Jan 89 X3J13
+Version 6, 2-Jul-89
+Status: passed, as amended, Jun 89 X3J13
+
++ SYMBOL-MACROLET-DECLARE
+Version 2,  9-Dec-88, Released 9 Dec 88
+Status: passed, Jan 89 X3J13
+
++ SYMBOL-MACROLET-SEMANTICS
+Status: Version 5, Passed, Jan 89 X3J13
+Version 6, 14-Mar-89, released 16-Mar-89
+Status: Version 6 (reconsidered), passed, Mar 89 X3J13
+
+- TAIL-RECURSION-OPTIMIZATION
+Version 2, Oct 88?
+Status: dropped somehow? Needs review?
+
++ TAILP-NIL
+Version 5, 9-Dec-88, Released 12-Dec-88
+Synopsis: Operation of TAILP given NIL
+Status: passed, Jan 89 X3J13
+
++ TEST-NOT-IF-NOT
+Version 3, 1 Dec 88, Released 9 dec 
+Version 4, 18-Mar-89
+Status: Passed, as amended, Jan 89 X3J13 with confirming vote
+	Jun 89 X3J13
+
++ THE-AMBIGUITY
+Version 2, 11-Jan-89, Released 11-Jan-89
+Status: FOR-DECLARATION passed, Jun 89 X3J13
+
+%+ TIME-ZONE-NON-INTEGER
+Version 1, 13-Mar-89, Released 16-Mar-89
+Version 2, 10-Apr-89, as amended Mar 89 X3J13 (not released, on arisia)
+Status: passed, as amended, Mar 89 X3J13 
+
++ TYPE-OF-UNDERCONSTRAINED
+Version 3, 12-Dec-88, Released 12 Dec 88
+Status: passed, Jan 89 X3J13
+Comments: problems found
+Version 6, 22-Jun-89, released 22-Jun-89
+Status: passed, Jun 89 X3J13
+
+%+ UNDEFINED-VARIABLES-AND-FUNCTIONS
+Synopsis: What happens on an undefined function call, unbound variable ref?
+Version 2, 3-Jul-89 (not released, on ari
+Status: passed, as amended, Jun89 X3J13
+
++ UNREAD-CHAR-AFTER-PEEK-CHAR
+Version 2, 2-Dec-88, Released 12-Dec-88
+Status: passed, Jan 89 X3J13
+
++ VARIABLE-LIST-ASYMMETRY
+Version 3, 08-Oct-88, Released 9 Dec 88
+Status: passed, Jan 89 X3J13
+
++ WITH-OUTPUT-TO-STRING-APPEND-STYLE
+Version 5, 7-JUN-88 
+Status: Passed, 1988
+
++ WITH-OPEN-FILE-DOES-NOT-EXIST
+Version 1, 17-Mar-89
+Status: STREAM-IS-NIL  passed, Jun 89 X3J13

@@ -1,0 +1,58 @@
+Issue:        SHARPSIGN-PLUS-MINUS-PACKAGE
+References:   #+ (p. 358), #- (p. 359), *FEATURES* (p. 448)
+Category:     CLARIFICATION/CHANGE
+Edit history: Version 1 by Pitman   01-Mar-87
+              Version 2 by Masinter 10-Nov-87
+              Version 3 by Masinter 14-Nov-87
+
+Problem Description:
+
+No information is provided in the description of #+ and #- (pp. 358-359) about what package the features are read on.
+
+In some systems, the current package is used. Since there is no wording in CLtL to the contrary, it's reasonable to assume that this would be done, but a consequence of this is that you must be much more sensitive to the package you're in at any given time when using #+ or #- even for system-provided features. (This is a problem if the LISP package can contain only the symbols in CLtL because system-provided features will likely not have the names of symbols on LISP and hence will require package prefixes. Having a symbol named LISP:SYMBOLICS or LISP:LUCID would not be possible, so something like #+Symbolics would not be possible; you'd have to write #+SYSTEM:SYMBOLICS or some such, which might get a read error in a non-Symbolics implementation that didn't export SYMBOLICS from SYSTEM...)
+
+In some systems, a canonical package (such as KEYWORD) is used. This means that package prefixes are rarely necessary in sharpsign conditionals for system-provided features regardless of the current package or restrictions about what may be in LISP. (For example, the KEYWORD package can have any symbol so it's not a problem to push :SYMBOLICS or :LUCID on *FEATURES*).
+
+This has implications about what goes on the *FEATURES*  list (p. 448).
+
+
+Proposal (SHARPSIGN-PLUS-MINUS-PACKAGE:KEYWORD):
+
+Specify that the default package while reading feature specs is the keyword package. Other packages may be designated by use of explicit package prefixes.
+
+Symbols on *FEATURES* may be in any package but  that in practice they will mostly be on the keyword package because that's the package #+/#- uses by default. If symbols in a package other than keyword appear on *FEATURES*, they  will be seen by #+/#- only if marked by explicit package  prefixes in the written feature-spec.
+
+Clarify that the package of the IEEE-FLOATING-POINT symbol mentioned on p. 448 is KEYWORD.
+
+Rationale:
+
+Making the behavior of #+ and #- well defined is important for people writing portable code that manipulate *FEATURES* directly.
+
+Current Practice:
+
+Some implementations bind *PACKAGE* while reading feature specs and others do not.
+
+Adoption Cost:
+
+Changes to implementations to make them conform should be fairly minor if not trivial.
+
+Benefits:
+
+As currently specified, using #+ and #- in truly portable code can have bootstrapping problems, since it is sometimes required to conditionally set up *FEATURES* in different ways for different systems.
+
+Conversion Cost:
+
+Few changes to user code will be required; code that uses #+ and #- will continue to work, although code that manipulates *FEATURES* directly may require editing. 
+
+Aesthetics:
+
+Most users would perceive this as a bug fix either to CLtL or to certain implementations.
+
+Discussion:
+
+The cleanup committee supports this proposal.
+
+It might be reasonable to suggest that only vendors should add keyword symbols to the *FEATURES* list, and that users should add features on their personal packages so that collisions due to user applications were less likely. This idea might be a subject of controversy though, so is not part of this proposal.
+
+It would be useful to create a non-binding registry of feature names (and package names) already in use, so that Lisp implementors could pick otherwise unused feature names, and users who wanted to write portable code could know what feature names were preferred.
+

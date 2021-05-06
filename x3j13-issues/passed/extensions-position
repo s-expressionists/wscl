@@ -1,0 +1,113 @@
+Issue:        EXTENSIONS-POSITION
+References:   Chapter 1, Working draft of standard
+Category:     Clarification
+Related Issues: CONFORMANCE-POSITION, IF-BODY, ERROR-TERMINOLOGY, EXTRA-SYNTAX,
+		EXTRA-OPTIONAL-KEYWORD-ARGUMENTS, UNSPECIFIED-DATATYPES,
+		MACRO-AS-FUNCTION, UNSOLCITED-MESSAGES, EXTRA-RETURN-VALUES
+Edit history: 12-DEC-88, Version 1 by Chapman
+              20-DEC-88, Version 2 by Chapman
+              9-JAN-89, Version 3 by Chapman
+              10-JAN-89, Version 4 by Chapman
+              2-FEB-89, Version 5 by Chapman
+              24-FEB-89, Version 6 by Chapman (added RPG's comment)
+              10-MAR-89, Version 7 by Chapman (added discussion)
+ 
+Problem Description:
+ 
+What is the definition of a language extension?
+What effect does a language extension have on a conforming program? 
+What obligation does an implementation have to warn the user that an 
+extension is being used?
+
+Presumably the only thing that defining it as an extension can mean from
+CL's point of view is `initially defining' it as an extension. Whether
+an implementation permits redefinition of an extension is between that
+implementation and its users and beyond the scope of Common Lisp. For
+example, it is common practice to redefine some kinds of system functions
+in Genera -- to extend the system in interesting ways, to fix bugs, etc.
+ 
+ 
+Proposal (EXTENSIONS-POSITION:DOCUMENTATION)
+ 
+The standard document should define a language extension to be
+any implementation-supplied tool that isn't explicitly defined
+in the standard. This includes facilities added to tools defined
+in the standard.
+The standard document should levy the following requirement on a 
+conforming implementation's documentation:
+The documentation that accompanies a conforming implementation should clearly
+state which parts of the implementation are extensions.  
+
+
+If the standard says that "the results are unspecified", and an
+implementation specifies the results, this an extension in the
+sense that if the correct behavior of a program depends on the results,
+only implementations with the same extension will execute the program
+correctly.
+
+In places where the standard says that "an implementation may be extended",
+this implies that a conforming, but probably non-portable, program can
+be written using the implementation's extension.
+
+Proposal (EXTENSIONS-POSITION:DISABLE)
+
+Same as EXTENSIONS-POSITION:DOCUMENTATION except that
+an implementation is required to have a way to disable its extensions, so
+that a programmer can be told when he is using a feature that might
+affect his program's portability. 
+
+
+Rationale:
+ 
+The standard should contain information about language extensions
+since most implementations have extended the language.
+ 
+Current Practice:
+
+CLtL allows any extension, provided that it doesn't alter the behavior
+of a program that only uses what is specified in CLtL.  In particular,
+any situation that "is an error" (either explicitly or implicitly) is a
+potential area for extension.
+ 
+ 
+Adoption Cost:
+ 
+Vendors will have to improve their documentation
+to list all their extensions.  Vendors will have to go through their
+implementation and determine what is or isn't an extension.
+ 
+ 
+Benefits:
+ 
+This definition will provide a basis for proper understanding of 
+the error terminology used in the standard. The implementation
+documentation requirement will aid the user in producing portable code.
+ 
+Conversion Cost:
+ 
+None.
+ 
+Aesthetics:
+ 
+None.
+ 
+Discussion:
+Masinter says:
+It seems to be a constraint on "documentation" rather than "implementation"
+if you turn the accidental behavior of (CAR T) into a "feature" of your
+implementation. We might want to disallow such an extension as "conforming
+to the standard". An implementation which had such an extension might
+conform, even if the extension did not conform.
+
+RPG says:
+I favor remaining mute on this topic in the standard.
+
+Moon says:
+"I favor EXTENSIONS-POSITION:DOCUMENTATION.
+ 
+I oppose EXTENSIONS-POSITION:DISABLE because it mandates a
+particular development environment feature, but Common Lisp
+has avoided saying anything about development environments
+since that is an area of extreme controversy.
+ 
+Gabriel's position of standing mute would be okay with me."

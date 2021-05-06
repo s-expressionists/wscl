@@ -1,0 +1,95 @@
+Status:		Passed, Jan 89 X3J13
+Issue:          DEFSTRUCT-SLOTS-CONSTRAINTS-NAME
+References:     CLtL p.308 & 86-003 p.4
+Category:       CLARIFICATION
+
+Edit history:   Version 1 by Skona Brittain 05/13/88
+                Version 2, Masinter, 14-Sep-88
+                Version 3, Masinter, 23-Sep-88
+                Version 4, Masinter, 31-Oct-88
+                Version 5, Masinter, 12-Jan-89
+
+Problem Description:
+
+The case of two slots of a structure having the same name is not 
+discussed in CLtL. Is it allowed?  The problem is that the
+name of slot accessors and the keyword arguments of the 
+constructor function is determined only by the SYMBOL-NAME
+of the slot designator; the meaning of slot accessors and
+the constructor function is unspecified.
+
+Proposal (DEFSTRUCT-SLOTS-CONSTRAINTS-NAME:DUPLICATES-ERROR):
+
+It is an error for two slots in a structure type to have the same symbol-name;
+that is, the SYMBOL-NAME of the slot names should not be STRING=.
+This holds when they were both named directly by the same call to defstruct
+or when one is present by virtue of being in an included structure.
+
+The situation of expanding a DEFSTRUCT macro with a duplicate name "should
+signal an error." (While not yet formally defined, the intent is that 
+the error signalling may occur when compiling a file that contains
+duplicate names or when evaluating a DEFSTRUCT form with duplicate names
+in an interpreter.)
+
+This proposal only affects the operation of the DEFSTRUCT
+macro, and not the STRUCTURE-CLASS or structures defined
+with DEFCLASS>
+
+Examples:
+
+(defstruct struc slot slot) would be an error.  So would
+(defstruct (struc2 (:include struc1)) slot) if preceded by
+(defstruct struc1 slot).
+
+(defstruct struct package-1:slot package-2:slot) is also an
+error. Slot accessors are interned in the current *PACKAGE*
+at the time of the evalution of the DEFSTRUCT. 
+
+Rationale:
+
+Since it would be difficult to prescribe reasonable behavior for
+DEFSTRUCT, it should be considered an error.
+
+Current Practice:
+
+In KCL, if two slots have the same name, no warning message is 
+given but mysterious behavior ensues.  (Their default values are 
+both whatever is given for the second one, neither can be given a
+different value via a call to the constructor function, only the 
+second one's value can be changed by setf...)
+
+Cost to Implementors:
+
+None.
+
+Cost to Users:
+
+None.
+
+Cost of Non-Adoption:
+
+Possible confusion.
+
+Benefits:
+
+Clarity.
+
+Aethetics:
+
+Something that is not well-defined and leads to erratic behavior 
+should be explicitly considered an error.
+
+Discussion: 
+
+Although this issue was mentioned in Guy's original issues file, it has
+not been officially discussed since.  
+
+This issue was first circulated to X3J13 June 1988.
+
+This proposal does not address the issue of whether NIL is a legitimate
+slot name. There seems to be no current reason why it might be prohibitied.
+
+The compiler committee is proposing to address generally the issue 
+of how macro-expansion errors during compile-file might be caught and
+turned into compiler warnings.
+

@@ -1,0 +1,222 @@
+Status:	Version 2, Passed, Jun 89 X3J13
+	Version 3, as amended & passed Nov 89 X3J13
+
+Issue:        CONDITION-RESTARTS
+Forum:	      Cleanup
+References:   Common Lisp Condition System
+Category:     CHANGE
+Edit history: 18-Jan-89, Version 1 by Pitman
+              26-Jun-89, Version 2 by Pitman and Barrett
+	       3-Dec-89, Version 3 by Masinter (as amended Nov 89 X3J13)
+
+Problem Description:
+
+  It was noted in the condition system document itself, and many people have
+  complained privately, that a major weakness of the condition system is the
+  inability to know whether a particular restart is associated with a 
+  particular signalling action.  Also, there has been an interest in
+  disabling an established restart in some situations.
+
+  The problem being addressed shows itself in situations involving recursive
+  errors. The programmer wants to make sure that a restart obtained from
+  FIND-RESTART or COMPUTE-RESTARTS is in fact present for the purpose of
+  handling some particular error that he is actively focussed on, and not
+  for some other (outer) error which he was not actively trying to handle.
+
+  Also, some implementors have wondered whether it was appropriate to
+  implement restarts as objects with dynamic extent.  It would be good
+  to make this clear so that users are not surprised when porting programs.
+
+Proposal (CONDITION-RESTARTS:PERMIT-ASSOCIATION):
+
+  1. Define that during the dynamic extent of a call to SIGNAL with a
+     particular condition, the effect of calling SIGNAL again on that
+     condition object for a distinct abstract event is not defined.
+
+     For example, although a handler MAY resignal a condition in order to
+     allow outer handlers first shot at handling the condition, two
+     distinct asynchronous keyboard events may not signal an EQ condition
+     object at the same time.
+
+  2. Define that restarts have dynamic extent.
+
+  3. Introduce a macro WITH-CONDITION-RESTARTS which can be used to
+     dynamically bind the association between a condition and a set
+     of restarts.
+ 
+     WITH-CONDITION-RESTARTS condition-form restarts-form &BODY forms
+								[Macro]
+
+      Evaluates CONDITION-FORM and RESTARTS-FORM, the results of which
+      should be a condition C and a list of restarts (R1 R2 ...),
+      respectively. Then evaluates the body of forms in implicit-progn
+      style, returning the result of the last form, or NIL if there
+      are no forms. While in the dynamic context of the body,
+      an attempt to find a restart Ri which is associated with a
+      condition Ci (see #4 below), as in (FIND-RESTART rI cI), will 
+      consider the restarts R1, R2, etc. if (EQ CI C).
+
+     Usually this macro is not used explicitly in code, since
+     RESTART-CASE handles most of the common cases in a way that is
+     syntactically more concise.
+
+  4. Extend COMPUTE-RESTARTS, FIND-RESTART, ABORT, CONTINUE, USE-VALUE,
+     and STORE-VALUE to permit an optional condition object as an argument.
+
+     When the extra argument is not supplied, these functions behave
+     exactly as defined before. (Restarts are considered without
+     prejudice to whether they have been associated with conditions.)
+
+     When this argument is supplied, only those restarts which are
+     associated with the given condition or restarts which are not
+     associated with any condition are considered. In all other
+     respects, the behavior is the same. [However, see #7 for related
+     developments.]
+
+     Passing a condition argument of NIL is treated the same as passing
+     no condition argument.
+
+  5. Extend the definition of RESTART-CASE to say that if the form to
+     do the signalling is a list whose car is any of SIGNAL, ERROR,
+     CERROR, or WARN (or is a form which macroexpands into such a
+     list), then WITH-CONDITION-RESTARTS is implicitly intended to
+     associate the restarts with the condition to be signalled.
+
+     That is, for example,
+        (RESTART-CASE (SIGNAL FRED)
+          (A ...)
+          (B ...))
+     is equivalent to
+        (RESTART-CASE
+            (WITH-CONDITION-RESTARTS FRED 
+                                     (LIST (FIND-RESTART 'A) 
+                                           (FIND-RESTART 'B))
+              (SIGNAL FRED))
+          (A ...)
+          (B ...))
+
+  6. Define that Common Lisp macros such as CHECK-TYPE, which are defined
+     to signal and to make restarts available, use the equivalent of
+     WITH-CONDITION-RESTARTS to associate the conditions they signal with
+     the defined restarts, so that users can make reliable tests not only
+     for the restarts being available, but also for them being available
+     for the right reasons.
+
+  7. Add a :TEST keyword to RESTART-CASE clauses and a :TEST-FUNCTION
+     keyword to RESTART-BIND clauses (in the same general style as the
+     :INTERACTIVE and :INTERACTIVE-FUNCTION keywords).  These permit
+     association of a function of one argument with a restart such
+     that if this function returns false, then functions such as
+     FIND-RESTART, COMPUTE-RESTARTS, and INVOKE-RESTART [see #4 above]
+     will not consider the restart to be active. The argument to the
+     test function is the value of the optional condition argument
+     most of these functions accept (or nil for invoke-restart, since
+     it doesn't have that argument). The default test function is
+
+       #'(LAMBDA (C) (DECLARE (IGNORE C)) T).
+
+Rationale:
+
+  1. The ability to recycle a condition object (including the ability to
+     resignal a condition) means that the same condition object might be
+     simultaneously active for two different purposes. In such a case, no
+     test (not even EQ) would suffice to determine whether a particular
+     restart belonged with a particular signalling action, since the
+     condition could not uniquely identify the signalling action. By
+     making the programmer responsible for assuring that that a given
+     condition may not be concurrently signalled for two conceptually
+     distinct purposes, this sticky area is avoided.
+
+  2. There are no known reasons for restarts to not have dynamic extent.
+     Important optimizations may be possible by allowing implementors this
+     flexibility.
+
+  3. This is is the minimal level of support needed to set up an 
+     association between restarts and conditions.
+
+  4. This provides a natural interface for retrieving and using the
+     information about the associations between conditions and restarts.
+
+  5. This provides a natural interface for the most common case of
+     wanting to signal a restart with some associated conditions.
+
+  6. This is a logical consequence of 5.
+
+  7. Programmers and implementors have asked for a way of
+     "filtering" restarts so that they are not visible in some contexts.
+
+Test Case:
+
+  (HANDLER-BIND ((ERROR #'(LAMBDA (C) (SIGNAL C) ...))) (SIGNAL "Test"))
+  was permissible and continues to be. However,
+  (HANDLER-BIND ((ERROR #'(LAMBDA (C) (SIGNAL FRED) ...))) (SIGNAL FRED))
+  may be undefined (depending on the programmer's intent) because the
+  two uses of FRED are not cooperating and may not represent conceptually
+  distinct situations.
+
+  (RESTART-CASE 
+      (WITH-CONDITION-RESTARTS FOO (LIST (FIND-RESTART 'ALPHA))
+        (RESTART-CASE
+            (INVOKE-RESTART 'ALPHA)
+          (ALPHA () 2)))
+    (ALPHA () 1)))
+  => 2
+
+  (LET ((FOO (MAKE-CONDITION 'SIMPLE-CONDITION)))
+    (RESTART-CASE 
+        (WITH-CONDITION-RESTARTS FOO (LIST (FIND-RESTART 'ALPHA))
+          (RESTART-CASE
+              (INVOKE-RESTART (FIND-RESTART 'ALPHA FOO))
+            (ALPHA () 2)))
+      (ALPHA () 1)))
+  => 1
+
+  (RESTART-CASE 
+      (WITH-CONDITION-RESTARTS FOO (LIST (FIND-RESTART 'ALPHA))
+        (RESTART-CASE
+            (INVOKE-RESTART 'ALPHA)
+          (ALPHA () :TEST (LAMBDA (C) (DECLARE (IGNORE C)) NIL)
+            2)))
+    (ALPHA () 1)))
+  => 1
+
+Current Practice:
+
+  Presumably no implementation does this yet.
+
+Cost to Implementors:
+
+  Several small, relatively modular changes.
+
+  The specific details of how the association is made between conditions
+  and restarts is left up to the implementation.  It is recommended (e.g.,
+  for the sake of the garbage collector) that the association be external
+  to the condition, however, since the condition might persist for long
+  afterward and the restart information has no value beyond the dynamic
+  extent during which the actual signalling is occurring.
+
+Cost to Users:
+
+  Except for the change to the recyclability of restarts, this change is 
+  upward compatible.
+
+  Probably very few if any users currently take advantage of recycling
+  restarts, so the cost to users of this change is very slight.
+  
+Cost of Non-Adoption:
+
+  Use of restarts would not be nearly as reliable.
+
+Benefits:
+
+  It would be possible to write code which was considerably more robust.
+
+Aesthetics:
+
+  Some people might consider this proposal to make things slightly better
+  because it avoids some ambiguities. Others might consider it to make
+  things slightly worse because it adds additional complexity.
+
+Discussion:
+
+  Pitman and Barrett support this proposal.

@@ -1,0 +1,116 @@
+  Format for proposals to the cleanup committee (Version 14)
+                    October 5, 1988
+
+
+Replace the text below in >> double inverted angle-brackets <<. Be
+brief; leave testimonials and personal opinions to the discussion at the
+end. Be complete; do not expect someone else to fix or redesign parts.
+Spell out names (e.g., Masinter rather than LMM) and upper-case all Lisp
+symbols (DEFUN rather than Defun). I like it better if you write in the
+third person rather than first.
+
+Remember that this is a proposal to a change to the standard
+for Common Lisp, not recommendations to the editor, not 
+a set of recommendations to Common Lisp implementors.
+
+Forum:	Cleanup
+Issue:         >>A short descriptive label, which starts with a name
+               which occurs in the index of CLtL, and be a suitable
+               symbol in the Common Lisp style, e.g., CDR-TERMINATION.
+		When in doubt, let the cleanup committee assign the name.
+		The name should match the problem description, not the 
+		proposal.<<
+
+References:    >>The pages of CLtL which describe the feature being
+               discussed, and other references.<<
+
+Related issues: >> names of other cleanup issues about the same topic.<<
+
+Category:      >>One or more of:
+               CLARIFICATION -- proposal to resolve an ambiguity or case
+               of under-specified situation in CLtL, where this
+               ambiguity interferes with portability of code.
+               CHANGE -- proposal for an incompatible change.
+               ADDITION -- proposal for a compatible extension<<
+
+Edit history:  >>Author and date of submission (version 1), and author
+               and date of subsequent versions.<<
+
+Problem description:
+
+>>Describe the problem being addressed -- why is the current situation
+unclear or unsatisfactory? Avoid describing the proposal here or arguing
+for its adoption. <<
+
+Proposal (>>issue-label:proposal-label<<): >> Describe as precisely as
+possible what you are proposing.  This  can take the form of
+text that could be dropped into the new specification document.
+Proposals should be for changes to Common Lisp, rather than changes to
+CLtL.  If necessary, propose a set of labelled alternatives here, rather
+than a single proposal. Each proposal must be a complete design; do not
+leave out details.  Avoid arguing for the proposal here, just describe
+it.<<
+
+Examples:
+
+>> Examples are samples of Common Lisp code that illustrates the issue.
+along with explanatory text. Please explain what the examples should
+do, do in current implementations, and any special tricks.<<
+
+Test Cases:
+>> Test Cases are simple stand-alone expressions which are valid and
+do not signal an error if the proposal is adhered to. (Use ASSERT
+if needed.)  Omit if you have none.
+<<
+
+Rationale:
+
+>> A one or two sentence summary of the arguments that follow. <<
+
+Current practice:
+
+>>Do some/many/no Common Lisp implementations already work this way?
+Survey independent Common Lisp implementations - preferably three or
+more. What do they do on the test cases or examples?  What do current
+user programs do? Are there textbooks which describe this feature? <<
+
+Cost to Implementors:
+
+>>What is the cost to implementors of adopting the proposal?  How much
+implementation effort is required?  Is public-domain code available? For
+pervasive changes, can the conversion be automated?<<
+
+Cost to Users:
+
+>>For incompatible changes, what is the cost to users of converting
+existing user code?  To what extent can the process be automated? How?<<
+
+Cost of non-adoption:
+
+>>How serious is it if nothing is done? <<
+
+Performance impact:
+
+>> what does the proposal do to better or worsen the size or speed
+of user programs and implementations? <<
+
+Benefits:
+
+>>What is better if the proposal is adopted? How serious is the problem
+if just left as it is? <<
+
+Esthetics:
+
+>>How does this proposal affect the simplicity of the language, ease of
+learning, etc. You can spell it aesthetics if you like. <<
+
+Discussion:
+
+>> Additional arguments, discussions, endorsements, testimonials, etc.
+should go here. Testimonials are the least effective; the discussion should
+be useful to someone not already with the issue or those discussing it.
+Avoid a blow-by-blow account of debates or recounting of history. <<
+
+
+
+     ----- End Forwarded Messages -----

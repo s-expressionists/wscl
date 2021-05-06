@@ -1,0 +1,133 @@
+Status:	Passed, Jan 89 X3J13
+Issue: 		HASH-TABLE-TESTS
+
+References: 	CLtL, p382 (third paragraph), and p383
+            	Issue EQUAL-STRUCTURE
+Requires Issue:   CONTAGION-ON-NUMERICAL-COMPARISONS
+
+Category:         Addition
+
+Edit history:  	26-Sep-88 Version 1 by JonL
+               	 8-Dec-88 Version 2 by Masinter
+
+Problem Description:
+
+A great many users try to coalesce two equivalent DEFSTRUCT instances,
+or two equivalent pointer arrays, using hash tables; but they are rudely
+awakened when they find out that EQUAL is not an appropriate test for
+this case, and that there is no :test argument to MAKE-HASH-TABLE which 
+will "hash on non-tree structures".
+
+Proposal: HASH-TABLE-TESTS:ADD-EQUALP
+
+With the advent of the issue CONTAGION-ON-NUMERICAL-COMPARISONS, we
+can expect EQUALP to be a true equivalence function, and thus a suitable
+candidate for the :test function to MAKE-HASH-TABLE.   Hash-tables will 
+come in four kinds, the difference being whether the keys are compared 
+with EQ, EQL, EQUAL, or EQUALP.
+
+
+Examples:
+
+> (defstruct foo a b c)
+FOO
+> (setq x      (make-foo :a 1 :b 'b :c '(1 . 2))
+        x-copy (make-foo :a 1 :b 'b :c '(1 . 2)))
+#S(FOO A 1 B B C (1 . 2))
+> (setq y      #(1 B (1 . 2))
+        y-copy (copy-seq y))
+#(1 B (1 . 2))
+> (setq ht-equal  (make-hash-table :test 'equal) 
+        ht-equalp (make-hash-table :test 'equalp))
+
+#<Hash-Table BB1F7B>
+> (progn (setf (gethash x ht-equal) t) (setf (gethash x ht-equalp) t) 
+         (setf (gethash y ht-equal) t) (setf (gethash y ht-equalp) t))
+T
+> (gethash x-copy ht-equal)
+NIL
+NIL
+> (gethash x-copy ht-equalp)
+T
+T
+> (gethash y-copy ht-equal)
+NIL
+NIL
+> (gethash (copy-seq y) ht-equalp)
+T
+T
+> 
+
+
+Rationale:	
+
+Implementing hash-tables efficiently is not an easy task; it makes more
+sense for this to be standardly available than for individual programmers 
+to keep trying to re-invent this obscure part of technology.
+
+
+Current Practice:
+
+Lucid's release 3.0 implements this proposal [some 2.1-level release
+supported it "provisionally"].  Symbolics implementation is reputed
+to be robust enough to implement this proposal trivially.
+
+
+Cost to Implementors:
+
+Moderate.  Implementors have already dealt with EQUAL; the only tricky 
+part will be ensuring the implication:
+    "If 'a' is EQUALP to 'b', then 'a' and 'b' must lie in the
+     same collision chain in any given EQUALP hash table"
+It has been suggested that merely linear searching a table is an acceptable
+implementation technique for CL's hash-tables  [although no serious 
+implementation limits itself thus] and that such tables have no "collision 
+chains"; but in fact, this is the degenerate case wherein all entries are 
+in the same collision chain, so the implication is trivially satisfied.
+
+Some persons prefer to say that the "reprobe sequence will be the same for
+the two items", rather than using the term "collision chain"; the meaning 
+is the same. 
+
+
+
+Cost to Users:
+
+None.  This is an entirely upwards-compatible addition.
+
+
+Cost of non-adoption:
+
+Continuing bug reports from users  about why "hashing 
+doesn't work" when said user tries entering pointer-containing objects
+other than cons cells into hash tables.  Continuing delay in same
+user's work until they figure out a new strategy for identifying
+equivalent structures.  More difficulty in debugging their alternatives.
+
+
+Benefits:
+
+Addresses one aspect of the difficult equivalence problem.  Makes
+hash tables more useful.  Permits case-insensitive hashing
+on strings [tables of type EQUAL are case-sensitive on strings]; 
+another use is to allow = comparison for numbers
+ [tables of type EQUAL use EQL on numbers].
+
+
+Aesthetics:
+
+Reduces the discontinuity between basic equivalence functions and those
+usable as equivalence relations in hash-tables.
+
+
+Discussion:
+
+With the rejection of all the issues related to EQUAL-STRUCTURE, there is 
+little or no hope that EQUAL will be "beefed up" to meet the expectations
+of so many of the user community on compound structures.   If one wants
+a hash-table with a :test function that has fewer equivalence classes 
+(i.e.,  does more "coalescing"), then there is no alternative now except 
+to use the function EQUALP.
+
+It would also be possible to extend hash tables to allow = or
+STRING=, but those are not being proposed at this time.

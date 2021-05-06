@@ -1,0 +1,75 @@
+Status:		Passed, Jan 89 X3J13
+Issue:          DEFSTRUCT-PRINT-FUNCTION-INHERITANCE
+References:     CLtL p. 312-314
+Category:       CLARIFICATION
+Edit History:   V1, 5 Aug 1988, Sandra Loosemore
+                V2, 15 Sep 1988, Sandra Loosemore
+                V3, 7 Dec 1988, Masinter
+
+Problem Description:
+
+CLtL doesn't make clear whether defstructs that :INCLUDE another
+structure type and do not specify a :PRINT-FUNCTION inherit the
+:PRINT-FUNCTION of the parent structure type.  While it is stated on
+page 314 that #S syntax is used if a :PRINT-FUNCTION is not specified,
+the language on page 313 indicates that all operations on the parent
+type will also work on objects of the child type.  Because of the
+ambiguity, existing implementations have gone both ways, and users
+cannot depend on either #S syntax or the parent type's :PRINT-FUNCTION
+being used.
+
+Proposal: DEFSTRUCT-PRINT-FUNCTION-INHERITANCE:YES
+
+Clarify that defstruct types which :INCLUDE another type but do not
+specify an explicit :PRINT-FUNCTION inherit the structure print
+function from the :INCLUDE'd type.  A print function that uses the
+default #S syntax (overriding any print function for the parent type)
+can be specified by providing the :PRINT-FUNCTION option without an 
+argument.
+
+Supplying a :PRINT-FUNCTION in a DEFSTRUCT is equivalent
+to defining an appropriate method on the PRINT-OBJECT generic
+function.
+
+Rationale:
+
+Users typically specify a print function for a structure type because
+its slots will contain circular objects or large internal data
+structures which are confusing when printed.  Any structure type that
+:INCLUDEs this type will also contain the same slots; it seems more
+reasonable to inherit the parent's print function than to use the
+default #S syntax.
+
+Current Practice:
+
+Lucid Common Lisp makes structures inherit print functions.
+VaxLisp uses #S syntax unless an explicit :PRINT-FUNCTION
+is specified.
+
+Cost to implementors:
+
+The changes to non-conforming implementations should be fairly minor
+and localized.
+
+
+Cost to users:
+
+It can't be any worse than the status quo.
+
+
+Benefits:
+
+An area of ambiguity in the language will be removed.
+
+
+Discussion:
+
+Pitman and VanRoggen support this proposal.
+
+The original version of the proposal did not provide for a way to
+force #S syntax to be used.  This functionality was added to the
+current version because there seemed to be general agreement that it
+would be useful.  Other alternatives would be to name the function
+that does what the #S printer does, or to provide a function that
+returns the #S information as a list (as suggested by Waters) so users
+can write their own.

@@ -1,0 +1,107 @@
+Status:		Passed, Jan 89 X3J13
+Forum:         Cleanup
+Issue:         DEFSTRUCT-CONSTRUCTOR-KEY-MIXTURE
+References:    CLtL page 316
+Category:      CHANGE
+Edit history:  20-Sep-88, Version 1, Peck
+               21-Sep-88, Version 2, Masinter, minor revisions
+                8-Jan-89, Version 3, Masinter
+
+
+Problem description:
+
+Currently, DEFSTRUCT constructor functions can be either the default
+constructor function, with *only* keyword arguments, or it can be a 
+so-called "By Order of Arguments" constructor function with explicitly
+*no* keyword arguments.  Other functions in Common Lisp allow a free
+mix of required, optional, and keyword arguments. 
+
+With the current restriction, it is necessary to hand code a function that
+will accept optional and keyword arguments and parse the supplied-p
+variables explicitly.  Even so, it is not obvious to the casual programmer
+how to provide the same semantics as defstruct does with respect to default
+values and the defstruct init-forms.
+
+Proposal: DEFSTRUCT-CONSTRUCTOR-KEY-MIXTURE:ALLOW-KEY
+
+Allow &KEY keyword arguments in constructor forms of DEFSTRUCTs
+and the &ALLOW-OTHER-KEYS token in addition to the &OPTIONAL,
+&REST and &AUX arguments already allowed. Keyword arguments default
+in a manner similar to that of &OPTIONAL arguments: if no default
+is supplied in the lambda-list then the slot initform is used;
+otherwise the slot is not initialized -- its initial value is
+undefined.
+
+If keyword arguments of the form ((key var) [default [svar]])
+are specified, the "slot name" is matched with VAR (and not KEY).
+
+Additional arguments that do not correspond to slot names but
+are merely present to supply values used in subsequent initialization 
+computations are allowed.
+
+
+Examples:
+
+It should be possible to write forms like this:
+
+(defstruct (foo (:constructor CREATE-FOO (a &optional b (c 'sea)
+					    &key (d 2)
+					    &aux e (f 'eff))))
+  (a 1) (b 2) (c 3) (d 4) (e 5) (f 6))
+
+(create-foo 10) => #S(foo a 10 b 2 c sea d 2 e nil f eff)
+(create-foo 10 'bee 'see :d 'dee) => #S(foo a 10 b bee c see d dee e nil f eff)
+
+In the definition:
+(defstruct (frob (:constructor create-frob
+		(a &key (b 3 have-b) (c-token 'c) 
+		        (c (list c-token (if have-b 7 2))))))
+	a b c)
+
+the c-token argument is used merely to supply a value used in the 
+initialization of the c slot. The "supplied-p" arguments of
+keyword arguments might be of this form.
+
+Rationale:
+
+This is a logical extension of the specification which makes some
+programming easier.
+
+Current practice:
+
+Many implementations signal an error if given &KEY arguments or
+arguments that are not slot names. The latest version of IIM Common 
+Lisp allows &KEY arguments in this manner. Envos Medley
+(Xerox Common Lisp) implements the proposal. 
+
+Cost to Implementors:
+
+The modifications to allow intermixed keywords and optionals in implementations
+that don't already are likely simple. 
+
+Cost to Users:
+
+No cost, this is upward compatible.
+
+Cost of non-adoption:
+
+The current situation is non-intuitive and needless restrictive.
+
+Benefits:
+
+Much easier for users to write the constructor function they want.
+Probably implementation code would be reduced, since this would no 
+longer be an error.
+
+Esthetics:
+
+Minor improvement since it removes a needless restriction.
+
+Discussion:
+
+Possibly  references to "By-position", "positional", and "By Order of
+Arguments" constructor function might need to be changed to something else in
+the standard.  (They can still be called BOA-constructors, though, right?  :-)
+
+Version 2 of this proposal was on the January 1989 ballot.
+

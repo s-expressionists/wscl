@@ -1,0 +1,158 @@
+Status:	Passed, Jan 89 X3J13
+Issue:         FORMAT-PRETTY-PRINT
+References:    FORMAT (pp. 385-388), PRIN1 (p. 83), PRINC (p. 83),
+               WRITE (p. 382), *PRINT-PRETTY* (p. 371)
+Category:      CLARIFICATION
+Edit history:  Version 1 by Pierson 3/4/88
+    	       Version 2 by Pierson 5/24/88 (fix name typo)
+	       Version 3 by Pierson 6/10/88 incorporate comments
+	       Version 4 by Pierson 6/10/88 comments from Van Roggen
+	       Version 5 by Masinter  2-Oct-88
+               Version 6 by Pierson 11/10/88 final nits
+               Version 7 by Pierson 11/15/88 "does" => "does not"
+
+Problem description:
+
+The FORMAT operators, ~A and ~S are defined to print their argument as
+PRINC and PRIN1 respectively.  The text does not say whether or not
+these FORMAT operators must obey the *PRINT-PRETTY* flag.
+
+Proposal (FORMAT-PRETTY-PRINT:YES):
+
+Specify that FORMAT does not rebind any of the printer control
+variables (*PRINT-...) except as follows:
+
+~A
+    Binds *PRINT-ESCAPE* to NIL.
+
+~S
+    Binds *PRINT-ESCAPE* to T.
+
+~D
+    Binds *PRINT-ESCAPE* to NIL, *PRINT-RADIX* to NIL, and
+    *PRINT-BASE* to 10.
+
+~B
+    Binds *PRINT-ESCAPE* to NIL, *PRINT-RADIX* to NIL, and
+    *PRINT-BASE* to 2.
+
+~O
+    Binds *PRINT-ESCAPE* to NIL, *PRINT-RADIX* to NIL, and
+    *PRINT-BASE* to 8.
+
+~X
+    Binds *PRINT-ESCAPE* to NIL, *PRINT-RADIX* to NIL, and
+    *PRINT-BASE* to 16.
+
+~R
+    Iff a first argument is specified, binds *PRINT-ESCAPE* to NIL,
+    *PRINT-RADIX* to NIL, and *PRINT-BASE* to the value of the first
+    argument.
+
+    Iff no aruments are specified, binds *PRINT-BASE* to 10.
+
+~@C
+    Binds *PRINT-ESCAPE* to T.
+
+~F,~G,~E,~$
+    Binds *PRINT-ESCAPE* to NIL.
+
+Test Cases/Examples:
+
+(LET ((TEST '#'(LAMBDA (X)
+		 (LET ((*PRINT-PRETTY* T))
+		   (PRINT X)
+		   (FORMAT T "~%~S " X)
+		   (TERPRI) (PRINC X) (PRINC " ")
+		   (FORMAT T "~%~A " X)))))
+  (FUNCALL (EVAL TEST) TEST))
+
+This should print four copies of the above lambda expression.  The
+first pair should appear identical and the second pair should appear
+identical.  The only difference between the two pairs should be the
+absence of string quotes in the second pair.
+
+Rationale:
+
+FORMAT should interact with the printer control variables in a
+predictable way.  This proposal is one of the two simplest possible
+definitions and provides the most flexibility to the user.
+
+A major advantage of this proposal is that the following two
+expressions are guaranteed to have exactly the same effect:
+
+    (FORMAT stream "~S" object)
+    (PRIN1 object stream)
+
+Thus use or non-use of FORMAT becomes a purely stylistic matter.
+
+Current practice:
+
+Ibuki Lisp and the TI Explorer obey the binding of *PRINT-PRETTY*.
+Lucid Common Lisp always applies ~A and ~S with *PRINT-PRETTY* bound
+to NIL.
+
+Cost to Implementors:
+
+While changing FORMAT to not bind *PRINT-foo* variables is trivial,
+there are some painful implications.  How does a pretty-printing ~A
+interact with MINCOL, etc?  How much of the user interface depends on
+FORMAT in ways that might be uglified by pretty printing?
+
+Cost to Users:
+
+Truely portable code shouldn't be affected because existing
+implementations are inconsistent.  Despite this, there are probably a
+number of user programs in non-complying implementations which will
+have to change whichever way this is decided.
+
+Cost of non-Adoption:
+
+The interaction of FORMAT and the printer control variables (especially
+*PRINT-PRETTY*) will remain undefined.  This will continue to make
+portable Common Lisp programming harder than it need be.
+
+Benefits:
+
+Life will be easier for users in two ways: (1) one more portability
+problem will be removed, and (2) users will be more likely to be able
+to persuade environmental features like debuggers to print in their
+preferred way.
+
+Aesthetics:
+
+The interaction between two related parts of output will be clarified
+in a simple way.
+
+Discussion:
+
+It is important to specify exactly what of Common Lisp's special
+variables get rebound by other functions and macros in Common Lisp.
+This cleanup issue addresses the interaction of FORMAT and the
+*PRINT-  variables. There may be other similar interactions in 
+Common Lisp that need clarification.
+
+Otherwise, code that depends on FORMATs action in one implementation
+will not port to others that do not have the same behavior.
+
+CLtL might change as follows:
+
+Add a header "Printer Control Variables" before the description of
+*PRINT-ESCAPE* on page 370.
+
+Add the following paragraph to page 386 just before the paragraph
+starting with "It is an error":
+
+    "The FORMAT function by itself never binds any of the printer
+    control variables.  Specific FORMAT directives bind exactly the
+    printer control variables specified in their description.  While
+    implementations may specify the binding of new, implementation
+    specific printer control variables for each FORMAT directive, they
+    may neither bind any standard printer control variables not
+    specified in description of a FORMAT directive nor fail to bind
+    any standard printer control variables as specified in the
+    description."
+
+There was some discussion on whether *PRINT-BASE* should be bound for
+~F, ~G, ~E, and ~$.  This is not necessary because page 341 of CLtL
+states that floating point numbers are always printed in base 10.

@@ -1,0 +1,56 @@
+Status: Passed, 1988 (not sure which meeting)
+Issue:        DRIBBLE-TECHNIQUE
+References:   DRIBBLE (p443)
+Category:     CLARIFICATION
+Edit history: 06-Dec-87, Version 1 by Pitman
+              14-Feb-88, Version 2 by Masinter
+
+Problem Description:
+
+The intent and effect of DRIBBLE is not very clearly specified. Users have complained that DRIBBLE behaves quite differently in different implementations.
+
+Proposal (DRIBBLE-TECHNIQUE:MAKE-EXPLICITLY-VAGUE):
+
+Clarify that DRIBBLE is intended primarily for interactive debugging and that its effect cannot be relied upon from programs.
+
+Test Case:
+
+ #1: (PROGN (DRIBBLE "temp")
+	    (PRINT 'FOO)
+            (DRIBBLE))
+
+ #2: (DRIBBLE "temp")
+     (PROGN (PRINT 'FOO)
+            (DRIBBLE)
+	    (PRINC 'BAR))	 
+
+Rationale:
+
+Users of DRIBBLE have been surprised about how differently DRIBBLE behaves in different implementations. This makes the status quo much more explicit and will lead to less surprise.
+
+Current Practice:
+
+Some implementations implement DRIBBLE as a function which simply assigns streams such as *STANDARD-OUTPUT* to broadcast streams (or the approximate equivalent thereof).  Even within this camp, there is not widespread agreement about which streams are affected. However, typically test case #1 will capture the output of (PRINT 'FOO) in the file "temp" and will execute (PRINT 'BAR) but not capture its output.
+
+Some implementations (eg, Symbolics) push to a recursive command loop when DRIBBLE is called with an argument, and return from that command loop when DRIBBLE is called with no argument. In these implementations, test case #1 will enter a recursive command loop upon the first call to DRIBBLE and will not execute the (PRINT 'FOO) until (DRIBBLE) is done interactively. When the second (DRIBBLE) in test case #1 is executed, DRIBBLE will complain that output is not currently being recorded. In test case #2, the output of (PRINT 'FOO) will be captured, but the form (PRINT 'BAR) will never be executed because (DRIBBLE) does not return normally (it throws).
+
+Cost to implementors:
+
+None. This is just a clarification.
+
+Cost to users:
+
+Anyone who currently uses DRIBBLE in code that is believed to be portable is kidding himself. If such code works in some implementations, it can continue to work.
+
+Benefits:
+
+Users will be aware that they cannot rely on DRIBBLE in portable code.
+
+Aesthetics:
+
+No apparent effect.
+
+Discussion:
+
+DRIBBLE, like other environment features, is a standard interface to a non-standard feature. As such, there is some question as to its place in the ANSI standard. However, if DRIBBLE remains in the standard, its behavior is made explicitly vague by this proposal.
+

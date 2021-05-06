@@ -1,0 +1,205 @@
+Status: passed, as amended, Mar 89 X3J13
+
+Issue:        LISP-PACKAGE-NAME
+References:   11.6 Built-in Packages (pp181-182)
+Category:     CHANGE
+Edit history: 22-Dec-88, Version 1 by Pitman
+		9-Apr-89, version 2 by Masinter, incorporate
+		changes per Mar 89 amendments.
+
+Problem Description:
+
+  Since ANSI Common Lisp will differ from the Common Lisp described by CLtL,
+  it will not be possible to have support for both in the same Lisp image
+  if ANSI Common Lisp insists on placing its functionality in the package
+  named LISP.
+
+  Further, use of the name unqualified name LISP by the ANSI Common Lisp
+  community is inconsistent with ANSI's expressed position to ISO that 
+  the term "LISP" names a language family rather than a specific dialect
+  within that family.
+
+Proposal (LISP-PACKAGE-NAME:COMMON-LISP):
+
+  Define that ANSI Common Lisp uses the package name COMMON-LISP, not LISP.
+  Define that the COMMON-LISP package has nickname CL.
+
+  Since some symbols (e.g., T, NIL, and LAMBDA) might have to be shared
+  between COMMON-LISP and LISP in implementations simultaneously supporting
+  both, clarify that the initial symbols specified by ANSI Common Lisp as
+  belonging in the COMMON-LISP package need not have a home package of 
+  Common-Lisp.
+
+  Similarly, rename the package USER to be COMMON-LISP-USER with
+  nickname CL-USER.
+
+Test Case:
+
+  In an implementation supporting CLtL's LISP package and 
+  the ANSI Common Lisp CL package proposed here:
+
+  (EQ 'LISP:T 'CL:T)
+  => not specified, due to this proposal, but probably T
+
+  (EQ 'LISP:CAR 'CL:CAR)
+  => not specified, due to this proposal, but probably T
+
+  (EQ 'LISP:FUNCTIONP 'CL:FUNCTIONP)
+  => not specified, due to this proposal, but since FUNCTIONP is
+     changed incompatibly between CLtL (LISP) and CL (ANSI), there
+     are good reasons why this might return NIL.
+
+  (SYMBOL-PACKAGE 'CL:T)
+  => not specified, due to this proposal. Perhaps #<Package CL>, 
+     perhaps #<Package LISP>, or perhaps something implementation-specific.
+
+  (SYMBOL-PACKAGE 'LISP:T)
+  => not specified, not due to this proposal, but because CLtL didn't
+     specify this explicitly.
+
+Rationale:
+
+  In practice, some implementations will have very legitimate reasons for 
+  wanting to Lisp dialects to be coresident. As it stands, they will have
+  little other choice than to make the two use different packages, and so
+  will be forced to be incompatible with one or the other dialect unless
+  we choose a different package name for the one dialect for which there
+  is currently no existing code.
+
+  Not only is this important the CLtL and ANSI Common Lisp communities, but
+  also, if we continue to use the name LISP, it sends a signal to the ISO
+  Lisp community that the "latest and greatest" Lisp should use the generic
+  name LISP, and they may try to use it as well. If ISO Lisp turns out to
+  be very different than ANSI Common Lisp, there may be motivation down the
+  line for having ISO Lisp and ANSI Common Lisp co-resident, and conflicts
+  will inevitably arise if both want to use the name LISP. This will almost
+  certainly lead to a confrontation where one Lisp dialect tries to force
+  the other out by the artificial means of asserting its right to this
+  generic name. Choosing a name which compatibly admits the option of
+  introducing other dialects into the environment at a later date without
+  conflict is a good way to avoid a class of potential problems.
+
+  Although there are a few problems which could come up due to the symbol
+  package of initial symbols being unspecified, experience with 
+  implementations that do this suggests that they are very few.
+  Problems occur only in the rare circumstance that all of the following
+  conditions are met:
+
+   - A symbol S on the LISP package but with home package H (that is not "LISP")
+     is shadowed in some package P of implementation A.
+
+   - A program F in package P uses the shadowed symbol H:S by an explicit
+     LISP: or H: package qualification. (Only the case of using "LISP:" is
+     interesting, of course, since if H were named explicitly, we would be
+     outside the bounds of portable code).
+
+   - The program F, referring to H:S, is printed out in implementation A 
+     while using package P (or some other package that shadows S, so that
+     the H package qualifier appears explicitly) and an attempt is made to
+     re-read it in implementation B.
+
+   - Implementation B has no package named H, has a package named H but no
+     external symbol named S, or has a package named H with external symbol
+     S but the symbol H:S has different semantics in implementation B than
+     it did in implementation A.
+
+  In practice, this hardly ever happens. It would happen even less if 
+  programmers were explicitly alerted that it was a potential problem they
+  needed to guard against.
+
+Current Practice:
+
+  Symbolics Genera already has a package named COMMON-LISP with nicknames
+  CL and LISP. As such, this would be an incompatible change for Genera.
+
+Cost to Implementors:
+
+  Small.
+
+  In some cases, this may even have `negative cost' because it will provide
+  implementors a way of avoiding incompatible changes to released operators.
+
+Cost to Users:
+
+  Small.
+
+  In some cases, this may even have `negative cost' because existing code
+  would be able to continue to run in implementations which chose to support
+  both CLtL's LISP and ANSI Common Lisp's CL packages, thereby allowing
+  developers to put off a massover changeover, perhaps doing the transition
+  more incrementally.
+
+Cost of Non-Adoption:
+
+  Implementations trying to support multiple dialects in the same environment
+  would be forced to violate one or the other spec.
+
+  Worse, different implementations faced with the same set of hard choices
+  about which spec to violate in order to concurrently support two dialects
+  might not make the same choices, leading to even more gratuitous 
+  incompatibility.
+
+  ANSI's position in ISO that we are not trying to legislate the meaning of
+  -the- LISP dialect would be weakened.
+
+Benefits:
+
+  Needless incompatibility would be avoided in a variety of situations.
+
+Aesthetics:
+
+  Failing to specify the home package of symbols in the LISP and CL packages
+  seems unaesthetic because it appears to diminish print/read invertability,
+  but as observed above, that case is rare.
+
+  Failiing to specify a way in which lisp dialects can be co-resident is also
+  unaesthetic because in practice implementors with a need to do this will do
+  so whether the standard allows them or not, and it will be a source of 
+  severe divergence among implementations.
+
+Discussion:
+
+  Symbolics Genera offers two co-resident dialects of Lisp: Zetalisp and
+  Symbolics Common Lisp. The Symbolics Cloe development environment adds
+  a third co-resident dialect, making an environment in which two differing
+  Common Lisp dialects (Symbolics Common Lisp and Cloe) must cooperate.
+  Already in Cloe it is not possible for the home package to contain 
+  package "LISP" since Cloe's concept of what the "LISP" package is differs
+  from Genera's concept of what the "LISP" package is, yet they are forced
+  by efficiency constraints to share the same symbol. It is Pitman's belief,
+  based on extensive experience with Cloe, that failure to pass this proposal
+  (or something very like it) will lead to all sorts of trouble for Common
+  Lisp users and implementors down the road.
+
+  Pitman strongly supports this proposal.
+
+Additional comments:
+
+Is it permissible for implementations to define
+"LISP" as a nickname for this package, for the
+sake of backward compatibility?
+
+Anyone wanting to make LISP a nickname could just as well create a LISP
+package which simply imported the appropriate symbols from the CL package.
+
+With only modest additional effort, they could try to make new symbols where
+feasable (especially for most functions) and put borrowed functions plopped
+in their function cells. The amount of additional storage is small (compared
+to implementing a whole new lisp), but it would leave open the possibility for
+users upgrading the level of compatibility without hurting the core
+system. eg, if I wanted APPEND to signal an error on dotted lists, I
+would not consider redefining the system's APPEND for fear of breaking
+the world, but if they told me that nothing depended on LISP other than
+compatibility code, I might feel ok about redefining (or doing
+SHADOWING-IMPORT of LISP:APPEND on a per-implementation basis (with
+appropriate sharp conditionals)) in order to up the level of
+compatibility.
+
+In fact, though, my guess is that implementations which are not going to
+do a serious compatibility effort are better off leaving the package
+missing. My experience has been that customers are often happier growing
+their own compatibility [or getting it from a public library] than being
+stuck with something which really doesn't do what they want but which
+seals off the place in the namespace which they needed in order to do
+their own thing.
+

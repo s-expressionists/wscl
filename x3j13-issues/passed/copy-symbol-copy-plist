@@ -1,0 +1,53 @@
+Status:	Passed, Mar 89 X3J13
+Issue:		COPY-SYMBOL-COPY-PLIST
+References:	COPY-SYMBOL (p 169), COPY-LIST (p 268), COPY-TREE (p
+		269).
+Category:	CLARIFICATION
+Edit history:	10-Jan-89, Version 1 by Margolin
+
+Problem Description:
+
+The description of COPY-SYMBOL, where the COPY-PROPS optional argument
+is non-NIL, says that a copy of the property list is used as the new
+symbol's property list.  However, there are several ways in which a list
+may be copied, most notably COPY-LIST and COPY-TREE, and the description
+doesn't say which mechanism should be used.
+
+Proposal (COPY-SYMBOL-COPY-PLIST:COPY-LIST)
+
+Clarify that when COPY-SYMBOL copies the property list of the symbol, it
+is as if (COPY-LIST (SYMBOL-PLIST sym)) were used as the new symbol's
+property list.
+
+Rationale:
+
+COPY-LIST is the simplest list-copying primitive.  The result of this
+copy is that GET returns EQL results for the two symbols until one of
+the property lists is altered, but altering either of the property lists
+doesn't affect the other.  This is current practice in the
+implementations I tested, and probably what most users assume.
+
+Current Practice:
+
+Symbolics Genera and Sun Common Lisp currently implement this.  I
+suspect most others do, too.
+
+Cost to Implementors:
+
+Little or none.
+
+Cost to Users:
+
+None unless they've been assuming some other type of copy.
+
+Benefits:
+
+Less ambiguity.
+
+Aesthetics:
+
+Well, I like it.
+
+
+
+     ----- End Forwarded Messages -----

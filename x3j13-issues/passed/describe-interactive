@@ -1,0 +1,174 @@
+Status:		Proposal NO passed Jan 89 X3J13
+Issue:        DESCRIBE-INTERACTIVE
+References:   DESCRIBE (p441)
+Category:     CLARIFICATION (EXPLICITLY-VAGUE) / CHANGE (NO)
+Edit history: 12-Sep-88, Version 1 by Pitman
+              23-Sep-88, Version 2 by Masinter
+              19-Oct-88, Version 3 by Pierson, invert
+              15-Nov-88, Version 4 by Pierson, two-proposal version
+
+Problem Description:
+
+  CLtL is not clear about whether DESCRIBE may be interactive.
+  While CLtL describes INSPECT as an interactive as an
+  interactive version of DESCRIBE, it doesn't make explicit
+  that DESCRIBE is non-interactive. In some implementations it is, 
+  and in other implementations it is not.
+
+  Users of systems in which DESCRIBE is not interactive may presume
+  that it is safe to call DESCRIBE in a batch applications without
+  hanging the application, which can lead to problems.
+
+Proposal (DESCRIBE-INTERACTIVE:EXPLICITLY-VAGUE):
+
+    Specify that DESCRIBE is permitted (though not required) to
+    require user input, and that such input should be negotiated
+    through *QUERY-IO*.
+
+    Descriptive information would continue to go to *STANDARD-OUTPUT*.
+
+  Test Case:
+
+    The following kind of interaction would be permissible in
+    implementations which chose to do it:
+
+     (DEFVAR *MY-TABLE* (MAKE-HASH-TABLE))
+     (SETF (GETHASH 'FOO *MY-TABLE*) 1)
+     (SETF (GETHASH 'BAR *MY-TABLE*) 2)
+     (SETF (GETHASH 'FOOBAR *MY-TABLE*) 3)
+     (DESCRIBE *MY-TABLE*)
+     #<EQ-HASH-TABLE 259> has 3 entries.
+     Do you want to see its contents? (Yes or No) Yes
+
+  Rationale:
+
+    This validates current implementations.
+
+  Current Practice:
+
+    Symbolics Genera asks some questions interactively when describing
+    some kinds of structured data structures, such as hash tables.
+    Since users can define their own DESCRIBE methods and took their cue
+    from the system, describing some user structures also require such
+    interactions.
+
+  Cost to Implementors:
+
+    None.
+
+  Cost to Users:
+
+    User code which depended on DESCRIBE running without user interaction
+    would have to be modified. Such code is not currently fully portable,
+    however.
+
+  Cost of Non-Adoption:
+
+    Users would not know the straight story about whether they should
+    expect interaction from DESCRIBE.
+
+  Benefits:
+
+    Implementations which don't do interactive querying in DESCRIBE only
+    because they're not 100% sure it's kosher would be free to do it.
+
+  Aesthetics:
+
+    Some people might think it's not aesthetic for DESCRIBE to require user
+    intervention. Not saying whether it's permissible is probably less
+    aesthetic, though.
+
+Proposal (DESCRIBE-INTERACTIVE:NO):
+
+    Specify that DESCRIBE is forbidden to prompt for or require
+    user input.  Permit implementations to extend describe via keyword
+    arguments to prompt for or require user input as long as the default
+    action if no keyword arguments are supplied does not prompt for or
+    require user input.
+
+    This is an incompatible change for some implementations.
+
+  Test Case:
+
+    The following kind of interaction would be permissible in
+    implementations which chose to do it:
+
+     (DEFVAR *MY-TABLE* (MAKE-HASH-TABLE))
+     (SETF (GETHASH 'FOO *MY-TABLE*) 1)
+     (SETF (GETHASH 'BAR *MY-TABLE*) 2)
+     (SETF (GETHASH 'FOOBAR *MY-TABLE*) 3)
+     (DESCRIBE *MY-TABLE* :INTERACTIVE T)
+     #<EQ-HASH-TABLE 259> has 3 entries.
+     Do you want to see its contents? (Yes or No) Yes
+
+  Rationale:
+
+    DESCRIBE is the only hook a portable program has for providing
+    information about objects to the user.  The potential interactive
+    functions of DESCRIBE are also likely to be available via INSPECT.
+
+  Current Practice:
+
+    Symbolics Genera asks some questions interactively when describing
+    some kinds of structured data structures, such as hash tables.
+    Since users can define their own DESCRIBE methods and took their cue
+    from the system, describing some user structures also require such
+    interactions.
+
+  Cost to Implementors:
+
+    Symbolics Genera and other non-conforming implementations will have
+    to change.
+
+  Cost to Users:
+
+    User code which depends on DESCRIBE running with user interaction
+    will have to be modified. Such code is not currently portable,
+    however.
+
+  Cost of Non-Adoption:
+
+    Users would not have any portable way to have progams inform the
+    user about object they are dealing with.  This might be important in
+    traces and logs of portable progams or in portable debugging tools.
+
+  Benefits:
+
+    It will be easier to provide some types of portable functionality.
+
+  Aesthetics:
+
+    This simplifies the language slightly.
+
+Discussion:
+
+  Pitman thinks it's important to clarify this issue, but he isn't fussy
+  about the particulars.
+
+  EXPLICITY-VAGUE proposal is the minimal proposal for compatibility
+  with current behavior.
+
+  Some members of the cleanup committee think that EXPLICITLY-VAGUE is
+  really a change from the intent of CLtL. However, the current
+  sentiment is to be less rather than more specific about the behavior
+  of debugging tools (25.3 of CLtL).
+
+  It might be possible to extend DESCRIBE to have additional 
+  keywords (:VERBOSE, :INTERACTIVE-ALLOWED) to cover 
+  additional behavior. 
+
+  Pierson supports NO because he thinks it's important for there to be
+  some way for portable programs to present this sort of information
+  to the user.  While the exact data and format presented is
+  implementation dependent and thus outside of the bounds of
+  standardization, the existance of such data is neither.
+
+  Moon opposes NO because "it creates extra work for implementors and
+  users of at least one implementation, for no compelling reason."
+
+  Moon suggested as a compromise only allowing DESCRIBE to require
+  user input from "interactive streams".  Several other members of the
+  committee like this in principle but question whether it's feasible
+  since we have neither defined "interactive streams" nor provided any
+  portable way to tell if a stream is interactive.
+

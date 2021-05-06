@@ -1,0 +1,58 @@
+Status: Passed, 1988 (not sure which meeting)
+Issue:          DEFSTRUCT-SLOTS-CONSTRAINTS-NUMBER
+References:     CLtL p.307 & 86-003 p.4
+Category:       CHANGE
+Edit history:   Revision 1 by Skona Brittain 05/13/88
+
+Problem Description:
+
+Structures defined by defstruct currently are required to have at least
+one slot.  This seems to have been a mistake in the design of the language.
+
+Proposal (DEFSTRUCT-SLOTS-CONSTRAINTS-NUMBER:ALLOW-ZERO):
+
+Allow a call to defstruct to have zero slot-descriptions.
+i.e. change the + to a * in the syntax of calls to defstruct 
+given at the bottom of page 307 of CLtL.
+
+Test Case:
+
+(defstruct s), which is not allowed according to CLtL, would be allowed.
+
+Rationale:
+
+The current restriction is in marked contrast to the generality allowed 
+elsewhere in the language.  And removing it slightly increases the 
+usefulness of defstruct - by allowing the zero slot case when it may be 
+deemed useful and by not requiring a check for it when it doesn't matter.
+
+Current Practice:
+
+KCL allows zero slots.  
+
+Cost to Implementors:
+
+None for implementations that currently allow zero slots.
+Very slight for others.
+
+Cost to Users:
+
+None.
+
+Benefits:
+
+Slightly increases the usefulness of defstruct and is aesthetic.
+
+Aesthetics:
+
+In general, it is more aesthetic to allow for generality rather than to
+specifically prohibit a particular case.  And the generality in this case 
+is consistent with that of many other features of the language, such as 
+that arrays can be empty, functions like + and list can take zero arguments, 
+etc.
+
+Discussion: 
+
+Although this issue was mentioned in Guy's original issues file, it has
+not been officially discussed since.
+

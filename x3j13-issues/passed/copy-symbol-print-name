@@ -1,0 +1,64 @@
+Status:	Passed, Mar 89 X3J13
+Issue:        COPY-SYMBOL-PRINT-NAME
+References:   COPY-SYMBOL (p. 169)
+Category:     CLARIFICATION
+Edit history: 1-MAR-89, Version 1 by Chapman
+              15-MAR-89, Version 2 by Chapman
+ 
+Problem Description:
+ 
+The description of COPY-SYMBOL states that it "returns a new uninterned
+symbol with the same print name as sym (its first argument)". The words
+"the same as" are not defined in CLtL. Do they mean EQ, EQUAL, ...?
+ 
+Proposal (COPY-SYMBOL-PRINT-NAME:EQUAL)
+ 
+The description of COPY-SYMBOL should read as follows:
+"COPY-SYMBOL returns an uninterned
+symbol whose print name is STRING= to
+the print name of the symbol that is the first argument to COPY-SYMBOL."
+ 
+Suggested implementation note:
+The string should not be copied unnecessarily. In this case, the uninterned
+symbol's print name would be EQ to the print name of the argument symbol.
+ 
+Rationale:
+ 
+This clarification resolves any possibility of ambiguity.
+ 
+Current Practice:
+ 
+Medley did this: the symbol names didn't really have a string header and
+some symbol names (the "initial symbols" ) had a different place for
+storing the actual characters than symbols created later. Unfortunately,
+that means that SYMBOL-NAME has to CONS.
+It wasn't so much a problem for Interlisp since most of the "string"
+functions in Interlisp will take symbols, but in Common Lisp, it is a
+performance hit. Poor design, but there's no reason to require SYMBOL-NAME
+to return EQ strings. 
+In this case, the strings aren't EQ even though the string characters are
+shared. (Think of it as strings displaced to a shared area.)
+ 
+ 
+Adoption Cost:
+ 
+?
+ 
+Benefits:
+ 
+Less ambiguity in the specification, and potentially more portable code.
+ 
+Conversion Cost:
+ 
+?
+ 
+Aesthetics:
+ 
+None.
+ 
+Discussion:
+ 
+
+
+
+     ----- End Forwarded Messages -----

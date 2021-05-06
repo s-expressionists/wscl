@@ -1,0 +1,94 @@
+Issue:         WITH-PACKAGE-ITERATOR-END
+
+Related issues: HASH-TABLE-PACKAGE-GENERATORS
+
+Category:      CLARIFICATION
+
+Edit history:  2-May-90, Version 1 by Moon
+               8-Jun-90, Version 2 by Moon (as amended at X3J13 meeting)
+
+Problem description:
+
+  The writeup in HASH-TABLE-PACKAGE-GENERATORS:ADD-WITH-WRAPPER is
+  unfortunately ambiguous about whether it's valid to call the
+  next-function again after it has returned NIL once.  The descriptions of
+  WITH-HASH-TABLE-ITERATOR and WITH-PACKAGE-ITERATOR say:
+
+    After all entries (symbols) have been returned [by successive
+    invocations of (<next-fn>)], then only one value is returned, namely
+    NIL.
+
+  The problem is that if calling the next-function again after it returns
+  NIL is valid, it turns out that the implementation of the generator has
+  to be less efficient.  But these language features exist primarily for
+  LOOP and other portable iteration facilities, and LOOP (and probably the
+  other facilities too) will never call the next-function after it returns
+  NIL, because that terminates the iteration.
+
+  This is Symbolics issue #24.
+
+Proposal (WITH-PACKAGE-ITERATOR-END:ONCE-ONLY):
+
+  Clarify that the consequences are undefined if the next-function is called
+  after it has returned NIL as its first value.
+
+Test Cases:
+
+  Macroexpand the following:
+
+    (loop for k being each hash-key of ht do (print k))
+
+    (loop for s being each symbol of 'common-lisp do (print s))
+
+    (with-hash-table-iterator (next ht)
+       (print (next)))
+
+    (with-package-iterator (next 'common-lisp :internal :external)
+       (print (next)))
+
+Rationale:
+
+  It seems silly to have needless generality in these macros, when the
+  next-function is already specified to have dynamic extent anyway.
+  The genmerality just causes a performance problem.
+
+Current practice:
+
+  Symbolics Genera 8.0 uses the less efficient implementation that
+  supports reinvoking the next-function after it returns NIL.
+
+  Lucid 4.0.0 Beta-1 does not support WITH-PACKAGE-ITERATOR and
+  WITH-HASH-TABLE-ITERATOR, but has a similar internal facility.
+
+  In both of the above implementations, LOOP generates code that
+  does not call the next-function again after it returns NIL.
+
+  Other implementations were not surveyed.
+
+Cost to Implementors:
+
+  None.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Small performance degradation.
+
+Performance impact:
+
+  Small performance improvement.
+
+Benefits:
+
+  Small performance improvement.
+
+Esthetics:
+
+  Not applicable to these macros.
+
+Discussion:
+
+  None.

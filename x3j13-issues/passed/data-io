@@ -1,0 +1,255 @@
+Status:	Passed, Jun 89 X3J13
+
+Issue:          DATA-IO
+References:     CLtL pp.360, 370, 382
+Related issues: CONSTANT-COMPILABLE-TYPES
+Category:       ADDITION
+Edit history:   Version 1,  9-May-89, by Moon
+                Version 2, 10-May-89, by Moon
+                        (clarify ambiguities, add PRINT-UNREADABLE-OBJECT)
+                Version 3, 18-May-89, by Moon (respond to KMP's comments)
+                Version 4, 21-May-89, by Moon (almost-final cleanup)
+                Version 5, 22-May-89, by Pitman (``never say never'')
+                Version 6, 23-May-89, by Moon (final cleanup)
+                Version 7, 18-Jun-89, by Moon (more fixes based on
+                        discussion in the cleanup subcommittee)
+                Version 8, 23-Jun-89, by Moon (fixes based on discussion)
+
+Problem description:
+
+  Storing data in textual form in files, as Lisp expressions, is common
+  practice but has some pitfalls.  Files can be unreadable if #<...> syntax
+  is written by the printer, or if the reader syntax or package varies
+  between writing and reading.  Files of data intended to be carried from
+  one Lisp implementation to another can fail to read correctly if
+  implementation-dependent syntax extensions get used when not intended.
+
+  CLtL p.370 recommends that unreadable objects be printed with #<...>
+  syntax including implementation-dependent information.  Now that users
+  can write their own PRINT-OBJECT methods, a way is needed for such
+  methods to print this syntax without any implementation-dependent coding.
+
+Proposal (DATA-IO:ADD-SUPPORT):
+
+  1a. Add a new variable *PRINT-READABLY*.  Add a corresponding keyword
+  argument :READABLY to WRITE.  The default value of *PRINT-READABLY* is
+  NIL.  If *PRINT-READABLY* is true, then printing any object produces a
+  printed representation that the reader will accept.  The reader will
+  produce an object that is "similar as a constant" to the object that
+  was printed.  The term "similar as a constant" is defined in the
+  already accepted compiler issue CONSTANT-COMPILABLE-TYPES:SPECIFY.
+
+  If *PRINT-READABLY* is true and printing a readable printed
+  representation is not possible, the printer signals an error of type
+  PRINT-NOT-READABLE rather than using an unreadable syntax such as #<...>.
+  The printed representation produced when *PRINT-READABLY* is true might
+  or might not be the same as the printed representation produced when
+  *PRINT-READABLY* is false.
+
+  1b. All methods for PRINT-OBJECT must obey *PRINT-READABLY*.  This
+  includes both user-defined methods and implementation-defined methods.
+
+  1c. If *PRINT-READABLY* is true and another printer control variable
+  (*PRINT-LENGTH*, *PRINT-LEVEL*, *PRINT-ESCAPE*, *PRINT-GENSYM*,
+  *PRINT-ARRAY*, or an implementation-defined printer control variable)
+  would cause the requirements of point 1a to be violated, that other
+  printer control variable is ignored.
+
+  1d. The printing of interned symbols is not affected by *PRINT-READABLY*,
+  regardless of the outcome of issue COMPILE-FILE-SYMBOL-HANDLING
+  (referenced by issue CONSTANT-COMPILABLE-TYPES).
+
+  1e. Note that the "similar as a constant" rule for readable printing
+  implies that #A or #( syntax cannot be used for arrays of element-type
+  other than T.  An implementation will have to use another syntax or
+  signal a PRINT-NOT-READABLE error.  A PRINT-NOT-READABLE error will not
+  be signalled for strings or bit-vectors.
+
+  1f. Readable printing of structures and standard-objects is controlled
+  by their PRINT-OBJECT method, not by their MAKE-LOAD-FORM method.
+  "Similarity as a constant" for these objects is application dependent
+  and hence is defined to be whatever these methods do.
+
+  2. Add a new reader control variable, *READ-EVAL*, whose default value is
+  T.  If *READ-EVAL* is NIL, the #. reader macro signals an error.  If
+  *READ-EVAL* is false and *PRINT-READABLY* is true, any PRINT-OBJECT
+  method that would output a #. reader macro either outputs something
+  different or signals an error of type PRINT-NOT-READABLE.
+
+  3. Add a new macro:
+
+  WITH-STANDARD-IO-SYNTAX &body body                             [Macro]
+  
+    Within the dynamic extent of <body>, all reader/printer control
+    variables, including any implementation-defined ones not specified by
+    Common Lisp, are bound to values that produce standard read/print
+    behavior.  The values for Common Lisp specified variables are:
+
+      *PACKAGE*                            The USER package
+      *PRINT-ARRAY*                        T
+      *PRINT-BASE*                         10
+      *PRINT-CASE*                         :UPCASE
+      *PRINT-CIRCLE*                       NIL
+      *PRINT-ESCAPE*                       T
+      *PRINT-GENSYM*                       T
+      *PRINT-LENGTH*                       NIL
+      *PRINT-LEVEL*                        NIL
+      *PRINT-PRETTY*                       NIL
+      *PRINT-RADIX*                        NIL
+      *PRINT-READABLY*                     T
+      *READ-BASE*                          10
+      *READ-DEFAULT-FLOAT-FORMAT*          SINGLE-FLOAT
+      *READ-EVAL*                          T
+      *READ-SUPPRESS*                      NIL
+      *READTABLE*                          The standard readtable
+
+    The values returned by WITH-STANDARD-IO-SYNTAX are the values
+    of the last body form, or NIL if there are no body forms.
+
+  4. Add a new macro:
+
+  PRINT-UNREADABLE-OBJECT (object stream &key type identity)      [Macro]
+                           &body body
+
+    Output a printed representation of <object> on <stream>, beginning with
+    "#<" and ending with ">".  Everything output to <stream> by the <body>
+    forms is enclosed in the angle brackets.  If :type is true, the body
+    output is preceded by a brief description of the object's type and a
+    space character.  If :identity is true, the body output is followed by
+    a space character and a representation of the object's identity,
+    typically a storage address.
+
+    If *PRINT-READABLY* is true, PRINT-UNREADABLE-OBJECT signals an error
+    of type PRINT-NOT-READABLE without printing anything.
+
+    The <object>, <stream>, :type, and :identity arguments are all evaluated
+    normally.  :type and :identity default to false.  It is valid to omit
+    the <body> forms.  If :type and :identity are both true and there are no
+    <body> forms, only one space character separates the type and the identity.
+
+    The value returned by PRINT-UNREADABLE-OBJECT is NIL.
+
+  5. Add a new condition type:
+
+  PRINT-NOT-READABLE                                             [Type]
+
+    Errors which occur during output while *PRINT-READABLY* is true, as a
+    result of attempting to output a printed representation that cannot be
+    read back, should inherit from this type.  This is a subtype of ERROR.
+    The init keyword :OBJECT is supported to initialize the slot containing
+    the object being printed, which can be accessed using
+    PRINT-NOT-READABLE-OBJECT.
+
+Examples:
+
+  ;; Example #1: Reliable Write-Read
+
+  (WITH-OPEN-FILE (FILE pathname :DIRECTION :OUTPUT)
+    (WITH-STANDARD-IO-SYNTAX
+      (PRINT DATA FILE)))
+
+  ; ... Later, in another Lisp:
+
+  (WITH-OPEN-FILE (FILE pathname :DIRECTION :INPUT)
+    (WITH-STANDARD-IO-SYNTAX
+      (SETQ DATA (READ FILE))))
+
+  ;; Example #2: Use of PRINT-UNREADABLE-OBJECT
+  ;; Note that in this example, the precise form of the output
+  ;; is really implementation-dependent.
+
+  (DEFMETHOD PRINT-OBJECT ((OBJ AIRPLANE) STREAM)
+    (PRINT-UNREADABLE-OBJECT (OBJ STREAM :TYPE T :IDENTITY T)
+      (PRINC (TAIL-NUMBER OBJ) STREAM)))
+
+  (PRINT MY-AIRPLANE)
+  #<Airplane NW0773 36000123135>        ;in Implementation A
+  ;or
+  #<FAA:AIRPLANE NW0773 17>             ;in Implementation B
+
+Rationale:
+
+  1. *PRINT-READABLY* is important so that errors involving data with no
+  readable printed representation are detected when writing the file, not
+  later on when the file is read.
+
+  *PRINT-READABLY* is different from *PRINT-ESCAPE* because output printed
+  with escapes only has to be generally recognizable by humans, whereas
+  output printed readably has to be reliably recognizable by computers.
+
+  2. Binding *READ-EVAL* to NIL is useful when reading data that came from
+  an untrusted source, such as a network or a user-supplied data file, to
+  prevent the #. reader macro from being exploited as a "Trojan horse" to
+  cause arbitrary forms to be evaluated.
+
+  3. Providing the WITH-STANDARD-IO-SYNTAX macro to bind all the variables,
+  instead of using LET and explicit bindings of the existing variables,
+  ensures that nothing is overlooked and avoids problems with
+  implementation-defined reader/printer control variables.
+
+  If the user wishes to use a non-standard value for some variable, such as
+  *PACKAGE* or *READ-EVAL*, it can be bound by LET inside the body of
+  WITH-STANDARD-IO-SYNTAX.  Similarly, if the user dislikes the somewhat
+  arbitrary choices of values for *PRINT-CIRCLE* and *PRINT-PRETTY*, they
+  can be bound to the preferred values inside the body.
+
+  4. PRINT-UNREADABLE-OBJECT allows user-written PRINT-OBEJCT methods to
+  adhere to implementation-specific style without requiring users to write
+  implementation-dependent code.
+
+  5. Defining a specific condition type associated with *PRINT-READABLY*
+  makes it possible for programs to handle the condition and recognize
+  the offending object.
+
+Current practice:
+
+  Symbolics Genera has had these features for many years, except with
+  different names.  For instance, WITH-STANDARD-IO-SYNTAX is named
+  WITH-STANDARD-IO-ENVIRONMENT and binds *PACKAGE* to a non-standard
+  package.  The proposed new names are better than the Genera names.
+
+  Genera's WITH-STANDARD-IO-ENVIRONMENT also disables #., to prevent trojan
+  horses, since #. could evaluate an arbitrary form.  This is particularly
+  important for network protocols.  WITH-STANDARD-IO-SYNTAX does not bind
+  *READ-EVAL* to NIL, because that would prevent using #. in the printer
+  for common datatypes, which is current practice in some implementations
+  for printing PATHNAMEs or RANDOM-STATEs.
+
+  In Genera, PRINT-UNREADABLE-OBJECT is called SYS:PRINTING-RANDOM-OBJECT
+  and takes slightly different arguments. In PCL, PRINT-UNREADABLE-OBJECT
+  is called PCL:PRINTING-RANDOM-THING.
+
+Cost to Implementors:
+
+  Very small, these features are all easy to add.  If #. is output by any
+  system-supplied print methods, they might want to invent a different
+  syntax, however that is not required by this proposal.
+
+Cost to Users:
+
+  None if they don't use the feature.  Otherwise just the cost of
+  supporting *PRINT-READABLY* or using PRINT-UNREADABLE-OBJECT in their
+  PRINT-OBJECT methods.
+
+Cost of non-adoption:
+
+  There will be no reliable, standard way to write data into a file.
+
+Performance impact:
+
+  Negligible.  Entering WRITE may be slightly slower since there is
+  one more keyword argument to parse and one more special variable
+  to bind before calling PRINT-OBJECT.
+
+Benefits:
+
+  Data can be written into files reliably without resorting to
+  implementation-specific programming.
+
+Esthetics:
+
+  Mildly improved.
+
+Discussion:
+
+  Pitman and Moon support this proposal.

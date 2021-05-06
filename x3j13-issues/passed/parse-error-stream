@@ -1,0 +1,64 @@
+Status:		Version 3 passed, 6/8/90
+
+Issue:		PARSE-ERROR-STREAM
+Forum:		Cleanup
+References:	Condition System, Version 18
+		Issue READER-ERROR
+		Issue CLOS-CONDITIONS
+Category:	CHANGE/CLARIFICATION
+Edit History:	Version 1, 1/3/90 by Kim A. Barrett
+		Version 2, 6/6/90 by Kim A. Barrett
+		Version 3, 6/11/90 by Kim A. Barrett (X3J13 ammendments)
+
+Problem Description:
+  The recently passed issue READER-ERROR defined the new condition type
+  PARSE-ERROR as a subtype of STREAM-ERROR.  This means that PARSE-ERROR
+  inherits behavior on the function STREAM-ERROR-STREAM, and has :STREAM as
+  the associated initarg.  The description of STREAM-ERROR can be read to
+  imply that the value of STREAM-ERROR-STREAM is in fact a STREAM.  That is,
+  that (TYPEP (STREAM-ERROR-STREAM c) 'STREAM) -> true.  However, it is fairly
+  easy to imagine a program which might want to signal PARSE-ERROR under some
+  circumstance, but which is not using a Common Lisp stream as its source of
+  input.
+
+Proposal (PARSE-ERROR-STREAM:SPLIT-TYPES):
+
+  1. Define that PARSE-ERROR has the class precedence list
+      (PARSE-ERROR ERROR SERIOUS-CONDITION CONDITION T)
+  thus making it no longer be a subtype of STREAM-ERROR.
+
+  2. Define a new condition called READER-ERROR, with class precedence list
+  (READER-ERROR PARSE-ERROR STREAM-ERROR ERROR SERIOUS-CONDITION CONDITION T).
+
+  Issue READER-ERROR (version 3, passed 11/89) specified that the reader was to
+  signal errors of type PARSE-ERROR for serious conditions that relate to
+  lexical analysis (the building and interpretation of tokens) and parsing
+  (errors in reader macro syntax) by the Lisp reader.  Change this to instead
+  specify that the reader signals errors of type READER-ERROR for such
+  situations.  There are numerous places (especially in chapter 3) that would
+  be affected.
+
+Rational:
+  SPLIT-TYPES fixes the problem in the obvious way.  If a program needs a
+  condition which inherits from both is desired, such a condition can be
+  trivially defined, since issue CLOS-CONDITIONS says that we now have
+  multiple inheritance for conditions.
+
+Current Practice:
+  PARSE-ERROR is sufficiently new that few implementations are likely to
+  have added it.
+
+Cost to Implementors:
+  Should be trivial.
+
+Cost to Users:
+  If this does not passe then some programs which might otherwise reasonably
+  signal PARSE-ERRORs will not be able to do so.
+
+Discussion:
+  Barrett supports SPLIT-TYPES.  He had some qualms about the merging when
+  he first saw the READER-ERROR issue, but didn't have time to think about
+  it much before the issue was voted on.
+
+
+

@@ -1,0 +1,112 @@
+Status: Passed, as amended, Jan 89 X3J13
+
+Issue:         NTH-VALUE
+References:    Multiple values, pp. 133-139
+Category:      ADDITION
+Edit history:  16-Aug-88, Version 1 by Pierson
+               01-Oct-88, Version 2 by Pitman (minor edits)
+               5-Oct-88, Version 3 by Masinter
+			(add Current Practice as per Gray)
+                8-Dec-88, Version 4 by Masinter
+			(add comments to discussion)
+                17-Mar-89, Version 5, Masinter (as amended)
+
+Problem description:
+
+  The set of operations on multiple values in Common Lisp is incomplete:
+
+  The only ways to retrieve just one of several return values (other than
+  the first) are:
+
+   - Bind several variables and then ignore all but one.
+     eg, (MULTIPLE-VALUE-BIND (X Y Z) <exp> (DECLARE (IGNORE X Y)) Z)
+     This is somewhat cumbersome to write and not perspicuous.
+
+   - Get a list of all return values and select from that.
+     eg, (THIRD (MULTIPLE-VALUE-LIST <exp>))
+     This is somewhat cumbersome, not perspicuous, and creates
+     needless garbage.
+
+Proposal (NTH-VALUE:ADD):
+
+  Add a new macro NTH-VALUE, described as
+
+  NTH-VALUE n form                                               [Macro]
+
+  N must be a non-negative integer.
+  Evaluates the FORM and returns the Nth value returned by the form as
+  a single value.  N is 0-based, i.e. the first returned value is 
+  value 0 (for consistency with NTH and NTHCDR). Both N and FORM are
+  evaluated, in left-to-right order.
+
+  NTH-VALUE returns NIL if N is greater than or equal to the number
+  of values returned by FORM.
+
+Examples:
+
+  With this proposal MOD could be defined as:
+
+  (DEFUN MOD (NUMBER DIVISOR)
+    (NTH-VALUE 1 (FLOOR NUMBER DIVISOR)))
+
+  The same code would currently be:
+
+  (DEFUN MOD (NUMBER DIVISOR)
+    (MULTIPLE-VALUE-BIND (DIVIDEND REMAINDER)
+        (FLOOR NUMBER DIVISOR)
+      (DECLARE (IGNORE DIVIDEND))
+      REMAINDER))
+
+Rationale:
+
+  This corrects the stated problem.
+
+Current practice:
+
+  The TI Explorer and LMI Lambda have this feature.
+ 
+Cost to Implementors:
+
+  Writing the macro version is fairly straightforward.
+
+  Some will choose to implement compiler hooks so that code written with
+  NTH-VALUE will be as efficient as possible. This may involve some
+  additional work, but presumably nothing major.
+
+Cost to Users:
+
+  This is an upward-compatible change.
+
+Cost of non-Adoption:
+
+  The occassional code where this comes up may be one or more of 
+  clumsier to write, more difficult to read, or less efficient.
+  (The feature is rarely used in implementations that have it.)
+
+Benefits:
+
+  The cost of non-adoption is avoided.
+
+Aesthetics:
+
+  While it does add another function to the language it removes
+  some need for the hairier multiple-value forms.
+
+Discussion:
+
+  Pitman proposed this in the very late pre-CLtL days. It was
+  rejected then because it was too late in the cycle.
+
+  There was not strong sentiment for including this feature
+  in Common Lisp, but no active opposition.
+
+Comments at the October 1988 X3J13 meeting:
+
+"Trivial, gratuitous."
+
+"Not trivial -- allows index computation. Hard to do this
+ in a portable, efficient way."
+
+"Says he has an NTH-VALUE macro for a portable system that he
+ uses (which exploits the computed index feature) and that it's
+ a gross kludge in one implementation to make it efficient."

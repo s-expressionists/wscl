@@ -1,0 +1,121 @@
+Status:		passed Jan 89 X3J13
+Issue:        DOTTED-MACRO-FORMS
+References:   forms (p54), lists and dotted lists (pp26-27),
+	      DEFMACRO (p145), destructuring macro arguments (p146)
+Category:     CLARIFICATION/CHANGE
+Edit history: 28-Jun-88, Version 1 by Pitman   (explicitly-vague vs allow)
+	      01-Oct-88, Version 2 by Masinter (disallow)
+	      15-Nov-88, Version 3 by Pitman   (revive allow, flush disallow)
+
+Problem Description:
+
+  CLtL is not explicit about whether macro forms may be dotted lists.
+
+  p54 says that only certain forms are "meaningful": self-evaluating
+   forms, symbols, and "lists".
+
+  pp26-27 defines "list" and "dotted list". It goes on to say
+   ``Throughout this manual, unless otherwise specified, it is an
+   error to pass a dotted list to a function that is specified
+   to require a list as an argument.''
+
+  p146 states that in DEFMACRO destructuring, ``the argument
+   form that would match the parameter is treated as a
+   (possibly dotted) list, to be used as an argument forms list
+   for satisfying the parameters in the embedded lambda list.''
+   It goes on to say that ". var" is treated like "&rest var"
+   at any level of the defmacro lambda-list.
+
+Proposal (DOTTED-MACRO-FORMS:ALLOW):
+
+ Define that it is permissible for a macro form (or subform) to be
+ a dotted list when "&REST var" or ". var" is used to match it. It
+ is the responsibility of the macro to recognize and deal with such
+ situations.
+
+Rationale:
+  
+ Some implementations permit dotted lists in macro forms at toplevel.
+ Most or all implementations permit dotted lists in macro forms at
+ embedded levels. This proposal makes the language internally
+ consistent without requiring changes to existing code.
+
+ Also, there's no reason to unnecessarily restrict &REST since there
+ is no computational overhead and since there's no dispute about how
+ to interpret programmer intent in this gray area.
+
+Test Case:
+
+  #1: (DEFMACRO MACW (&WHOLE W &REST R) `(- ,(CDR W)))
+      (MACW . 1) => ??
+
+  #2: (DEFMACRO MACR (&REST R) `(- ,R))
+      (MACR . 1) => ??
+
+  #3: (DEFMACRO MACX (&WHOLE W) `(- ,(CDR W)))
+      (MACX . 1)
+
+    (MACW . 1) => -1 under this proposal.
+    (MACR . 1) => -1 under this proposal.
+
+    (MACX . 1) is an error under CLtL semantics and is not
+	       changed by this proposal. The reason it is an
+	       error is that the argument pattern does not
+	       match. The pattern is dictated by the arguments
+	       -other than- the &WHOLE argument, so the pattern
+	       is () and MACX cannot be called with any arguments.
+
+Current Practice:
+
+  A. Some implementations bind W to (MACW . 1) in #1 and #3
+   		      and bind R to 1 in #1 and #2.
+
+  B. Some implementations bind W to (MACW . 1) in #3
+		      and signal a syntax error in #1 and #2.
+
+  C. Some implementations signal a syntax error in #1, #2, and #3.
+     Symbolics Genera is such an implementation.
+
+Cost to Implementors:
+  
+ Some implementations would have to eliminate an error check.
+
+ Some implementations which try to use APPLY of a normal lambda
+ to accomplish part of the destructuring (in the non-recursive case)
+ would have to be slightly more careful.
+  
+Cost to Users:
+  
+ None. This change is upward compatible.
+  
+Benefits:
+
+ People would know what to expect.
+
+Aesthetics:
+
+ Mixed opinion: certainly it is better to specify whether they are
+ allowed or an error than to be vague.
+
+ Some feel that disallowing dotted macro forms helps catch syntax errors.
+ Some feel that allowing dotted macro forms makes the language more regular.
+
+Discussion:
+
+ Goldman@VAXA.ISI.EDU raised this issue on Common-Lisp.
+ This issue came up primarily in the context of program-written programs;
+ a macro used in the program generated code might occasionally use
+ a dotted tail to a list to explicitly represent special conditions.
+ 
+ Allowing dotted macro forms may blur the data/code distinction too much, 
+ particularly for people who are new to Lisp. On the other hand, some people
+ argue that the point of macros is to help blur that distinction. Macro
+ forms are data which must be translated to program, and only once the
+ program claims to be macroexpanded ought syntax restrictions be imposed.
+
+ This proposal was rewritten from `DISALLOW' to `ALLOW' after Steele pointed
+ out in a recent meeting that dotted lists are allowed in subforms and 
+ that permitting them at toplevel would be the most internally consistent
+ interpretation.
+
+ Pitman supports DOTTED-MACRO-FORMS:ALLOW.

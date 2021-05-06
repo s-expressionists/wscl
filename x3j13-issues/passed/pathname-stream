@@ -1,0 +1,64 @@
+Issue:         PATHNAME-STREAM
+
+References:    PATHNAME (p.413), also the introductory text right above
+               it on the same page.
+               Derived references: TRUENAME (p.413), PARSE-NAMESTRING (p.414),
+               MERGE-PATHNAMES (p.415), PATHNAME-HOST etc. (p.417),
+               OPEN (p.418), WITH-OPEN-FILE (p.422),
+               RENAME-FILE (p.423), DELETE-FILE (p.424)
+
+Edit History:  Version 1 by Moon 11-May-87
+               Version 2 by Masinter 29-May-87 (minor editing)
+               Version 3 by Masinter 11-Jun-87 (minor editing)
+               Version 4 by Masinter  8-Oct-87 (rewording)
+               Version 5 by Masinter  8-Oct-87 (explicitly only open)
+               Version 6 by Masinter 14-Nov-87
+
+Category:     	CHANGE/CLARIFICATION
+
+Problem Description:
+
+CLtL says that a stream can be used as an argument and converted to a pathname, but many sources or sinks of data that streams might be connected to have no pathnames associated with them; for example, streams created with MAKE-TWO-WAY-STREAM or OPEN-STRING-STREAM. For many such streams, there is no simple way to coerce such a stream to a pathname.
+
+Proposal PATHNAME-STREAM:FILES-OR-SYNONYM:
+
+Clarify that the use of a stream as an argument that expects a pathname (as described on p413 of CLtL) only applies to streams that are originally opened by use of the OPEN or WITH-OPEN-FILE, or to synonym streams whose symbol is bound to such a stream. It is an error to attempt to obtain a pathname from a stream created with MAKE-TWO-WAY-STREAM, OPEN-STRING-STREAM, MAKE-ECHO-STREAM, MAKE-BROADCAST-STREAM, MAKE-CONCATENATED-STREAM, MAKE-STRING-INPUT-STREAM, MAKE-STRING-OUTPUT-STREAM.
+
+The pathname used represents the name used to open the file. This may be, but is not required to be, the actual name of the file. The pathname used is the same as would be returned by the PATHNAME function.
+
+Rationale:
+
+This is probably what the designers of Common Lisp intended. This is the only thing that can be implemented without large changes to the language such as extending pathnames to things other than files. 
+
+Current Practice:
+
+Some systems signal an error if a non-file stream is used as a pathname. Others return an empty pathname.
+
+Some implementations do not return a meaningful value for PATHNAME of a synonym stream.
+
+Adoption Cost:
+
+Implementations that do not currently handle PATHNAME of a synonym stream will have to change to allow it. Otherwise, since the proposal says only "is an error" rather than "signals an error", no implementations other changes are necessary.
+
+Benefits:
+
+The description of pathname functions will make more sense.
+
+Conversion Cost: 
+
+Small: Users with code which accesses pathname components of streams in implementations which allow it might need to change their programs to make them portable.
+
+Aesthetics:
+
+Makes language a little cleaner.
+
+Discussion: 
+
+The only point of disagreement on this proposal has been on the issue of whether PATHNAME applies to synonym streams and returns the pathname of the stream designated. 
+
+This version of the proposal says yes, because CLtL p 329 says about synonym streams that  "Any operations on the new stream ..." and does not say anything about exceptions; earlier on the page the phrase "synonym streams that pass all operations on" is used.  This seems fairly unambiguous, although the word "operations" is not defined. There was a similar controversy about what CLOSE of a synonym stream means.
+
+Note that there is currently no way portable to determine whether a stream has a pathname available. 
+
+The entire PATHNAME section needs work to clarify the intent and enable portable code. This is just a minor issue among the major ones.
+

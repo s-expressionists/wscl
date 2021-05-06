@@ -1,0 +1,158 @@
+Status:	Passed, Jan 89 X3J13
+Issue:        RANGE-OF-COUNT-KEYWORD
+References:   :COUNT (p247), REMOVE[-xxx] (p253), DELETE[-xxx] (p254),
+	      [N]SUBSTITUTE[-xxx] (pp255-256)
+Category:     CLARIFICATION
+Edit history: 21-Aug-88, Version 1 by Dave Touretzky
+	      22-Aug-88, Version 2 by Pitman
+	      09-Oct-88, Version 3 by Pitman
+
+Problem Description:
+
+ CLtL is overly vague about legal values for the :COUNT keyword
+ parameters to builtin functions such as the sequence functions. It
+ says that the keyword ``limits the number of elements [affected]''.
+ Implementations have varied in their interpretation of this phrase,
+ however.
+
+ CLtL p247 specifies that if the :COUNT parameter to functions such
+ as REMOVE and DELETE ``is NIL or is not supplied, all matching items
+ are affected.'' Because of the placement of this requirement
+ outside of the description of the functions affected, some
+ implementations have overlooked this requirement and had to be 
+ changed later.
+ 
+ CLtL doesn't say explicitly that the value of :COUNT must be an
+ integer, nor does it say what to do for negative values.
+
+ The fact that reasonable implementations disagree on some of the
+ details make this an obvious candidate for cleanup.
+
+Proposal (RANGE-OF-COUNT-KEYWORD:NIL-OR-INTEGER):
+
+ Clarify that for the functions
+
+   REMOVE	REMOVE-IF	REMOVE-IF-NOT
+   DELETE	DELETE-IF	DELETE-IF-NOT
+   SUBSTITUTE	SUBSTITUTE-IF	SUBSTITUTE-IF-NOT
+   NSUBSTITUTE	NSUBSTITUTE-IF	NSUBSTITUTE-IF-NOT
+
+ the following restrictions on the :COUNT keyword parameter exist:
+
+   * The value of this parameter must be NIL or an integer.
+
+   * Using a negative integer value is functionally equivalent to
+     using a value of zero.
+
+Examples:
+
+  #1: (REMOVE 'A '(A B A B) :COUNT  0)   => (A B A B)
+  #2: (REMOVE 'A '(A B A B) :COUNT -3)   => (A B A B)
+  #3: (REMOVE 'A '(A B A B) :COUNT NIL)  => (B B)
+  #4: (REMOVE 'A '(A B A B) :COUNT  1.0) is an error.
+  #5: (REMOVE 'A '(A B A B) :COUNT 'FOO) is an error.
+
+Rationale:
+
+ Disallowing non-integer numbers is probably the original intent and
+ is consistent with other functions such as NTH (p265) which accept
+ count-like arguments that are explicitly required to integers. This
+ restriction would presumably permit better optimizations in low-safety
+ mode on stock hardware.
+
+ Allowing NIL to be equivalent to no value allows a simplified flow
+ of control in some situations. For example, one can write
+  (DEFUN MYDEL (ITEM &OPTIONAL COUNT)
+    (DELETE ITEM *MYLIST* :COUNT COUNT))
+ where otherwise it might be necessary to write something like
+  (DEFUN MYDEL (ITEM &OPTIONAL (COUNT NIL COUNT-P))
+    (IF COUNT-P
+        (DELETE ITEM *MYLIST* :COUNT COUNT)
+        (DELETE ITEM *MYLIST*)))
+
+ Allowing negative numbers frees users from having to do an explicit
+ check for negative numbers when the value of :COUNT is computed by
+ some complicated expression. For example:
+  (DEFUN LEAVE-AT-MOST (N ITEM SEQUENCE &KEY (FROM-END T))
+    (REMOVE ITEM SEQUENCE 
+      :COUNT (PRINT (- (COUNT ITEM SEQUENCE) N))
+      :FROM-END FROM-END))
+  (LEAVE-AT-MOST 2 #\A "BANANAS")  ==>  "BANANS"
+  (LEAVE-AT-MOST 2 #\S "BANANAS")  ==>  "BANANAS"
+
+Current Practice:
+
+ [Note: Pitman didn't try these examples in KCL or CMU Common Lisp. He's
+  working from data in Touretzky's last draft of this proposal, so someone
+  from those camps might want to test the assertions made here.]
+
+ #1: All correct implementations presumably return (A B A B).
+     This value is consisent with this proposal.
+
+ #2: Symbolics Cloe returns (A B A B).
+     KCL returns (A B A B) for lists.
+     This value is forced by this proposal.
+
+     Symbolics Genera and CMU Common Lisp return (B B).
+     KCL does something bizarre for vectors (``pads with n blanks or
+      NILs, where -n is the value of the :count keyword parameter'',
+      says Touretzky.)
+     These implementations would have to change.
+
+ #3: All correct implementations presumably return (B B).
+     This value is consisent with this proposal.
+
+     Some implementations have been known to signal a wrong type
+     argument error in the past, but have presumably been fixed.
+
+ #4: Symbolics Genera and Symbolics Cloe return (B A B).
+     CMU Common Lisp returns (B B).
+     These behaviors are consistent with this proposal.
+  
+ #5: Symbolics Cloe and Symbolics Genera signal an error.
+     CMU Common Lisp returns (A B A B).
+     These behaviors are consistent with this proposal.
+
+
+Cost to Implementors:
+
+  Some implementations would have to change. These functions are typically
+  heavily optimized by compilers. Not only source code, but also compiler
+  optimizers and perhaps even microcode or hardware might have to be
+  modified to fully accomodate this change, so it might be quite expensive.
+
+Cost to Users:
+
+  None for Common Lisp users. This change is an upward compatible
+  clarification of standard practice.
+
+Cost of Non-Adoption:
+
+  The behavior of these functions when given degenerate keyword values would
+  be unintuitive. In many such cases, considerable additional user code must
+  be written to watch for and avoid creating such situations.
+
+Benefits:
+
+  More compact, more intuitive, and more portable code.
+
+Aesthetics:
+
+  This change improves language aesthetics.
+
+Discussion:
+
+  In the past there has been some argument about what SUBSEQ should do when
+  given positions greater than the length of the sequence.  Currently it 
+  "is an error" to specify positions less than zero or greater than the
+  length of the sequence.  Touretzky doesn't think the same should apply to
+  the :COUNT keyword. The inputs to SUBSEQ are ordinal numbers: they specify
+  positions, like array subscripts.  The value of :COUNT is not an ordinal,
+  it is an upper bound on the size of the set of affected items (which is
+  a cardinal number).
+ 
+  Pitman supports this proposal. [Hopefully Touretzky supports it, too?]
+
+  van Roggen says he personally supports the stated proposal but that a
+  survey he did of users at DEC showed up a number of people who thought
+  that negative count arguments should be an error.

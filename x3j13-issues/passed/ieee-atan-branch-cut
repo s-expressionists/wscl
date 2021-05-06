@@ -1,0 +1,127 @@
+Status:	Passed, Jan 89 X3J13
+Forum:         Cleanup
+Issue:         IEEE-ATAN-BRANCH-CUT
+References:    CLtL p.203-214
+Related issues: COMPLEX-ATAN-BRANCH-CUT
+Category:      CHANGE
+
+Edit history:  Version 1, 13-Dec-88, Steele
+               Version 2, 11-Jan-89, Masinter 
+
+Problem description:
+
+If an implementation provides a floating-point minus zero as well as a
+floating-point plus zero, most notably as in IEEE 754 floating-point
+arithmetic, then slight adjustments in the branch cuts of transcendental
+functions are appropriate.
+
+If there is a minus zero and a plus zero, then *no* complex number
+is actually "on the axis" whether real or imaginary.  Instead,
+numbers of the form x+0i and x-0i straddle the real axis, and those
+of the form 0+xi and -0+xi straddle the imginary axis.  Branch cuts
+that lie on the axes therefore run between such numbers, and directions
+of continuity are not an issue.
+
+Proposal (IEEE-ATAN-BRANCH-CUT:SPLIT):
+
+Redefine the branch cut for two-argument ATAN, covering
+the cases where there is or is not a minus zero, and then redefine *all*
+other functions that have branch cuts in terms of two-argument ATAN.
+Specifically, we first define PHASE in terms of two-argument ATAN,
+and complex ABS in terms of real SQRT (which has no branch cut problems);
+then define complex LOG in terms of PHASE, ABS, and real LOG; then define
+complex SQRT in terms of LOG; and then define all others in terms of these.
+
+In this propoal Lisp expressions should be taken as mathematical
+formulas that actually are implemented in other ways for improved accuracy.
+
+(1) If there is no minus zero, two-argument ATAN behaves as in CLtL.
+    If there is a minus zero, then some cases are modified:
+	Condition			result
+	y=+0  x>0			   +0
+	y=-0  x>0			   -0
+	y=+0  x<0			   +pi
+	y=-0  x<0			   -pi
+	y=+0  x=+0			   +0
+	y=-0  x=+0			   -0
+	y=+0  x=-0			   +pi
+	y=-0  x=-0			   -pi
+    The range of two-argument atan therefore includes -pi in this case.
+
+    Note that the case y=0 x=0 is an error in the absence of minus zero,
+    but is defined in the presence of minus zero.
+
+(2) (PHASE X) = (ATAN (IMAGPART X) (REALPART X)), as before, but now
+    the range of PHASE may include -PI if there is a minus zero.
+
+(3) (ABS X) = (SQRT (+ (* (REALPART X) (REALPART X))
+		       (* (IMAGPART X) (IMAGPART X)))), as before
+
+(4) (LOG X) = (COMPLEX (LOG (ABS X)) (PHASE X))
+
+(5) (SQRT X) = (EXP (/ (LOG X) 2))
+
+(6) For EXPT, ASIN, ACOS, ATAN, ASINH, ACOSH, ATANH use the formulas
+    in CLtL pp. 211-213, but use the formulas (1-5) above as the
+    definitions of LOG and SQRT in order to determine the branch cuts
+    properly.
+
+Examples:
+
+(LOG #c(-1.0 +0.0)) => #c(0.0 3.14159...)	;Current
+(LOG #c(-1.0 -0.0)) => #c(0.0 3.14159...)	;Current
+
+(LOG #c(-1.0 +0.0)) => #c(0.0 3.14159...)	;Proposed (= current)
+(LOG #c(-1.0 -0.0)) => #c(0.0 -3.14159...)	;Proposed (conjugate)
+
+Rationale:
+
+The current specification ignores some natural consequences of IEEE
+floating-point arithmetic.  The proposed specification produces results
+more natural to that arithmetic.
+
+  
+Current practice:
+
+Of implementations that support a minus zero that I have checked,
+such as Sun-4 CL 2.1.3 of 10-Nov-88 and Symbolics CL, all follow
+the current CLtL specification.
+
+The IEEE trig library atan2 routine written by K.C. Ng (with the advice
+or supervision of W. Kahan, I believe), and distributed with BSD UNIX
+(it is file /usr/src/usr.lib/libm/IEEE/atan2.c on my machine) follows
+this proposal for treatment of minus zero.
+
+
+Cost to Implementors:
+
+Some of the trig routines will require some rewriting.  Probably certain
+tests that are now written using ZEROP need to be rewritten to use
+FLOAT-SIGN instead.
+
+
+Cost to Users:
+
+It is barely conceivable that some user code could depend on this.
+Probably there is no cost.
+
+The compatibility note on p. 210 of CLtL gave users fair warning that
+a change of this kind might be adopted.
+
+Cost of non-adoption:
+
+Unnatural treatment of some functions on machines supporting IEEE
+floating-point arithmetic.
+
+Benefits:
+
+Natural treatment, etc.
+
+Esthetics:
+
+A toss-up, except to those who care.
+
+Discussion:
+
+Steele has sent a letter to W. Kahan at Berkeley to get any last
+comments he may have on the matter.

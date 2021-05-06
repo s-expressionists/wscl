@@ -1,0 +1,65 @@
+Forum:		Cleanup
+Issue:		MACROEXPAND-RETURN-VALUE
+References:	MACROEXPAND, MACROEXPAND-1
+			(CLtL p151)
+		COMPILER-MACROEXPAND, COMPILER-MACROEXPAND-1
+			(issue DEFINE-COMPILER-MACRO)
+Category:	CHANGE
+Edit History:   V1, 29 Oct 1989, Sandra Loosemore
+
+
+Problem Description:
+
+CLtL says that the second value returned by MACROEXPAND and
+MACROEXPAND-1 is T if the argument form is a macro call.  Presumably
+this is also the case for COMPILER-MACROEXPAND and
+COMPILER-MACROEXPAND-1, since these functions are intended to be "just
+like" their counterparts.  Specifying a return value of T is
+inconsistent with other predicates in the language, where a return
+value of "true" is normally specified instead.
+
+
+Proposal (MACROEXPAND-RETURN-VALUE:TRUE):
+
+Change the specification so that the second return value from
+MACROEXPAND, MACROEXPAND-1, COMPILER-MACROEXPAND, and
+COMPILER-MACROEXPAND-1 is a boolean instead of one of the symbols T or
+NIL.  In other words, if the form represents a macro call (or a
+compiler macro call, as appropriate), the second return value is true.
+
+
+Rationale:
+
+This is more consistent with other predicates in the language.
+
+
+Current Practice:
+
+Presumably all conforming implementations now return T.
+
+
+Cost to implementors:
+
+None, except possibly for the cost of changing documentation.
+
+
+Cost to users:
+
+It seems unlikely that user programs would explicitly test for the
+return value being T, or otherwise depend on this.
+
+
+Benefits:
+
+Increased consistency in the language design.
+
+
+Discussion:
+
+Loosemore notes:
+  In some implementations, there is a slight performance advantage in
+  allowing the return values from predicates to be any non-NIL value
+  instead of the symbol T.  Some functions such as MEMBER are required
+  to return a particular truth value that conveys extra information back
+  to the caller, but there doesn't appear to be similar motivation for
+  making an exception to the general rule in this situation.

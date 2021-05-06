@@ -1,0 +1,97 @@
+Status:	Passed, Jan 89 X3J13
+Forum:         Cleanup
+Issue:         FORMAT-E-EXPONENT-SIGN
+
+References:    CLtL pp. 366, 393
+
+Category:      CLARIFICATION
+
+Edit history:  Bob Cassels, 13 Sep 88
+			Masinter,  2-Oct-88 (change issue name)
+
+Problem description:
+
+    The result of (format nil "~E" 1.0) is specified in a contradictory way.
+    The ambiguity is whether a plus sign should be printed in front of
+    the exponent.
+    
+    The top of page 393 says, "Next, either a plus or a minus sign is
+    printed, followed by e digits ... [decimal exponent]"
+    
+    Later on page 393 we see, "If all of w, d, and e are omitted, then the
+    effect is ... [like prin1].
+    
+    Page 366 [presumably where prin1 is defined] doesn't explicitly say that
+    the plus sign is omitted from the exponent, but all the examples (and
+    usual practice) indicate that.
+    
+    So the posssibilities are:
+
+	A. "1.0e+0"
+	B. "1.0e0"
+    
+    The first reference implies that A is correct, the third reference
+    implies that B is correct.  The second reference implies that A and B
+    are the same.
+
+Proposal (FORMAT-E-EXPONENT-SIGN:FORCE-SIGN):
+
+    Specify that ~E always prints a plus or minus sign in front of the
+    exponent.
+
+ This would cause the language on page 393 of CLtL to to change:
+
+    "If all of w, d, and e are omitted, then the effect is to print the
+    value using ordinary free-format exponential-notation output; PRIN1 uses
+    a similar format for any non-zero number whose magnitude is less than
+    10**-3 or greater than or equal to 10**7.  The only difference is that
+    the ~E directive always prints a plus or minus sign in front of the
+    exponent, while PRIN1 omits the plus sign if the exponent is
+    non-negative."
+
+Test Case:
+
+    (format nil "~E" 1.0) => "1.0e+0"
+
+Rationale:
+
+    This proposal makes ~E self-consistent.  That is more important than
+    making ~E consistent with PRIN1.
+
+Current practice:
+
+    Symbolics Common Lisp, Ibuki Lisp, and VAX Lisp all print the plus
+    sign as in the test case above.  Apollo DOMAIN Common Lisp (version
+    2.10) and Xerox Common Lisp produce "1.0", which is wrong because  
+   it includes no exponent at all.
+
+Adoption Cost:
+
+    Minimal changes to one printing routine for non-conforming
+    implementations.  (No change to the three implementations mentioned
+    above.)
+
+Cost of non-adoption:
+
+    Minor confusion and possible incompatibility among implementations.
+
+Benefits:
+
+    Less confusion, more compatibility.
+
+Conversion Cost:
+
+    Minimal.  It is doubtful that any user programs depend on this
+    obscure distinction.
+
+Esthetics:
+
+    A matter of opinion.
+
+Discussion:
+
+    Fortran ~E format requires a sign before the exponent, since the exponent
+    mark character may be dropped.  Since Common Lisp ~E always prints
+    the exponent marker, the exponent sign may be dropped in the case
+    that it would be a plus sign.
+

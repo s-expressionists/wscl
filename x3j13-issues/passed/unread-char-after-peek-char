@@ -1,0 +1,96 @@
+Status:	Passed, Jan 89 X3J13
+Issue:         UNREAD-CHAR-AFTER-PEEK-CHAR
+
+References:    pp 379, 380 of CLtL
+
+Category:      CLARIFICATION
+
+Edit history:  Version 1 by Doug Cutting <Cutting.PA@Xerox.COM> on July 29, 1988
+               Version 2 by Masinter  2-Dec-88
+
+Problem description:
+
+PEEK-CHAR and UNREAD-CHAR are very similar mechanisms.  The description of
+PEEK-CHAR in CLtL even states that "it is as if one had called READ-CHAR and
+then UNREAD-CHAR in succession."  But while CLtL prohibits calling UNREAD-CHAR
+twice in succession it does not prohibit calling UNREAD-CHAR after PEEK-CHAR.
+The obvious implementation of PEEK-CHAR and UNREAD-CHAR (a one-character buffer)
+will not work unless this prohibition is present.
+
+Proposal (UNREAD-CHAR-AFTER-PEEK-CHAR:DONT-ALLOW): 
+
+   Rewrite the specification so that it is clear that doing either a
+   PEEK-CHAR or READ-CHAR `commits' all previous characters. UNREAD-CHAR
+   on any character preceding that which is seen by the PEEK-CHAR (including
+   those passed over by PEEK-CHAR when `seeking' with a non-NIL first
+   argument) is not specified.
+
+   In particular, the results of calling  UNREAD-CHAR after PEEK-CHAR
+   is unspecified.
+
+Example:
+
+   (defun test (&optional (stream *standard-input*))
+     (let* ((char1a (read-char stream))	
+	    (char2a (peek-char nil stream))
+	    (char1b (progn (unread-char char1a stream)
+			   (read-char stream)))
+	    (char2b (read-char stream)))
+       (list char1a char2a char1b char2b)))
+
+
+This is not legal, since the PEEK-CHAR for char2a "commits"
+the character read by char1a, and so the unread-char is not legal.
+
+Rationale:
+
+PEEK-CHAR and UNREAD-CHAR provide equivalent functionality and it is thus
+reasonable for an implementation to implement them in terms of the same
+mechanism.
+
+Current practice:
+
+In Xerox Common Lisp, different (non-random-access) stream types behave
+differently. One, (TCP/FTP) handled this correctly, while another did not.
+
+In Symbolics Genera, for the Example above:
+
+     (test)ab
+     => (#\a #\b #\a #\b)
+
+     (with-input-from-string (s "abc") (test s))
+     => (#\a #\b #\a #\b)
+
+     (progn (with-open-file (s "foo.output" :direction :output)
+	      (write-string "abc" s))
+            (with-open-file (s "foo.output" :direction :input) 
+	      (test s)))
+     Signals an error about unreading #\a when #\b was already unread.
+
+
+Cost to Implementors:
+
+Presumably none.  Implementations which allow this are still correct.
+
+Cost to Users:
+
+Small.  I suspect there is very little code which depends upon this working
+correctly, as most code uses either PEEK-CHAR or UNREAD-CHAR, but not both.
+
+Cost of non-adoption:
+
+Implementations of sequential streams are forced to be unnecessarily complex in
+order to be correct.
+
+Benefits:
+
+Allows simple yet adequately powerful implementation of sequential streams.
+
+Esthetics:
+
+Requires that users have shared, one-char buffer model of how UNREAD-CHAR and
+PEEK-CHAR work, rather than two separate one-char buffers.
+
+Discussion:
+
+<none>

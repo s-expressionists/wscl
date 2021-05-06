@@ -1,0 +1,244 @@
+Status: Version 11 passed Jun 89 X3J13
+(Version 5 passed Jan 89, but various problems were found.)
+
+Issue:        ADJUST-ARRAY-NOT-ADJUSTABLE
+References:   ADJUST-ARRAY (p297), ADJUSTABLE-ARRAY-P (p293),
+              MAKE-ARRAY (pp286-289), simple arrays (p28, 289),
+              simple strings with fill pointers (p299),
+              VECTOR-PUSH-EXTEND (p296)
+Category:     CLARIFICATION and CHANGE
+Edit history: 22-Apr-87, Version 1 by Pitman
+              15-Nov-88, Versions 2a,2b,2c by Pitman
+              02-Dec-88, Version 3 by Pitman
+              11-Jan-89, Version 4 by Pitman
+              16-Jan-89, Version 5, by Gabriel.  Amended at the meeting to shorten.
+              23-Jan-89, Version 6, by Moon.  Shorten without the bug introduced
+                        by the amendment, add clarification of SIMPLE-ARRAY type.
+              15-Feb-89, Version 7, by Pitman. Minor changes per comments from
+                        RPG and Dalton.
+              11-Mar-89, Version 8, by Pitman. Change category, add endorsements.
+              17-Mar-89, Version 9, by Moon, fix wording and examples to make it
+                        clear that the semantics of simple-array is unchanged.
+               6-Jun-89, Version 10, by Moon and Gabriel, do over.
+              23-Jun-89, Version 11, by Moon, two little corrections
+
+Problem Description:
+
+  There are a number of unclear passages in CLtL related to simple arrays
+  and adjustable arrays.  There is disagreement on precisely how these
+  passages are to be interpreted, and no one is happy with the fact that
+  ADJUST-ARRAY works only on an implementation-dependent subset of arrays.
+
+  The description of the :ADJUSTABLE option to MAKE-ARRAY on p288 says that
+  ``the argument, if specified and not NIL, indicates that it must be
+  possible to alter the array's size dynamically after it is created. This
+  argument defaults to NIL.''  The description of the :ADJUSTABLE option
+  does not say what MAKE-ARRAY will do if the argument is unsupplied or
+  explicitly NIL.
+
+  The description of ADJUSTABLE-ARRAY-P on p293 says that it is true ``if
+  the argument (which must be an array) is adjustable, and otherwise
+  false.'' However, the description of MAKE-ARRAY makes it clear that this
+  is not necessarily the same as asking if the array was created with
+  :ADJUSTABLE T.  If ADJUSTABLE-ARRAY-P returns NIL, you know that
+  :ADJUSTABLE NIL was supplied (or no :ADJUSTABLE option was supplied), but
+  if ADJUSTABLE-ARRAY-P returns T, then there is no information about
+  whether :ADJUSTABLE was used.
+
+  The description of ADJUST-ARRAY on pp297-298 says that it is ``not
+  permitted to call ADJUST-ARRAY on an array that was not created with the
+  :ADJUSTABLE option.'' This is inconsistent with ADJUSTABLE-ARRAY-P.
+
+  The definition of SIMPLE-ARRAY on p.28 says ``an array that is not
+  displaced to another array, has no fill pointer, and is not to have its
+  size adjusted dynamically after creation is called a simple array.''
+  It is left unclear whether this is an implication or an equivalence,
+  i.e. whether there can be other simple arrays as well.
+  CLtL p.299 appears to refer to simple strings with fill pointers,
+  suggesting that it is an implication, but similar language is used for
+  equivalences in other parts of CLtL.
+
+Proposal (ADJUST-ARRAY-NOT-ADJUSTABLE:IMPLICIT-COPY)
+
+  1. If MAKE-ARRAY is called with the :ADJUSTABLE, :FILL-POINTER, 
+  and :DISPLACED-TO arguments each either unspecified or false, the
+  resulting array is a simple array.  (This just repeats what CLtL
+  says on page 289, it's here to aid in understanding the next point.)
+      
+  2. If MAKE-ARRAY is called with one or more of the :ADJUSTABLE,
+  :FILL-POINTER, or :DISPLACED-TO arguments true, whether the
+  resulting array is simple is unspecified.
+
+  3. It is permitted to call ADJUST-ARRAY on any array.  (Remove the
+  restriction documented at the bottom of p.297.)
+
+  4. If ADJUST-ARRAY is applied to an array created with :ADJUSTABLE true,
+  the array returned is EQ to its first argument.  It is not specified
+  whether ADJUST-ARRAY returns an array EQ to its first argument for any
+  other arrays.  If the array returned by ADJUST-ARRAY is not EQ to its
+  first argument, the original array is unchanged and does not share
+  storage with the new array.
+
+  5. The predicate ADJUSTABLE-ARRAY-P is true if and only if ADJUST-ARRAY
+  will return a value EQ to this array when given this array as its first
+  argument.
+
+Clarifications and Logical Consequences:
+
+  a. There is no specified way to create an array for which ADJUSTABLE-ARRAY-P
+     definitely returns NIL.
+
+  b. There is no specified way to create an array that is non-simple.
+
+  c. The definition of SIMPLE-ARRAY on p.28 is taken to be an implication,
+     not an equivalence.  This is either a clarification or a change depending
+     on one's prior reading of that definition.
+
+  d. The meaning of ADJUSTABLE-ARRAY-P is changed.
+
+  e. As with such functions as DELETE and NCONC, textbooks should
+     instruct programmers to be careful to receive the value returned by
+     ADJUST-ARRAY, as it might not be EQ to the first argument.
+
+  f. VECTOR-PUSH-EXTEND still signals an error if given a non-adjustable
+     array.  ADJUST-ARRAY's new feature of making a copy cannot be used
+     by VECTOR-PUSH-EXTEND, since there is no way to return the copy to
+     the caller.
+
+Rationale:
+
+  Points 3 and 4 eliminate the problem of ADJUST-ARRAY only working on a
+  subset of arrays, by changing it to work on all arrays.  It remains
+  implementation-dependent whether the array is modified in place or
+  copied, i.e. whether the result is EQ to the argument, however many other
+  functions in Common Lisp have similar implementation-dependent behavior.
+  Implementation-dependent storage allocation or reuse is considered
+  more benign than implementation-dependent applicability of an operation.
+
+  Point 3 recognizes that ADJUST-ARRAY offers features that are offered by
+  no other function and which are useful in cases involving non-adjustable
+  arrays (for what amounts to copying).  This change would allow an
+  expression such as:
+
+    (SETQ X (ADJUST-ARRAY X ...))
+
+  to work reliably. Those desiring the old behavior could do:
+
+    (IF (OR (NOT (ADJUSTABLE-ARRAY-P X))
+            (NOT (EQUAL (ARRAY-RANK X) (LENGTH NEW-DIMENSIONS))))
+        (ERROR "Array cannot be adjusted."))
+  
+  to get the old style error checking.
+
+  Point 5 recycles the name ADJUSTABLE-ARRAY-P as a test for whether an
+  array is adjusted in place or by copying.
+
+  Point 2 preserves the raison d'etre of simple arrays, which is to provide
+  a portable interface to implementation-dependent specialized arrays that
+  trade decreased functionality for faster access.  A proposed alternative
+  was to specify a way to create an array that is guaranteed not to be
+  simple.  This would have made (typep (make-array ...) 'simple-array)
+  return the same value in all implementations, but would have required
+  large changes to some implementations and would be of little benefit to
+  users.  Users need to know that certain arrays are simple, so they can
+  put in declarations and get higher performance, but users have no need to
+  be able to create arrays that are definitely non-simple (for lower
+  performance) or definitely non-adjustable.
+
+Examples:
+
+  1. The following program is conforming.
+  
+    (defun double (a)
+      (adjust-array a (* (length a) 2)))
+  
+    (double (make-array 30))
+
+  2. The following program is conforming.  In no implementation is the
+  type declaration violated.
+
+    (let ((a (make-array 100)))
+      (declare (simple-array a))
+      (frob a))
+
+  3. The following program is non-conforming.  The consequences of this
+  program are undefined because the type declaration is violated in some
+  implementations.
+
+    (let ((a (make-array 100 :adjustable t)))
+      (declare (simple-array a))
+      (frob a))
+
+Current Practice:
+
+  Every correct CLtL implementation conforms to points 1 and 2.  It is
+  unlikely that any implementation currently exists that conforms to points
+  3, 4, and 5.  Points 3 and 4 involve additions to an implementation to
+  support the copying form of ADJUST-ARRAY.  Point 5 may involve a change
+  to ADJUSTABLE-ARRAY-P or may be able to use the existing implementation
+  of the function.
+
+  Symbolics Genera makes :ADJUSTABLE NIL arrays adjustable in most cases,
+  and ignores adjustability in deciding whether an array is a SIMPLE-ARRAY.
+  The arrays that are internally simple in Symbolics Genera are a different
+  subset of arrays from the type SIMPLE-ARRAY, because simplicity in that
+  implementation depends on the rank and total-size as well as on the
+  fill-pointer and displacement, thus Genera does not use the type
+  SIMPLE-ARRAY for anything.
+
+  Lucid, IIM, Ibuki, and Symbolics Cloe make :ADJUSTABLE NIL arrays
+  non-adjustable in all cases, and make every array non-simple that CLTL
+  does not require to be simple.
+
+  Macintosh Allegro Common Lisp v1.2 makes :ADJUSTABLE NIL arrays
+  non-adjustable in all cases, makes all arrays of rank other than 1
+  non-simple (violating point 1), and makes every array non-simple that
+  CLTL does not require to be simple.
+
+Cost to Implementors:
+
+  The change to ADJUSTABLE-ARRAY-P is easy.  The change to ADJUST-ARRAY may
+  involve some complex coding but should not be a large task.  No changes
+  are required to anything connected with SIMPLE-ARRAY.
+
+Cost to Users:
+
+  None in code that does not call ADJUSTABLE-ARRAY-P.  This is a fully
+  upward-compatible change from the user's standpoint.
+
+Benefits:
+
+  Programs that use simple arrays and/or adjust arrays will be easier
+  to port, as the language specification for these features will be
+  clearer.  More programs will be able to call ADJUST-ARRAY, as its use
+  will not be restricted to a subset of arrays.
+
+Non-Benefits:
+
+  Users who expect adjusting arrays created with :ADJUSTABLE NIL to signal
+  an error would not get the desired signal.  A few programs might have
+  porting problems due to variation among implementations of whether the
+  result of ADJUST-ARRAY is EQ to the first argument.
+
+Aesthetics:
+
+  Most people believe the status quo is unaesthetic.  Having an aspect of
+  the language more clearly specified is an aesthetic improvement.
+  Allowing ADJUST-ARRAY on all arrays is an aesthetic improvement.
+
+Discussion:
+
+  There are at least 110 messages of discussion preceding this version of the
+  proposal.  It does not seem feasible to summarize them here.
+
+  Dick Gabriel, Dave Moon, and Guy Steele support this proposal.
+
+  Some commentors would like to get rid of ADJUSTABLE-ARRAY-P, since
+  ADJUST-ARRAY now works on all arrays.  Other commentors have said that
+  ADJUSTABLE-ARRAY-P is still needed in some applications, such as user
+  written functions that behave like VECTOR-PUSH-EXTEND, and hence should
+  be kept; the concept of "adjustable array" is still meaningful.
+
+
+
+     ----- End Forwarded Messages -----

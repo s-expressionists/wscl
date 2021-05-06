@@ -1,0 +1,96 @@
+Status: passed, 1988 (not sure which meeting)
+Issue:        ADJUST-ARRAY-FILL-POINTER
+References:   ADJUST-ARRAY (p297)
+Category:     CLARIFICATION
+Edit history: 15-Mar-88, Version 1 by Pitman
+
+Problem Description:
+
+  CLtL does not specify clearly the effect of ADJUST-ARRAY on the fill
+  pointer.
+
+Proposal (ADJUST-ARRAY-FILL-POINTER:MINIMAL):
+
+  Clarify that the :FILL-POINTER keyword argument to ADJUST-ARRAY is treated
+  as follows...
+
+  If :FILL-POINTER argument is not given, then the fill-pointer of the array
+  to be adjusted (if any) is left alone. It is an error to adjust an array
+  to a size smaller than its fill pointer without specifying the :FILL-POINTER
+  option so that its fill-pointer is properly adjusted in the process.
+
+  If supplied, the :FILL-POINTER argument must be either an integer between 0
+  and the new size of the array, the symbol T (indicating that the new size
+  of the array should be used), or the symbol NIL (indicating that the fill
+  pointer should left as it is -- as if the :FILL-POINTER option had not been
+  specified).
+
+  An error is signalled if a non-NIL value for :FILL-POINTER is supplied and
+  the array to be adjusted does not already have a fill pointer.
+
+Test Case:
+
+  (SETQ A1 (MAKE-ARRAY 5 :FILL-POINTER 3 :ADJUSTABLE T))
+  (SETQ A2 (ADJUST-ARRAY A1 4))
+  (FILL-POINTER A1) => 3
+  (FILL-POINTER A2) => 3
+
+  (SETQ B1 (MAKE-ARRAY 5 :FILL-POINTER 3 :ADJUSTABLE T))
+  (SETQ B2 (ADJUST-ARRAY B1 2 :FILL-POINTER 1))
+  (FILL-POINTER B1) => 1
+  (FILL-POINTER B2) => 1
+
+  (SETQ C1 (MAKE-ARRAY 5 :FILL-POINTER 3 :ADJUSTABLE T))
+  (SETQ C2 (ADJUST-ARRAY C1 2 :FILL-POINTER T))
+  (FILL-POINTER C1) => 2
+  (FILL-POINTER C2) => 2
+
+  (SETQ D1 (MAKE-ARRAY 5 :ADJUSTABLE T))
+  (SETQ D2 (ADJUST-ARRAY D1 2 :FILL-POINTER 2)) signals an error.
+
+  (SETQ E1 (MAKE-ARRAY 5 :FILL-POINTER T :ADJUSTABLE T))
+  (SETQ E2 (ADJUST-ARRAY E1 4)) is an error.
+
+Rationale:
+
+  This behavior must be more clearly defined if portable programs are going
+  to be able to depend on it.
+
+Current Practice:
+
+  Symbolics Lisp implements the proposal. In case "E", it does not signal an
+  error. It simply leaves the illegal fill-pointer in place so that the
+  programmer can correct it using (SETF (FILL-POINTER E2) ...)
+
+Cost to Implementors:
+
+  Probably most implementations do not deviate significantly from the proposed
+  behavior. The cost to implementors is probably very slight.
+
+Cost to Users:
+
+  None. This clarifies a fuzzy area in the manual which users cannot currently
+  depend upon.
+
+Cost of Non-Adoption:
+
+  The interaction between ADJUST-ARRAY and fill-pointers would continue to be
+  hazy, and portable programs would not be able to rely upon that behavior
+  being consistent across implementations.
+
+Benefits:
+
+  The cost of non-adoption would be avoided.
+
+Aesthetics:
+
+  There is little if any aesthetic impact of this change.
+
+Discussion:
+
+  Pitman volunteered to write this issue up for the Cleanup committee. He's
+  not very passionate about the details one way or another, but figures it's
+  a good idea that they be clarified.
+
+
+   The cleanup committee didn't object.

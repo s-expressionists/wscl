@@ -1,0 +1,210 @@
+Status: passed, as amended here, Jun 89 X3J13
+Issue:        PATHNAME-COMPONENT-CASE
+References:   Pathnames (pp410-413),
+              MAKE-PATHNAME (p416),
+              PATHNAME-HOST (p417),
+              PATHNAME-DEVICE (p417),
+              PATHNAME-DIRECTORY (p417),
+              PATHNAME-NAME (p417),
+              PATHNAME-TYPE (p417)
+Related-issues: PATHNAME-WILD
+Category:     CHANGE
+Edit history: 1-Jul-88, Version 1 by Pitman
+              22-Mar-89, Version 2 by Moon, update and rewrite
+               9-May-89, Version 3 by Moon, remove alternate proposals
+               9-May-89, Version 4 by Moon, respond to discussion with KMP
+              17-Jun-89, Version 5 by Moon, fix typo, make minor improvements
+ 			to the presentation.
+              1-Jul-89, Version 6 by Masinter, as per Jun89X3J13 amendments
+
+Problem Description:
+
+  Issues of alphabetic case in pathnames are a major source of problems.
+  In some file systems, the customary case is lowercase, in some uppercase,
+  in some mixed.  In some file systems, case matters, in others it does
+  not.
+
+  There are two kinds of pathname case portability problems: moving
+  programs from one Common Lisp to another, and moving pathname component
+  values from one file system to another.  To solve the first problem, all
+  Common Lisp implementations that support a particular file system must
+  use compatible representations for pathname component values.  To solve
+  the second problem, there must be a common representation for the least
+  common denominator pathname component values that exist on all
+  interesting file systems.
+
+  This desire for a common representation directly conflicts with the
+  desire among programmers who only use one file system to work with the
+  local conventions and not think about issues of porting to other file
+  systems.  The common representation cannot be the same as every local
+  convention, since they vary.
+
+  In the current anarchy of pathname component case conventions:
+  
+  (NAMESTRING (MAKE-PATHNAME :NAME "FOO" :TYPE "LISP"))
+  will produce foo.lisp in some Unix Common Lisp implementations
+  and will produce FOO.LISP in other Unix Common Lisp implementations.
+
+  (NAMESTRING (MAKE-PATHNAME :NAME "foo" :TYPE "lisp"))
+  will produce FOO.LISP in some Tops-20 Common Lisp implementations
+  and will produce "^Vf^Vo^Vo.^Vl^Vi^Vs^Vp"in other Tops-20 Common
+  Lisp implementations.
+
+  Problems like this make it difficult to use MAKE-PATHNAME for much of
+  anything without corrective (non-portable) code.
+
+  Other problems occur in merging because doing
+   (NAMESTRING (MERGE-PATHNAMES (MAKE-PATHNAME :HOST "MY-TOPS-20" :NAME "FOO")
+                                (PARSE-NAMESTRING "MY-UNIX:x.lisp")))
+  should probably return "MY-TOPS-20:FOO.LISP" but in fact might return
+  "MY-TOPS-20:FOO.^Vl^Vi^Vs^Vp" in some implementations.
+
+  Problems like this make it difficult to use any merging primitives for
+  much of anything without corrective (non-portable) code.
+
+Proposal (PATHNAME-COMPONENT-CASE:KEYWORD-ARGUMENT):
+
+  Add a keyword argument :CASE to MAKE-PATHNAME, PATHNAME-HOST,
+  PATHNAME-DEVICE, PATHNAME-DIRECTORY, PATHNAME-NAME, and PATHNAME-TYPE.
+  The possible values for the argument are :COMMON and :LOCAL.
+
+  :LOCAL means strings input to MAKE-PATHNAME or output by PATHNAME-xxx
+  follow the local file system's conventions for alphabetic case.
+  Strings given to MAKE-PATHNAME will be used exactly as written if
+  the file system supports both cases.  If the file system only
+  supports one case, the strings will be translated to that case.
+
+  :COMMON means strings input to MAKE-PATHNAME or output by PATHNAME-xxx
+  follow this common convention:
+    - all uppercase means to use a file system's customary case.
+    - all lowercase means to use the opposite of the customary case.
+    - mixed case represents itself.
+  The second and third bullets exist so that translation from local to
+  common and back to local is information-preserving.
+
+  The default is :LOCAL.
+
+  Namestrings always use local file system case conventions.
+
+  MERGE-PATHNAMES and TRANSLATE-WILD-PATHNAME map customary case in the
+  input pathnames into customary case in the output pathname.
+
+Implications of the proposal:
+
+  Unix is case-sensitive and prefers lowercase, so it translates between
+  common and local by inverting the case of non-mixed-case strings.
+  
+  Tops-20 is case-sensitive and prefers uppercase, so it uses identical
+  representations for common and local.
+
+  VAX/VMS is upper-case-only (that is, the file system translates all file
+  name arguments to upper case), so it translates common to local by
+  upcasing, and translates local to common with no change.
+
+  Macintosh is case-insensitive and prefers lowercase, so it translates
+  between common and local by inverting the case of non-mixed-case strings,
+  and ignores case in EQUAL of two pathnames.
+
+Test Case/Examples:
+
+  (PATHNAME-NAME (PARSE-NAMESTRING "MY-UNIX:/me/foo.lisp")
+                 :CASE :COMMON)                                 => "FOO"
+  (PATHNAME-NAME (PARSE-NAMESTRING "MY-TOPS-20:<ME>FOO.LISP")
+                 :CASE :COMMON)                                 => "FOO"
+  (PATHNAME-NAME (PARSE-NAMESTRING "MY-UNIX:/me/foo.lisp")
+                 :CASE :LOCAL)                                  => "foo"
+  (PATHNAME-NAME (PARSE-NAMESTRING "MY-TOPS-20:<ME>FOO.LISP")
+                 :CASE :LOCAL)                                  => "FOO"
+  (PATHNAME-NAME (PARSE-NAMESTRING "MY-UNIX:/me/TeX.lisp")
+                 :CASE :COMMON)                                 => "TeX"
+  (PATHNAME-NAME (PARSE-NAMESTRING "MY-UNIX:/me/TeX.lisp")
+                 :CASE :LOCAL)                                  => "TeX"
+  (NAMESTRING (MAKE-PATHNAME :HOST "MY-UNIX" :NAME "FOO"
+                             :CASE :COMMON)                     => "MY-UNIX:foo"
+
+Rationale:
+
+  This does not solve the whole pathname problem, but it does improve
+  the situation for a clearly defined set of very common problems.
+  Together with the other pathname proposals, the behavior of pathnames
+  should be sufficiently consistent across Common Lisp implementations
+  and across file systems to allow portability of pathname-manipulating
+  programs.
+
+  The current situation where different implementations talk about
+  the *same* file system in different ways will be corrected by this
+  and some of the other pathname proposals.
+
+  Upper case is chosen as the common case for no better reason than
+  consistency with Lisp symbols.
+
+  The :CASE keyword argument provides access to both common and local
+  conventions without introducing any new functions.  The default
+  convention is the common one, assuming that most programs are fully
+  portable and therefore :COMMON will be more frequently used.
+
+Current Practice:
+
+  There are no known implementations of exactly what is proposed.
+  Symbolics Genera uses common case normally, and provides a way to
+  access the local case (called "raw") that in practice is rarely used.
+  Symbolics Genera's own file system is case-insensitive and uses lower
+  case as the customary case, but transparent network access is available
+  to file systems using all known case conventions.
+
+  Several Common Lisp implementations behave as if :CASE :LOCAL was
+  specified (but accept no :CASE argument).
+
+Cost to Implementors:
+
+  The :CASE feature is easily added, but some implementations may have
+  to change the default behavior when :CASE is not specified.  No
+  implementation need change its internal representation, nor the way
+  pathnames print, just the interface functions listed above.
+
+Cost to Users:
+
+  Technically, this change is upward compatible.
+
+  In fact, since the existing CLtL spec is so poor, nearly everyone relies
+  heavily on implementation-specific behavior since there is little other
+  choice. As such, any change is almost certain to break lots of programs,
+  in usually superficial but nevertheless important ways. However, if we
+  really make the pathname facility more portable, the user community may
+  be willing to bear the consequences of these changes.
+
+Cost of Non-Adoption:
+
+  We would be contributing to the perpetuation of the existing fiasco of a
+  pathname system.
+
+Performance Impact:
+
+  None.
+
+Benefits:
+
+  One step closer to a usable pathname system.
+
+Aesthetics:
+
+  Anything that simplifies the user model of pathnames is an improvement.
+
+Discussion:
+
+  Some people would rather use lowercase as the common case.  The
+  decision is essentially arbitrary.  Everywhere else in Common Lisp
+  where case matters, uppercase was chosen.
+
+  It has been proposed that the Common Lisp specification should include
+  specifications of the exact behavior of pathnames for several popular
+  operating systems, so that multiple implementations for those
+  operating systems would be compatible with each other.  This proposal
+  does that for alphabetic case.
+
+  Some people want the default for :CASE to be :LOCAL instead of :COMMON.
+  See Rationale.
+
+  There should probably be a remark somewhere that says that portable
+  programs shouldn't expect to be able to create and/or access distinct
+  files whose pathname components differ only in case.

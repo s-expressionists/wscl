@@ -1,0 +1,261 @@
+Status:	Passed, Jun 89 X3J13
+Issue:         PATHNAME-COMPONENT-VALUE
+
+Related Issues:PATHNAME-CANONICAL-TYPE,
+               PATHNAME-SUBDIRECTORY-LIST,
+               PATHNAME-UNSPECIFIC-COMPONENT,
+               PATHNAME-WILD
+
+References:    CLtL pp.410-3
+
+Category:      CLARIFICATION and CHANGE
+
+Edit history:  Version 1, 20-Mar-89, by Moon
+               Version 2,  9-May-89, by Moon (rewrite based on mail)
+               Version 3, 17-Jun-89, by Moon (add discussion, current practice)
+
+Problem description:
+  
+  CLtL is overly restrictive on the possible values for pathname components.
+  These restrictions are described in a funny way that makes it unclear
+  whether they are requirements, guidelines, or just an example.
+  
+  The restrictions are not all written down in one place, but they appear
+  to be as follows:
+
+  Host          nil, :wild, string, or list of strings
+  Device        nil, :wild, string, or something else ("structured")
+  Directory     nil, :wild, string, or something else ("structured")
+  Name          nil, :wild, string, or something else ("structured")
+  Type          nil, :wild, or string
+  Version       nil, :wild, :newest, positive integer, implementation
+                dependent symbol, or implementation-dependent integer
+                less than or equal to zero.  Suggestions include :oldest,
+                :previous, :installed, 0, and -1.
+
+  PATHNAME-UNSPECIFIC-COMPONENT:NEW-TOKEN allowed implementations to
+  allow any component to be :UNSPECIFIC.  This has been voted in.
+
+  PATHNAME-SUBDIRECTORY-LIST proposes a list of strings and keyword
+  symbols for the directory component.
+
+  PATHNAME-CANONICAL-TYPE proposes some new operations but does not
+  change the possible values of the type component.
+
+  PATHNAME-WILD proposes a portable way to test for implementation
+  dependent component values that indicate wildcard matching.  It
+  does not change the possible values of any component.
+
+Proposal (PATHNAME-COMPONENT-VALUE:SPECIFY):
+
+  The points of the proposal have been numbered/lettered to facilitate
+  discussion of individual points.
+
+  0. Pathname component value strings never contain the punctuation
+  characters that are used to separate pathname fields (e.g. slashes and
+  dots in Unix).  Punctuation characters appear only in namestrings.
+  Characters used as punctuation can appear in pathname component values
+  with a non-punctuation meaning if the file system allows it (e.g. a Unix
+  file name that begins with a dot).
+
+  When examining pathname components, conforming programs must be prepared
+  to encounter any of the following values:
+  
+    1. Any component can be NIL, which means the component has not
+    been specified.
+  
+    2. Any component can be :UNSPECIFIC, which means the component has
+    no meaning in this particular pathname.
+  
+    3. The device, directory, name, and type can be strings.
+  
+    4. The host can be any object, at the discretion of the implementation.
+  
+    5. The directory can be a list of strings and symbols as detailed in
+    PATHNAME-SUBDIRECTORY-LIST (this assumes that it passes.)
+  
+    6. The version can be any symbol or any integer.  The symbol :NEWEST
+    refers to the largest version number that already exists in the file
+    system when reading, overwriting, appending, superseding, or directory
+    listing an existing file, and refers to the smallest version number
+    greater than any existing version number when creating a new file.
+    Other symbols and integers have implementation-defined meaning.
+    It is suggested, but not required, that implementations use positive
+    integers starting at 1 as version numbers, recognize the symbol :OLDEST
+    to designate the smallest existing version number, and use keyword
+    symbols for other special versions.
+
+  Wildcard pathnames can be used with DIRECTORY but not with OPEN, and
+  return true from WILD-PATHNAME-P (if issue PATHNAME-WILD passes).  When
+  examining wildcard components of a wildcard pathname, conforming programs
+  must be prepared to encounter any of the following additional values
+  in any component or any element of a list that is the directory component:
+
+    7. :WILD, which matches anything.
+
+    8. A string containing implementation-dependent special wildcard
+    characters.
+
+    9. Any object, representing an implementation-dependent wildcard
+    pattern.
+
+  When constructing a pathname from components, conforming programs
+  must follow these rules:
+  
+    a. Any component can be NIL.  NIL in the host may mean a default host
+    rather than an actual NIL in some implementations.
+    
+    b. The host, device, directory, name, and type can be strings.  There
+    are implementation-dependent limits on the number and type of
+    characters in these strings.
+  
+    c. The directory can be a list of strings and symbols as detailed in
+    PATHNAME-SUBDIRECTORY-LIST (this assumes that it passes.)  There are
+    implementation-dependent limits on the list's length and contents.
+  
+    d. The version can be :NEWEST.
+
+    e. Any component can be taken from the corresponding component
+    of another pathname.  When the two pathnames are for different
+    file systems (in implementations that support multiple file
+    systems), an appropriate translation occurs.  If no meaningful
+    translation is possible, an error is signalled.  The definitions
+    of "appropriate" and "meaningful" are implementation-dependent.
+  
+    f. When constructing a wildcard pathname, the name, type, or version
+    can be :WILD, which matches anything.
+  
+    g. An implementation might support other values for some components,
+    but a portable program cannot use those values.  A conforming program
+    can use implementation-dependent values but this can make it
+    non-portable, for example, it might work only with Unix file systems.
+
+Consequences:
+
+  The changes relative to CLtL plus PATHNAME-UNSPECIFIC-COMPONENT
+  are as follows:
+
+  The removal of punctuation characters during parsing is specified.
+
+  "Structured" components are disallowed in non-wildcard pathnames,
+  except for the specific structuring of directories specified
+  in issue PATHNAME-SUBDIRECTORY-LIST.
+  
+  "Structured" hosts are allowed, a generalization of CLtL's list
+  of strings.
+
+  The type and version can be "structured" in wildcard pathnames.
+  
+  The difference between what component values a program can depend
+  on being able to use, versus what component values a program must
+  be prepared to encounter, is clarified.
+
+  The implementation-dependent variations are identified explicitly.
+
+Rationale:
+  
+  This should make it easier to write portable programs that deal with
+  pathnames and make it easier for implementors by clarifying the
+  framework into which they must fit.  Also it should make it easier
+  to write the Common Lisp language specification by resolving some
+  things that were unclear about the status quo.
+
+  Adding "structured" hosts conforms to current practice.
+
+  Substituting a default host for NIL conforms to current practice
+  in implementations that require all pathnames to have a specific host.
+
+  Confining "structured" devices and names to wildcard pathnames, and
+  replacing "structured" directories with an explicit specification of
+  the form of the directory value, should improve portability without causing
+  any harm.
+
+  :WILD is only required to be supported in the name, type, or version,
+  which are the easiest to implement and the most useful in applications.
+
+Current practice:
+  
+  All versions of Symbolics Genera violate CLtL in the matter of hosts,
+  since it uses standard-objects as the host component.  Genera deviates
+  slightly from PATHNAME-SUBDIRECTORY-LIST, but otherwise conforms to
+  PATHNAME-COMPONENT-VALUE:SPECIFY.
+
+  Like Genera, the Explorer current practice is to use an object instead of
+  a string for the host component.  The directory component is a list of
+  strings, not yet supporting the symbols specified in proposal
+  PATHNAME-SUBDIRECTORY-LIST; other than that, the Explorer conforms to
+  proposal PATHNAME-COMPONENT-VALUE:SPECIFY.
+
+  Macintosh Allegro Common Lisp 1.2.2 uses NIL and "" for :UNSPECIFIC,
+  and uses a string with punctuation characters instead of a list for
+  the directory.  MAKE-PATHNAME won't set a component to NIL when
+  :DEFAULTS is used, it merges with the defaults instead.
+  Otherwise it seems consistent with what is proposed.
+
+  Lucid Common Lisp 3.0.1 under Unix uses NIL for :UNSPECIFIC, and uses
+  a list for directories of somewhat different form from what is proposed
+  in PATHNAME-SUBDIRECTORY-LIST.  Lucid lets you store arbitrary information
+  in the version field with MAKE-PATHNAME :VERSION and will return it with
+  PATHNAME-VERSION (as long as it's a symbol or an integer), even though
+  it's not used.  Otherwise it seems consistent with what is proposed.
+
+  Ibuki Common Lisp Release 01/01 behaves the same as Lucid, including the
+  same form of structured directory, except it doesn't have the ability to
+  store information in the unused pathname version field, and it has the
+  same bug in MAKE-PATHNAME that the Macintosh has.  Otherwise it seems
+  consistent with what is proposed.
+
+  Other implementations were not surveyed.
+
+  This proposal assumes that no current or planned implementation
+  uses "structured" names except possibly for wildcards.
+
+Cost to Implementors:
+
+  Most implementations already conform, except for the changes required
+  by PATHNAME-UNSPECIFIC-COMPONENT and PATHNAME-SUBDIRECTORY-LIST, so
+  the cost of this proposal itself should be minimal.  It is conceivable
+  that an implementation may exist that has to change its pathname
+  representation, for example one that uses numbers as "structured" devices.
+  Some implementations may have to change their treatment of punctuation
+  characters.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+  
+  Pathnames will continue to be a poorly specified part of the language.
+
+Performance impact:
+
+  None of any significance.
+
+Benefits/Esthetics:
+
+  The boundary between the specified behavior of pathnames and the
+  implementation-dependent behavior of pathnames will be more clear.
+
+Discussion:
+
+  Sandra Loosemore comments:
+
+    As I've said before, I don't think that trying to construct or pick
+    apart pathnames by component can be accomplished portably in any case,
+    because even if you restrict the representation of what can appear in
+    the various components, the objects you stuff in may or may not make
+    sense for a particular file system.  Instead, I would much prefer to
+    deprecate MAKE-PATHNAME and the PATHNAME-xxx accessors and leave the
+    question of representation of components unspecified in the standard.
+    
+    I realize that this position may be seen as being too extreme.  In
+    that case I'd be willing to shut up and go along with proposal SPECIFY
+    as long as my position gets noted in the writeup.
+    
+  Larry Masinter and Dave Moon both feel that we should be able to
+  prescribe exact pathname component values for popular file systems, so
+  that multiple implementations will behave the same way when using the
+  same file system.  Obvious candidates as the key file systems are MS/DOS,
+  Macintosh, Unix, and VAX/VMS.  A call for volunteers to write up tables
+  for any of them produced absolutely no response, however.

@@ -1,0 +1,113 @@
+Status:		Passed, Jan 89 X3J13
+Forum:         Cleanup
+Issue:         CONTAGION-ON-NUMERICAL-COMPARISONS
+
+References:    CLtL p.194
+
+Category:      CHANGE
+
+Edit history:  Version 1, 14-Sep-88, Moon
+
+Problem description:
+
+The numerical contagion rules specified on CLtL p.194 make it impossible
+for the numerical comparison functions to be transitive when given
+arguments of mixed floating and rational types (see example below).
+
+Proposal (CONTAGION-ON-NUMERICAL-COMPARISONS:TRANSITIVE):
+	  
+Instead of using the same contagion rule both for combining functions
+and for comparing functions, make the present rule apply only to
+combining functions and add the following rule:  When rational and
+floating-point numbers are compared by a numerical function, the
+function RATIONAL is called to convert the floating-point number to a
+rational and then an exact comparison is performed.  In the case of
+complex numbers (RATIONAL is for some unknown reason only allowed on
+reals), the real and imaginary parts are handled individually.
+
+It is of course valid to use a more efficient implementation than
+actually calling RATIONAL, as long as the result of the comparison is
+the same.
+
+Test Cases/Examples:
+
+(defvar a (/ 10.0 single-float-epsilon))
+
+(= a (1+ (floor a)))
+should be NIL, since 
+(= a (floor a))
+is certainly T and
+(= (floor a) (1+ (floor a)))
+is certainly NIL.  However, by the rule of floating-point contagion,
+(= a (1+ (floor a)))
+is the same as 
+(= a (float (1+ (floor a)) a))
+and the latter form is certainly T.
+
+To understand this example better, it helps to realize that
+(= a (+ a 1.0))
+is always true, by the definition of single-float-epsilon.
+
+Here is a second example:
+
+(defvar i (floor a))
+
+(<= a (+ i 1)) is T.
+(< (+ i 1) (+ i 2)) is T.
+(<= (+ i 2) a) is T by CLtL, NIL by this proposal.
+Thus CLtL requires
+  a <= i+1 < i+2 <= a
+which ought to imply
+  a < a
+which is absurd.
+
+Rationale:
+
+Transitivity of = and of < are important to many algorithms.  What CLtL
+says now was probably not intentional, but just the result of thinking
+that comparing and combining could be lumped together without really
+thinking about it.
+
+Without this change, it is impossible to extend the :TEST argument to
+MAKE-HASH-TABLE to allow = or EQUALP, since there could be two table
+entries with rational keys that are not =, then GETHASH could be
+presented with a floating-point argument that is = to both keys.
+
+Current practice:
+
+Lucid is said to implement the proposal.  As far as I know all other
+implementations do what CLtL currently says.
+
+Cost to Implementors:
+
+This requires a change in what is likely to be intricate and
+implementation-dependent code.  However, the total effort should
+be small compared to the cost of writing that code originally.
+
+Cost to Users:
+
+This is an incompatible change.  It's difficult to know if any users
+are depending on the current behavior.  It seems likely that most users
+would expect the proposed behavior, and may be wondering why their
+programs don't quite work when the numbers get large.
+
+Cost of non-adoption:
+
+Comparison functions in Common Lisp will be non-transitive.
+
+Benefits:
+
+Comparison functions in Common Lisp will be transitive.
+
+Esthetics:
+
+Having two rules of floating-point contagion may seem less esthetic,
+but I'm certain that having the comparison functions behave in a more
+mathematically correct fashion outweighs that esthetically.
+
+Discussion:
+
+Everyone who has expressed an opinion has thought this was the right
+thing for years, but we never got around to writing it up as a cleanup
+proposal.
+
