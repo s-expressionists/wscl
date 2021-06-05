@@ -22,7 +22,7 @@ variables explicitly.  Even so, it is not obvious to the casual programmer
 how to provide the same semantics as defstruct does with respect to default
 values and the defstruct init-forms.
 
-Proposal: DEFSTRUCT-CONSTRUCTOR-KEY-MIXTURE:ALLOW-KEY
+Proposal (DEFSTRUCT-CONSTRUCTOR-KEY-MIXTURE:ALLOW-KEY):
 
 Allow &KEY keyword arguments in constructor forms of DEFSTRUCTs
 and the &ALLOW-OTHER-KEYS token in addition to the &OPTIONAL,
