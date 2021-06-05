@@ -398,14 +398,14 @@ rather than an error in a \term{program},
 
 \label Description::
 
-\funref{assert} assures that \param{test-form} evaluates to \term{true}.
+\macref{assert} assures that \param{test-form} evaluates to \term{true}.
 If \param{test-form} evaluates to \term{false}, \macref{assert} signals a
 \term{correctable} \term{error} (denoted by \param{datum} and \param{arguments}).
 Continuing from this error using \therestart{continue} makes it possible
 for the user to alter the values of the \param{places} before
 \macref{assert} evaluates \param{test-form} again.
 If the value of \param{test-form} is \term{non-nil},
-\funref{assert} returns \nil.
+\macref{assert} returns \nil.
 
 The \param{places} are \term{generalized references} to data
 upon which \param{test-form} depends, 
