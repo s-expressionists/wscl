@@ -49,7 +49,7 @@ by the special form.  They form an extended part of the "body".
 
 
 
-Proposal (DECLARATION-SCOPE:NO-HOISTING)
+Proposal (DECLARATION-SCOPE:NO-HOISTING):
 
 Specify that the scope of a declaration located at the head of a special 
 form or lambda expression is as follows:
@@ -101,7 +101,7 @@ issue is decided, and should not be confused with that scoping issue.
 
 
 
-Proposal (DECLARATION-SCOPE:LIMITED-HOISTING)
+Proposal (DECLARATION-SCOPE:LIMITED-HOISTING):
 
 Specify that the scope of a declaration located at the head of a special 
 form or lambda expression is as follows:
