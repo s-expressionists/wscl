@@ -1,5 +1,5 @@
 Status: Version 11 passed Jun 89 X3J13
-(Version 5 passed Jan 89, but various problems were found.)
+        (Version 5 passed Jan 89, but various problems were found.)
 
 Issue:        ADJUST-ARRAY-NOT-ADJUSTABLE
 References:   ADJUST-ARRAY (p297), ADJUSTABLE-ARRAY-P (p293),
