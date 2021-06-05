@@ -15,7 +15,7 @@ Edit history:   07-Jul-88, Version 1 by Pitman
                  9-Apr-89, Verison 9 by Masinter, as amended Mar 89 X3J13,
 				and discussion updated.
 
-Related-Issues: DEFPACKAGE (passed)
+Related Issues: DEFPACKAGE (passed)
 		COMPILE-FILE-SYMBOL-HANDLING
 
 Problem Description:
