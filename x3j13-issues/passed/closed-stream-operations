@@ -27,7 +27,7 @@ Problem Description:
 
   but the list of inquiry operations is not specified.
  
-Proposal (CLOSED-STREAM-FUNCTIONS:ALLOW-INQUIRY)
+Proposal (CLOSED-STREAM-FUNCTIONS:ALLOW-INQUIRY):
  
  Clarify the behavior of the following functions on closed streams:
 
