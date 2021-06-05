@@ -33,7 +33,7 @@ Cost to Users:
   Programs which currently depend on being able to SETF these accessors are
   already non-portable.
 
-Benifits:
+Benefits:
   Users will know what to expect.
 
 Discussion:
