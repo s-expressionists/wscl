@@ -1,6 +1,6 @@
 Status: Passed Jan 89 X3J13 with amendment to specify that CLOSE on a
-closed stream returns NIL. At Mar 89 X3J13, amendment was withdrawn;
-this version stands.
+        closed stream returns NIL. At Mar 89 X3J13, amendment was withdrawn;
+        this version stands.
 
 Forum:          Cleanup
 Issue:          CLOSED-STREAM-OPERATIONS
