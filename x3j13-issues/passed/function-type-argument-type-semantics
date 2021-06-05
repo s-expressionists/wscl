@@ -35,7 +35,7 @@ is also of type
 The problem is that the argument types aren't restrictive, so no interesting
 matching of types is possible.
 
-Proposal (FUNCTION-TYPE-ARGUMENT-TYPE-SEMANTICS:RESTRICTIVE)
+Proposal (FUNCTION-TYPE-ARGUMENT-TYPE-SEMANTICS:RESTRICTIVE):
 
 This proposal is written as if DECLARE-TYPE-FREE (Version 6, 06-Oct-88)
 is in effect.
