@@ -99,5 +99,5 @@ The situation with the DECLARE special form is related but not
 entirely analogous, so it has been left out of this proposal.
 From a purely abstract point of view, DECLARE is not a special form 
 at all but simply a syntactic marker like LAMBDA, and the only
-reason for defining it as an operator is to facilitate diagnostics 
-about misplaced declarations.ÿ
+reason for defining it as an operator is to facilitate diagnostics
+about misplaced declarations.
