@@ -18,7 +18,7 @@ awakened when they find out that EQUAL is not an appropriate test for
 this case, and that there is no :test argument to MAKE-HASH-TABLE which 
 will "hash on non-tree structures".
 
-Proposal: HASH-TABLE-TESTS:ADD-EQUALP
+Proposal HASH-TABLE-TESTS:ADD-EQUALP:
 
 With the advent of the issue CONTAGION-ON-NUMERICAL-COMPARISONS, we
 can expect EQUALP to be a true equivalence function, and thus a suitable
