@@ -4348,7 +4348,7 @@ if by use of \funref{vector-push-extend}.
 %% Sandra: Huh?
 %In either case, 
 The \term{output} \term{stream} 
-is automatically closed on exit from \macref{with-output-from-string},
+is automatically closed on exit from \macref{with-output-to-string},
 no matter whether the exit is normal or abnormal.
 \issue{WITH-OPEN-FILE-STREAM-EXTENT:DYNAMIC-EXTENT}
 The \term{output} \term{string stream} to which the \term{variable} \param{var}
@@ -4358,7 +4358,7 @@ its \term{extent} ends when the \term{form} is exited.
 
 
 %% 21.2.0 21
-If no \param{string} is provided, then \macref{with-output-from-string} 
+If no \param{string} is provided, then \macref{with-output-to-string} 
 \issue{CHARACTER-PROPOSAL:2-5-6}
 produces a \term{stream} that accepts characters and returns a \term{string} 
 of the indicated \param{element-type}.
