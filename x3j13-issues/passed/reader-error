@@ -1,5 +1,5 @@
 Status: passed (unanimously) Jun-90 meeting
-(at which it was amended to rename READER-ERROR to PARSE-ERROR.)
+        (at which it was amended to rename READER-ERROR to PARSE-ERROR.)
 
 Forum:		Cleanup
 Issue:		READER-ERROR
