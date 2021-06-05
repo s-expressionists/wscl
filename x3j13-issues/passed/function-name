@@ -89,14 +89,14 @@ Proposal (FUNCTION-NAME:SMALL):
   use the term "function-specifier" or "function specifier".
 
 
-Rationale for FUNCTION-NAME:SMALL:
+  Rationale:
 
-  This is the minimum change to Common Lisp needed to do what 88-002R says
-  about (SETF reader).  Giving implementations freedom to extend the syntax
-  of function-names allows for current practice.  Changing the name from
-  "function-specifier" to "function-name" avoids confusion and improves
-  consistency with the rest of the language, at the cost of a few small
-  changes to 88-002R.
+    This is the minimum change to Common Lisp needed to do what 88-002R says
+    about (SETF reader).  Giving implementations freedom to extend the syntax
+    of function-names allows for current practice.  Changing the name from
+    "function-specifier" to "function-name" avoids confusion and improves
+    consistency with the rest of the language, at the cost of a few small
+    changes to 88-002R.
 
 
 Proposal (FUNCTION-NAME:MEDIUM):
@@ -108,12 +108,12 @@ Proposal (FUNCTION-NAME:MEDIUM):
   the body is surrounded by an implicit block named sym.
 
 
-Rationale for FUNCTION-NAME:MEDIUM:
+  Rationale:
 
-  Keeping DEFUN consistent with DEFMETHOD is a good idea.  Also 88-002R
-  says "The name of a generic function, like the name of an ordinary
-  function, can be either a symbol or a two-element list whose...", which
-  implies this change to DEFUN.
+    Keeping DEFUN consistent with DEFMETHOD is a good idea.  Also 88-002R
+    says "The name of a generic function, like the name of an ordinary
+    function, can be either a symbol or a two-element list whose...", which
+    implies this change to DEFUN.
 
 
 Proposal (FUNCTION-NAME:LARGE):
@@ -174,41 +174,41 @@ Proposal (FUNCTION-NAME:LARGE):
   11. Clarify that the eighth rule for SETF places (the one for macros)
   uses MACROEXPAND-1, not MACROEXPAND.
 
-Rationale for FUNCTION-NAME:LARGE:
+  Rationale:
 
-  This extends the new feature throughout the language, in order to make
-  things generally more consistent and powerful.  Point by point:
+    This extends the new feature throughout the language, in order to make
+    things generally more consistent and powerful.  Point by point:
 
-  1,2,3 - one should be able to compile, examine, and make declarations
-  about functions regardless of whether they are named with symbols or
-  with lists.
+    1,2,3 - one should be able to compile, examine, and make declarations
+    about functions regardless of whether they are named with symbols or
+    with lists.
 
-  4 - locally defined non-generic SETF functions are a logical companion
-  to locally defined generic SETF functions, which can be defined with
-  GENERIC-FLET or GENERIC-LABELS.  They make sense on their own, since one
-  might define a local reader function and want a local writer function
-  to go with it.
+    4 - locally defined non-generic SETF functions are a logical companion
+    to locally defined generic SETF functions, which can be defined with
+    GENERIC-FLET or GENERIC-LABELS.  They make sense on their own, since one
+    might define a local reader function and want a local writer function
+    to go with it.
 
-  5,6 - one should be able to apply development tools to functions
-  regardless of how they are named.  The function DOCUMENTATION was already
-  updated to work for function-names by 88-002R.  There might be some
-  difficulty with implementation-dependent syntax extensions to TRACE and
-  UNTRACE conflicting with this new syntax.
+    5,6 - one should be able to apply development tools to functions
+    regardless of how they are named.  The function DOCUMENTATION was already
+    updated to work for function-names by 88-002R.  There might be some
+    difficulty with implementation-dependent syntax extensions to TRACE and
+    UNTRACE conflicting with this new syntax.
 
-  7 - this restores consistency between the FUNCTION special form and the
-  first element of a function call form.
+    7 - this restores consistency between the FUNCTION special form and the
+    first element of a function call form.
 
-  8 - it seems more consistent to allow macros to be named the same way
-  that ordinary functions are named.  However, this might be considered
-  redundant with DEFSETF.
+    8 - it seems more consistent to allow macros to be named the same way
+    that ordinary functions are named.  However, this might be considered
+    redundant with DEFSETF.
 
-  9 - this is not needed by the "chapter 1 and 2" level of CLOS, but might
-  be used by the metaobject based implementation of ENSURE-GENERIC-FUNCTION.
+    9 - this is not needed by the "chapter 1 and 2" level of CLOS, but might
+    be used by the metaobject based implementation of ENSURE-GENERIC-FUNCTION.
 
-  10 - this change was in SETF-FUNCTION-VS-MACRO and makes item 4 more useful.
+    10 - this change was in SETF-FUNCTION-VS-MACRO and makes item 4 more useful.
 
-  11 - this change was in SETF-FUNCTION-VS-MACRO and is a good idea, but
-  actually is independent of everything else being proposed here.
+    11 - this change was in SETF-FUNCTION-VS-MACRO and is a good idea, but
+    actually is independent of everything else being proposed here.
 
 
 Examples:
