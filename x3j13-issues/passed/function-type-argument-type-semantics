@@ -3,7 +3,7 @@ Forum:        Cleanup
 Issue:        FUNCTION-TYPE-ARGUMENT-TYPE-SEMANTICS
 References:   CLtL pp 47-48, 158-159
 Category:     CHANGE
-Related-issues: DECLARE-TYPE-FREE
+Related issues: DECLARE-TYPE-FREE
 Edit history: #1, 7 Sept 1988, Walter van Roggen
               #2, 13 Sept 1988, Walter van Roggen (costs & proposal limitations)
               #3,  7-Dec-88, Masinter
