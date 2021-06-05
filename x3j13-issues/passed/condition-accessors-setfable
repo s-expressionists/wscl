@@ -12,7 +12,7 @@ Proposal (CONDITION-ACCESSORS-SETFABLE:NO):
   The effect of using accessor functions defined for the various standard
   (i.e., pre-defined) condition classes as places for SETF is undefined.
 
-Rational:
+Rationale:
   Conditions are used to record state at a particular point in time.  Allowing
   them to be modified at some later time makes little sense.  The Condition
   System does say that it is an error to attempt to assign a condition's slots
