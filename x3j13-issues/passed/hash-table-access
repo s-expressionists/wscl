@@ -13,7 +13,7 @@ Problem Description:
   There are many characteristics of hash-tables which are specified upon
   creation but are not accessible afterwards.
  
-Proposal: (HASH-TABLE-ACCESS:X3J13-MAR-89)
+Proposal (HASH-TABLE-ACCESS:X3J13-MAR-89):
  
   Add the following functions to the language:
  
