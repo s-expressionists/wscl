@@ -1,4 +1,5 @@
-Status: Issue:        DESTRUCTURING-BIND
+Status:       ?
+Issue:        DESTRUCTURING-BIND
 Forum:	      Cleanup
 References:   DEFMACRO (CLtL pp145-151),
 	      The LOOP Facility (X3J13/89-004)
