@@ -130,7 +130,7 @@
 \def\DefunMultiWithValues
 #1 #2 #3{{\let\vtop=\Vtop
 \def\entry##1{##1&\cr}
-\def\blankline{\vksip 5pt}
+\def\blankline{\vskip 5pt}
 \halign{\hskip\leftskip\function ## {\arg #1}\hfil&\quad\EV\ {\arg #2}##\cr#3}}
 \Vskip\normalparskip!}
 
@@ -150,7 +150,7 @@
 \def\DefsetfMulti
 #1 #2 #3{{\let\vtop=\Vtop
 \def\entry##1{##1\cr}
-\def\blankline{\vksip 5pt}
+\def\blankline{\vskip 5pt}
 \halign{\hskip\leftskip\function (setf (## {\arg #1}) {\arg #2})\hfil\cr#3}}
 \Vskip\normalparskip!}
 
