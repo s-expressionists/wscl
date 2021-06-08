@@ -230,11 +230,11 @@ as \term{free declarations}.
 % of \f{x} because of the \declref{special} \term{declaration} for \f{x}
 % in the second line.  The third occurrence of \f{x} \term{establishes} a
 % \term{lexical binding} of \f{x} (because there is no \declref{special}
-% \term{declaration} in the corresponding \macref{let} \term{form}).
+% \term{declaration} in the corresponding \specref{let} \term{form}).
 % The fourth occurrence of \f{x} \term{x} is a reference to the
 % \term{lexical binding} of \f{x} established in the third line.
 % The fifth occurrence of \f{x} \term{establishes} a \term{dynamic binding}
-% of \term{x} for the body of the \macref{let} \term{form} that begins on
+% of \term{x} for the body of the \specref{let} \term{form} that begins on
 % that line because of the \declref{special} \term{declaration} for \f{x}
 % in the sixth line. The reference to \f{x} in the fourth line is not
 % affected by the \declref{special} \term{declaration} in the sixth line 
@@ -306,7 +306,7 @@ as \term{free declarations}.
 % 
 % \f{x} is not initially (\eg in the first line) known to be a \term{fixnum} 
 % since the scope of the \declref{fixnum} \term{declaration} for \f{x} in the fourth line
-% covers only the body of the \macref{let} form in the fifth line, but not the
+% covers only the body of the \specref{let} form in the fifth line, but not the
 % \term{initialization form} for \f{y} in the third line.  The compiler can assume that
 % \f{x} is not greater than the value of \f{(- most-positive-fixnum 42)} because \f{y}
 % has been declared to be a \term{fixnum} in the fourth line.
@@ -434,11 +434,11 @@ The first occurrence of \f{x} \term{establishes} a \term{dynamic binding}
 of \f{x} because of the \declref{special} \term{declaration} for \f{x}
 in the second line.  The third occurrence of \f{x} \term{establishes} a
 \term{lexical binding} of \f{x} (because there is no \declref{special}
-\term{declaration} in the corresponding \macref{let} \term{form}).
+\term{declaration} in the corresponding \specref{let} \term{form}).
 The fourth occurrence of \f{x} \term{x} is a reference to the
 \term{lexical binding} of \f{x} established in the third line.
 The fifth occurrence of \f{x} \term{establishes} a \term{dynamic binding}
-of \term{x} for the body of the \macref{let} \term{form} that begins on
+of \term{x} for the body of the \specref{let} \term{form} that begins on
 that line because of the \declref{special} \term{declaration} for \f{x}
 in the sixth line. The reference to \f{x} in the fourth line is not
 affected by the \declref{special} \term{declaration} in the sixth line 
