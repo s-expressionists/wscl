@@ -4251,12 +4251,12 @@ The body \param{forms} compute and return the \term{form} that specifies
 how the methods are combined, that is, the effective method.
 The effective method is evaluated in
 the \term{null lexical environment} augmented with a local macro definition
-for \funref{call-method} and with bindings named by
+for \macref{call-method} and with bindings named by
 symbols not \term{accessible} from \thepackage{common-lisp-user}.
 Given a method object in one of the 
 \term{lists} produced by the method group
 specifiers and a \term{list} of next methods,
-\funref{call-method}
+\macref{call-method}
 will invoke the method such that \funref{call-next-method} has available
 the next methods.
  
@@ -4265,7 +4265,7 @@ method, some implementations employ an optimization that uses the
 single method directly as the effective method, thus avoiding the need
 to create a new effective method.  This optimization is active when
 the effective method form consists entirely of an invocation of
-the \funref{call-method} macro whose first \term{subform} is a method object and
+the \macref{call-method} macro whose first \term{subform} is a method object and
 whose second \term{subform} is \nil\ or unsupplied.  Each
 \macref{define-method-combination} body is responsible for stripping off
 redundant invocations of \specref{progn}, \macref{and},
