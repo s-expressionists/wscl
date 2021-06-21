@@ -1,0 +1,8 @@
+* Introduction
+
+  This directory contains cleanup issues which describe changes that
+  produce the "Well Specified Common Lisp" specification from the
+  final draft of the Common Lisp specification.
+
+  Issues represented as text files which follow the same format as the
+  X3J13 cleanup issues.

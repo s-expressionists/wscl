@@ -1,24 +1,36 @@
 * Introduction
 
-  This repository contains the TeX and plain-text source files from
-  which the Common Lisp ANSI standard and the Common Lisp HyperSpec
-  were created.
+  This repository contains the TeX and plain-text source files for the
+  "Well Specified Common Lisp" specification.
 
-  The only changes to the source files correct typographic, syntactic
-  and other minor errors and should be easily identifiable from the
-  version history of the repository and/or the file:changes directory.
+  "Well Specified Common Lisp" will be abbreviated WSCL, and it should
+  be pronounced like "whistle".
 
-* Purpose
+  Well Specified Common Lisp has not been published by any standards
+  organization and is thus not an official standard, let alone a new
+  Common Lisp standard.
 
-  The purpose of this repository is making slightly fixed versions of
-  the mentioned documents easily accessible for further processing.
+  Well Specified Common Lisp is intended as a more strict version of
+  the current Common Lisp standard. It is more strict in that it
+  attempts to specify required behavior of implementations in many
+  cases where the current Common Lisp standard is either silent on the
+  subject, or specifically mentions unspecified behavior. We intend to
+  accomplish this work in an as uncontroversial way as possible.
+  Specifically, we mainly want to consolidate behavior that most
+  existing Common Lisp implementations already agree upon.
 
 * Content
 
   + file:dpANS3 directory ::
 
        This directory contains the TeX sources of the final draft of
-       the Common Lisp specification.
+       the Common Lisp specification with two kinds of changes:
+
+       1. Modifications to make the TeX sources syntactically correct
+          and internally consistent without affecting the semantics.
+
+       2. Modifications due to the application of passed WSCL cleanup
+          issues.
 
   + file:x3j13-issues directory ::
 
@@ -30,8 +42,14 @@
        on 2021-05-06. Unfortunately, that collection does not contain
        all issue files.
 
+  + file:wscl-issues directory ::
+
+       This directory contains cleanup issues which describe changes
+       that produce the WSCL specification from the final draft of the
+       Common Lisp specification.
+
   + file:changes directory ::
 
        This directory contains descriptions of changes that were made
-       to TeX sources of the final draft of the Common Lisp
+       to the TeX sources of the final draft of the Common Lisp
        specification as well as the X3J13 cleanup issues.
