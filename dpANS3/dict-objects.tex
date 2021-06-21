@@ -3691,7 +3691,7 @@ The macro \macref{call-method} invokes the specified \term{method},
 supplying it with arguments and with definitions for
 \funref{call-next-method} and for \funref{next-method-p}.
 If the invocation of \macref{call-method} is lexically inside
-of a \funref{make-method}, the arguments are those that
+of a \macref{make-method}, the arguments are those that
 were supplied to that method.  Otherwise the arguments are
 those that were supplied to the generic function.
 The definitions
@@ -3699,18 +3699,18 @@ of \funref{call-next-method} and \funref{next-method-p} rely on
 the specified \param{next-method-list}.
  
 If \param{method} is a \term{list}, the first element of the \term{list}
-must be the symbol \funref{make-method} and the second element must be
+must be the symbol \macref{make-method} and the second element must be
 a \term{form}.  Such a \term{list} specifies a \term{method} \term{object}
 whose \term{method} function has a body that is the given \term{form}.
  
 \param{Next-method-list} can contain \term{method} \term{objects} or \term{lists},
-the first element of which must be the symbol \funref{make-method} and the
+the first element of which must be the symbol \macref{make-method} and the
 second element of which must be a \term{form}.
  
 % Added by Moon:
  
-Those are the only two places where \funref{make-method} can be used.
-The \term{form} used with \funref{make-method} is evaluated in
+Those are the only two places where \macref{make-method} can be used.
+The \term{form} used with \macref{make-method} is evaluated in
 the \term{null lexical environment} augmented with a local macro definition
 for \macref{call-method} and with bindings named by
 symbols not \term{accessible} from \thepackage{common-lisp-user}.
