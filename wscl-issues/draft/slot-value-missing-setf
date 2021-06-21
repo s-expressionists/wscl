@@ -1,0 +1,64 @@
+Issue:        SLOT-VALUE-MISSING-SETF
+Forum:        Cleanup
+Category:     CHANGE
+Status:       draft
+Edit History: 21-Jun-21, Version 1 by Jan Moringen
+References:   SLOT-VALUE
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the description of
+  SLOT-VALUE gives no indication that implementations must support
+
+    (setf (slot-value INSTANCE SLOT-NAME) NEW-VALUE)
+
+  .
+
+Proposal (SLOT-VALUE-MISSING-SETF:ADD):
+
+  1. Change the ftype of the SLOT-VALUE component from "Function" to
+     "Accessor"
+
+  2. In the "Syntax" compartment of the SLOT-VALUE component, add the
+     line
+
+       \Defsetf {slot-value} {object slot-name} {new-value}
+
+  3. In the "Arguments and values" compartment of the SLOT-VALUE
+     component, add
+
+       \param{new-value}---an \term{object}.
+
+Current Practice:
+
+  It is almost certain that all existing implementations conform to
+  this proposal. Users rely on the described functionality.
+
+Cost to Implementors:
+
+  None.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Either an incomplete specification, if the absence of the proposed
+  changes is considered an accidental omission, or much less useful
+  instance slots, if the absense of the proposed changes is considered
+  deliberate.
+
+Benefits:
+
+  Either a more complete specification or more useful instance slots.
+
+Aesthetics:
+
+  This change makes SLOT-VALUE consistent other accessors for
+  slot-like places such as AREF. The inconsistency likely stems from
+  an accidental omission.
+
+Discussion:
+
+  None so far.
