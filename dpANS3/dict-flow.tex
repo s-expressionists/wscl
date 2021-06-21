@@ -1521,12 +1521,14 @@ and if it was previously \term{unbound}, it remains \term{unbound}.
 If \param{documentation} is supplied, it is attached to \param{name} as a
 \term{documentation string} of kind \misc{variable}. 
 
+\issue{DEFPARAMETER-NON-TOPLEVEL-SEMANTICS}
 \issue{DEFINING-MACROS-NON-TOP-LEVEL:ALLOW}
 \macref{defparameter} and \macref{defvar} normally appear as a \term{top level form}, 
 but it is meaningful for them to appear as \term{non-top-level forms}.  However,
 the compile-time side effects described below only take place when
 they appear as \term{top level forms}.
 \endissue{DEFINING-MACROS-NON-TOP-LEVEL:ALLOW}
+\endissue{DEFPARAMETER-NON-TOPLEVEL-SEMANTICS}
 
 \label Examples::
 
