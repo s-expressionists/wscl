@@ -1,0 +1,50 @@
+Issue:        DEFPARAMETER-NON-TOPLEVEL-SEMANTICS
+Forum:        Cleanup
+Category:     CLARIFICATION
+Status:       proposed
+Edit History: 21-Jun-21, Version 1 by Jan Moringen
+Reference:    DEFVAR, DEFPARAMETER
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the descriptions of
+  DEFVAR and DEFPARAMETER do not specify which binding is affected
+  when the specified initial value is assigned.
+
+Test Case:
+
+  (defparameter *foo* 1)
+  (list (let ((*foo* 2))
+          (defparameter *foo* 3)
+          *foo*)
+        *foo*)
+
+  (defparameter *foo* 1)
+  (list (let ((*foo* 2))
+          (defparameter *foo*)
+          *foo*)
+        *foo*)
+
+Proposal (SLOT-VALUE-MISSING-SETF:TOPLEVEL):
+
+  Under this proposal, the above test cases would evaluate to (2 2)
+  and (? ?) respectively.
+
+Proposal (SLOT-VALUE-MISSING-SETF:LEXICAL):
+
+  Under this proposal, The above test case would evaluate to (3 1) and
+  (? 1) respectively.
+
+Current Practice:
+
+Cost to Implementors:
+
+Cost to Users:
+
+Cost of non-adoption:
+
+Benefits:
+
+Aesthetics:
+
+Discussion:
