@@ -26,18 +26,18 @@ Proposal (TYPE-SPECIFIER-ABBREVIATION:ONLY-MOD):
   (which also happens to be the same as UNSIGNED-BYTE).  Add MOD to 
   the list of standard type specifier symbols.
 
-   Rationale for proposal ONLY-MOD:
+  Rationale:
 
-     It's not clear what the abbreviated forms of AND, EQL,
-     MEMBER, NOT, OR, SATISFIES, and VALUES would mean.
+    It's not clear what the abbreviated forms of AND, EQL,
+    MEMBER, NOT, OR, SATISFIES, and VALUES would mean.
 
-     CLtL defines MOD in terms of the INTEGER type specifier,
-     which already has a well-defined meaning when given
-     unspecified arguments.  Also, MOD is the only type specifier 
-     listed in the section "Type Specifiers That Abbreviate" that 
-     is not now a standard type specifier symbol, and treating
-     all abbreviating type specifiers consistently seems better
-     than making a pointless exception for MOD.
+    CLtL defines MOD in terms of the INTEGER type specifier,
+    which already has a well-defined meaning when given
+    unspecified arguments.  Also, MOD is the only type specifier 
+    listed in the section "Type Specifiers That Abbreviate" that 
+    is not now a standard type specifier symbol, and treating
+    all abbreviating type specifiers consistently seems better
+    than making a pointless exception for MOD.
 
 
 Proposal (TYPE-SPECIFIER-ABBREVIATION:NONE):
@@ -47,14 +47,14 @@ Proposal (TYPE-SPECIFIER-ABBREVIATION:NONE):
   or be given as *.  Clarify that these symbols are not standard 
   type specifier symbols.
 
-   Rationale for proposal NONE:
+  Rationale:
 
-     It's not clear what the abbreviated forms of AND, EQL,
-     MEMBER, NOT, OR, SATISFIES, and VALUES would mean.
+    It's not clear what the abbreviated forms of AND, EQL,
+    MEMBER, NOT, OR, SATISFIES, and VALUES would mean.
 
-     While MOD could be assigned a reasonable meaning, adding it
-     to the list of standard type specifier symbols is a
-     pointless change to the language.
+    While MOD could be assigned a reasonable meaning, adding it
+    to the list of standard type specifier symbols is a
+    pointless change to the language.
      
 Current Practice:
 
