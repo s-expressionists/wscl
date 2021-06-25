@@ -56,7 +56,7 @@ Proposal (FORMAT-STRING-ARGUMENTS:SPECIFY):
   an editorial matter, change all references to arguments now
   named "format-string" to "format-control".
 
-  Rationale for proposal SPECIFY:
+  Rationale:
 
   Items (1) and (2) were probably what was intended by the
   PRETTY-PRINT-INTERFACE proposal.  Item (3) is a logical
@@ -73,7 +73,7 @@ Proposal (FORMAT-STRING-ARGUMENTS:RETRACT):
 
   (2) Remove the FORMATTER macro from the language.
 
-  Rationale for proposal RETRACT:
+  Rationale:
 
   It is easier to remove this feature than to try to fix the rest
   of the language to be consistent with it.  Having a macro to
