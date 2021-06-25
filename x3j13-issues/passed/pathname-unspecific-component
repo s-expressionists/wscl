@@ -149,7 +149,7 @@ Aesthetics:
 
 Discussion:
 
-  Pitman and Moon support PATHNAME-TYPE-UNSPECIFIC:NEW-TOKEN.
+  Pitman and Moon support PATHNAME-UNSPECIFIC-COMPONENT:NEW-TOKEN.
 
   This feature existed (for types) in the Colander draft edition of
   CLtL, but was removed for the Laser edition. The following text is
