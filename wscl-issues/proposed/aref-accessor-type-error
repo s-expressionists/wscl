@@ -1,0 +1,73 @@
+Issue:          AREF-ACCESSOR-TYPE-ERROR
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         proposed
+Edit History:   11-Jul-21, Version 1 by Robert Strandh,
+References:     AREF
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the description of
+  the accessor AREF indicates no exceptional situations.  The section
+  "Arguments and Values" mentions that the array argument must be
+  an array, which by default means that the consequences are undefined
+  if an object that is not of type array is given.
+
+Proposal (AREF-ACCESSOR-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE):
+
+  This proposal changes the description of the AREF accessor, so that
+  the section "Exceptional Situations" instead reads:
+
+  "The accessor AREF should signal an error of type TYPE-ERROR
+  if given an argument which is not an array.
+
+Test Cases:
+
+  (defun one (object)
+    (declare (optimize (safety 3)))
+    (aref object 0))
+
+  (one 234) => ERROR: The value 234 is not of type ARRAY.
+
+  (defun two (object)
+    (declare (optimize (safety 3)))
+    (setf (aref object 0) 345))
+
+  (two 234) => ERROR: The value 234 is not of type ARRAY.
+
+Rationale:
+
+  We think it was a simple omission from the draft ANSI specification
+  to indicate no exceptional situations.
+
+Current Practice:
+
+  SBCL 2.1.3
+    (one)   => ERROR: The value 234 is not of type ARRAY.
+    (two)   => ERROR: The value 234 is not of type ARRAY.
+
+  TODO: check other implementations.
+
+Cost to Implementors:
+
+  None.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  TODO
+
+Benefits:
+
+  TODO
+
+Aesthetics:
+
+  TODO
+
+Discussion:
+
+  TODO
