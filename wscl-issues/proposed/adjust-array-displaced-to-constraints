@@ -1,0 +1,109 @@
+Issue:          ADJUST-ARRAY-DISPLACED-TO-CONSTRAINTS
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         proposed
+Edit History:   11-Jul-21, Version 1 by Jan Moringen,
+References:     ADJUST-ARRAY
+Related Issues: ADJUST-ARRAY-DISPLACEMENT-RULES
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the description of
+  ADJUST-ARRAY states that :initial-element and :initial-contents must
+  not be supplied if :displaced-to is supplied and
+  displaced-index-offset may be supplied only if displaced-to is
+  supplied.
+
+  Douglas Katzman notes two problems with this:
+
+  1.  :DISPLACED-TO could be given as NIL which almost surely should
+      not allow :DISPLACED-INDEX-OFFSET to be supplied.
+
+  2.  Similarly there is a problem with "initial-elements and
+      initial-contents must not be supplied if displaced-to is
+      supplied." because that would forbid ":initial-element 'foo
+      :displaced-to nil" which we have always allowed.
+
+Proposal (ADJUST-ARRAY-DISPLACED-TO-CONSTRAINTS:ALLOW-NIL):
+
+  This proposal changes the description of ADJUST-ARRAY so that
+  :displaced-to nil results in the same constraints on
+  :initial-element, :initial-content and :displaced-index-offset as
+  :displaced-to not being supplied.  The individual proposed changes
+  to the description of ADJUST-ARRAY are:
+
+  1. Change the sentence "Initial-element must not be supplied if
+     either initial-contents or displaced-to is supplied." to
+     "Initial-element must not be supplied if either initial-contents
+     is supplied or a non-nil displaced-to is supplied.".
+
+  2. Change the sentence "initial-contents must not be supplied if
+     either initial-element or displaced-to is given." to
+     "initial-contents must not be supplied if either initial-element
+     is given or a non-nil displaced-to is given.".
+
+  3. Change the sentence "displaced-index-offset may be supplied only
+     if displaced-to is supplied." to "displaced-index-offset may be
+     supplied only if a non-nil displaced-to is supplied."
+
+  4. Add the following sentence at the end of the "Exceptional
+     Situations" section: "An error of type error is signaled if
+     displaced-index-offset is supplied but displaced-to is either not
+     supplied or nil."
+
+Test Cases:
+
+  (defun one ()
+    (adjust-array (make-array 3 :initial-element 1 :adjustable t) 4
+                  :displaced-to nil :initial-element 2))
+  (one) => #(1 1 1 2)
+
+  (defun two ()
+    (adjust-array (make-array 3 :initial-element 1 :adjustable t) 4
+                  :displaced-to nil :initial-contents '(2 2 2 2)))
+  (two) => #(2 2 2 2)
+
+  (defun three ()
+    (adjust-array (make-array 3 :initial-element 1 :adjustable t) 4
+                  :displaced-to nil :displaced-index-offset 1))
+  (three) => ERROR: :displaced-index-offset must not be supplied when
+                    :displaced-to nil is supplied.
+
+Rationale:
+
+  ADJUST-ARRAY-DISPLACEMENT-RULES states "Note: Omitting the
+  :DISPLACED-TO argument to ADJUST-ARRAY is equivalent to specifying
+  :DISPLACED-TO NIL; in either case, the array is not displaced after
+  the call ..." so the behavior described in ALLOW-NIL was intended
+  but not specified precisely enough.
+
+Current Practice:
+
+  SBCL 2.1.1
+    (one)   => #(1 1 1 2)
+    (two)   => #(2 2 2 2)
+    (three) => #(1 1 1 0) ; not conforming under ALLOW-NIL
+
+Cost to Implementors:
+
+  TODO
+
+Cost to Users:
+
+  TODO
+
+Cost of non-adoption:
+
+  TODO
+
+Benefits:
+
+  TODO
+
+Aesthetics:
+
+  TODO
+
+Discussion:
+
+  TODO
