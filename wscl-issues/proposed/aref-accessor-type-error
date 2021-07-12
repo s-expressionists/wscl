@@ -59,6 +59,34 @@ Current Practice:
        234
       which is not of the expected type ARRAY.
 
+  This is SBCL 2.1.6
+  (one 234): (NIL #<TYPE-ERROR expected-type: VECTOR datum: 234>)
+  (two 234): (NIL #<TYPE-ERROR expected-type: VECTOR datum: 234>)
+
+  This is Armed Bear Common Lisp 1.8.0
+  (one 234): (NIL #<TYPE-ERROR {48643AF7}>)
+  (two 234): (NIL #<TYPE-ERROR {EDD18F5}>)
+
+  This is Clozure Common Lisp Version 1.12  LinuxX8664
+  (one 234): (NIL #<TYPE-ERROR #x30200085EF2D>)
+  (two 234): (NIL #<TYPE-ERROR #x302000852D3D>)
+
+  This is ECL 21.2.1
+  (one 234): (NIL #<a SIMPLE-TYPE-ERROR 0x55de344a0300>)
+  (two 234): (NIL #<a SIMPLE-TYPE-ERROR 0x55de344a0280>)
+
+  This is CLISP 2.49.92 (2018-02-18) (built on 8b44a77f9106 [172.17.0.4])
+  (one 234): (NIL #<SIMPLE-TYPE-ERROR #x00007FD03C333026>)
+  (two 234): (NIL #<SIMPLE-TYPE-ERROR #x00007FD03C33D656>)
+
+  This is CMU Common Lisp 21d (21D Unicode)
+  (one 234): (NIL #<TYPE-ERROR {604D203D}>)
+  (two 234): (NIL #<TYPE-ERROR {604DFA4D}>)
+
+  This is clasp cclasp-boehm-0.4.2-3852-gb14e329f4-cst
+  (one 234): (NIL #<TYPE-ERROR>)
+  (two 234): (NIL #<TYPE-ERROR>)
+
   TODO: check other implementations.
 
 Cost to Implementors:
