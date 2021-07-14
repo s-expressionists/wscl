@@ -1102,6 +1102,7 @@ All the following \term{forms} should signal an error:
 
 \label Exceptional Situations::
 
+\issue{INVALID-TYPE-SPECIFIER}
 If a coercion is not possible, an error \oftype{type-error} is signaled.
 
 \f{(coerce x 'nil)} always signals an error \oftype{type-error}.
@@ -1119,6 +1120,7 @@ if the \term{symbol} names a \term{macro} or a \term{special operator}.
 An error \oftype{type-error} should be signaled if \param{result-type}
 specifies the number of elements and \param{object} is of a different length.
 \endissue{SEQUENCE-TYPE-LENGTH:MUST-MATCH}
+\endissue{INVALID-TYPE-SPECIFIER}
 
 \label See Also::
 
@@ -1506,7 +1508,11 @@ these names should always refer to the same sets of
 
 \label Affected By:\None.
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{INVALID-TYPE-SPECIFIER}
+\None.
+\endissue{INVALID-TYPE-SPECIFIER}
 
 \label See Also::
 
@@ -1826,12 +1832,14 @@ denote the same \term{type}.  Notice that
 \label Exceptional Situations::
 
 %% 4.5.0.0 10
+\issue{INVALID-TYPE-SPECIFIER}
 An error \oftype{error} is signaled if \param{type-specifier} is \f{values}, 
 or a \term{type specifier} list whose first element is either
 \misc{function} or \misc{values}.
 
 The consequences are undefined if
 the \param{type-specifier} is not a \term{type specifier}.
+\endissue{INVALID-TYPE-SPECIFIER}
 
 \label See Also::
 

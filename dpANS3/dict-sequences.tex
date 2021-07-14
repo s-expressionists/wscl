@@ -312,6 +312,7 @@ The \term{implementation}.
 
 \label Exceptional Situations::
 
+\issue{INVALID-TYPE-SPECIFIER}
 The consequences are unspecified if \param{initial-element} 
 is not an \term{object} which can be stored in the resulting \term{sequence}.
 
@@ -325,6 +326,7 @@ An error \oftype{type-error} must be signaled if the \param{result-type} is neit
 An error \oftype{type-error} should be signaled if \param{result-type} specifies 
 the number of elements and \param{size} is different from that number.
 \endissue{SEQUENCE-TYPE-LENGTH:MUST-MATCH}
+\endissue{INVALID-TYPE-SPECIFIER}
 
 \label See Also::
 
@@ -516,6 +518,7 @@ otherwise, an error is signaled.
 
 \label Exceptional Situations::
 
+\issue{INVALID-TYPE-SPECIFIER}
 \issue{CONCATENATE-SEQUENCE:SIGNAL-ERROR}
 An error \oftype{type-error} must be signaled if the \param{result-type} is 
      not a \term{recognizable subtype} of \typeref{list},
@@ -531,6 +534,7 @@ if \param{result-type} specifies the
 number of elements and the minimum length of the \param{sequences} 
 is different from that number.
 \endissue{SEQUENCE-TYPE-LENGTH:MUST-MATCH}
+\endissue{INVALID-TYPE-SPECIFIER}
 
 \label See Also::
 
@@ -2119,6 +2123,7 @@ otherwise, an error is signaled.
 
 \label Exceptional Situations::
 
+\issue{INVALID-TYPE-SPECIFIER}
 \issue{CONCATENATE-SEQUENCE:SIGNAL-ERROR}
 An error must be signaled if the \param{result-type} is neither
      a \term{recognizable subtype} of \typeref{list},
@@ -2131,6 +2136,7 @@ if \param{result-type} specifies the number of elements
 and the sum of the lengths of \param{sequence-1} and \param{sequence-2} 
 is different from that number.
 \endissue{SEQUENCE-TYPE-LENGTH:MUST-MATCH}
+\endissue{INVALID-TYPE-SPECIFIER}
 
 \label See Also::
 
