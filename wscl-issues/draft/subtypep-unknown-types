@@ -1,0 +1,185 @@
+Issue:          SUBTYPEP-UNKNOWN-TYPES
+Forum:          Cleanup
+Category:       CHANGE
+Status:         draft
+Edit History:   14-Jul-21, Version 1 by Bike.
+References:     SUBTYPEP
+Related issues: SUBTYPEP-TOO-VAGUE
+
+Problem Description:
+
+  The draft ANSI Common Lisp specification says in part, concerning SUBTYPEP:
+    "subtypep is permitted to return the values false and false only when at
+     least one argument involves one of these type specifiers: and, eql, the
+     list form of function, member, not, or, satisfies, or values."
+  and
+    "subtypep never returns a second value of nil when both type-1 and type-2
+     involve only the [...] names of types defined by [...] defclass"
+
+  This causes difficulties with forward-referenced classes, for which only
+  incomplete subtype information is available, as well as "unknown" types (i.e.,
+  types with no definition known to the implementation, as can for example
+  appear during COMPILE-FILE processing). In this case it could be useful to
+  allow SUBTYPEP to return an inexact answer. This would also strengthen the
+  requirement for SUBTYPEP to return exact results when the implementation does
+  have complete subtype information.
+
+  It is worth noting that the standard contemplates "unknown" type specifiers
+  in the section concerning DEFTYPE:
+    "If the expansion of a type specifier is not defined fully at compile time
+     (perhaps because it expands into an unknown type specifier [...]), an
+     implementation may ignore any references to this type in declarations
+     and/or signal a warning."
+
+  This issue essentially concerns what SUBTYPEP can do in this situation.
+
+Proposal (SUBTYPEP-UNKNOWN-TYPES:LOOSEN-SIMPLE):
+
+  Amend the definition of SUBTYPEP such that
+
+  * It may return a second value of false when either type specifier involves
+    a symbol that is unknown to the type system, i.e. is not a standard atomic
+    type specifier listed in Figure 4-2 and has not been defined by DEFSTRUCT,
+    DEFINE-CONDITION, DEFCLASS, or DEFTYPE.
+  * It may return a second value of false when either type specifier involves a
+    class that has not been finalized, or the name of such a class.
+
+  Rationale:
+
+    Simple to define and implement and gives the required flexibility.
+
+Proposal (SUBTYPEP-UNKNOWN-TYPES:LOOSEN-COMPLEX):
+
+  Amend the definition of SUBTYPEP such that
+
+  * [ditto the first entry above]
+  * It may return a second value of false when either type specifier involves a
+    class that has not been finalized, or the name of such a class, unless there
+    is a chain of direct superclass relationships from the unfinalized class to
+    the relevant type involved in the other argument.
+
+  This second condition is harder to define specifically. A more exacting
+  definition might go as follows. If A, B, and C are classes or names thereof,
+
+  * A is a recognizable subtype of itself.
+  * If A is a direct subclass of B, A is a recognizable subtype of B. (This
+    includes cases where A is unfinalized and/or B is forward-referenced.)
+  * If A is a recognizable subtype of B, and B is a recognizable subtype of C,
+    A is a recognizable subtype of C. (This includes cases where, for example,
+    C is forward-referenced, B is defined but not finalized, and A is a subclass
+    of B.)
+  * If A is finalized and B appears in its class precedence list, A is a
+    recognizable subtype of B. If A is finalized and B does not appear in its
+    class precedence list, A is recognizably not a subtype of B.
+    The positive condition here is actually unnecessary as it's covered by
+    the direct subclass and transitivity definitions above, but it's probably
+    worth noting.
+  * If A is not finalized, A is recognizably not a subtype of any of the types
+    listed as disjoint from types defined by DEFCLASS by CLHS 4.2.2, and in
+    turn, those types are recognizably not subtypes of A.
+
+  Rationale:
+
+    Provides the needed flexibility, while forcing SUBTYPEP to recognize some
+    obvious cases, as can be useful.
+
+Proposal (SUBTYPEP-UNKNOWN-TYPES:ERROR):
+
+  Amend the definition of SUBTYPEP so that an error is signaled if one or both
+  type specifiers provided is undefined or only partially defined.
+
+  Rationale:
+
+    This is a stricter version of the existing definition. It makes the
+    situation clearer without abandoning the existing definition.
+
+Examples:
+
+  ;;; Here we define our own version of a standard function, with a compiler
+  ;;; macro to signal a warning if it's given a bad type specifier.
+  (defun my-make-sequence (result-type length &rest keys)
+    (apply #'make-sequence result-type length keys))
+  (define-compiler-macro my-make-sequence (result-type length &rest keys
+                                           &environment env)
+    (declare (ignore length keys))
+    (multiple-value-bind (st surety) (subtypep result-type 'sequence env)
+      (when (and (not st) surety) ; definitely not a subtype
+        (warn "~a given a bad type specifier ~a!"
+              'my-make-sequence result-type))))
+  ;;; Now say we compile
+  (my-make-sequence 'unknown 5)
+  ;;; where UNKNOWN has not been defined by DEFTYPE etc.
+  ;;; If compiler macroexpanded, SUBTYPEP cannot return true or false (because
+  ;;; the type system doesn't know whether or not it is a subtype), and can
+  ;;; also not return NIL NIL, as neither type specifier includes one of the
+  ;;; symbols listed in the description of SUBTYPEP. A conforming implementation
+  ;;; must do something else, like signal an error or crash.
+  ;;; Under either loosening proposal, the subtypep would return NIL NIL, so no
+  ;;; warning would be issued by the compiler macro function, which is the
+  ;;; appropriate behavior, since it's not clear whether or not the call will be
+  ;;; an error at runtime.
+  ;;; Under ERROR, the compiler macro function would definitely signal an error.
+  
+Current Practice:
+
+  Test 1 is (subtypep 'unknown 'sequence).
+  Test 2 is (defclass foo (bar) ()) (subtypep 'foo 'bar).
+  Test 3 is (defclass foo2 (foo) ()) (subtypep 'foo2 'foo) subsequent to above.
+  Test 4 is (subtypep 'foo 'hash-table).
+  Test 5 is (subtypep 'bar 'hash-table).
+
+         Test 1         Test 2       Test 3     Test 4          Test 5
+  SBCL   NIL NIL        T T          T T        NIL T           NIL T
+  CCL    NIL NIL        T T          NIL NIL    NIL NIL         NIL NIL
+  Clasp  NIL NIL        NIL NIL      NIL NIL    NIL NIL         NIL NIL
+
+  SBCL conforms to LOOSEN-COMPLEX. CCL and Clasp conform to LOOSEN-SIMPLE.
+  None tested conform to the current standard.
+
+Cost to Implementors:
+
+  Both loosening proposals loosen existing requirements, so they would take no
+  effort to implement.
+  Some implementations (e.g. CCL and Clasp) would need to reorganize their
+  code a bit to implement LOOSEN-COMPLEX.
+  ERROR would require several implementations to change how SUBTYPEP works, and
+  could take some extensive effort. SBCL for example has an internal dedicated
+  UNKNOWN-TYPE structure which is used within the compiler.
+
+Cost to Users:
+
+  For the loosening proposals, users relying on SUBTYPEP to signal an error in
+  these cases would be disappointed, but SUBTYPEP is not already required to
+  signal an error anyway.
+  ERROR would invalidate existing code that treats SUBTYPEP as being tolerant
+  of undefined types, as in the example code.
+
+Benefits:
+
+  Any proposal gives understandable behavior. LOOSEN-COMPLEX additionally
+  allows SUBTYPEP to be used to answer questions about forward referenced
+  classes.
+
+Cost of non-adoption:
+
+  Behavior of SUBTYPEP in these cases remains vague and hard to use.
+  Implementations continue to not conform to the standard as written.
+
+Discussion:
+
+  The existing definition of SUBTYPEP does not seem to be written with the
+  possibility of undefined or partially undefined subtype relationships in
+  mind (as distinct from uncomputable relationships). Practice has shown that
+  SUBTYPEP is often used by compilers and other code analysis tools, and for
+  this it is often convenient to use NIL NIL to represent these partially-known
+  relationships as well.
+
+  It could be argued that SUBTYPEP should return a definite false if given an
+  unfinalized class and a class that is not a direct superclass (or a direct
+  superclass of a direct superclass, etc.) because in that moment, it is not a
+  definite subtype. Alternately, it could be argued that types are defined as
+  sets of objects, and the set of objects that are instances of an unfinalized
+  class is necessarily empty (because unfinalized classes cannot be
+  instantiated), so an unfinalized class is the bottom type and thus a subtype
+  of any type. Neither of these behaviors seem practically useful to me at all,
+  but they could be written up as proposals if someone disagrees.

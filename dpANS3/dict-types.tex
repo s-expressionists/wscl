@@ -1225,11 +1225,13 @@ in subsequent \term{type} declarations.
 The \term{programmer} must ensure that the body of a \macref{deftype} form 
 can be \term{evaluated} at compile time if the \param{name} is
 referenced in subsequent \term{type} declarations.  
+\issue{SUBTYPEP-UNKNOWN-TYPES}
 If the expansion of a \term{type specifier} is not defined fully at compile time
 (perhaps because it expands into an unknown \term{type specifier} or a
 \typeref{satisfies} of a named \term{function} that isn't defined in the
 compile-time environment), an \term{implementation} may ignore any references to
 this \term{type} in declarations and/or signal a warning.
+\endissue{SUBTYPEP-UNKNOWN-TYPES}
 \endissue{COMPILE-FILE-HANDLING-OF-TOP-LEVEL-FORMS:CLARIFY}
 
 \label Examples::
@@ -1330,6 +1332,7 @@ that might result.
 }
 
 \issue{SUBTYPEP-TOO-VAGUE:CLARIFY-MORE}
+\issue{SUBTYPEP-UNKNOWN-TYPES}
 
 \funref{subtypep} is permitted to return the 
 \term{values} \term{false} and \term{false} only when at least
@@ -1372,6 +1375,7 @@ an implementation supports only a single type of floating-point numbers,
 in that implementation \f{(subtypep 'float 'long-float)} 
 returns the \term{values} \term{true} and \term{true} 
 (since the two \term{types} are identical).
+\endissue{SUBTYPEP-UNKNOWN-TYPES}
 \endissue{SUBTYPEP-TOO-VAGUE:CLARIFY-MORE}
 
 \issue{ARRAY-TYPE-ELEMENT-TYPE-SEMANTICS:UNIFY-UPGRADING}
