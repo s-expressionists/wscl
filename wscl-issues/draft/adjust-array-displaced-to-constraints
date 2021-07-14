@@ -4,7 +4,7 @@ Category:       CLARIFICATION
 Status:         draft
 Edit History:   11-Jul-21, Version 1 by Jan Moringen,
 References:     ADJUST-ARRAY
-Related Issues: ADJUST-ARRAY-DISPLACEMENT-RULES
+Related Issues: ADJUST-ARRAY-DISPLACEMENT
 
 Problem Description:
 
@@ -71,11 +71,11 @@ Test Cases:
 
 Rationale:
 
-  ADJUST-ARRAY-DISPLACEMENT-RULES states "Note: Omitting the
-  :DISPLACED-TO argument to ADJUST-ARRAY is equivalent to specifying
-  :DISPLACED-TO NIL; in either case, the array is not displaced after
-  the call ..." so the behavior described in ALLOW-NIL was intended
-  but not specified precisely enough.
+  ADJUST-ARRAY-DISPLACEMENT states "Note: Omitting the :DISPLACED-TO
+  argument to ADJUST-ARRAY is equivalent to specifying :DISPLACED-TO
+  NIL; in either case, the array is not displaced after the call ..."
+  so the behavior described in ALLOW-NIL was intended but not
+  specified precisely enough.
 
 Current Practice:
 
