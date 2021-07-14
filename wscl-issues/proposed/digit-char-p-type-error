@@ -19,7 +19,7 @@ Proposal (DIGIT-CHAR-P-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE):
   so that the section "Exceptional Situations" instead reads:
 
   "The function DIGIT-CHAR-P should signal an error of type TYPE-ERROR
-  if given an argument which is not a character.
+  if given an argument which is not a character."
 
 Test Cases:
 
