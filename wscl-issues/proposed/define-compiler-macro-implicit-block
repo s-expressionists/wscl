@@ -1,0 +1,44 @@
+Issue: COMPILER-MACRO-IMPLICIT-BLOCK
+
+Forum: Editorial
+
+References: DEFINE-COMPILER-MACRO, Issue FLET-IMPLICIT-BLOCK
+
+Category: CHANGE
+
+Edit history: 2004-06-10, Version 1 by Nikodemus Siivola
+
+Status: For CLiki consideration
+
+Problem Description:
+    Current definition of DEFINE-COMPILER-MACRO violates the rule of thumb observed by other named entities that take code bodies, that is mentioned in the Issue FLET-IMPLICIT-BLOCK writeup: "any named entity that takes a code body establishes an implicit block with the obvious name."
+
+Proposal COMPILER-MACRO-IMPLICIT-BLOCK:YES
+    Specify that DEFINE-COMPILER-MACRO establishes an implicit block with the name of the compiler-macro as the block name.
+
+Test case:
+
+Rationale:
+    The current behaviour violates expectations and complicates writing compiler-macros in some cases.
+
+Current practice:
+    As defined in the standard, DEFINE-COMPILER-MACRO does not establish an implicit block.
+
+Cost to Implementors:
+    Small.
+
+Cost to Users:
+    None. The altered definition would not affect behaviour of conforming code.
+
+Cost of Non-Adoption:
+    The unintuitive behaviour violating expectations catered for by the rest of the language remains. Users writing complex compiler macros that would benefit from having a non-local exit via RETURN-FROM must explicitly establish the block.
+
+Benefits:
+    More uniform specification and easier to write compiler-macros in some cases.
+
+Aesthetics:
+    Improved. Cleaner specification due to increased uniformity. Cleaner user code due to lack of explicit blocks in compiler-macros (though rare).
+
+Discussion:
+
+    Bruno Haible says: Agreed, with a minor change: DEFINE-COMPILER-MACRO should establish an implicit block, like DEFUN does (using the notion of "function block name").
