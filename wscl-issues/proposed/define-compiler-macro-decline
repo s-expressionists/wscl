@@ -1,0 +1,42 @@
+Issue: DEFINE-COMPILER-MACRO-DECLINE
+
+Forum: Editorial
+
+References: DEFINE-COMPILER-MACRO
+
+Category: CLARIFICATION/CHANGE
+
+Edit history: 2004-06-16, Version 1 by Christophe Rhodes
+
+Status: For CLiki consideration
+
+Problem Description:
+    The glossary entry for compiler macro function is inconsistent with the entries in the main body of the standard: the glossary states that returning nil from the compiler macro function indicates that the original form should not be expanded, whereas define-compiler-macro states that this is achieved by returning the original form (from the &whole argument).
+
+Proposal (DEFINE-COMPILER-MACRO-DECLINE:ORIGINAL-FORM-ONLY):
+    Specify that the glossary entry was in error, and that to decline expansion the original form should be returned from the compiler macro function. Specify that a return value of nil indicates that the form should be expanded by the compiler, if it expands the compiler macro at all, to nil.
+
+Test case:
+
+Rationale:
+    The glossary entry was clearly in error, and could potentially cause confusion.
+
+Current practice:
+    SBCL 0.8.11 (and earlier versions), CMUCL 18e and CLISP 2.33 behave as in proposal DEFINE-COMPILER-MACRO-DECLINE:ORIGINAL-FORM-ONLY.
+
+Cost to Implementors:
+    Minimal.
+
+Cost to Users:
+    None.
+
+Cost of Non-Adoption:
+    Continued confusion over the required semantics of a compiler macro function.
+
+Benefits:
+    Enhanced ability to write compiler macros portably.
+
+Aesthetics:
+    Returning the original form to decline is clearly superior to returning nil, as it avoids any possible confusion over nil as expansion.
+
+Discussion:

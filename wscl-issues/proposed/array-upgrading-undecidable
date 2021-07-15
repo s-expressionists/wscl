@@ -1,0 +1,51 @@
+Issue: ARRAY-UPGRADING-UNDECIDABLE
+
+Forum: Editorial
+
+References: UPGRADED-ARRAY-ELEMENT-TYPE, MAKE-ARRAY
+
+Category: CLARIFICATION/CHANGE
+
+Edit history: 2005-08-04, Version 1 by Paul F. Dietz
+
+Status: For CLiki consideration
+
+Problem Description:
+
+    UPGRADED-ARRAY-ELEMENT-TYPE and the definition of 'subtype' in the glossary imply that UPGRADED-ARRAY-ELEMENT-TYPE must be computable on all types, and that it can be used to distinguish between SATISFIES types that are type-equivalent to BIT and CHARACTER, respectively. This can easily be shown to be undecidable.
+
+Proposal (ARRAY-UPGRADING-UNDECIDABLE:RESTRICT):
+
+Modify the semantics of :(CLHS UPGRADED-ARRAY-ELEMENT-TYPE) so that its behavior on types for which SUBTYPEP is permitted to fail is unspecified. In particular, it is allowed to violate the subtype constraints in section 15.1.2.1 if the type being upgraded contains or can be expanded to a type that contains OR, AND, NOT, compound FUNCTION types, or SATISFIES.
+
+Test case:
+
+Rationale:
+
+As currently specified, the function cannot be correctly implemented.
+
+Current practice:
+
+    Ignore the problem and do not implement properly on complex compound types.
+
+Cost to Implementors:
+
+    None.
+
+Cost to Users:
+
+    None.
+
+Cost of Non-Adoption:
+
+    Inconsistency between implementations and the standard.
+
+Benefits:
+
+    Eliminates an impossible requirement.
+
+Aesthetics:
+
+Discussion:
+
+It may be desirable to require UPGRADED-ARRAY-ELEMENT-TYPE to respect ordering constraints on two types T1 and T2 if (SUBTYPEP T1 T2) is true, even if T1 and T2 contain any of the compound type specifiers listed above.

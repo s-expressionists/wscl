@@ -1,0 +1,47 @@
+Issue: VALUES-&ALLOW-OTHER-KEYS
+
+Forum: Editorial
+
+References: VALUES
+
+Category: CLARIFICATION/CHANGE
+
+Edit history: 2004-07-20, Version 1 by Bruno Haible
+
+Status: For CLiki consideration
+
+Problem Description:
+
+    (values &allow-other-keys) matches the syntax for the VALUES type specifier, but the description doesn't say what it means. Because the syntax does not allow &key, &allow-other-keys was probably a mistake.
+
+Proposal (VALUES-&ALLOW-OTHER-KEYS:DISALLOW):
+
+    Don't mention &ALLOW-OTHER-KEYS as being allowed in the VALUES type specifier.
+
+Test case:
+
+Rationale:
+
+Current practice:
+
+    CLISP supports &KEY and &ALLOW-OTHER-KEYS.
+
+Cost to Implementors:
+
+    None.
+
+Cost to Users:
+
+    None.
+
+Cost of Non-Adoption:
+
+    Unclear spec.
+
+Benefits:
+
+Aesthetics:
+
+Discussion:
+
+    Bruno Haible supports proposal DISALLOW.

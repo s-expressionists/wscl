@@ -1,0 +1,37 @@
+Issue: WITH-HASH-TABLE-ITERATOR-BINDING-TYPE
+
+Forum: Editorial
+
+References: WITH-HASH-TABLE-ITERATOR
+
+Category: CLARIFICATION/CHANGE
+
+Edit history: 2004-07-20, Version 1 by Bruno Haible
+
+Status: For CLiki consideration
+
+Problem Description:
+
+    The Exceptional Situations for WITH-HASH-TABLE-ITERATOR claim it establishes a local function. Should be a local macro.
+
+Proposal (WITH-HASH-TABLE-ITERATOR-BINDING-TYPE:???):
+
+Test case:
+
+Rationale:
+
+Current practice:
+
+Cost to Implementors:
+
+Cost to Users:
+
+Cost of Non-Adoption:
+
+Benefits:
+
+Aesthetics:
+
+Discussion:
+
+    Bruno Haible says: I agree, should be local macro. But since macros cannot be called, it needs reformulation.
