@@ -47,7 +47,9 @@ Current practice:
 
 Cost to Implementors:
 
-  Small.
+  Small. Actually, given that DEFINE-COMPILER-MACRO and DEFMACRO are
+  often defined in terms of the same or similar machinery, an implementation
+  might have to go out of its way to not establish a block.
 
 Cost to Users:
 
