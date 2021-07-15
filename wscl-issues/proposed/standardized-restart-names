@@ -1,48 +1,61 @@
-Issue: STANDARDIZED-RESTART-NAMES
-
-Forum: Editorial
-
-References: RESTART-BIND, RESTART-CASE, WITH-SIMPLE-RESTART
-
-Category: CLARIFICATION/CHANGE
-
-Edit history: 2004-06-16, Version 1 by Christophe Rhodes
-
-Status: For CLiki consideration
+Issue:          STANDARDIZED-RESTART-NAMES
+Forum:          Cleanup
+Category:       CLARIFICATION, CHANGE
+Status:         proposed
+Edit history:   2004-06-16, Version 1 by Christophe Rhodes
+                2021-07-15, version 2 by Bike (reformat for WSCL, etc)
+References:     RESTART-BIND, RESTART-CASE, WITH-SIMPLE-RESTART
 
 Problem Description:
-    In the restrictions on conforming programs, section 11.1.2.1.2, point 18, it is specified that except where specifically allowed, the consequences are undefined if any symbols in the Common Lisp package are bound as a restart name. However, no such permission is given anywhere, even for the standardized restart names; strictly, this means that the user is unable to participate in the protocols defined by those restarts portably, by binding those names where it makes semantic sense.
+
+  In the restrictions on conforming programs, section 11.1.2.1.2, point 18, it
+  is specified that except where specifically allowed, the consequences are
+  undefined if any symbols in the Common Lisp package are bound as a restart
+  name. However, no such permission is given anywhere, even for the standardized
+  restart names; strictly, this means that the user is unable to participate in
+  the protocols defined by those restarts portably, by binding those names where
+  it makes semantic sense.
 
 Proposal (STANDARDIZED-RESTART-NAMES:ALLOW-BINDING):
-    Explicitly allow binding the standardized restart names (abort, continue, muffle-warning, store-value and use-value) as restarts names by conforming code.
+
+  Explicitly allow binding the standardized restart names (abort, continue,
+  muffle-warning, store-value and use-value) as restarts names by conforming
+  code.
 
 Test case:
 
-(defun read-eval-print-loop (level)
-   (with-simple-restart (abort "Exit command level ~D." level)
-     (loop
-       (with-simple-restart (abort "Return to command level ~D." level)
-         (let ((form (prog2 (fresh-line) (read) (fresh-line))))
-           (prin1 (eval form)))))))
+  ;;; Strictly speaking, this code has undefined behavior.
+  (defun read-eval-print-loop (level)
+    (with-simple-restart (abort "Exit command level ~D." level)
+      (loop
+        (with-simple-restart (abort "Return to command level ~D." level)
+          (let ((form (prog2 (fresh-line) (read) (fresh-line))))
+            (prin1 (eval form)))))))
 
 Rationale:
-    read-eval-print-loop, above, is an example from the ANSI standard; it was clearly intended that this should work.
+
+  read-eval-print-loop, above, is an example from the ANSI standard; it was
+  clearly intended that this should work.
 
 Current practice:
-    The author knows of no implementation which is incompatible with proposal STANDARDIZED-RESTART-NAMES:ALLOW-BINDING.
+
+  The author knows of no implementation which is incompatible with proposal
+  STANDARDIZED-RESTART-NAMES:ALLOW-BINDING.
 
 Cost to Implementors:
-    Minimal.
+
+  Minimal, or none if they already allow this.
 
 Cost to Users:
-    None.
+
+  None.
 
 Cost of Non-Adoption:
-    Continued inability to participate in the protocols defined by the ANSI standard.
+
+  Continued inability to participate in the protocols defined by the ANSI
+  standard.
 
 Benefits:
-    Enhanced portability of code, and enhanced ability of disparate programs to cooperate in protocols.
 
-Aesthetics:
-
-Discussion:
+  Enhanced portability of code, and enhanced ability of disparate programs to
+  cooperate in protocols.

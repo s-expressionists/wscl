@@ -1,47 +1,48 @@
-Issue: VALUES-&ALLOW-OTHER-KEYS
-
-Forum: Editorial
-
-References: VALUES
-
-Category: CLARIFICATION/CHANGE
-
-Edit history: 2004-07-20, Version 1 by Bruno Haible
-
-Status: For CLiki consideration
+Issue:          VALUES-&ALLOW-OTHER-KEYS
+Forum:          Cleanup
+Category:       CLARIFICATION, CHANGE
+Status:         proposed
+Edit history:   2004-07-20, Version 1 by Bruno Haible
+                2021-07-15, version 2 by Bike (reformat for WSCL, etc)
+References:     VALUES
 
 Problem Description:
 
-    (values &allow-other-keys) matches the syntax for the VALUES type specifier, but the description doesn't say what it means. Because the syntax does not allow &key, &allow-other-keys was probably a mistake.
+  (values &allow-other-keys) matches the syntax for the VALUES type specifier,
+  but the description doesn't say what it means.
 
 Proposal (VALUES-&ALLOW-OTHER-KEYS:DISALLOW):
 
-    Don't mention &ALLOW-OTHER-KEYS as being allowed in the VALUES type specifier.
+  Don't mention &ALLOW-OTHER-KEYS as being allowed in the VALUES type specifier.
 
 Test case:
 
+  ;;; This is allowed by the standard, going off of the syntax section, but
+  ;;; the meaning is not clear.
+  (the (values integer &allow-other-keys) 5)
+
 Rationale:
+
+  Because the syntax does not allow &key, &allow-other-keys was probably a
+  mistake.
 
 Current practice:
 
-    CLISP supports &KEY and &ALLOW-OTHER-KEYS.
+  CLISP supports &KEY and &ALLOW-OTHER-KEYS (or did in 2004). SBCL and CCL
+  signal an error on the test case.
 
 Cost to Implementors:
 
-    None.
+  None.
 
 Cost to Users:
 
-    None.
+  None.
 
 Cost of Non-Adoption:
 
-    Unclear spec.
-
-Benefits:
-
-Aesthetics:
+  Unclear spec.
 
 Discussion:
 
-    Bruno Haible supports proposal DISALLOW.
+  Bruno Haible supports proposal DISALLOW.
