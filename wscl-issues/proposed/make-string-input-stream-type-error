@@ -21,7 +21,7 @@ Proposal (MAKE-STRING-INPUT-STREAM-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE):
   Situations" instead reads:
 
   "The function MAKE-STRING-INPUT-STREAM should signal an error of
-  type TYPE-ERROR if given an argument which is not a string.
+  type TYPE-ERROR if given an argument which is not a string."
 
 Test Cases:
 

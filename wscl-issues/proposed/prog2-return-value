@@ -8,13 +8,13 @@ References:     PROG2
 
 Problem Description:
 
-  The Description section in the specification for prog2 states that it returns
+  The Description section in the specification for PROG2 states that it returns
   the primary value of the first form in the body. This is in contradiction with
   the Syntax description as well as with common sense.
 
 Proposal (PROG2-RETURN-VALUE:SECOND-FORM):
 
-  Alter the Description section for prog2 to specify that the return value is
+  Alter the Description section for PROG2 to specify that the return value is
   the primary value of the second form in the body.
 
 Test case:

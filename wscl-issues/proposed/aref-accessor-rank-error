@@ -29,14 +29,14 @@ Test Cases:
     (declare (optimize (safety 3)))
     (aref object 0 0))
 
-  (one (make-array 1 :initial-element nil) =>
+  (one (make-array 1 :initial-element nil)) =>
      ERROR: The value #(nil) is not of type ARRAY * (* *)
 
   (defun two (object)
     (declare (optimize (safety 3)))
     (setf (aref object 0 0) 345))
 
-  (two (make-array 1 :initial-element nil) =>
+  (two (make-array 1 :initial-element nil)) =>
      ERROR: The value #(nil) is not of type ARRAY * (* *)
 
 Rationale:

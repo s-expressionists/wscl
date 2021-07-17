@@ -30,14 +30,14 @@ Test Cases:
     (declare (optimize (safety 3)))
     (aref object 1))
 
-  (one (make-array 1 :initial-element nil) =>
+  (one (make-array 1 :initial-element nil)) =>
      ERROR: Invalid index 1 for array #(nil).
 
   (defun two (object)
     (declare (optimize (safety 3)))
     (setf (aref object 1) 345))
 
-  (two (make-array 1 :initial-element nil) =>
+  (two (make-array 1 :initial-element nil)) =>
      ERROR: Invalid index 1 for array #(nil).
 
 Rationale:

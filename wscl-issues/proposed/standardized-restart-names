@@ -18,8 +18,8 @@ Problem Description:
 
 Proposal (STANDARDIZED-RESTART-NAMES:ALLOW-BINDING):
 
-  Explicitly allow binding the standardized restart names (abort, continue,
-  muffle-warning, store-value and use-value) as restarts names by conforming
+  Explicitly allow binding the standardized restart names (ABORT, CONTINUE,
+  MUFFLE-WARNING, STORE-VALUE and USE-VALUE) as restarts names by conforming
   code.
 
 Test case:
