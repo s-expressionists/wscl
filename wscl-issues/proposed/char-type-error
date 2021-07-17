@@ -1,25 +1,27 @@
-Issue:          CHAR-TYPE-ERROR
+Issue:          CHAR-SCHAR-TYPE-ERROR
 Forum:          Cleanup
 Category:       CLARIFICATION
 Status:         proposed
-Edit History:   16-Jul-21, Version 1 by Robert Strandh.
+Edit History:   16-Jul-21, Version 1 by Robert Strandh,
+                17-Jul-21, Version 2 by Robert Strandh.
 References:     CHAR
 
 Problem Description:
 
   In the draft ANSI Common Lisp specification, the description of the
-  function CHAR indicates no exceptional situations.  The section
-  "Arguments and Values" mentions that the string argument must be a
-  string, which by default means that the consequences are undefined
-  if an object that is not of type string is given.
+  functions CHAR and SCHAR indicates no exceptional situations.  The
+  section "Arguments and Values" mentions that the string argument
+  must be a string, which by default means that the consequences are
+  undefined if an object that is not of type string is given.
 
-Proposal (CHAR-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE):
+Proposal (CHAR-SCHAR-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE):
 
-  This proposal changes the description of the CHAR function,
-  so that the section "Exceptional Situations" instead reads:
+  This proposal changes the description of the CHAR and SCHAR
+  functions, so that the section "Exceptional Situations" instead
+  reads:
 
-  "The function CHAR should signal an error of type TYPE-ERROR
-  if given an argument which is not a string."
+  "The functions CHAR and SCHAR should signal an error of type
+  TYPE-ERROR if given an argument which is not a string."
 
 Test Cases:
 
@@ -27,7 +29,12 @@ Test Cases:
     (declare (optimize (safety 3)))
     (char object 0))
 
+  (defun two (object)
+    (declare (optimize (safety 3)))
+    (schar object 0))
+
   (one 234) => ERROR: The value 234 is not of type STRING.
+  (two 234) => ERROR: The value 234 is not of type STRING.
 
 Rationale:
 
@@ -38,6 +45,7 @@ Current Practice:
 
   SBCL 2.1.3
     (one) => [signals a type error]
+    (two) => [signals a type error]
 
   TODO: check other implementations.
 
