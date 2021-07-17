@@ -10,16 +10,16 @@ Problem Description:
 
   The glossary entry for compiler macro function is inconsistent with the
   entries in the main body of the standard: the glossary states that returning
-  nil from the compiler macro function indicates that the original form should
-  not be expanded, whereas define-compiler-macro states that this is achieved
-  by returning the original form (from the &whole argument).
+  NIL from the compiler macro function indicates that the original form should
+  not be expanded, whereas DEFINE-COMPILER-MACRO states that this is achieved
+  by returning the original form (from the &WHOLE argument).
 
 Proposal (DEFINE-COMPILER-MACRO-DECLINE:ORIGINAL-FORM-ONLY):
 
   Specify that the glossary entry was in error, and that to decline expansion
   the original form should be returned from the compiler macro function.
-  Specify that a return value of nil indicates that the form should be expanded
-  by the compiler, if it expands the compiler macro at all, to nil.
+  Specify that a return value of NIL indicates that the form should be expanded
+  by the compiler, if it expands the compiler macro at all, to NIL.
 
 Test case:
 
