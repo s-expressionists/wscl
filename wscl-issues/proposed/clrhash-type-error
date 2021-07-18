@@ -1,0 +1,72 @@
+Issue:          CLRHASH-TYPE-ERROR
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         proposed
+Edit History:   18-Jul-21, Version 1 by Robert Strandh.
+References:     CLRHASH
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the description of the
+  function CLRHASH indicates no exceptional situations.  The section
+  "Arguments and Values" mentions that the hash-table argument must be
+  a hash table, which by default means that the consequences are
+  undefined if an object that is not of type hash-table is given.
+
+Proposal (CLRHASH-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE):
+
+  This proposal changes the description of the clrhash function, so
+  that the section "Exceptional Situations" instead reads:
+
+  "The function CLRHASH should signal an error of type TYPE-ERROR if
+  given an argument which is not a hash table."
+
+Test Cases:
+
+  (defun one (object)
+    (declare (optimize (safety 3)))
+    (clrhash #'print object))
+
+  (one 234) => ERROR: The value 234 is not of type HASH-TABLE.
+
+Rationale:
+
+  We think it was a simple omission from the draft ANSI specification
+  to indicate no exceptional situations.
+
+Current Practice:
+
+  SBCL 2.1.3
+    (one) => [signals a type error]
+
+  TODO: check other implementations.
+
+Cost to Implementors:
+
+  Very small.  We believe that most implementations are already
+  signaling an error in safe code.  Some implementations may signal a
+  simple error, and those implementation would need to signal a
+  type-error instead.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Application programmers may need to add explicit checks to be
+  certain that their code is conforming.
+
+Benefits:
+
+  Application programmers may rely on an error being
+  signaled in safe code, and thus avoid having to
+  add explicit checks in portable code.
+
+Aesthetics:
+
+  No influence.
+
+Discussion:
+
+  TODO
