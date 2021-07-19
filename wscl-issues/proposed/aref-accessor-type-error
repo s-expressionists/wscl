@@ -48,12 +48,12 @@ Current Practice:
     (two) => ERROR: The value 234 is not of type ARRAY.
 
   ECL
-    (one) =>
+    (one 234) =>
       Condition of type: SIMPLE-TYPE-ERROR
       In function AREF, the value of the first argument is
        234
       which is not of the expected type ARRAY.
-    (two) =>
+    (two 234) =>
       Debugger received error of type: SIMPLE-TYPE-ERROR
       In function SET, the value of the first argument is
        234
