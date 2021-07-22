@@ -23,7 +23,7 @@ Test case:
 
 Rationale:
 
-  Because the syntax does not allow &key, &allow-other-keys was probably a
+  Because the syntax does not allow &KEY, &ALLOW-OTHER-KEYS was probably a
   mistake.
 
 Current practice:
