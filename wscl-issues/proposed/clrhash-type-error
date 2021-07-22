@@ -11,11 +11,11 @@ Problem Description:
   function CLRHASH indicates no exceptional situations.  The section
   "Arguments and Values" mentions that the hash-table argument must be
   a hash table, which by default means that the consequences are
-  undefined if an object that is not of type hash-table is given.
+  undefined if an object that is not of type HASH-TABLE is given.
 
 Proposal (CLRHASH-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE):
 
-  This proposal changes the description of the clrhash function, so
+  This proposal changes the description of the CLRHASH function, so
   that the section "Exceptional Situations" instead reads:
 
   "The function CLRHASH should signal an error of type TYPE-ERROR if
@@ -46,7 +46,7 @@ Cost to Implementors:
   Very small.  We believe that most implementations are already
   signaling an error in safe code.  Some implementations may signal a
   simple error, and those implementation would need to signal a
-  type-error instead.
+  TYPE-ERROR instead.
 
 Cost to Users:
 
