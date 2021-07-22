@@ -11,11 +11,11 @@ Problem Description:
   function REMHASH indicates no exceptional situations.  The section
   "Arguments and Values" mentions that the hash-table argument must be
   a hash table, which by default means that the consequences are
-  undefined if an object that is not of type hash-table is given.
+  undefined if an object that is not of type HASH-TABLE is given.
 
 Proposal (REMHASH-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE):
 
-  This proposal changes the description of the remhash function, so
+  This proposal changes the description of the REMHASH function, so
   that the section "Exceptional Situations" instead reads:
 
   "The function REMHASH should signal an error of type TYPE-ERROR if
