@@ -54,7 +54,7 @@ Cost to Implementors:
   Very small.  We believe that most implementations are already
   signaling an error in safe code.  Some implementations may signal a
   simple error, and those implementation would need to signal a
-  type-error instead.
+  TYPE-ERROR instead.
 
 Cost to Users:
 
