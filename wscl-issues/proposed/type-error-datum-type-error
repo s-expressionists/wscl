@@ -10,19 +10,19 @@ Problem Description:
   In the draft ANSI Common Lisp specification, the description of the
   function TYPE-ERROR-DATUM indicates no exceptional situations.  The
   section "Arguments and Values" mentions that the condition argument
-  must be a condition of type type-error, which by default means that
+  must be a condition of type TYPE-ERROR, which by default means that
   the consequences are undefined if an object that is not a condition
-  of type type-error is given as an argument.
+  of type TYPE-ERROR is given as an argument.
 
 Proposal (TYPE-ERROR-DATUM-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE):
 
-  This proposal changes the description of the type-error-datum
+  This proposal changes the description of the TYPE-ERROR-DATUM
   function, so that the section "Exceptional Situations" instead
   reads:
 
   "The function TYPE-ERROR-DATUM should signal an error of type
   TYPE-ERROR if the condition argument is not a condition of type
-  type-error.
+  TYPE-ERROR."
 
 Test Cases:
 
@@ -49,7 +49,7 @@ Cost to Implementors:
   Very small.  We believe that most implementations are already
   signaling an error in safe code.  Some implementations may signal a
   simple error, and those implementation would need to signal a
-  type-error instead.  Some implementations, like SBCL may signal a
+  TYPE-ERROR instead.  Some implementations, like SBCL may signal a
   type error but with expected type CONDITION, and those
   implementations would have to change so that TYPE-ERROR is the
   expected type instead.
