@@ -8,22 +8,22 @@ References:     USE-PACKAGE
 Problem Description:
 
   In the draft ANSI Common Lisp specification, the description of the
-  function USE-PACKAGE contains the phrase "use-package checks for
+  function USE-PACKAGE contains the phrase "USE-PACKAGE checks for
   name conflicts between the newly imported symbols and those already
-  accessible in package".  However, use-package does not "import" any
+  accessible in package".  However, USE-PACKAGE does not "import" any
   symbols, because "import" means to "make the symbol be present in
-  the package", and the description of use-package states that
-  "use-package does not cause any new symbols to be present in package
-  but only makes them accessible by inheritance". 
+  the package", and the description of USE-PACKAGE states that
+  "USE-PACKAGE does not cause any new symbols to be present in package
+  but only makes them accessible by inheritance".
 
 Proposal (USE-PACKAGE-REMOVE-INCORRECT-TERMINOLOGY:NO-IMPORT):
 
-  This proposal changes the description of the use-package function,
-  so that the phrase "use-package checks for name conflicts between
+  This proposal changes the description of the USE-PACKAGE function,
+  so that the phrase "USE-PACKAGE checks for name conflicts between
   the newly imported symbols and those already accessible in package"
   is replaced by:
 
-  "use-package checks for name conflicts between the symbols about to
+  "USE-PACKAGE checks for name conflicts between the symbols about to
   be made accessible and those already accessible in package".
 
 Rationale:
