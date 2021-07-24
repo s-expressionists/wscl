@@ -449,11 +449,13 @@ Current state of the package system.
 
 \label Exceptional Situations::
 
+\issue{IMPORT-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 \funref{import} signals a \term{correctable} error \oftype{package-error}
 if any of the \param{symbols} to be \term{imported} has the \term{same} \term{name}
 (under \funref{string=}) as some distinct \term{symbol} (under \funref{eql})
 already \term{accessible} in the \param{package}, even if the conflict is
 with a \term{shadowing symbol} of the \param{package}.
+\endissue{IMPORT-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
                      
