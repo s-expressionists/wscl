@@ -1256,9 +1256,11 @@ Current state of the package system.
 
 \label Exceptional Situations::
 
+\issue{UNEXPORT-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 If \funref{unexport} is given a \term{symbol}
 not \term{accessible} in \param{package} at all, 
 an error \oftype{package-error} is signaled.
+\endissue{UNEXPORT-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 The consequences are undefined if \param{package} is \thepackage{keyword}
 %added for Sandra:
