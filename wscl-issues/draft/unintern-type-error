@@ -1,0 +1,79 @@
+Issue:          UNINTERN-TYPE-ERROR
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         draft
+Edit History:   29-Jul-21, Version 1 by Robert Strandh.
+References:     UNINTERN
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the description of the
+  function UNINTERN indicates a single exceptional situation, which is
+  when the fact that the symbol is uninterned, a name conflict can
+  occor.  However, no exceptional situation is mentioned related to
+  the types of the arguments.  As a result, the consequences are
+  undefined if the required argument is not a symbol, or if the
+  optional argument is not a package designator.
+
+Proposal (UNINTERN-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE):
+
+  This proposal changes the description of the UNINTERN function, so
+  that the section "Exceptional Situations" contains these additional
+  phrases:
+
+  "The function UNINTERN should signal an error of type TYPE-ERROR if
+  the PACKAGE argument is not a package designator.", and "The
+  function UNINTERN should signal an error of type TYPE-ERROR if the
+  SYMBOL argument is not a symbol.
+
+Test Cases:
+
+  (defun one (object1 object2)
+    (declare (optimize (safety 3)))
+    (unintern object1 object2))
+
+  (one 234 "CL-USER") => ERROR: The value 234 is not of type ...
+  (one 'a 234) => ERROR: The value 234 is not of type ...
+
+Rationale:
+
+  We think it was a simple omission from the draft ANSI specification
+  to indicate no exceptional situations for these cases.
+
+Current Practice:
+
+  SBCL 2.1.3
+    (one 234 "CL-USER") => [signals a type error]
+    (one 'a 234) => [signals a type error]
+
+  TODO: check other implementations.
+
+Cost to Implementors:
+
+  Very small.  We believe that most implementations are already
+  signaling an error in safe code.  Some implementations may signal a
+  simple error, and those implementation would need to signal a
+  TYPE-ERROR instead.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Application programmers may need to add explicit checks to be
+  certain that their code is conforming.
+
+Benefits:
+
+  Application programmers may rely on an error being
+  signaled in safe code, and thus avoid having to
+  add explicit checks in portable code.
+
+Aesthetics:
+
+  No influence.
+
+Discussion:
+
+  TODO
