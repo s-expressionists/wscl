@@ -1,0 +1,78 @@
+Issue:          FIND-SYMBOL-TYPE-ERROR
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         draft
+Edit History:   31-Jul-21, Version 1 by Robert Strandh.
+References:     FIND-SYMBOL
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the description of the
+  function FIND-SYMBOL indicates no exceptional situations.  The
+  section "Arguments and Values" mentions that the required parameter
+  STRING must be a string, and that the optional parameter PACKAGE
+  must be a package designator, which by default means that the
+  consequences are undefined if an object that is not a string is
+  given as the STRING argument, or if an object that is not a package
+  designator is given as the PACKAGE argument.
+
+Proposal (FIND-SYMBOL-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE):
+
+  This proposal changes the description of the FIND-SYMBOL function,
+  so that the section "Exceptional Situations" instead reads:
+
+  "The function FIND-SYMBOL should signal an error of type TYPE-ERROR
+  if the STRING argument is not a string, or if the PACKAGE argument
+  is not a package designator."
+
+Test Cases:
+
+  (defun one (object1 object2)
+    (declare (optimize (safety 3)))
+    (find-symbol object1 object2))
+
+  (one 234 *package*) => ERROR: The value 234 is not of type ...
+  (one "hello" 234) => ERROR: The value 234 is not of type ...
+
+Rationale:
+
+  We think it was a simple omission from the draft ANSI specification
+  to indicate no exceptional situations.
+
+Current Practice:
+
+  SBCL 2.1.3
+    (one 234 *package*) => [signals a type error]
+    (one "hello" 234) => [signals a type error]
+
+  TODO: check other implementations.
+
+Cost to Implementors:
+
+  Very small.  We believe that most implementations are already
+  signaling an error in safe code.  Some implementations may signal a
+  simple error, and those implementation would need to signal a
+  type-error instead.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Application programmers may need to add explicit checks to be
+  certain that their code is conforming.
+
+Benefits:
+
+  Application programmers may rely on an error being
+  signaled in safe code, and thus avoid having to
+  add explicit checks in portable code.
+
+Aesthetics:
+
+  No influence.
+
+Discussion:
+
+  TODO
