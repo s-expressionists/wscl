@@ -1,0 +1,210 @@
+Issue:          META-ISSUE-TYPE-ERRORS
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         proposed
+Edit History:   01-Aug-21, Version 1 by John Cowan,
+References:     See below
+
+Problem Description:
+
+This meta-issue provides a list of functions that do /not/
+refer to type-error and document no exceptional conditions.
+Prima facie these are all candidates for adding type-error
+for each wrongly typed argument.
+
+There are at least two kinds of false positives in this list:
+ * Functions that take no arguments.
+ * Functions that accept only arguments of type T.
+ 
+ There is at least one kind of false negatives in this list:
+  * Functions that have some other kind of exceptional condition
+    besides a type-error.
+
+Function ABS
+Function ACONS
+Standard Generic Function ALLOCATE-INSTANCE
+Function APPEND
+Function APPLY
+Function APROPOS, APROPOS-LIST
+Function ARRAY-DIMENSION
+Function ARRAY-IN-BOUNDS-P
+Function ARRAY-ROW-MAJOR-INDEX
+Function ARITHMETIC-ERROR-OPERANDS...
+Function ARRAYP
+Function ATOM
+Function BREAK
+Function BROADCAST-STREAM-STREAMS
+Function BIT-AND, BIT-ANDC1, BIT-ANDC2...
+Function BIT-VECTOR-P
+Function BYTE, BYTE-SIZE, BYTE-POSITION
+Function CELL-ERROR-NAME
+Function CERROR
+Function CHAR-INT
+Standard Generic Function CHANGE-CLASS
+Function CHARACTERP
+Function CIS
+Function CLASS-OF
+Standard Generic Function CLASS-NAME
+Function CLOSE
+Function CLRHASH
+Function COMPILED-FUNCTION-P
+Function CODE-CHAR
+Function COMPUTE-RESTARTS
+Function COMPLEX
+Function COMPLEXP
+Function COMPLEMENT
+Standard Generic Function COMPUTE-APPLICABLE-METHODS
+Function CONCATENATED-STREAM-STREAMS
+Function CONJUGATE
+Function CONS
+Function CONSTANTLY
+Function CONSP
+Function CONSTANTP
+Function COPY-ALIST
+Function COPY-READTABLE
+Function COPY-STRUCTURE
+Function COPY-TREE
+Function DECODE-UNIVERSAL-TIME
+Function DEPOSIT-FIELD
+Standard Generic Function DESCRIBE-OBJECT
+Function DESCRIBE
+Function DIGIT-CHAR-P
+Function DIGIT-CHAR
+Standard Generic Function DOCUMENTATION...
+Function DPB
+Function ECHO-STREAM-INPUT-STREAM...
+Function EQ
+Function EQL
+Function EQUAL
+Function EQUALP
+Function ERROR
+Function EVAL
+Function EXP, EXPT
+Function FILE-STRING-LENGTH
+Function FIND-ALL-SYMBOLS
+Function FIND-PACKAGE
+Function FIND-RESTART
+Function FIND-SYMBOL
+Function FLOAT
+Function FLOATP
+Function FLOOR, FFLOOR, CEILING, FCEILING...
+Standard Generic Function FUNCTION-KEYWORDS
+Function FUNCTION-LAMBDA-EXPRESSION
+Function FUNCTIONP
+Function GET-INTERNAL-RUN-TIME
+Function GET-INTERNAL-REAL-TIME
+Function GET-PROPERTIES
+Function GET-SETF-EXPANSION
+Function HASH-TABLE-COUNT
+Function HASH-TABLE-P
+Function IDENTITY
+Standard Generic Function INITIALIZE-INSTANCE
+Function INTEGERP
+Function INTERN
+Function INVALID-METHOD-ERROR
+Function INVOKE-DEBUGGER
+Function KEYWORDP
+Function LDB-TEST
+Function LISP-IMPLEMENTATION-TYPE...
+Function LIST, LIST*
+Function LIST-ALL-PACKAGES
+Function LISTEN
+Function LISTP
+Function LOG
+Function MACHINE-INSTANCE
+Function MACHINE-TYPE
+Function MACHINE-VERSION
+Function MAPHASH
+Function MERGE-PATHNAMES
+Function METHOD-COMBINATION-ERROR
+Standard Generic Function METHOD-QUALIFIERS
+Function MACROEXPAND, MACROEXPAND-1
+Function MISMATCH
+Function MAKE-ARRAY
+Function MAKE-CONDITION
+Function MAKE-DISPATCH-MACRO-CHARACTER
+Function MAKE-ECHO-STREAM
+Function MAKE-HASH-TABLE
+Standard Generic Function MAKE-INSTANCES-OBSOLETE
+Function MAKE-LOAD-FORM-SAVING-SLOTS
+Function MAKE-PATHNAME
+Function MAKE-STRING-INPUT-STREAM
+Function MAKE-STRING-OUTPUT-STREAM
+Function MAKE-STRING
+Function MOD, REM
+Function NAMESTRING, FILE-NAMESTRING...
+Function NCONC
+Local Function NEXT-METHOD-P
+Function NOT
+Function NULL
+Function NUMERATOR, DENOMINATOR
+Function NUMBERP
+Standard Generic Function (SETF CLASS-NAME)
+Function PACKAGE-ERROR-PACKAGE
+Function PACKAGEP
+Function PATHNAME
+Function PATHNAMEP
+Function PPRINT-FILL, PPRINT-LINEAR...
+Function PRINT-NOT-READABLE-OBJECT
+Standard Generic Function PRINT-OBJECT
+Function PROCLAIM
+Function RASSOC, RASSOC-IF, RASSOC-IF-NOT
+Function RATIONALP
+Function READ-DELIMITED-LIST
+Function READTABLEP
+Function REALP
+Function REMHASH
+Function REPLACE
+Function REVAPPEND, NRECONC
+Standard Generic Function REMOVE-METHOD
+Function RENAME-PACKAGE
+Function RANDOM-STATE-P
+Function ROOM
+Function RPLACA, RPLACD
+Function RESTART-NAME
+Function SEARCH
+Function SET
+Function SET-MACRO-CHARACTER, GET-MACRO-CHARACTER
+Function SET-SYNTAX-FROM-CHAR
+Function SHADOW
+Standard Generic Function SHARED-INITIALIZE
+Function SHADOWING-IMPORT
+Function SHORT-SITE-NAME, LONG-SITE-NAME
+Function SIGNAL
+Function SIGNUM
+Function SLOT-EXISTS-P
+Function SIMPLE-BIT-VECTOR-P
+Function SIMPLE-CONDITION-FORMAT-CONTROL...
+Function SIMPLE-STRING-P
+Function SIMPLE-VECTOR-P
+Function STRING-TRIM, STRING-LEFT-TRIM...
+Function STRING-UPCASE, STRING-DOWNCASE...
+Function STRING=, STRING/=, STRING&lt;...
+Function STRINGP
+Function STREAM-ERROR-STREAM
+Function STREAM-EXTERNAL-FORMAT
+Function STREAMP
+Function SUBLIS, NSUBLIS
+Function SUBST, SUBST-IF, SUBST-IF-NOT...
+Function SUBTYPEP
+Function SOFTWARE-TYPE, SOFTWARE-VERSION
+Function SXHASH
+Function SYMBOLP
+Function SYNONYM-STREAM-SYMBOL
+Function TYPE-ERROR-DATUM, TYPE-ERROR-EXPECTED-TYPE
+Function TYPE-OF
+Function TWO-WAY-STREAM-INPUT-STREAM...
+Function UNBOUND-SLOT-INSTANCE
+Function UNREAD-CHAR
+Function UNUSE-PACKAGE
+Function UPGRADED-ARRAY-ELEMENT-TYPE
+Function UPGRADED-COMPLEX-PART-TYPE
+Function USE-PACKAGE
+Function USER-HOMEDIR-PATHNAME
+Function VECTORP
+Function VECTOR
+Function WRITE-CHAR
+Function WRITE, PRIN1, PRINT, PPRINT...
+Function WRITE-STRING, WRITE-LINE
+Function WRITE-TO-STRING, PRIN1-TO-STRING...
+Function Y-OR-N-P, YES-OR-NO-P
