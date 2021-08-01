@@ -23,6 +23,10 @@ Problem Description:
       initial-contents must not be supplied if displaced-to is
       supplied." because that would forbid ":initial-element 'foo
       :displaced-to nil" which we have always allowed.
+      
+  Also:
+  
+  3.  no default value is specified for :DISPLACED-TO.
 
 Proposal (ADJUST-ARRAY-DISPLACED-TO-CONSTRAINTS:ALLOW-NIL):
 
@@ -32,6 +36,10 @@ Proposal (ADJUST-ARRAY-DISPLACED-TO-CONSTRAINTS:ALLOW-NIL):
   :displaced-to not being supplied.  The individual proposed changes
   to the description of ADJUST-ARRAY are:
 
+  0. Change the sentence
+        "displaced-to---an array or nil. initial-elements and initial-contents must not be supplied if displaced-to is an array."
+     to "displaced-to---an array or nil. initial-elements and initial-contents must not be supplied if displaced-to is an array. The default is nil."
+     
   1. Change the sentence "Initial-element must not be supplied if
      either initial-contents or displaced-to is supplied." to
      "Initial-element must not be supplied if either initial-contents
