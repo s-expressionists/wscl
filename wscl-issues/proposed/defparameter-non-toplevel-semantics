@@ -68,3 +68,10 @@ Aesthetics:
 Discussion:
 
   TODO
+  
+  The test case is not clear, because the same variable name is used for both the 
+  defparameter and the defvar examples.  Perhaps adding a (unintern '*foo*) would 
+  help undestand the test case for defvar too.
+  I can't say anything about the expected results given this ambituity.
+  
+  
