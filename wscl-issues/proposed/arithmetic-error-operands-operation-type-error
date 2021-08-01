@@ -84,3 +84,10 @@ Aesthetics:
 Discussion:
 
   TODO
+  
+  If these operators were readers (or accessors) instead of mere functions, 
+  these issues wouldn't occur at all (no-applicable-method would be called 
+  and signal the type-error).  
+  Would it be possible to gather all those cases in a single issue?
+  And take note for a new version of the standard?
+  
