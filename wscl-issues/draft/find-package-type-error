@@ -1,0 +1,74 @@
+Issue:          FIND-PACKAGE-TYPE-ERROR
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         draft
+Edit History:   01-Aug-21, Version 1 by Robert Strandh.
+References:     FIND-PACKAGE
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the description of the
+  function FIND-PACKAGE indicates no exceptional situations.  The
+  section "Arguments and Values" mentions that the NAME argument must
+  be a string designator or a package object, which by default means
+  that the consequences are undefined if an object that is neither a
+  string designator nor a package object is given.
+
+Proposal (FIND-PACKAGE-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE):
+
+  This proposal changes the description of the FIND-PACKAGE function,
+  so that the section "Exceptional Situations" instead reads:
+
+  "The function FIND-PACKAGE should signal an error of type TYPE-ERROR
+  if given an argument which is neither a string designator nor a
+  package object.
+
+Test Cases:
+
+  (defun one (object)
+    (declare (optimize (safety 3)))
+    (find-package object))
+
+  (one 234) => ERROR: The value 234 is not of type ...
+
+Rationale:
+
+  We think it was a simple omission from the draft ANSI specification
+  to indicate no exceptional situations.
+
+Current Practice:
+
+  SBCL 2.1.3
+    (one 234) => [signals a type error]
+
+  TODO: check other implementations.
+
+Cost to Implementors:
+
+  Very small.  We believe that most implementations are already
+  signaling an error in safe code.  Some implementations may signal a
+  simple error, and those implementation would need to signal a
+  type-error instead.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Application programmers may need to add explicit checks to be
+  certain that their code is conforming.
+
+Benefits:
+
+  Application programmers may rely on an error being
+  signaled in safe code, and thus avoid having to
+  add explicit checks in portable code.
+
+Aesthetics:
+
+  No influence.
+
+Discussion:
+
+  TODO
