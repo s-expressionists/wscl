@@ -2,8 +2,9 @@ Issue:          AREF-ACCESSOR-DIMENSION-ERROR
 Forum:          Cleanup
 Category:       CLARIFICATION
 Status:         draft
-Edit History:   13-Jul-21, Version 1 by Robert Strandh.
-                17-Jul-21, Version 2 by Robert Strandh.
+Edit History:   13-Jul-21, Version 1 by Robert Strandh
+                17-Jul-21, Version 2 by Robert Strandh
+                11-Aug-21, Version 3 by Tarn W. Burton (update current practice)
 References:     AREF
 
 Problem Description:
@@ -47,14 +48,41 @@ Rationale:
 
 Current Practice:
 
-  The following implementations signal a type error:
-  SBCL, ABCL, ECL, CLISP, Clasp
+  ABCL 1.8.1-dev-fasl43
+    (one 234) => [signals type-error]
+    (two 234) => [signals type-error]
 
-  The following implementations signal a simple error:
-  CCL, CMUCL
+  ACL 10.1
+    (one 234) => [signals type-error]
+    (two 234) => [signals type-error]
 
-  TODO: Check other implementations, in particular Allegro and
-  LispWorks.
+  CCL 1.12-f98
+    (one 234) => [signals type-error]
+    (two 234) => [signals type-error]
+
+  CLASP cclasp-boehmprecise-0.4.2-4548-g80d9caef9-cst
+    (one 234) => [signals type-error]
+    (two 234) => [signals type-error]
+
+  CLISP 2.49.93+
+    (one 234) => [signals simple-type-error]
+    (two 234) => [signals simple-type-error]
+
+  CMU 2019-05-27 16:42:54 (21D Unicode)
+    (one 234) => [signals type-error]
+    (two 234) => [signals type-error]
+
+  ECL 21.2.1-e68e6827
+    (one 234) => [signals simple-type-error]
+    (two 234) => [signals simple-type-error]
+
+  LWPE 7.1.2
+    (one 234) => [signals type-error]
+    (two 234) => [signals type-error]
+
+  SBCL 2.1.7
+    (one 234) => [signals type-error]
+    (two 234) => [signals type-error]
 
 Cost to Implementors:
 
