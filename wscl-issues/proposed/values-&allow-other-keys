@@ -28,8 +28,23 @@ Rationale:
 
 Current practice:
 
-  CLISP supports &KEY and &ALLOW-OTHER-KEYS (or did in 2004). SBCL and CCL
-  signal an error on the test case.
+  ABCL 1.8.1-dev-fasl43
+    (the (values integer &allow-other-keys) 5) => 5
+
+  CLISP 2.49.93+
+    (the (values integer &allow-other-keys) 5) => 5
+
+  CLASP cclasp-boehmprecise-0.4.2-4453-gee36ba131-cst
+    (the (values integer &allow-other-keys) 5) => 5
+
+  CMU 2019-05-27 16:42:54 (21D Unicode)
+    (the (values integer &allow-other-keys) 5) => [signals program-error]
+
+  ECL 21.2.1-e68e6827
+    (the (values integer &allow-other-keys) 5) => 5
+
+  SBCL 2.1.7
+    (the (values integer &allow-other-keys) 5) => [signals program-error]
 
 Cost to Implementors:
 
