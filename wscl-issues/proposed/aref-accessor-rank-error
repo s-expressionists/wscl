@@ -2,7 +2,8 @@ Issue:          AREF-ACCESSOR-RANK-ERROR
 Forum:          Cleanup
 Category:       CLARIFICATION
 Status:         proposed
-Edit History:   12-Jul-21, Version 1 by Robert Strandh.
+Edit History:   12-Jul-21, Version 1 by Robert Strandh
+                11-Aug-21, Version 2 by Tarn W. Burton (update current practice)
 References:     AREF
 
 Problem Description:
@@ -46,11 +47,41 @@ Rationale:
 
 Current Practice:
 
-  SBCL 2.1.3
-    (one ...)   => ERROR: The value #(nil) is not of type ARRAY * (* *)
-    (two ...)   => ERROR: The value #(nil) is not of type ARRAY * (* *)
+  ABCL 1.8.1-dev-fasl43
+    (one (make-array 1 :initial-element nil)) => [signals program-error]
+    (two (make-array 1 :initial-element nil)) => [signals program-error]
 
-  TODO: check other implementations.
+  ACL 10.1
+    (one (make-array 1 :initial-element nil)) => [signals simple-error]
+    (two (make-array 1 :initial-element nil)) => [signals simple-error]
+
+  CCL 1.12-f98
+    (one (make-array 1 :initial-element nil)) => [signals type-error]
+    (two (make-array 1 :initial-element nil)) => [signals type-error]
+
+  CLASP cclasp-boehmprecise-0.4.2-4548-g80d9caef9-cst
+    (one (make-array 1 :initial-element nil)) => [signals program-error]
+    (two (make-array 1 :initial-element nil)) => [signals program-error]
+
+  CLISP 2.49.93+
+    (one (make-array 1 :initial-element nil)) => [signals simple-error]
+    (two (make-array 1 :initial-element nil)) => [signals simple-error]
+
+  CMU 2019-05-27 16:42:54 (21D Unicode)
+    (one (make-array 1 :initial-element nil)) => [signals program-error]
+    (two (make-array 1 :initial-element nil)) => [signals program-error]
+
+  ECL 21.2.1-e68e6827
+    (one (make-array 1 :initial-element nil)) => [signals simple-error]
+    (two (make-array 1 :initial-element nil)) => [signals simple-error]
+
+  LWPE 7.1.2
+    (one (make-array 1 :initial-element nil)) => [signals error]
+    (two (make-array 1 :initial-element nil)) => [signals error]
+
+  SBCL 2.1.7
+    (one (make-array 1 :initial-element nil)) => [signals type-error]
+    (two (make-array 1 :initial-element nil)) => [signals type-error]
 
 Cost to Implementors:
 
