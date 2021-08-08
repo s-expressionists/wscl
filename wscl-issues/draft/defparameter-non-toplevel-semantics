@@ -5,6 +5,7 @@ Status:         draft
 Edit History:   21-Jun-21, Version 1 by Jan Moringen,
                 21-Jun-21, Version 2 by Jan Moringen based on feedback
                 by _death and Bike
+                01-Aug-21, Version 3 by Jan Moringen based on feedback by pjb
 References:     DEFVAR, DEFPARAMETER
 Related Issues: DEFVAR-INIT-TIME, DEFVAR-INITIALIZATION
 
@@ -25,11 +26,11 @@ Test Case:
           *foo*)
         *foo*)
 
-  (defvar *foo* 1)
-  (list (let ((*foo* 2))
-          (defvar *foo*)
-          *foo*)
-        *foo*)
+  (defvar *bar* 1)
+  (list (let ((*bar* 2))
+          (defvar *bar*)
+          *bar*)
+        *bar*)
 
 Proposal (DEFPARAMETER-NON-TOPLEVEL-SEMANTICS:TOPLEVEL):
 
