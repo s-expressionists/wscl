@@ -1,0 +1,154 @@
+Issue:          DESTRUCTURING-LAMBDA-LIST-&WHOLE-DESTRUCTURING
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         proposed
+Edit History:   20-Aug-21, Version 1 by Jan Moringen
+References:     DEFMACRO, DESTRUCTURING-BIND
+Related Issues: DEFMACRO-LAMBDA-LIST
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the descriptions of
+  macro lambda lists and destructuring lambda lists are inconsistent
+  regarding the question whether the lambda list keyword &WHOLE may be
+  followed by a pattern.
+
+
+  Section "Macro Lambda Lists"
+
+    %Per X3J13 (05-Oct-93), prohibit destructuring of whole variable. -kmp
+    \auxbnf{wholevar}{\ttbrac{{\whole} \param{var}}}
+
+    "&WHOLE is followed by a single variable that is bound to the
+    entire macro-call form;"
+
+    "If &WHOLE and a following variable appear, they must appear first
+    in lambda-list"
+
+    "&WHOLE can appear at any level of a macro lambda list. At inner
+    levels, the whole variable is bound to the corresponding part of
+    the argument, as with rest, but unlike rest, other arguments are
+    also allowed."
+
+  Section "Lambda-list-directed Destructuring by Lambda Lists"
+
+    whole: The next element is a destructuring pattern that matches
+    the entire form in a macro, or the entire subexpression at inner
+    levels.
+
+  Section "Destructuring Lambda Lists"
+
+    %Per X3J13 (05-Oct-93), prohibit destructuring of whole variable. -kmp
+    \auxbnf{wholevar}{\ttbrac{{\whole} \param{var}}}
+
+Proposal (DESTRUCTURING-LAMBDA-LIST-&WHOLE-DESTRUCTURING:VARIABLE):
+
+  In section "Lambda-list-directed Destructuring by Lambda Lists",
+  change the description of the &WHOLE lambda list to instead read
+
+    "whole: The next element is a variable name that is bound to the
+    entire form in a macro, or the entire subexpression at inner
+    levels."
+
+  Test Cases:
+
+    (defmacro foo (&whole (a b) c) `'(,a ,b ,c)) => Error
+
+    (defmacro bar ((&whole (a) b)) `'(,a ,b)) => Error
+
+  Rationale:
+
+    TODO
+
+Proposal (DESTRUCTURING-LAMBDA-LIST-&WHOLE-DESTRUCTURING:DESTRUCTURING):
+
+  In section "Macro Lambda Lists", change the BNF production for
+  wholevar to
+
+    wholevar ::= [&whole {var | ↓pattern}]
+
+  Further down in the same section, change
+
+    "&WHOLE is followed by a single variable that is bound to the
+     entire macro-call form;"
+
+  to
+
+    "&WHOLE is followed by a destructuring pattern that is matches the
+     entire macro-call form;"
+
+  And after that, still in the same section, change
+
+    "If &WHOLE and a following variable appear, they must appear first
+     in lambda-list"
+
+  to
+
+    "If &WHOLE and a following destructuring pattern appear, they must
+     appear first in lambda-list"
+
+  And finally for this section, change
+
+    "At inner levels, the &WHOLE variable is bound to the corresponding
+     part of the argument, as with rest, but unlike rest, other
+     arguments are also allowed."
+
+  to
+
+    "At inner levels, the &WHOLE destructuring pattern matches the
+     corresponding part of the argument, as with &REST, but unlike
+     &REST, other arguments are also allowed."
+
+  In Section "Destructuring Lambda Lists", change the BNF production
+  for wholevar to
+
+    wholevar ::= [&whole {var | ↓pattern}]
+
+  Test Cases:
+
+    (defmacro foo (&whole (a b) c) `'(,a ,b ,c))
+    (foo 1) => (foo 1 1)
+
+    (defmacro bar ((&whole (a) b)) `'(,a ,b))
+    (foo (1)) => (1 1)
+
+  Rationale:
+
+    TODO
+
+Current Practice:
+
+  SBCL 2.1.1.debian
+    (defmacro foo (&whole (a b) c) `'(,a ,b ,c)) => &WHOLE argument is not a symbol: (A B)
+    (defmacro bar ((&whole (a) b)) `'(,a ,b)) (bar (1)) => (1 1)
+
+  ECL 20.4.24
+    (defmacro foo (&whole (a b) c) `'(,a ,b ,c))
+    (foo 1) => (foo 1 1)
+
+    (defmacro bar ((&whole (a) b)) `'(,a ,b))
+    (bar (1)) => (1 1)
+
+Cost to Implementors:
+
+  TODO
+
+Cost to Users:
+
+  TODO
+
+Cost of non-adoption:
+
+  TODO
+
+Benefits:
+
+  TODO
+
+Aesthetics:
+
+  TODO
+
+Discussion:
+
+  Bike supports proposal DESTRUCTURING.
