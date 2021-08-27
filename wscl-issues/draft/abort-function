@@ -8,17 +8,17 @@ References:     ABORT
 Problem Description:
 
   In the draft ANSI Common Lisp specification, the description of
-  the ABORT function states that a control-error will be signaled
-  if an abort restart is not active. It does not state what the
-  outcome will be if an abort restart is available but when invoked
+  the ABORT function states that a CONTROL-ERROR will be signaled
+  if an ABORT restart is not active. It does not state what the
+  outcome will be if an ABORT restart is available but when invoked
   it does not dynamically transfer control or halt execution as
   expected but instead returns normally.
 
 Proposal (ABORT-FUNCTION:SIGNAL-ERROR-ON-RETURN):
 
   This proposal changes the description of ABORT so that signalling
-  a control-error is also specified for in the case of an invoked
-  abort restart not behaving as expected. The individual proposed
+  a CONTROL-ERROR is also specified in the case of an invoked
+  ABORT restart not behaving as expected. The individual proposed
   changes to the description of ABORT are:
 
   1. Change the "Exceptional Situations" section to the following:
@@ -39,7 +39,7 @@ Rationale:
 
   A caller to ABORT does not expect the function to return.
   Specifically, documentation for the ABORT restart states: "The
-  intent of the abort restart is to allow return to the innermost
+  intent of the ABORT restart is to allow return to the innermost
   command level." Returning to the "innermost command level" is
   normally accomplished by returning to the REPL or appropriate
   containing loop. It may imply killing the process in batch
