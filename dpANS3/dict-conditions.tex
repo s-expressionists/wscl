@@ -4049,11 +4049,13 @@ the presence of a \term{restart} having the same name.
 
 \label Exceptional Situations::
 
+\issue{ABORT-FUNCTION:SIGNAL-ERROR-ON-RETURN}
 If an appropriate \misc{abort} \term{restart}
  is not available for \thefunction{abort},
 or an appropriate \misc{muffle-warning} \term{restart} 
  is not available for \thefunction{muffle-warning},
 an error \oftype{control-error} is signaled.
+\endissue{ABORT-FUNCTION:SIGNAL-ERROR-ON-RETURN}
 
 \label See Also::
 
