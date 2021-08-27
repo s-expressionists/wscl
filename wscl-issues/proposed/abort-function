@@ -1,0 +1,99 @@
+Issue:          ABORT-FUNCTION
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         proposed
+Edit History:   27-Aug-21, Version 1 by Tarn W. Burton
+References:     ABORT
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the description of
+  the ABORT function states that a control-error will be signaled
+  if an abort restart is not active. It does not state what the
+  outcome will be if an abort restart is available but when invoked
+  it does not dynamically transfer control or halt execution as
+  expected but instead returns normally.
+
+Proposal (ABORT-FUNCTION:SIGNAL-ERROR-ON-RETURN):
+
+  This proposal changes the description of ABORT so that signalling
+  a control-error is also specified for in the case of an invoked
+  abort restart not behaving as expected. The individual proposed
+  changes to the description of ABORT are:
+
+  1. Change the "Exceptional Situations" section to the following:
+     "If an appropriate abort restart is not available for the
+     function abort, or an invoked abort restart does not transfer
+     control and returns, or an appropriate muffle-warning restart
+     is not available for the function muffle-warning, an error of
+     type control-error is signaled."
+
+Test Cases:
+
+  (defun one ()
+    (restart-bind ((abort (lambda ())))
+      (abort)))
+  (one) => [signals control-error]
+
+Rationale:
+
+  A caller to ABORT does not expect the function to return.
+  Specifically, documentation for the ABORT restart states: "The
+  intent of the abort restart is to allow return to the innermost
+  command level." Returning to the "innermost command level" is
+  normally accomplished by returning to the REPL or appropriate
+  containing loop. It may imply killing the process in batch
+  processing situations.
+
+Current Practice:
+
+  ABCL 1.8.1-dev-fasl43
+    (one) => [signals control-error]
+
+  ACL 10.1
+    (one) => nil
+
+  CCL 1.12-f98
+    (one) => [signals restart-failure which is not a defined condition]
+
+  CLASP cclasp-boehmprecise-0.4.2-4548-g80d9caef9-cst
+    (one) => nil
+
+  CLISP 2.49.93+
+    (one) => nil
+
+  CMU 2019-05-27 16:42:54 (21D Unicode)
+    (one) => [signals control-error]
+
+  ECL 21.2.1-e68e6827
+    (one) => [signals control-error]
+
+  LWPE 7.1.2
+    (one) => nil
+
+  SBCL 2.1.7
+    (one) => [signals control-error]
+
+Cost to Implementors:
+
+  TODO
+
+Cost to Users:
+
+  TODO
+
+Cost of non-adoption:
+
+  TODO
+
+Benefits:
+
+  TODO
+
+Aesthetics:
+
+  TODO
+
+Discussion:
+
+  TODO
