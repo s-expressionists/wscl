@@ -1,0 +1,69 @@
+Issue:          STRING-NOT-EQUAL-MISSING-DESCRIPTION
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         proposed
+Edit History:   28-Aug-21, Version 1 by Jan Moringen
+References:     STRING-EQUAL, STRING-NOT-EQUAL
+Related Issues:
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the description of
+  STRING=, STRING-EQUAL, STRING-NOT-EQUAL and related functions
+  mentions STRING-NOT-EQUAL in the list of names, and in the Syntax
+  section, but not in the Description section.
+
+Proposal (STRING-NOT-EQUAL-MISSING-DESCRIPTION:ADD-DESCRIPTION):
+
+  In the Description section, change the passage
+
+    string-equal
+      string-equal is just like string= except that differences in
+      case are ignored; two characters are considered to be the same
+      if char-equal is true of them.
+
+  to
+
+    string-equal, string-not-equal
+      string-equal and string-not-equal are just like string= and
+      string/=, respectively, except that differences in case are
+      ignored; two characters are considered to be the same if
+      char-equal is true of them.
+
+Test Cases:
+
+  None.
+
+Rationale:
+
+  We think it was a simple omission from the draft ANSI specification
+  to not mention STRING-NOT-EQUAL in the Description section.
+
+Current Practice:
+
+  None.
+
+Cost to Implementors:
+
+  None.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  No explicit description of the behavior of STRING-NOT-EQUAL in the
+  specification.
+
+Benefits:
+
+  Closes a hole in the specified behavior.
+
+Aesthetics:
+
+  Makes the Description section more regular.
+
+Discussion:
+
+  None.
