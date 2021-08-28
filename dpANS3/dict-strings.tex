@@ -820,13 +820,15 @@ positions; otherwise it is \term{false}.
 \funref{string/=} is \term{true} if the supplied substrings are 
 different; otherwise it is \term{false}.
 
+\issue{STRING-NOT-EQUAL-MISSING-DESCRIPTION:ADD-DESCRIPTION}
 \itemitem{\funref{string-equal}}
 
 %% 18.2.0 8
 \funref{string-equal} is just like \funref{string=} 
 except that differences in case are ignored; 
 two characters are considered to be the same if \funref{char-equal} is \term{true} of them.
-     
+\endissue{STRING-NOT-EQUAL-MISSING-DESCRIPTION:ADD-DESCRIPTION}
+
 \itemitem{\funref{string<}}
 
 \funref{string<} is \term{true} if substring1 is less than substring2;
