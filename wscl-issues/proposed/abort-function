@@ -56,8 +56,8 @@ Current Practice:
   CCL 1.12-f98
     (one) => [signals restart-failure which is not a defined condition]
 
-  CLASP cclasp-boehmprecise-0.4.2-4548-g80d9caef9-cst
-    (one) => nil
+  CLASP cclasp-boehmprecise-0.4.2-4610-g5e6b2fa12-cst
+    (one) => [signals control-error]
 
   CLISP 2.49.93+
     (one) => nil
