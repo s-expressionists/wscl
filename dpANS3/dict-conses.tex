@@ -746,7 +746,10 @@ but otherwise returns the same values as \funref{sublis}.
  
 \label Affected By:\None.
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\None.
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -921,7 +924,11 @@ might alter the \term{tree structure} of \param{tree}.
 
 \label Affected By:\None.
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\None.
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -1028,8 +1035,10 @@ or \term{cdr} of \param{tree-2}.
 
 \label Exceptional Situations::
 
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 The consequences are undefined 
 if both \param{tree-1} and \param{tree-2} are circular.
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -2946,7 +2955,9 @@ with this element is returned; otherwise \nil\ is returned.
 
 \label Exceptional Situations::
 
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 \Lazychecktype{list}{a \term{proper list}}
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -3294,7 +3305,9 @@ in \param{alist} in place of a pair, it is ignored.
 
 \label Exceptional Situations::
 
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 \Lazychecktype{alist}{an \term{association list}}
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -3560,7 +3573,11 @@ If \nil\ appears in \param{alist} in place of a pair, it is  ignored.
 
 \label Affected By:\None.
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\None.
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -3999,7 +4016,9 @@ but not \param{list-2}.
 
 \label Exceptional Situations::
 
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 \Lazychecktypes{\param{list-1} and \param{list-2}}{\term{proper lists}}
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -4077,7 +4096,9 @@ otherwise, nothing is added and the original \param{list} is returned.
 
 \label Exceptional Situations::
 
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 \Lazychecktype{list}{a \term{proper list}}
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -4315,7 +4336,9 @@ if appropriate.
 
 \label Exceptional Situations::
 
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 \Lazychecktypes{\param{list-1} and \param{list-2}}{\term{proper lists}}
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -4422,7 +4445,9 @@ might share storage with one of \param{list-1} or \param{list-2}.
 
 \label Exceptional Situations::
 
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 \Lazychecktypes{\param{list-1} and \param{list-2}}{\term{proper lists}}
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -4517,7 +4542,9 @@ function.
 
 \label Exceptional Situations::
 
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 \Lazychecktypes{\param{list-1} and \param{list-2}}{\term{proper lists}}
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -4637,7 +4664,9 @@ of the \term{list structure} of \param{list-1} or \param{list-2}.
 
 \label Exceptional Situations::
 
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 \Lazychecktypes{\param{list-1} and \param{list-2}}{\term{proper lists}}
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 

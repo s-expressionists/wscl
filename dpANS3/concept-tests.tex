@@ -60,8 +60,10 @@ returns a \term{generalized boolean} representing \term{false}.
 If neither a \kwd{test} nor a \kwd{test-not} \term{argument} is supplied, 
 it is as if a \kwd{test} argument of \f{\#'eql} was supplied.
 
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 The consequences are unspecified if both a \kwd{test} and a \kwd{test-not} \term{argument}
 are supplied in the same \term{call} to $F$.
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \beginsubsubsection{Examples of Satisfying a Two-Argument Test}
 
