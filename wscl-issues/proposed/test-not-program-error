@@ -10,6 +10,7 @@ References:     ADJOIN, ASSOC, COUNT, FIND, INTERSECTION, NINTERSECTION,
                 NSET-EXCLUSIVE-OR, SUBLIS, NSUBLIS, SUBSETP, SUBST,
                 NSUBST, SUBSTITUTE, NSUBSTITUTE, TREE-EQUAL, UNION,
                 NUNION
+Related Issues: TEST-NOT-IF-NOT
 
 Problem Description:
 
