@@ -1,0 +1,119 @@
+Issue:          GO-NON-EXISTENT-TAG
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         proposed
+Edit History:   16-Sep-21, Version 1 by Tarn W. Burton.
+References:     GO, PROGRAM-ERROR
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the description of
+  the special operator GO indicates no exceptional situations. The
+  description of GO includes the following statement:
+
+  "The consequences are undefined if there is no matching tag
+  lexically visible to the point of the go."
+
+  The description of PROGRAM-ERROR includes the following
+  statement:
+
+  "The errors that result from naming a go tag or a block tag that
+  is not lexically apparent are of type program-error."
+
+Proposal (GO-NON-EXISTENT-TAG:SIGNAL-ERROR-IN-SAFE-CODE):
+
+  This proposal changes the description of GO so the consequences
+  of naming a go tag that is not lexically apparent are defined.
+  The individual proposed changes to the description of GO are:
+
+  1. Remove the sentence "The consequences are undefined if there
+     is no matching tag lexically visible to the point of the go."
+
+  2. Update the section "Exceptional Situations" to contain the
+     following text: "The special operator GO will signal an error
+     of type PROGRAM-ERROR if there is no matching tag lexically
+     visible to the point of the go."
+
+Test Cases:
+
+  (defmacro one (go-name tag-name)
+    `(locally
+       (declare (optimize (safety 3)))
+       (tagbody
+         (go ,go-name)
+        ,tag-name)))
+
+  (one a a) => NIL
+  (one a b) => [signals PROGRAM-ERROR]
+
+Rationale:
+
+  The ANSI specification is inconsistent in regards to the expected
+  behavior of GO when applied to unmatched tags.
+
+Current Practice:
+
+  ABCL 1.8.1-dev-fasl43
+    (one a a) => NIL
+    (one a b) => [signals CONTROL-ERROR]
+
+  ACL 10.1
+    (one a a) => NIL
+    (one a b) => [signals CONTROL-ERROR]
+
+  CCL 1.12-f98
+    (one a a) => NIL
+    (one a b) => [signals PROGRAM-ERROR]
+
+  CLASP cclasp-boehmprecise-0.4.2-4619-g23bf6aa3d-cst
+    (one a a) => NIL
+    (one a b) => [signals PROGRAM-ERROR]
+
+  CLISP 2.49.93+
+    (one a a) => NIL
+    (one a b) => [signals SIMPLE-ERROR]
+
+  CMU 2019-05-27 16:42:54 (21D Unicode)
+    (one a a) => NIL
+    (one a b) => [signals PROGRAM-ERROR]
+
+  ECL 21.2.1-e68e6827
+    (one a a) => NIL
+    (one a b) => [signals SIMPLE-ERROR]
+
+  LWPE 7.1.2
+    (one a a) => NIL
+    (one a b) => [signals PROGRAM-ERROR]
+
+  SBCL 2.1.7
+    (one a a) => NIL
+    (one a b) => [signals PROGRAM-ERROR]
+
+Cost to Implementors:
+
+  Very small.  Most implementations already signal an error and
+  would only need to change the implementation of GO to signal
+  the correct error.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Application programmers may need to add explicit checks to be
+  certain that their code is conforming.
+
+Benefits:
+
+  Application programmers may rely on an error being
+  signaled in safe code, and thus avoid having to
+  add explicit checks in portable code.
+
+Aesthetics:
+
+  No influence.
+
+Discussion:
+
+  TODO
