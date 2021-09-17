@@ -3,7 +3,7 @@
   This directory contains descriptions of changes that were made to
   TeX sources of the final draft of the Common Lisp specification as
   well as the X3J13 cleanup issues to produce the contents of the
-  file:../dpANS3 and file:../issues directories respectively.
+  file:../dpANS3 and file:../x3j13-issues directories respectively.
 
 * Change Description Format
 
@@ -73,4 +73,4 @@
      ~changes/NAME.sexp~
 
   2. For the commit $c$ produce the diff restricted to the directories
-     ~dpANS3~ and ~issues~.
+     ~dpANS3~ and ~x3j13-issues~.
