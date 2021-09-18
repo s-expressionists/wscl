@@ -3,6 +3,7 @@ Forum:          Cleanup
 Category:       CLARIFICATION
 Status:         proposed
 Edit History:   18-Jul-21, Version 1 by Robert Strandh.
+                18-Sep-21, Version 2 by Tarn W. Burton (update current practice)
 References:     REMHASH
 
 Problem Description:
@@ -27,7 +28,7 @@ Test Cases:
     (declare (optimize (safety 3)))
     (remhash 345 object))
 
-  (one 234) => ERROR: The value 234 is not of type HASH-TABLE.
+  (one 234) => [signals TYPE-ERROR with expected type HASH-TABLE]
 
 Rationale:
 
@@ -36,10 +37,33 @@ Rationale:
 
 Current Practice:
 
-  SBCL 2.1.3
-    (one 234) => [signals a type error]
+  ABCL 1.8.1-dev-fasl43
+    (one 234) => [signals TYPE-ERROR with expected type HASH-TABLE]
 
-  TODO: check other implementations.
+  ACL 10.1
+    (one 234) => [signals TYPE-ERROR with expected type HASH-TABLE]
+
+  CCL 1.12-f98
+    (one 234) => [signals TYPE-ERROR with expected type HASH-TABLE]
+
+  CLASP cclasp-boehmprecise-0.4.2-4619-g23bf6aa3d-cst
+    (one 234) => [signals TYPE-ERROR with expected type
+                   CORE:HASH-TABLE-BASE]
+
+  CLISP 2.49.93+
+    (one 234) => [signals TYPE-ERROR with expected type HASH-TABLE]
+
+  CMU 2019-05-27 16:42:54 (21D Unicode)
+    (one 234) => [signals TYPE-ERROR with expected type HASH-TABLE]
+
+  ECL 21.2.1-e68e6827
+    (one 234) => [signals TYPE-ERROR with expected type HASH-TABLE]
+
+  LWPE 7.1.2
+    (one 234) => [signals TYPE-ERROR with expected type HASH-TABLE]
+
+  SBCL 2.1.7
+    (one 234) => [signals TYPE-ERROR with expected type HASH-TABLE]
 
 Cost to Implementors:
 
