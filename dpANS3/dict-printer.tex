@@ -487,8 +487,10 @@ the block.
 
 \label Exceptional Situations::
 
+\issue{PPRINT-INVALID-KIND-OR-RELATIVE-TO:SIGNAL-ERROR-IN-SAFE-CODE}
 An error is signaled if \param{relative-to} is any \term{object} other
 than \kwd{block} or \kwd{current}.
+\endissue{PPRINT-INVALID-KIND-OR-RELATIVE-TO:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -799,8 +801,10 @@ The placement of newlines and conditional newlines.
 
 \label Exceptional Situations::
 
+\issue{PPRINT-INVALID-KIND-OR-RELATIVE-TO}
 An error \oftype{type-error} is signaled if \param{kind} 
 is not one of \kwd{linear}, \kwd{fill}, \kwd{miser}, or \kwd{mandatory}.
+\endissue{PPRINT-INVALID-KIND-OR-RELATIVE-TO}
 
 \label See Also::
 
@@ -971,8 +975,10 @@ The \param{kind} argument specifies the style of tabbing.  It must be one of
 
 \label Exceptional Situations::
 
+\issue{PPRINT-INVALID-KIND-OR-RELATIVE-TO:SIGNAL-ERROR-IN-SAFE-CODE}
 An error is signaled if \param{kind} is not one of \kwd{line},
 \kwd{section}, \kwd{line-relative}, or \kwd{section-relative}.
+\endissue{PPRINT-INVALID-KIND-OR-RELATIVE-TO:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 

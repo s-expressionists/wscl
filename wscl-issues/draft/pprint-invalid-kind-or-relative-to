@@ -1,0 +1,172 @@
+Issue:          PPRINT-INVALID-KIND-OR-RELATIVE-TO
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         draft
+Edit History:   03-Oct-21, Version 1 by Tarn W. Burton
+References:     PPRINT-INDENT, PPRINT-NEWLINE, PPRINT-TAB
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the Exceptional
+  Situations section in the description of the function
+  PPRINT-INDENT, the function PPRINT-NEWLINE, and the function
+  PPRINT-TAB are not consistent in regards to the errors signaled
+  for invalid KIND or RELATIVE-TO arguments. The text for each
+  function is listed below.
+
+  1. PPRINT-INDENT: "An error is signaled if relative-to is any
+     object other than :block or :current."
+
+  2. PPRINT-NEWLINE: "An error of type type-error is signaled if
+     kind is not one of :linear, :fill, :miser, or :mandatory."
+
+  3. PPRINT-TAB: "An error is signaled if kind is not one of
+     :line, :section, :line-relative, or :section-relative."
+
+Proposal (PPRINT-INVALID-KIND-OR-RELATIVE-TO:SIGNAL-ERROR-IN-SAFE-CODE):
+
+  This proposal changes the description of the PPRINT-INDENT and
+  the PPRINT-TAB functions to specify that a TYPE-ERROR will be
+  signaled in these situations. The individual proposed changes
+  to the descriptions are:
+
+  1. Change the text of section "Exceptional Situations" of the
+     PPRINT-INDECT function to read: "An error of type type-error
+     is signaled if relative-to is any object other than :block
+     or :current."
+
+  2. Change the text of section "Exceptional Situations" of the
+     PPRINT-TAB function to read: "An error of type type-error
+     is signaled if kind is not one of :line, :section,
+     :line-relative, or :section-relative."
+
+Test Cases:
+
+  (defun one (object)
+    (declare (optimize (safety 3)))
+    (pprint-indent object 0))
+
+  (defun two (object)
+    (declare (optimize (safety 3)))
+    (pprint-newline object))
+
+  (defun three (object)
+    (declare (optimize (safety 3)))
+    (pprint-tab object 10 10))
+
+  (one :bar) => [signals TYPE-ERROR with expected type
+                  (MEMBER :BLOCK :CURRENT)]
+  (two :bar) => [signals TYPE-ERROR with expected type
+                  (MEMBER :LINEAR :MISER :FILL :MANDATORY)]
+  (three :bar) => [signals TYPE-ERROR with expected type
+                    (MEMBER :LINE :SECTION :LINE-RELATIVE
+                            :SECTION-RELATIVE)]
+
+Rationale:
+
+  We think it was a small error in the draft ANSI specification
+  to not specify that the functions PPRINT-INDENT and PPRINT-TAB
+  signaled a TYPE-ERROR for invalid KIND or RELATIVE-TO
+  arguments.
+
+Current Practice:
+
+  ABCL 1.8.1-dev-fasl43
+    (one :bar) => [signals SIMPLE-ERROR]
+    (two :bar) => [signals TYPE-ERROR with expected type
+                    (MEMBER :LINEAR :MISER :FILL :MANDATORY)]
+    (three :bar) => [signals SIMPLE-ERROR]
+
+  ACL 10.1
+    (one :bar) => [signals TYPE-ERROR with expected type
+                    (MEMBER :BLOCK :CURRENT)]
+    (two :bar) => [signals TYPE-ERROR with expected type
+                    (MEMBER :LINEAR :MISER :FILL :MANDATORY)]
+    (three :bar) => [signals TYPE-ERROR with expected type
+                      (MEMBER :LINE :SECTION :LINE-RELATIVE
+                              :SECTION-RELATIVE)]
+
+  CCL 1.12-f98
+    (one :bar) => [signals SIMPLE-ERROR]
+    (two :bar) => [signals TYPE-ERROR with expected type
+                    (MEMBER :LINEAR :MISER :FILL :MANDATORY)]
+    (three :bar) => [signals SIMPLE-ERROR]
+
+  CLASP cclasp-boehmprecise-0.4.2-4642-g23594dc12-cst
+    (one :bar) => [signals TYPE-ERROR with expected type
+                    (MEMBER :BLOCK :CURRENT)]
+    (two :bar) => [signals TYPE-ERROR with expected type
+                    (MEMBER :LINEAR :MISER :FILL :MANDATORY)]
+    (three :bar) => [signals TYPE-ERROR with expected type
+                      (MEMBER :LINE :SECTION :LINE-RELATIVE
+                              :SECTION-RELATIVE)]
+
+  CLISP 2.49.93+
+    (one :bar) => [signals TYPE-ERROR with expected type
+                    (MEMBER :BLOCK :CURRENT)]
+    (two :bar) => [signals TYPE-ERROR with expected type
+                    (MEMBER :LINEAR :FILL :MISER :MANDATORY)]
+    (three :bar) => [signals TYPE-ERROR with expected type
+                      (MEMBER :LINE :LINE-RELATIVE :SECTION
+                              :SECTION-RELATIVE)]
+
+  CMU 2019-05-27 16:42:54 (21D Unicode)
+    (one :bar) => [signals TYPE-ERROR with expected type
+                    (MEMBER :BLOCK :CURRENT)]
+    (two :bar) => [signals TYPE-ERROR with expected type
+                    (MEMBER :LINEAR :MISER :FILL :MANDATORY)]
+    (three :bar) => [signals TYPE-ERROR with expected type
+                      (MEMBER :LINE :SECTION :LINE-RELATIVE
+                              :SECTION-RELATIVE)]
+
+  ECL 21.2.1-1b5b8b40
+    (one :bar) => [signals TYPE-ERROR with expected type
+                    (MEMBER :BLOCK :CURRENT)]
+    (two :bar) => [signals TYPE-ERROR with expected type
+                    (MEMBER :LINEAR :MISER :FILL :MANDATORY)]
+    (three :bar) => [signals TYPE-ERROR with expected type
+                      (MEMBER :LINE :SECTION :LINE-RELATIVE
+                              :SECTION-RELATIVE)]
+
+  LWPE 7.1.2
+    (one :bar) => [signals TYPE-ERROR with expected type
+                    (MEMBER :BLOCK :CURRENT)]
+    (two :bar) => [signals TYPE-ERROR with expected type
+                    (MEMBER :LINEAR :MISER :FILL :MANDATORY)]
+    (three :bar) => [signals TYPE-ERROR with expected type
+                      (MEMBER :LINE :SECTION :LINE-RELATIVE
+                              :SECTION-RELATIVE)]
+
+  SBCL 2.1.7
+    (one :bar) => [signals TYPE-ERROR with expected type
+                    (MEMBER :BLOCK :CURRENT)]
+    (two :bar) => [signals TYPE-ERROR with expected type
+                    (MEMBER :LINEAR :MISER :FILL :MANDATORY)]
+    (three :bar) => [signals TYPE-ERROR with expected type
+                      (MEMBER :LINE :SECTION :LINE-RELATIVE
+                              :SECTION-RELATIVE)]
+
+Cost to Implementors:
+
+  Very small.  Only ABCL and CCL are currently non-conformant.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Application programmers may need to add explicit checks to be
+  certain that their code is conforming.
+
+Benefits:
+
+  Consistent behavior across all implementations.
+
+Aesthetics:
+
+  No influence.
+
+Discussion:
+
+  TODO
