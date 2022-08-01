@@ -1,0 +1,89 @@
+Issue:          FLOOR-ETC-REMAINDER-TYPE
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         proposed
+Edit History:   22-August-1, Version 1 by Bike
+References:     FLOOR, CEILING, TRUNCATE, ROUND,
+                FFLOOR, FCEILING, FTRUNCATE, FROUND
+Related Issues: FFLOOR-ETC-QUOTIENT-TYPE
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the description of
+  the type of the remainder returned by the FLOOR family of functions
+  is problematic. It states the following in their description:
+
+    "All of these operations perform type conversion operations on
+     numbers. The remainder is an integer if both x and y are
+     integers, is a rational if both x and y are rationals, and is a
+     float if either x or y is a float."
+
+  There are several issues here. First, "type conversion operations"
+  does not seem to be a term of art defined anywhere. Second, the
+  variables "x", "y", and "numbers" only appear in this passage; the
+  arguments to the functions are actually called "number" and
+  "divisor", and there's only one "number" so the reference to
+  "numbers" is confusing. Third, the remainder's type is only
+  specified in the last case as far as being a float; so, a literal
+  reading of this passage would allow an operation carried out on
+  double floats to return a single float remainder, which is not the
+  usual case for CL arithmetic and could be contrary to 12.1.4.2.
+  
+  This problem may have arisen because the usual contagion rules do
+  not apply to the quotient, which is always an integer for the first
+  group and always a float for the second.
+
+Proposal (FLOOR-ETC-REMAINDER-TYPE:CONTAGION):
+
+  Specify that the remainder is subject to the usual contagion rules.
+  Specifically, strike the text quoted above, and replace it with:
+
+    "The type of the remainder is controlled by the usual contagion
+     rules based on the types of number and divisor.
+     See Section 12.1.4.1 (Rule of Float and Rational Contagion) and
+     Section 12.1.4.4 (Rule of Float Precision Contagion).
+
+     For FLOOR, CEILING, TRUNCATE, and ROUND, the quotient is always
+     an integer."
+
+Rationale:
+
+  This has minimal friction with the rest of the arithmetic
+  operations, and removes some need for redundant descriptions
+  of how contagion rules work. The second paragraph about the
+  quotient makes clear that the contagion rules do not apply there,
+  and acts as a transition into the following paragraph concerning
+  the type of the quotient in FFLOOR etc.
+  (See issue FFLOOR-ETC-QUOTIENT-TYPE for more on that.)
+
+Test Cases:
+
+  (nth-value 1 (truncate 3 2)) ; => 1
+  (nth-value 1 (truncate 3/2 1)) ; => 1/2
+  ;; These test cases use TYPEP in order to account for
+  ;; implementations in which single-float = double-float, etc.
+  (typep (nth-value 1 (truncate 3d0 2)) 'double-float) ; => true
+  (typep (nth-value 1 (truncate 3 2s0)) 'short-float) ; => true
+  (typep (nth-value 1 (truncate 3d0 2s0)) 'double-float) ; => true
+
+Current Practice:
+
+  SBCL 2.0.0 and Clasp 0.4.2-5623-g89a262d0f match the test case
+  results.
+
+  The ANSI test suite for Common Lisp, although not administered by
+  ANSI, relies on the proposed behavior. For example, test FLOOR.10
+  checks that the remainder of (floor x x) is eql to (float 0 x) if
+  x is a float.
+
+Cost to Implementors:
+
+  None, if they already have this behavior. Slight if they don't.
+
+Cost to Users:
+
+  None, as implementations already behave this way.
+
+Benefits:
+
+  Clarity.

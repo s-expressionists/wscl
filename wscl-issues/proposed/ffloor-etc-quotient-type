@@ -1,0 +1,81 @@
+Issue:          FFLOOR-ETC-QUOTIENT-TYPE
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         proposed
+Edit History:   22-August-1, Version 1 by Bike
+References:     FFLOOR, FCEILING, FTRUNCATE, FROUND
+Related Issues: FLOOR-ETC-REMAINDER-TYPE
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the description of
+  the type of the quotient returned by the FFLOOR family of functions
+  is self-contradictory. In the Arguments and Values section, it says
+
+    "quotient---[...] for ffloor, fceiling, ftruncate, and fround:
+     a float."
+
+  But in the Description, it says
+
+    "ffloor, fceiling, ftruncate, and fround handle arguments of
+     different types in the following way: if number is a float, and
+     divisor is not a float of longer format, then the first result
+     is a float of the same type as number. Otherwise, the first
+     result is of the type determined by contagion rules; see
+     Section 12.1.1.2 (Contagion in Numeric Operations)."
+
+  This contradicts the Arguments and Values section because the usual
+  contagion rules would make the quotient a rational if both parameters
+  were rational, contrary to the idea that the quotient is always
+  a float. This also makes it unclear what format of float these
+  functions should return if given rationals.
+
+Proposal (FFLOOR-ETC-QUOTIENT-TYPE:FLOAT-CONTAGION):
+
+  Specify in the description that, if either argument is a float, the
+  quotient is a float of the largest format of an argument as per
+  12.1.4.4. Additionally specify that if both arguments are rationals,
+  the result is a single float, which is in analogy to the rule for
+  irrational functions of rationals in 12.1.3.3. For example:
+
+    "For FFLOOR, CEILING, TRUNCATE, and ROUND, the type of the
+     quotient is determined in the following way: If either argument
+     is a float, the quotient is a float of the largest format among
+     the floating point arguments to the function, as per Section
+     12.1.4.1 (Rule of Float and Rational Contagion) and Section
+     12.1.4.4 (Rule of Float Precision Contagion). Otherwise, if both
+     arguments are rational, the quotient is a single float."
+
+Rationale:
+
+  This has minimal friction with the rest of the arithmetic operations,
+  and goes with what seems to be the point of the FFLOOR family, which
+  is to always return a float quotient just as the FLOOR family always
+  returns an integer quotient.
+
+Test Cases:
+
+  (values (ftruncate 3 2)) ; => 1f0
+  (values (ftruncate 3f0 2)) ; => 1f0
+  (values (ftruncate 3 2d0)) ; => 1d0
+  (values (ftruncate 3d0 2f0)) ; => 1d0
+  (values (ftruncate 3f0 2d0)) ; => 1d0
+
+Current Practice:
+
+  SBCL 2.0.0 and Clasp 0.4.2-5623-g89a262d0f match the test case
+  results, except that Clasp returns 1f0 for the last case in the
+  interpreter. This is contrary to the existing description and so
+  a bug even without the proposal.
+
+Cost to Implementors:
+
+  None, if they already have this behavior. Slight if they don't.
+
+Cost to Users:
+
+  None.
+
+Benefits:
+
+  Clarity.
