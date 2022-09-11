@@ -1,0 +1,63 @@
+Issue:          INCF-DECF-VALUE-NOT-SPECIFIED
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         draft
+Edit History:   11-Sep-22, Version 1 by Robert Strandh.
+References:     INCF, DECF
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the description of the
+  operators INCF and DECF does not explicitly mention what value is
+  returned from the form.  The only hint is the name of the return
+  value, i.e., NEW-VALUE.
+
+Proposal (INCF-DECF-VALUE-NOT-SPECIFIED:SPECIFY-VALUE-AFTER-UPDATE):
+
+  This proposal changes the description of the operators INCF and DECF
+  so that the following phrase is added to the section "Description",
+  after the second sentence in that section:
+
+  "This result is then returned."
+
+Test Cases:
+
+  (- *read-base* (incf *read-base*)) => -1
+  (- *read-base* (decf *read-base*)) => 1
+
+Rationale:
+
+  We think it was a simple omission from the draft ANSI specification
+  to leave the return value unspecified.
+
+Current Practice:
+
+  SBCL SBCL 2.1.3:
+
+     (- *read-base* (incf *read-base*)) => -1
+     (- *read-base* (decf *read-base*)) => 1
+
+Cost to Implementors:
+
+  None.  We are convinced that all implementations return the correct
+  value.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  New implementations could fail to return the new value.
+
+Benefits:
+
+  Application programmers can rely on the value being returned.
+
+Aesthetics:
+
+  No influence.
+
+Discussion:
+
+  TODO
