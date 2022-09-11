@@ -2753,8 +2753,10 @@ and \funref{ldiff} could be defined by:
 %% Described using more descriptive terminology, 
 %% in a way that doesn't get confused about whether n is 0-based or 1-based. -kmp 29-Aug-93
 %Returns the \param{n}th successive \term{cdr} of \param{list}.
+\issue{NTHCDR-LIST-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 Returns the \term{tail} of \param{list} that would be obtained by calling \funref{cdr}
 \param{n} times in succession.
+\endissue{NTHCDR-LIST-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label Examples::
 
