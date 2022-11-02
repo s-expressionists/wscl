@@ -5,6 +5,7 @@ Status:         proposed
 Edit History:   13-Jul-21, Version 1 by Robert Strandh
                 17-Jul-21, Version 2 by Robert Strandh
                 11-Aug-21, Version 3 by Tarn W. Burton (update current practice)
+                02-Nov-22, Version 4 by Robert Strandh
 References:     AREF
 
 Problem Description:
@@ -48,41 +49,43 @@ Rationale:
 
 Current Practice:
 
-  ABCL 1.8.1-dev-fasl43
-    (one 234) => [signals type-error]
-    (two 234) => [signals type-error]
+  ABCL ???
+    (one (one (make-array 1 :initial-element nil))) => ?
+    (two (one (make-array 1 :initial-element nil))) => ?
 
-  ACL 10.1
-    (one 234) => [signals type-error]
-    (two 234) => [signals type-error]
+  ACL ???
+    (one (one (make-array 1 :initial-element nil))) => ?
+    (two (one (make-array 1 :initial-element nil))) => ?
 
-  CCL 1.12-f98
-    (one 234) => [signals type-error]
-    (two 234) => [signals type-error]
+  CCL ???
+    (one (one (make-array 1 :initial-element nil))) => ?
+    (two (one (make-array 1 :initial-element nil))) => ?
 
-  CLASP cclasp-boehmprecise-0.4.2-4548-g80d9caef9-cst
-    (one 234) => [signals type-error]
-    (two 234) => [signals type-error]
+  CLASP ???
+    (one (one (make-array 1 :initial-element nil))) => ?
+    (two (one (make-array 1 :initial-element nil))) => ?
 
-  CLISP 2.49.93+
-    (one 234) => [signals simple-type-error]
-    (two 234) => [signals simple-type-error]
+  CLISP ???
+    (one (one (make-array 1 :initial-element nil))) => ?
+    (two (one (make-array 1 :initial-element nil))) => ?
 
-  CMU 2019-05-27 16:42:54 (21D Unicode)
-    (one 234) => [signals type-error]
-    (two 234) => [signals type-error]
+  CMU ???
+    (one (one (make-array 1 :initial-element nil))) => ?
+    (two (one (make-array 1 :initial-element nil))) => ?
 
-  ECL 21.2.1-e68e6827
-    (one 234) => [signals simple-type-error]
-    (two 234) => [signals simple-type-error]
+  ECL ???
+    (one (one (make-array 1 :initial-element nil))) => ?
+    (two (one (make-array 1 :initial-element nil))) => ?
 
-  LWPE 7.1.2
-    (one 234) => [signals type-error]
-    (two 234) => [signals type-error]
+  LWPE ???
+    (one (one (make-array 1 :initial-element nil))) => ?
+    (two (one (make-array 1 :initial-element nil))) => ?
 
-  SBCL 2.1.7
-    (one 234) => [signals type-error]
-    (two 234) => [signals type-error]
+  SBCL 2.1.3
+    (one (one (make-array 1 :initial-element nil)))
+      => [signals invalid-array-index-error, a subclass of type-error]
+    (two 
+      => [signals invalid-array-index-error, a subclass of type-error]
 
 Cost to Implementors:
 
