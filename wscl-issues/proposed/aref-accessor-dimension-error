@@ -50,41 +50,41 @@ Rationale:
 Current Practice:
 
   ABCL ???
-    (one (one (make-array 1 :initial-element nil))) => ?
-    (two (one (make-array 1 :initial-element nil))) => ?
+    (one (make-array 1 :initial-element nil)) => ?
+    (two (make-array 1 :initial-element nil)) => ?
 
   ACL ???
-    (one (one (make-array 1 :initial-element nil))) => ?
-    (two (one (make-array 1 :initial-element nil))) => ?
+    (one (make-array 1 :initial-element nil)) => ?
+    (two (make-array 1 :initial-element nil)) => ?
 
   CCL ???
-    (one (one (make-array 1 :initial-element nil))) => ?
-    (two (one (make-array 1 :initial-element nil))) => ?
+    (one (make-array 1 :initial-element nil)) => ?
+    (two (make-array 1 :initial-element nil)) => ?
 
   CLASP ???
-    (one (one (make-array 1 :initial-element nil))) => ?
-    (two (one (make-array 1 :initial-element nil))) => ?
+    (one (make-array 1 :initial-element nil)) => ?
+    (two (make-array 1 :initial-element nil)) => ?
 
   CLISP ???
-    (one (one (make-array 1 :initial-element nil))) => ?
-    (two (one (make-array 1 :initial-element nil))) => ?
+    (one (make-array 1 :initial-element nil)) => ?
+    (two (make-array 1 :initial-element nil)) => ?
 
   CMU ???
-    (one (one (make-array 1 :initial-element nil))) => ?
-    (two (one (make-array 1 :initial-element nil))) => ?
+    (one (make-array 1 :initial-element nil)) => ?
+    (two (make-array 1 :initial-element nil)) => ?
 
   ECL ???
-    (one (one (make-array 1 :initial-element nil))) => ?
-    (two (one (make-array 1 :initial-element nil))) => ?
+    (one (make-array 1 :initial-element nil)) => ?
+    (two (make-array 1 :initial-element nil)) => ?
 
   LWPE ???
-    (one (one (make-array 1 :initial-element nil))) => ?
-    (two (one (make-array 1 :initial-element nil))) => ?
+    (one (make-array 1 :initial-element nil)) => ?
+    (two (make-array 1 :initial-element nil)) => ?
 
   SBCL 2.1.3
-    (one (one (make-array 1 :initial-element nil)))
+    (one (make-array 1 :initial-element nil))
       => [signals invalid-array-index-error, a subclass of type-error]
-    (two 
+    (two (make-array 1 :initial-element nil)
       => [signals invalid-array-index-error, a subclass of type-error]
 
 Cost to Implementors:
