@@ -50,36 +50,52 @@ Rationale:
 Current Practice:
 
   ABCL ???
-    (one (make-array 1 :initial-element nil)) => ?
-    (two (make-array 1 :initial-element nil)) => ?
+    (one (make-array 1 :initial-element nil))
+      => [signals a type-error]
+    (two (make-array 1 :initial-element nil))
+      => [signals a type-error]
 
   ACL ???
-    (one (make-array 1 :initial-element nil)) => ?
-    (two (make-array 1 :initial-element nil)) => ?
+    (one (make-array 1 :initial-element nil))
+      => [signals a type-error]
+    (two (make-array 1 :initial-element nil))
+      => [signals a type-error]
 
   CCL ???
-    (one (make-array 1 :initial-element nil)) => ?
-    (two (make-array 1 :initial-element nil)) => ?
+    (one (make-array 1 :initial-element nil))
+      => [does not signal a type-error]
+    (two (make-array 1 :initial-element nil))
+      => [does not signal a type-error]
 
   CLASP ???
-    (one (make-array 1 :initial-element nil)) => ?
-    (two (make-array 1 :initial-element nil)) => ?
+    (one (make-array 1 :initial-element nil))
+      => [signals a type-error]
+    (two (make-array 1 :initial-element nil))
+      => [signals a type-error]
 
   CLISP ???
-    (one (make-array 1 :initial-element nil)) => ?
-    (two (make-array 1 :initial-element nil)) => ?
+    (one (make-array 1 :initial-element nil))
+      => [signals a type-error]
+    (two (make-array 1 :initial-element nil))
+      => [signals a type-error]
 
   CMU ???
-    (one (make-array 1 :initial-element nil)) => ?
-    (two (make-array 1 :initial-element nil)) => ?
+    (one (make-array 1 :initial-element nil))
+      => [does not signal a type-error]
+    (two (make-array 1 :initial-element nil))
+      => [does not signal a type-error]
 
   ECL ???
-    (one (make-array 1 :initial-element nil)) => ?
-    (two (make-array 1 :initial-element nil)) => ?
+    (one (make-array 1 :initial-element nil))
+      => [signals a type-error]
+    (two (make-array 1 :initial-element nil))
+      => [signals a type-error]
 
   LWPE ???
-    (one (make-array 1 :initial-element nil)) => ?
-    (two (make-array 1 :initial-element nil)) => ?
+    (one (make-array 1 :initial-element nil))
+      => [signals a condition:array-error but not a type-error]
+    (two (make-array 1 :initial-element nil))
+      => [signals a condition:array-error but not a type-error]
 
   SBCL 2.1.3
     (one (make-array 1 :initial-element nil))
