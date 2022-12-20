@@ -3,7 +3,8 @@ Forum:          Correction
 Category:       CORRECTION
 Status:         proposed
 Edit History:   20-Dec-22, Version 1 by Robert Strandh.
-Edit History:   20-Dec-22, Version 2 by Robert Strandh.
+                20-Dec-22, Version 2 by Robert Strandh.
+                20-Dec-22, Version 3 by Robert Strandh.
 References:     PACKAGE-USED-BY-LIST
 
 Problem Description:
@@ -50,6 +51,18 @@ Current Practice:
     (one "CL") => [returns a list of packages]
 
   ABCL 1.7.0
+    (one "CL") => [returns a list of packages]
+
+  CLISP 2.49.93+
+    (one "CL") => [returns a list of packages]
+
+  Allegro (ACL) 10.1
+    (one "CL") => [returns a list of packages]
+
+  LispWorks 7.1.2 PE
+    (one "CL") => [returns a list of packages]
+
+  Clasp 0.4.2
     (one "CL") => [returns a list of packages]
 
 Cost to Implementors:
