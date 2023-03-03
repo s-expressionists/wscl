@@ -43,6 +43,16 @@ jobs:
             --removable-annotations true                         \
             --with-sidebar          true
 
+      - name: add-index-html
+        run: |
+          echo -e '<html lang="en">\n' > /tmp/output/index.html
+          echo -e '<head>\n' >> /tmp/output/index.html
+          echo -e '<meta charset="utf-8">\n' >> /tmp/output/index.html
+          echo -e '<meta http-equiv="refresh" content="0;url=chap-0.xhtml"/>\n' >> /tmp/output/index.html
+          echo -e '<link rel="canonical" href="https://s-expressionists.github.io/wscl/chap-0.xhtml"/>\n' >> /tmp/output/index.html
+          echo -e '</head>\n' >> /tmp/output/index.html
+          echo -e '</html>\n' >> /tmp/output/index.html
+
       - name: deploy-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
