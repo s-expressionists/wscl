@@ -4,7 +4,7 @@
 
 <br/><div class="component" id="macro-defstruct"><div class="header"><span class="left"><span class="name" id="macro-defstruct">defstruct</span></span><span class="right"><span class="ftype">Macro</span></span></div><br/><dl><dt class="label">Syntax</dt><dd><span class="function-definition"><span class="name">defstruct</span>&nbsp;<span class="lambda-list">name-and-options <span class="explicit-roman">[</span>documentation<span class="explicit-roman">]</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mo>{</mo></math><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">slot-description</span><math xmlns="http://www.w3.org/1998/Math/MathML"><mo>}</mo></math><span class="explicit-roman">*</span></span>&nbsp;→&nbsp;<span class="return-values">structure-name</span></span><br/><br/><tr><td>name-and-options</td><td>::=</td><td>structure-name |
 			  <span class="explicit-roman">(</span>structure-name <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>[</mi><mi>[</mi></math> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">options</span><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>]</mi><mi>]</mi></math><span class="explicit-roman">)</span></td></tr>
-<tr><td>options</td><td>::=</td><td><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">conc-name-option</span>          |<br/>
+<div class="issue-annotation"><span class="issue-reference error">issue:Issue DEFSTRUCT-PRINT-FUNCTION-AGAIN:X3J13-MAR-93</span><tr><td>options</td><td>::=</td><td><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">conc-name-option</span>          |<br/>
                  <math xmlns="http://www.w3.org/1998/Math/MathML"><mo>{</mo></math><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">constructor-option</span><math xmlns="http://www.w3.org/1998/Math/MathML"><mo>}</mo></math><span class="explicit-roman">*</span>    |<br/>
                  <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">copier-option</span>             |<br/>
                  <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">include-option</span>            |<br/>
@@ -12,7 +12,7 @@
                  <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">named-option</span>	          |<br/>
                  <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">predicate-option</span>          |<br/>
                  <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">printer-option</span>            |<br/>
-                 <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">type-option</span></td></tr><tr><td>conc-name-option</td><td>::=</td><td><span class="keyword">:conc-name</span>         | 
+                 <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">type-option</span></td></tr></div><tr><td>conc-name-option</td><td>::=</td><td><span class="keyword">:conc-name</span>         | 
 		   	  <span class="explicit-roman">(</span><span class="keyword">:conc-name</span><span class="explicit-roman">)</span> |
 		   	  <span class="explicit-roman">(</span><span class="keyword">:conc-name</span> <span class="parameter">conc-name</span><span class="explicit-roman">)</span></td></tr>
 <tr><td>constructor-option</td><td>::=</td><td><span class="keyword">:constructor</span>         |<br/>
@@ -29,9 +29,9 @@
 			  <span class="explicit-roman">(</span><span class="keyword">:predicate</span> <span class="parameter">predicate-name</span><span class="explicit-roman">)</span></td></tr>
 <tr><td>include-option</td><td>::=</td><td><span class="explicit-roman">(</span><span class="keyword">:include</span> <span class="parameter">included-structure-name</span>
 					     <math xmlns="http://www.w3.org/1998/Math/MathML"><mo>{</mo></math><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">slot-description</span><math xmlns="http://www.w3.org/1998/Math/MathML"><mo>}</mo></math><span class="explicit-roman">*</span><span class="explicit-roman">)</span></td></tr>
-<tr><td>printer-option</td><td>::=</td><td><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">print-object-option</span> | <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">print-function-option</span></td></tr>
+<div class="issue-annotation"><span class="issue-reference error">issue:Issue DEFSTRUCT-PRINT-FUNCTION-AGAIN:X3J13-MAR-93</span><tr><td>printer-option</td><td>::=</td><td><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">print-object-option</span> | <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">print-function-option</span></td></tr>
 <tr><td>print-object-option</td><td>::=</td><td><span class="explicit-roman">(</span><span class="keyword">:print-object</span> <span class="parameter">printer-name</span><span class="explicit-roman">)</span> |
-			     <span class="explicit-roman">(</span><span class="keyword">:print-object</span><span class="explicit-roman">)</span></td></tr><tr><td>print-function-option</td><td>::=</td><td><span class="explicit-roman">(</span><span class="keyword">:print-function</span> <span class="parameter">printer-name</span><span class="explicit-roman">)</span> |
+			     <span class="explicit-roman">(</span><span class="keyword">:print-object</span><span class="explicit-roman">)</span></td></tr></div><tr><td>print-function-option</td><td>::=</td><td><span class="explicit-roman">(</span><span class="keyword">:print-function</span> <span class="parameter">printer-name</span><span class="explicit-roman">)</span> |
 			       <span class="explicit-roman">(</span><span class="keyword">:print-function</span><span class="explicit-roman">)</span></td></tr>
 <tr><td>type-option</td><td>::=</td><td><span class="explicit-roman">(</span><span class="keyword">:type</span> <span class="parameter">type</span><span class="explicit-roman">)</span></td></tr>
 <tr><td>named-option</td><td>::=</td><td><span class="keyword">:named</span></td></tr>
@@ -42,16 +42,16 @@
 				       <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>[</mi><mi>[</mi></math> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">slot-option</span><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>]</mi><mi>]</mi></math><span class="explicit-roman">]</span><span class="explicit-roman">)</span></td></tr>
 <tr><td>slot-option</td><td>::=</td><td><span class="keyword">:type</span> <span class="parameter">slot-type</span> | <br/>
 		     <span class="keyword">:read-only</span> <span class="parameter">slot-read-only-p</span></td></tr><br/></dd></dl><dl><dt class="label">Arguments and Values</dt><dd><span class="parameter">conc-name</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-string designator">string designator</a>.<br/><span class="parameter">constructor-arglist</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-boa lambda list">boa lambda list</a>.<br/><span class="parameter">constructor-name</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a>.<br/><span class="parameter">copier-name</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a>.<br/><span class="parameter">included-structure-name</span>&mdash;an already-defined <a class="glossary-reference" href="chapter-26.xhtml#glossary-structure name">structure name</a>.
-Note that a <a class="glossary-reference" href="chapter-26.xhtml#glossary-derived type">derived type</a> is not permissible, 
+<span class="issue-annotation"><span class="issue-reference error">issue:Issue DEFSTRUCT-INCLUDE-DEFTYPE:EXPLICITLY-UNDEFINED</span>Note that a <a class="glossary-reference" href="chapter-26.xhtml#glossary-derived type">derived type</a> is not permissible, 
 even if it would expand into a <a class="glossary-reference" href="chapter-26.xhtml#glossary-structure name">structure name</a>.
-
-<span class="parameter">initial-offset</span>&mdash;a non-negative <a class="glossary-reference" href="chapter-26.xhtml#glossary-integer">integer</a>.<br/><span class="parameter">predicate-name</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a>.<br/><span class="parameter">printer-name</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-function name">function name</a> or a <a class="glossary-reference" href="chapter-26.xhtml#glossary-lambda expression">lambda expression</a>.
-
+</span>
+<span class="parameter">initial-offset</span>&mdash;a non-negative <a class="glossary-reference" href="chapter-26.xhtml#glossary-integer">integer</a>.<br/><span class="parameter">predicate-name</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a>.<br/><div class="issue-annotation"><span class="issue-reference error">issue:Issue DEFSTRUCT-PRINT-FUNCTION-AGAIN:X3J13-MAR-93</span><span class="parameter">printer-name</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-function name">function name</a> or a <a class="glossary-reference" href="chapter-26.xhtml#glossary-lambda expression">lambda expression</a>.
+</div>
 <span class="parameter">slot-name</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a>.<br/><span class="parameter">slot-initform</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-form">form</a>.<br/><span class="parameter">slot-read-only-p</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-generalized boolean">generalized boolean</a>.<br/><span class="parameter">structure-name</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a>.<br/><span class="parameter">type</span>&mdash;one of the <a class="glossary-reference" href="chapter-26.xhtml#glossary-type specifier">type specifiers</a>
 		    <a class="type-reference" href="chapter-14.xhtml#type-list">list</a>,
 		    <a class="type-reference" href="chapter-15.xhtml#type-vector">vector</a>,
-	         or <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-15.xhtml#function-vector">vector</a> <span class="parameter">size</span>)</span>
-</span></code></pre>,
+	         or <code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-15.xhtml#function-vector">vector</a> <span class="parameter">size</span>)</span>
+</span></code>,
 		 or some other <a class="glossary-reference" href="chapter-26.xhtml#glossary-type specifier">type specifier</a> defined 
 		    by the <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> to be appropriate.<br/>
 
@@ -60,24 +60,24 @@ with named slots as specified by the <span class="parameter">slot-options</span>
 arranges for <a class="macro-reference" href="chapter-5.xhtml#macro-setf">setf</a> to work properly on such
 <a class="glossary-reference" href="chapter-26.xhtml#glossary-reader">reader</a> functions.
 Also, unless overridden, it
-     defines a predicate named <pre><code><span class="syntax-root"><span class="parameter">name</span>-p
-</span></code></pre>,
-     defines a constructor function named <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">make-\param{constructor-name}</span>
-</span></code></pre>,
- and defines a copier function named <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">copy-\param{constructor-name}</span>
-</span></code></pre>.
+     defines a predicate named <code><span class="syntax-root"><span class="parameter">name</span>-p
+</span></code>,
+     defines a constructor function named <code><span class="syntax-root"><span class="syntax-interned-symbol">make-\param{constructor-name}</span>
+</span></code>,
+ and defines a copier function named <code><span class="syntax-root"><span class="syntax-interned-symbol">copy-\param{constructor-name}</span>
+</span></code>.
 All names of automatically created functions might automatically
 be declared <a class="declaration-reference" href="chapter-3.xhtml#declaration-inline">inline</a> (at the discretion of the <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a>).<br/>If <span class="parameter">documentation</span> is supplied, it is attached to <span class="parameter">structure-name</span>
 as a <a class="glossary-reference" href="chapter-26.xhtml#glossary-documentation string">documentation string</a> of kind <a class="symbol-reference" href="chapter-2.xhtml#symbol-structure">structure</a>,
-and unless <span class="keyword">:type</span> is used, the <span class="parameter">documentation</span> is also attached 
+<div class="issue-annotation"><span class="issue-reference error">issue:Issue DOCUMENTATION-FUNCTION-BUGS:FIX</span>and unless <span class="keyword">:type</span> is used, the <span class="parameter">documentation</span> is also attached 
 to <span class="parameter">structure-name</span> as a <a class="glossary-reference" href="chapter-26.xhtml#glossary-documentation string">documentation string</a> of kind
 <a class="symbol-reference" href="chapter-25.xhtml#symbol-type">type</a> and as a <a class="glossary-reference" href="chapter-26.xhtml#glossary-documentation string">documentation string</a> to the <a class="glossary-reference" href="chapter-26.xhtml#glossary-class">class</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">object</a> 
 for the <a class="glossary-reference" href="chapter-26.xhtml#glossary-class">class</a> named <span class="parameter">structure-name</span>.
-
+</div>
 <a class="macro-reference" href="#macro-defstruct">defstruct</a> defines a constructor function that is used to
 create instances of the structure created by <a class="macro-reference" href="#macro-defstruct">defstruct</a>.
-The default name is <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">make-\param{structure-name}</span>
-</span></code></pre>.
+The default name is <code><span class="syntax-root"><span class="syntax-interned-symbol">make-\param{structure-name}</span>
+</span></code>.
 A different name can be supplied
 by giving the name as the argument to the <span class="parameter">constructor</span> option.
 <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a> indicates that no constructor function will be created.<br/>After a new structure type has been defined, instances of that type
@@ -99,27 +99,27 @@ All the <span class="parameter">keywords</span> and <span class="parameter">form
 are evaluated.  
 If a slot is not initialized in this way, 
 it is initialized by evaluating <span class="parameter">slot-initform</span> in the slot description
-at the time the constructor function is called.
-If no <span class="parameter">slot-initform</span> is supplied, 
+<span class="issue-annotation"><a class="issue-reference" href="issues/defstruct-default-value-evaluation.xhtml#issue-defstruct-default-value-evaluation:iff-needed">Issue DEFSTRUCT-DEFAULT-VALUE-EVALUATION:IFF-NEEDED</a>at the time the constructor function is called.
+</span><div class="issue-annotation"><span class="issue-reference error">issue:Issue UNITIALIZED-ELEMENTS:CONSEQUENCES-UNDEFINED</span>If no <span class="parameter">slot-initform</span> is supplied, 
 the consequences are undefined if an attempt is later made to read the slot's value
 before a value is explicitly assigned.
-
+</div>
 Each <span class="parameter">slot-initform</span> supplied for a <a class="macro-reference" href="#macro-defstruct">defstruct</a> component,
 when used by the constructor function for an otherwise unsupplied
 component, is re-evaluated on every call to the
 constructor function.  
-The <span class="parameter">slot-initform</span> is not evaluated 
+<div class="issue-annotation"><a class="issue-reference" href="issues/defstruct-default-value-evaluation.xhtml#issue-defstruct-default-value-evaluation:iff-needed">Issue DEFSTRUCT-DEFAULT-VALUE-EVALUATION:IFF-NEEDED</a>The <span class="parameter">slot-initform</span> is not evaluated 
         unless it is needed in the creation of a particular structure
         instance.  If it is never needed, there can be no type-mismatch
         error, even if the <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> 
 of the slot is specified; no warning
         should be issued in this case.
-For example, in the following sequence, only the last call is an error.<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="#macro-defstruct">defstruct</a> <span class="syntax-interned-symbol">person</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">name</span> <span class="syntax-number">007</span> <span class="syntax-keyword-symbol">:type</span> <a class="function-reference" href="chapter-16.xhtml#function-string">string</a>)</span>)</span> 
+</div>For example, in the following sequence, only the last call is an error.<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="#macro-defstruct">defstruct</a> <span class="syntax-interned-symbol">person</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">name</span> <span class="syntax-number">007</span> <span class="syntax-keyword-symbol">:type</span> <a class="function-reference" href="chapter-16.xhtml#function-string">string</a>)</span>)</span> 
 <span class="syntax-cons">(<span class="syntax-interned-symbol">make-person</span> <span class="syntax-keyword-symbol">:name</span> <span class="syntax-string">"James"</span>)</span>
 <span class="syntax-cons">(<span class="syntax-interned-symbol">make-person</span>)</span>
 </span></code></pre><br/>It is as if the <span class="parameter">slot-initforms</span> were 
 used as <a class="glossary-reference" href="chapter-26.xhtml#glossary-initialization form">initialization forms</a> for the <a class="glossary-reference" href="chapter-26.xhtml#glossary-keyword parameter">keyword parameters</a> 
-of the constructor function.<br/>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbols</a> which name the slots must not be used by the 
+of the constructor function.<br/><span class="issue-annotation"><a class="issue-reference" href="issues/defstruct-constructor-slot-variables.xhtml#issue-defstruct-constructor-slot-variables:not-bound">Issue DEFSTRUCT-CONSTRUCTOR-SLOT-VARIABLES:NOT-BOUND</a>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbols</a> which name the slots must not be used by the 
 <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> as the <a class="glossary-reference" href="chapter-26.xhtml#glossary-name">names</a> for the <a class="glossary-reference" href="chapter-26.xhtml#glossary-lambda variable">lambda variables</a>
 in the constructor function, since one or more of those <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbols</a>
 might have been proclaimed <a class="declaration-reference" href="chapter-3.xhtml#declaration-special">special</a> or might be defined as
@@ -127,14 +127,14 @@ the name of a <a class="glossary-reference" href="chapter-26.xhtml#glossary-cons
 The slot default init forms are evaluated 
 in the <a class="glossary-reference" href="chapter-26.xhtml#glossary-lexical environment">lexical environment</a> in which the <a class="macro-reference" href="#macro-defstruct">defstruct</a> form itself appears and
 in the <a class="glossary-reference" href="chapter-26.xhtml#glossary-dynamic environment">dynamic environment</a> in which the call to the constructor function appears.
-
-For example, if the form <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-10.xhtml#function-gensym">gensym</a>)</span>
-</span></code></pre> were used as an initialization form,
+</span>
+For example, if the form <code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-10.xhtml#function-gensym">gensym</a>)</span>
+</span></code> were used as an initialization form,
 either in the constructor-function call or as the default initialization form
 in <a class="macro-reference" href="#macro-defstruct">defstruct</a>, then every call to the constructor function would call
-<a class="function-reference" href="chapter-10.xhtml#function-gensym">gensym</a> once to generate a new <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a>.<br/>Each <span class="parameter">slot-description</span> in <a class="macro-reference" href="#macro-defstruct">defstruct</a> can specify zero or more
+<a class="function-reference" href="chapter-10.xhtml#function-gensym">gensym</a> once to generate a new <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a>.<br/><div class="issue-annotation"><a class="issue-reference" href="issues/defstruct-slots-constraints-number.xhtml#issue-defstruct-slots-constraints-number">Issue DEFSTRUCT-SLOTS-CONSTRAINTS-NUMBER</a>Each <span class="parameter">slot-description</span> in <a class="macro-reference" href="#macro-defstruct">defstruct</a> can specify zero or more
 <span class="parameter">slot-options</span>.  
-A <span class="parameter">slot-option</span> consists of a pair of a keyword and a value
+</div>A <span class="parameter">slot-option</span> consists of a pair of a keyword and a value
 (which is not a form to be evaluated, but the value itself).  For example:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="#macro-defstruct">defstruct</a> <span class="syntax-interned-symbol">ship</span>
   <span class="syntax-cons">(<span class="syntax-interned-symbol">x-position</span> <span class="syntax-number">0.0</span> <span class="syntax-keyword-symbol">:type</span> <a class="type-reference" href="chapter-12.xhtml#type-short-float">short-float</a>)</span>
   <span class="syntax-cons">(<span class="syntax-interned-symbol">y-position</span> <span class="syntax-number">0.0</span> <span class="syntax-keyword-symbol">:type</span> <a class="type-reference" href="chapter-12.xhtml#type-short-float">short-float</a>)</span>
@@ -159,10 +159,10 @@ this specifies that this slot cannot be
 altered; it will always contain the value supplied at construction time.
 <a class="macro-reference" href="chapter-5.xhtml#macro-setf">setf</a> will not accept the <a class="glossary-reference" href="chapter-26.xhtml#glossary-reader">reader</a> function for this slot.
 If <span class="parameter">x</span> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-false">false</a>, this slot-option has no effect.
-<span class="parameter">X</span> is not evaluated.<br/>When this option is <a class="glossary-reference" href="chapter-26.xhtml#glossary-false">false</a> or unsupplied,
+<span class="parameter">X</span> is not evaluated.<br/><span class="issue-annotation"><a class="issue-reference" href="issues/setf-functions-again.xhtml#issue-setf-functions-again:minimal-changes">Issue SETF-FUNCTIONS-AGAIN:MINIMAL-CHANGES</a>When this option is <a class="glossary-reference" href="chapter-26.xhtml#glossary-false">false</a> or unsupplied,
 it is <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a> whether the ability to <a class="glossary-reference" href="chapter-26.xhtml#glossary-write">write</a>
 the slot is implemented by a <a class="glossary-reference" href="chapter-26.xhtml#glossary-setf function">setf function</a> or a <a class="glossary-reference" href="chapter-26.xhtml#glossary-setf expander">setf expander</a>.
-
+</span>
 </dd></dl><br/>The following keyword options are available for use with <a class="macro-reference" href="#macro-defstruct">defstruct</a>.  
 A <a class="macro-reference" href="#macro-defstruct">defstruct</a> option can be either a keyword or a <a class="glossary-reference" href="chapter-26.xhtml#glossary-list">list</a>
 of a keyword and arguments for that keyword; 
@@ -209,13 +209,13 @@ If at least one argument is supplied and the first argument is not <a class="sym
 that argument is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a> which specifies the name of the 
 constructor function.  If the argument is not supplied (or if the option itself is not
 supplied), the name of the constructor is produced by concatenating the
-string <pre><code><span class="syntax-root"><span class="syntax-string">"MAKE-"</span>
-</span></code></pre> and the name of the structure, interning the name
+string <code><span class="syntax-root"><span class="syntax-string">"MAKE-"</span>
+</span></code> and the name of the structure, interning the name
 in whatever <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">package</a> is current at the time <a class="macro-reference" href="#macro-defstruct">defstruct</a>
 is expanded.  If the argument is provided and is <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>,
 no constructor function is defined.<br/>If <span class="keyword">:constructor</span> is given as
-<pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-keyword-symbol">:constructor</span> <span class="parameter">name</span> <span class="parameter">arglist</span>)</span>
-</span></code></pre>, 
+<code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-keyword-symbol">:constructor</span> <span class="parameter">name</span> <span class="parameter">arglist</span>)</span>
+</span></code>, 
 then instead of making a keyword
 driven constructor function, <a class="macro-reference" href="#macro-defstruct">defstruct</a> 
 defines a ``positional'' constructor function,
@@ -223,56 +223,57 @@ taking arguments whose meaning is determined by the argument's position
 and possibly by keywords.
 <span class="parameter">Arglist</span> is used to describe what the arguments to the
 constructor will be. In the simplest case something like
-<pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-keyword-symbol">:constructor</span> <span class="syntax-interned-symbol">make-foo</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">a</span> <span class="syntax-interned-symbol">b</span> <span class="syntax-interned-symbol">c</span>)</span>)</span>
-</span></code></pre> defines <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">make-foo</span>
-</span></code></pre> to be
+<code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-keyword-symbol">:constructor</span> <span class="syntax-interned-symbol">make-foo</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">a</span> <span class="syntax-interned-symbol">b</span> <span class="syntax-interned-symbol">c</span>)</span>)</span>
+</span></code> defines <code><span class="syntax-root"><span class="syntax-interned-symbol">make-foo</span>
+</span></code> to be
 a three-argument 
 constructor function whose arguments are used to initialize the
-slots named <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">a</span>
-</span></code></pre>, <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">b</span>
-</span></code></pre>, and <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">c</span>
-</span></code></pre>.<br/>Because a constructor of this type operates ``By Order of Arguments,''
+slots named <code><span class="syntax-root"><span class="syntax-interned-symbol">a</span>
+</span></code>, <code><span class="syntax-root"><span class="syntax-interned-symbol">b</span>
+</span></code>, and <code><span class="syntax-root"><span class="syntax-interned-symbol">c</span>
+</span></code>.<br/>Because a constructor of this type operates ``By Order of Arguments,''
 it is sometimes known as a ``boa constructor.''<br/>For information on how the <span class="parameter">arglist</span> for a ``boa constructor'' is
 processed, see <span class="section-reference error">section:BoaLambdaLists.</span><br/>It is permissible to use the
 <span class="keyword">:constructor</span> option more than once, so that you can define several
-different constructor functions, each taking different parameters.<br/>
+different constructor functions, each taking different parameters.<br/><span class="reviewer-note" id="reviewer-note-what-about-(:constru"><span class="reviewer-note-tooltip"><span class="reviewer">Barmar</span>: What about (:constructor) and (:constructor nil).
+		  Should we worry about it?</span>‣</span>
 
-<a class="macro-reference" href="#macro-defstruct">defstruct</a> creates the default-named keyword constructor function
+<div class="issue-annotation"><span class="issue-reference error">issue:Issue DEFSTRUCT-CONSTRUCTOR-OPTIONS:EXPLICIT</span><a class="macro-reference" href="#macro-defstruct">defstruct</a> creates the default-named keyword constructor function
 only if no explicit <span class="keyword">:constructor</span> options are specified, or if the
-<span class="keyword">:constructor</span> option is specified without a <span class="parameter">name</span> argument.<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-keyword-symbol">:constructor</span> <a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a>)</span>
-</span></code></pre> is meaningful only when there are no other
+<span class="keyword">:constructor</span> option is specified without a <span class="parameter">name</span> argument.<br/><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-keyword-symbol">:constructor</span> <a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a>)</span>
+</span></code> is meaningful only when there are no other
 <span class="keyword">:constructor</span> options specified.  It prevents <a class="macro-reference" href="#macro-defstruct">defstruct</a>
 from generating any constructors at all.<br/>Otherwise, <a class="macro-reference" href="#macro-defstruct">defstruct</a> creates a constructor function corresponding
 to each supplied <span class="keyword">:constructor</span> option.  It is permissible to specify
 multiple keyword constructor functions as well as multiple 
 ``boa constructors''.
-<br/></dd><dt><span class="keyword">:copier</span></dt><dd>This option takes one argument, a <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a>,
+</div><br/></dd><dt><span class="keyword">:copier</span></dt><dd>This option takes one argument, a <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a>,
 which specifies the name of the copier
 function.  If the argument is not provided or if the option itself is not
 provided, the name of the copier is produced by concatenating the
-string <pre><code><span class="syntax-root"><span class="syntax-string">"COPY-"</span>
-</span></code></pre> and the name of the structure, interning the name
+string <code><span class="syntax-root"><span class="syntax-string">"COPY-"</span>
+</span></code> and the name of the structure, interning the name
 in whatever <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">package</a> is current at the time <a class="macro-reference" href="#macro-defstruct">defstruct</a>
 is expanded.
-If the argument is provided and is <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>, no copier function is defined.<br/>The automatically defined copier function is a function of
+If the argument is provided and is <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>, no copier function is defined.<br/><div class="issue-annotation"><a class="issue-reference" href="issues/defstruct-copier.xhtml#issue-defstruct-copier:argument-type">Issue DEFSTRUCT-COPIER:ARGUMENT-TYPE</a>The automatically defined copier function is a function of
 one <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument">argument</a>,
-which must be of the structure type being defined.
-The copier function creates a <a class="glossary-reference" href="chapter-26.xhtml#glossary-fresh">fresh</a> 
+<span class="issue-annotation"><span class="issue-reference error">issue:Issue DEFSTRUCT-COPIER-ARGUMENT-TYPE:RESTRICT</span>which must be of the structure type being defined.
+</span>The copier function creates a <a class="glossary-reference" href="chapter-26.xhtml#glossary-fresh">fresh</a> 
 structure that has the same <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> as its <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument">argument</a>,
 and that has the <a class="glossary-reference" href="chapter-26.xhtml#glossary-same">same</a> component values as the original 
 structure; that is, the component values are not copied recursively.
-If the <a class="macro-reference" href="#macro-defstruct">defstruct</a> <span class="keyword">:type</span> option was not used,
+<div class="issue-annotation"><span class="issue-reference error">issue:Issue DEFSTRUCT-COPIER-ARGUMENT-TYPE:RESTRICT</span>If the <a class="macro-reference" href="#macro-defstruct">defstruct</a> <span class="keyword">:type</span> option was not used,
 the following equivalence applies:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="parameter">copier-name</span> <span class="syntax-interned-symbol">x</span>)</span> <a class="function-reference" href="chapter-12.xhtml#function-=">=</a> <span class="syntax-cons">(<a class="function-reference" href="#function-copy-structure">copy-structure</a> <span class="syntax-cons">(<a class="special-operator-reference" href="chapter-3.xhtml#special-operator-the">the</a> <span class="parameter">structure-name</span> <span class="syntax-interned-symbol">x</span>)</span>)</span>
-</span></code></pre>
+</span></code></pre></div></div>
 </dd><dt><span class="keyword">:include</span></dt><dd>This option is used for building a new structure definition as
 an extension of another structure definition.  For example:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="#macro-defstruct">defstruct</a> <span class="syntax-interned-symbol">person</span> <span class="syntax-interned-symbol">name</span> <span class="syntax-interned-symbol">age</span> <span class="syntax-interned-symbol">sex</span>)</span>
 </span></code></pre>
 To make a new structure to represent an astronaut
 that has the
 attributes of name, age, and sex, and <a class="glossary-reference" href="chapter-26.xhtml#glossary-function">functions</a>
-that operate on <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">person</span>
-</span></code></pre> structures, <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">astronaut</span>
-</span></code></pre> is defined
+that operate on <code><span class="syntax-root"><span class="syntax-interned-symbol">person</span>
+</span></code> structures, <code><span class="syntax-root"><span class="syntax-interned-symbol">astronaut</span>
+</span></code> is defined
 with <span class="keyword">:include</span> as follows:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="#macro-defstruct">defstruct</a> <span class="syntax-cons">(<span class="syntax-interned-symbol">astronaut</span> <span class="syntax-cons">(<span class="syntax-keyword-symbol">:include</span> <span class="syntax-interned-symbol">person</span>)</span>
                       <span class="syntax-cons">(<span class="syntax-keyword-symbol">:conc-name</span> <span class="syntax-interned-symbol">astro-</span>)</span>)</span>
    <span class="syntax-interned-symbol">helmet-size</span>
@@ -283,23 +284,23 @@ This is done in such a way
 that the <a class="glossary-reference" href="chapter-26.xhtml#glossary-reader">reader</a> functions for the included
 structure also work on the structure being defined.
 In this example, an
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">astronaut</span>
-</span></code></pre> therefore has five slots: the three defined in
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">person</span>
-</span></code></pre> and the two defined in <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">astronaut</span>
-</span></code></pre>
-itself.  The <a class="glossary-reference" href="chapter-26.xhtml#glossary-reader">reader</a> functions defined by the <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">person</span>
-</span></code></pre> structure
-can be applied to instances of the <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">astronaut</span>
-</span></code></pre> structure, and they
+<code><span class="syntax-root"><span class="syntax-interned-symbol">astronaut</span>
+</span></code> therefore has five slots: the three defined in
+<code><span class="syntax-root"><span class="syntax-interned-symbol">person</span>
+</span></code> and the two defined in <code><span class="syntax-root"><span class="syntax-interned-symbol">astronaut</span>
+</span></code>
+itself.  The <a class="glossary-reference" href="chapter-26.xhtml#glossary-reader">reader</a> functions defined by the <code><span class="syntax-root"><span class="syntax-interned-symbol">person</span>
+</span></code> structure
+can be applied to instances of the <code><span class="syntax-root"><span class="syntax-interned-symbol">astronaut</span>
+</span></code> structure, and they
 work correctly.
-Moreover, <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">astronaut</span>
-</span></code></pre> has its own <a class="glossary-reference" href="chapter-26.xhtml#glossary-reader">reader</a> functions for
-components defined by the <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">person</span>
-</span></code></pre> structure.
+Moreover, <code><span class="syntax-root"><span class="syntax-interned-symbol">astronaut</span>
+</span></code> has its own <a class="glossary-reference" href="chapter-26.xhtml#glossary-reader">reader</a> functions for
+components defined by the <code><span class="syntax-root"><span class="syntax-interned-symbol">person</span>
+</span></code> structure.
 The following examples illustrate the 
-use of <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">astronaut</span>
-</span></code></pre> structures:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="special-operator-reference" href="chapter-5.xhtml#special-operator-setq">setq</a> <span class="syntax-interned-symbol">x</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">make-astronaut</span> <span class="syntax-keyword-symbol">:name</span> <span class="syntax-quote">'<span class="syntax-interned-symbol">buzz</span></span>
+use of <code><span class="syntax-root"><span class="syntax-interned-symbol">astronaut</span>
+</span></code> structures:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="special-operator-reference" href="chapter-5.xhtml#special-operator-setq">setq</a> <span class="syntax-interned-symbol">x</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">make-astronaut</span> <span class="syntax-keyword-symbol">:name</span> <span class="syntax-quote">'<span class="syntax-interned-symbol">buzz</span></span>
                         <span class="syntax-keyword-symbol">:age</span> <span class="syntax-number">45.</span>
                         <span class="syntax-keyword-symbol">:sex</span> <a class="section-reference" href="chapter-26.xhtml#section-T">T</a>
                         <span class="syntax-keyword-symbol">:helmet-size</span> <span class="syntax-number">17.5</span>)</span>)</span>
@@ -307,20 +308,20 @@ use of <pre><code><span class="syntax-root"><span class="syntax-interned-symbol"
 <span class="syntax-cons">(<span class="syntax-interned-symbol">astro-name</span> <span class="syntax-interned-symbol">x</span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-interned-symbol">BUZZ</span>
 <span class="syntax-cons">(<span class="syntax-interned-symbol">astro-favorite-beverage</span> <span class="syntax-interned-symbol">x</span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-interned-symbol">TANG</span>
 </span></code></pre>
-<pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-17.xhtml#function-reduce">reduce</a> <span class="syntax-function">#'<a class="function-reference" href="chapter-12.xhtml#function-+">+</a></span> <span class="syntax-interned-symbol">astros</span> <span class="syntax-keyword-symbol">:key</span> <span class="syntax-function">#'<span class="syntax-interned-symbol">person-age</span></span>)</span> ; obtains the total of the ages 
+<div class="issue-annotation"><a class="issue-reference" href="issues/reduce-argument-extraction.xhtml#issue-reduce-argument-extraction">Issue REDUCE-ARGUMENT-EXTRACTION</a><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-17.xhtml#function-reduce">reduce</a> <span class="syntax-function">#'<a class="function-reference" href="chapter-12.xhtml#function-+">+</a></span> <span class="syntax-interned-symbol">astros</span> <span class="syntax-keyword-symbol">:key</span> <span class="syntax-function">#'<span class="syntax-interned-symbol">person-age</span></span>)</span> ; obtains the total of the ages 
                                       ; of the possibly empty
                                       ; sequence of astros
-</span></code></pre>The difference between the <a class="glossary-reference" href="chapter-26.xhtml#glossary-reader">reader</a> functions <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">person-name</span>
-</span></code></pre> and <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">astro-name</span>
-</span></code></pre>
-is that <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">person-name</span>
-</span></code></pre> can be correctly applied to any <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">person</span>
-</span></code></pre>,
-including an <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">astronaut</span>
-</span></code></pre>, while <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">astro-name</span>
-</span></code></pre> can be correctly
-applied only to an <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">astronaut</span>
-</span></code></pre>.  An implementation might 
+</span></code></pre></div>The difference between the <a class="glossary-reference" href="chapter-26.xhtml#glossary-reader">reader</a> functions <code><span class="syntax-root"><span class="syntax-interned-symbol">person-name</span>
+</span></code> and <code><span class="syntax-root"><span class="syntax-interned-symbol">astro-name</span>
+</span></code>
+is that <code><span class="syntax-root"><span class="syntax-interned-symbol">person-name</span>
+</span></code> can be correctly applied to any <code><span class="syntax-root"><span class="syntax-interned-symbol">person</span>
+</span></code>,
+including an <code><span class="syntax-root"><span class="syntax-interned-symbol">astronaut</span>
+</span></code>, while <code><span class="syntax-root"><span class="syntax-interned-symbol">astro-name</span>
+</span></code> can be correctly
+applied only to an <code><span class="syntax-root"><span class="syntax-interned-symbol">astronaut</span>
+</span></code>.  An implementation might 
 check for incorrect use of <a class="glossary-reference" href="chapter-26.xhtml#glossary-reader">reader</a> functions.<br/>At most one <span class="keyword">:include</span> can be supplied in a single <a class="macro-reference" href="#macro-defstruct">defstruct</a>.
 The argument to <span class="keyword">:include</span> is required and must be the
 name of some previously defined structure.  If the structure being
@@ -334,9 +335,9 @@ becomes the name of a <a class="glossary-reference" href="chapter-26.xhtml#gloss
 a valid <a class="glossary-reference" href="chapter-26.xhtml#glossary-type specifier">type specifier</a> recognizable by <a class="function-reference" href="chapter-4.xhtml#function-typep">typep</a>; it becomes
 a <a class="glossary-reference" href="chapter-26.xhtml#glossary-subtype">subtype</a> of the included structure.  
 In the above example,
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">astronaut</span>
-</span></code></pre> is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-subtype">subtype</a> of <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">person</span>
-</span></code></pre>; hence<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-4.xhtml#function-typep">typep</a> <span class="syntax-cons">(<span class="syntax-interned-symbol">make-astronaut</span>)</span> <span class="syntax-quote">'<span class="syntax-interned-symbol">person</span></span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a>
+<code><span class="syntax-root"><span class="syntax-interned-symbol">astronaut</span>
+</span></code> is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-subtype">subtype</a> of <code><span class="syntax-root"><span class="syntax-interned-symbol">person</span>
+</span></code>; hence<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-4.xhtml#function-typep">typep</a> <span class="syntax-cons">(<span class="syntax-interned-symbol">make-astronaut</span>)</span> <span class="syntax-quote">'<span class="syntax-interned-symbol">person</span></span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a>
 </span></code></pre>
 indicating that all operations on persons also
 work on astronauts.<br/>The structure using <span class="keyword">:include</span> can specify default values or
@@ -359,8 +360,8 @@ the
 <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> specified in the included structure.
 
 For example, if the
-default age for an astronaut is <pre><code><span class="syntax-root"><span class="syntax-number">45</span>
-</span></code></pre>, then <br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="#macro-defstruct">defstruct</a> <span class="syntax-cons">(<span class="syntax-interned-symbol">astronaut</span> <span class="syntax-cons">(<span class="syntax-keyword-symbol">:include</span> <span class="syntax-interned-symbol">person</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">age</span> <span class="syntax-number">45</span>)</span>)</span>)</span>
+default age for an astronaut is <code><span class="syntax-root"><span class="syntax-number">45</span>
+</span></code>, then <br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="#macro-defstruct">defstruct</a> <span class="syntax-cons">(<span class="syntax-interned-symbol">astronaut</span> <span class="syntax-cons">(<span class="syntax-keyword-symbol">:include</span> <span class="syntax-interned-symbol">person</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">age</span> <span class="syntax-number">45</span>)</span>)</span>)</span>
    <span class="syntax-interned-symbol">helmet-size</span>
    <span class="syntax-cons">(<span class="syntax-interned-symbol">favorite-beverage</span> <span class="syntax-quote">'<span class="syntax-interned-symbol">tang</span></span>)</span>)</span>
 </span></code></pre><br/>
@@ -385,22 +386,22 @@ For example:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">
                       <span class="syntax-keyword-symbol">:identity</span> <span class="syntax-number">1</span>)</span>
   <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-cons">(<a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a> <a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a> <span class="syntax-interned-symbol">BINOP</span> <a class="function-reference" href="chapter-12.xhtml#function-*">*</a> <span class="syntax-interned-symbol">X</span> <span class="syntax-number">5</span> <a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a> <a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a> <a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a> <a class="section-reference" href="chapter-26.xhtml#section-T">T</a> <a class="section-reference" href="chapter-26.xhtml#section-T">T</a> <span class="syntax-number">1</span>)</span>
 </span></code></pre>
-The first two <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a> elements stem from the <span class="keyword">:initial-offset</span> of <pre><code><span class="syntax-root"><span class="syntax-number">2</span>
-</span></code></pre>
-in the definition of <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
-</span></code></pre>.  The next four elements contain the
-structure name and three slots for <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
-</span></code></pre>.  The next three <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a> elements
-stem from the <span class="keyword">:initial-offset</span> of <pre><code><span class="syntax-root"><span class="syntax-number">3</span>
-</span></code></pre> in the definition of
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">annotated-binop</span>
-</span></code></pre>.  The last three list elements contain the additional
-slots for an <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">annotated-binop</span>
-</span></code></pre>.<br/>
+The first two <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a> elements stem from the <span class="keyword">:initial-offset</span> of <code><span class="syntax-root"><span class="syntax-number">2</span>
+</span></code>
+in the definition of <code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
+</span></code>.  The next four elements contain the
+structure name and three slots for <code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
+</span></code>.  The next three <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a> elements
+stem from the <span class="keyword">:initial-offset</span> of <code><span class="syntax-root"><span class="syntax-number">3</span>
+</span></code> in the definition of
+<code><span class="syntax-root"><span class="syntax-interned-symbol">annotated-binop</span>
+</span></code>.  The last three list elements contain the additional
+slots for an <code><span class="syntax-root"><span class="syntax-interned-symbol">annotated-binop</span>
+</span></code>.<br/>
 </dd><dt><span class="keyword">:initial-offset</span></dt><dd><span class="keyword">:initial-offset</span> instructs <a class="macro-reference" href="#macro-defstruct">defstruct</a> to skip over a certain
 number of slots before it starts allocating the slots described in the
 body.  This option's argument is the number of slots <a class="macro-reference" href="#macro-defstruct">defstruct</a> 
-should skip.  <span class="keyword">:initial-offset</span> can be used only if <span class="keyword">:type</span> is also supplied.<br/>
+should skip.  <span class="keyword">:initial-offset</span> can be used only if <span class="keyword">:type</span> is also supplied.<br/><span class="reviewer-note" id="reviewer-note-what-are-initial-val"><span class="reviewer-note-tooltip"><span class="reviewer">Barmar</span>: What are initial values of the skipped slots?</span>‣</span>
 <span class="keyword">:initial-offset</span> allows 
 slots to be allocated beginning at a representational
 element other than the first.  For example, the form<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="#macro-defstruct">defstruct</a> <span class="syntax-cons">(<span class="syntax-interned-symbol">binop</span> <span class="syntax-cons">(<span class="syntax-keyword-symbol">:type</span> <a class="function-reference" href="chapter-14.xhtml#function-list">list</a>)</span> <span class="syntax-cons">(<span class="syntax-keyword-symbol">:initial-offset</span> <span class="syntax-number">2</span>)</span>)</span>
@@ -408,16 +409,16 @@ element other than the first.  For example, the form<br/><pre><code><span class=
   <span class="syntax-interned-symbol">operand-1</span>
   <span class="syntax-interned-symbol">operand-2</span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-interned-symbol">BINOP</span>
 </span></code></pre>
-would result in the following behavior for <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">make-binop</span>
-</span></code></pre>:<br/><pre><code><span class="syntax-root"> <span class="syntax-cons">(<span class="syntax-interned-symbol">make-binop</span> <span class="syntax-keyword-symbol">:operator</span> <span class="syntax-quote">'<a class="function-reference" href="chapter-12.xhtml#function-+">+</a></span> <span class="syntax-keyword-symbol">:operand-1</span> <span class="syntax-quote">'<span class="syntax-interned-symbol">x</span></span> <span class="syntax-keyword-symbol">:operand-2</span> <span class="syntax-number">5</span>)</span>
+would result in the following behavior for <code><span class="syntax-root"><span class="syntax-interned-symbol">make-binop</span>
+</span></code>:<br/><pre><code><span class="syntax-root"> <span class="syntax-cons">(<span class="syntax-interned-symbol">make-binop</span> <span class="syntax-keyword-symbol">:operator</span> <span class="syntax-quote">'<a class="function-reference" href="chapter-12.xhtml#function-+">+</a></span> <span class="syntax-keyword-symbol">:operand-1</span> <span class="syntax-quote">'<span class="syntax-interned-symbol">x</span></span> <span class="syntax-keyword-symbol">:operand-2</span> <span class="syntax-number">5</span>)</span>
 <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-cons">(<a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a> <a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a> <a class="function-reference" href="chapter-12.xhtml#function-+">+</a> <span class="syntax-interned-symbol">X</span> <span class="syntax-number">5</span>)</span>
  <span class="syntax-cons">(<span class="syntax-interned-symbol">make-binop</span> <span class="syntax-keyword-symbol">:operand-2</span> <span class="syntax-number">4</span> <span class="syntax-keyword-symbol">:operator</span> <span class="syntax-quote">'<a class="function-reference" href="chapter-12.xhtml#function-*">*</a></span>)</span>
 <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-cons">(<a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a> <a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a> <a class="function-reference" href="chapter-12.xhtml#function-*">*</a> <a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a> <span class="syntax-number">4</span>)</span>
 </span></code></pre>
 The selector functions
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operator</span>
-</span></code></pre>, <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operand-1</span>
-</span></code></pre>,
+<code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operator</span>
+</span></code>, <code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operand-1</span>
+</span></code>,
 and <span class="explicit-mono">binop-operand-2</span> would be essentially equivalent to <a class="function-reference" href="chapter-14.xhtml#function-third">third</a>,
 <a class="function-reference" href="chapter-14.xhtml#function-fourth">fourth</a>, and <a class="function-reference" href="chapter-14.xhtml#function-fifth">fifth</a>, respectively.
 Similarly, the form<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="#macro-defstruct">defstruct</a> <span class="syntax-cons">(<span class="syntax-interned-symbol">binop</span> <span class="syntax-cons">(<span class="syntax-keyword-symbol">:type</span> <a class="function-reference" href="chapter-14.xhtml#function-list">list</a>)</span> <span class="syntax-keyword-symbol">:named</span> <span class="syntax-cons">(<span class="syntax-keyword-symbol">:initial-offset</span> <span class="syntax-number">2</span>)</span>)</span>
@@ -425,15 +426,15 @@ Similarly, the form<br/><pre><code><span class="syntax-root"><span class="syntax
   <span class="syntax-interned-symbol">operand-1</span>
   <span class="syntax-interned-symbol">operand-2</span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-interned-symbol">BINOP</span>
 </span></code></pre>
-would result in the following behavior for <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">make-binop</span>
-</span></code></pre>:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">make-binop</span> <span class="syntax-keyword-symbol">:operator</span> <span class="syntax-quote">'<a class="function-reference" href="chapter-12.xhtml#function-+">+</a></span> <span class="syntax-keyword-symbol">:operand-1</span> <span class="syntax-quote">'<span class="syntax-interned-symbol">x</span></span> <span class="syntax-keyword-symbol">:operand-2</span> <span class="syntax-number">5</span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-cons">(<a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a> <a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a> <span class="syntax-interned-symbol">BINOP</span> <a class="function-reference" href="chapter-12.xhtml#function-+">+</a> <span class="syntax-interned-symbol">X</span> <span class="syntax-number">5</span>)</span>
+would result in the following behavior for <code><span class="syntax-root"><span class="syntax-interned-symbol">make-binop</span>
+</span></code>:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">make-binop</span> <span class="syntax-keyword-symbol">:operator</span> <span class="syntax-quote">'<a class="function-reference" href="chapter-12.xhtml#function-+">+</a></span> <span class="syntax-keyword-symbol">:operand-1</span> <span class="syntax-quote">'<span class="syntax-interned-symbol">x</span></span> <span class="syntax-keyword-symbol">:operand-2</span> <span class="syntax-number">5</span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-cons">(<a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a> <a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a> <span class="syntax-interned-symbol">BINOP</span> <a class="function-reference" href="chapter-12.xhtml#function-+">+</a> <span class="syntax-interned-symbol">X</span> <span class="syntax-number">5</span>)</span>
 <span class="syntax-cons">(<span class="syntax-interned-symbol">make-binop</span> <span class="syntax-keyword-symbol">:operand-2</span> <span class="syntax-number">4</span> <span class="syntax-keyword-symbol">:operator</span> <span class="syntax-quote">'<a class="function-reference" href="chapter-12.xhtml#function-*">*</a></span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-cons">(<a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a> <a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a> <span class="syntax-interned-symbol">BINOP</span> <a class="function-reference" href="chapter-12.xhtml#function-*">*</a> <a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a> <span class="syntax-number">4</span>)</span>
-</span></code></pre><br/>The first two <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a> elements stem from the <span class="keyword">:initial-offset</span> of <pre><code><span class="syntax-root"><span class="syntax-number">2</span>
-</span></code></pre>
-in the definition of <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
-</span></code></pre>.  The next four elements contain the
-structure name and three slots for <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
-</span></code></pre>.  <br/></dd><dt><span class="keyword">:named</span></dt><dd><span class="keyword">:named</span> specifies that the structure is named.
+</span></code></pre><br/>The first two <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a> elements stem from the <span class="keyword">:initial-offset</span> of <code><span class="syntax-root"><span class="syntax-number">2</span>
+</span></code>
+in the definition of <code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
+</span></code>.  The next four elements contain the
+structure name and three slots for <code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
+</span></code>.  <br/></dd><dt><span class="keyword">:named</span></dt><dd><span class="keyword">:named</span> specifies that the structure is named.
 If no <span class="keyword">:type</span> is supplied,
 then the structure is always named.<br/>
 For example:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="#macro-defstruct">defstruct</a> <span class="syntax-cons">(<span class="syntax-interned-symbol">binop</span> <span class="syntax-cons">(<span class="syntax-keyword-symbol">:type</span> <a class="function-reference" href="chapter-14.xhtml#function-list">list</a>)</span>)</span>
@@ -441,46 +442,46 @@ For example:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">
   <span class="syntax-interned-symbol">operand-1</span>
   <span class="syntax-interned-symbol">operand-2</span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-interned-symbol">BINOP</span>
 </span></code></pre>
-This defines a constructor function <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">make-binop</span>
-</span></code></pre> and three
-selector functions, namely <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operator</span>
-</span></code></pre>, <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operand-1</span>
-</span></code></pre>,
-and <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operand-2</span>
-</span></code></pre>.  (It does not, however, define a predicate
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop-p</span>
-</span></code></pre>, for reasons explained below.)<br/>The effect of <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">make-binop</span>
-</span></code></pre> is simply to construct a list of length three:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">make-binop</span> <span class="syntax-keyword-symbol">:operator</span> <span class="syntax-quote">'<a class="function-reference" href="chapter-12.xhtml#function-+">+</a></span> <span class="syntax-keyword-symbol">:operand-1</span> <span class="syntax-quote">'<span class="syntax-interned-symbol">x</span></span> <span class="syntax-keyword-symbol">:operand-2</span> <span class="syntax-number">5</span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-+">+</a> <span class="syntax-interned-symbol">X</span> <span class="syntax-number">5</span>)</span>  
+This defines a constructor function <code><span class="syntax-root"><span class="syntax-interned-symbol">make-binop</span>
+</span></code> and three
+selector functions, namely <code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operator</span>
+</span></code>, <code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operand-1</span>
+</span></code>,
+and <code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operand-2</span>
+</span></code>.  (It does not, however, define a predicate
+<code><span class="syntax-root"><span class="syntax-interned-symbol">binop-p</span>
+</span></code>, for reasons explained below.)<br/>The effect of <code><span class="syntax-root"><span class="syntax-interned-symbol">make-binop</span>
+</span></code> is simply to construct a list of length three:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">make-binop</span> <span class="syntax-keyword-symbol">:operator</span> <span class="syntax-quote">'<a class="function-reference" href="chapter-12.xhtml#function-+">+</a></span> <span class="syntax-keyword-symbol">:operand-1</span> <span class="syntax-quote">'<span class="syntax-interned-symbol">x</span></span> <span class="syntax-keyword-symbol">:operand-2</span> <span class="syntax-number">5</span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-+">+</a> <span class="syntax-interned-symbol">X</span> <span class="syntax-number">5</span>)</span>  
 <span class="syntax-cons">(<span class="syntax-interned-symbol">make-binop</span> <span class="syntax-keyword-symbol">:operand-2</span> <span class="syntax-number">4</span> <span class="syntax-keyword-symbol">:operator</span> <span class="syntax-quote">'<a class="function-reference" href="chapter-12.xhtml#function-*">*</a></span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-*">*</a> <a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a> <span class="syntax-number">4</span>)</span>
 </span></code></pre>
-It is just like the function <pre><code><span class="syntax-root"><a class="function-reference" href="chapter-14.xhtml#function-list">list</a>
-</span></code></pre> except that it takes
-keyword arguments and performs slot defaulting appropriate to the <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
-</span></code></pre>
+It is just like the function <code><span class="syntax-root"><a class="function-reference" href="chapter-14.xhtml#function-list">list</a>
+</span></code> except that it takes
+keyword arguments and performs slot defaulting appropriate to the <code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
+</span></code>
 conceptual data type.  Similarly, the selector functions
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operator</span>
-</span></code></pre>, <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operand-1</span>
-</span></code></pre>,
-and <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operand-2</span>
-</span></code></pre> are essentially equivalent to <a class="function-reference" href="chapter-14.xhtml#function-car">car</a>,
+<code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operator</span>
+</span></code>, <code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operand-1</span>
+</span></code>,
+and <code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operand-2</span>
+</span></code> are essentially equivalent to <a class="function-reference" href="chapter-14.xhtml#function-car">car</a>,
 <a class="function-reference" href="chapter-14.xhtml#function-cadr">cadr</a>, and <a class="function-reference" href="chapter-14.xhtml#function-caddr">caddr</a>, respectively.  They might not be
 completely equivalent because,
 for example, an implementation would be justified in adding error-checking
 code to ensure that the argument to each selector function is a length-3
-list.<br/><pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
-</span></code></pre> is a conceptual data type in that it is not made a part of
-the <span class="explicit-roman">Common Lisp</span> type system.  <a class="function-reference" href="chapter-4.xhtml#function-typep">typep</a> does not recognize <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
-</span></code></pre> as
-a <a class="glossary-reference" href="chapter-26.xhtml#glossary-type specifier">type specifier</a>, and <a class="function-reference" href="chapter-4.xhtml#function-type-of">type-of</a> returns <pre><code><span class="syntax-root"><a class="function-reference" href="chapter-14.xhtml#function-list">list</a>
-</span></code></pre> when
-given a <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
-</span></code></pre> structure.  There is no way to distinguish a data
-structure constructed by <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">make-binop</span>
-</span></code></pre> from any other <a class="glossary-reference" href="chapter-26.xhtml#glossary-list">list</a> that 
-happens to have the correct structure.<br/>There is not any way to recover the structure name <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
-</span></code></pre> from
-a structure created by <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">make-binop</span>
-</span></code></pre>.  This can only be done
+list.<br/><code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
+</span></code> is a conceptual data type in that it is not made a part of
+the <span class="explicit-roman">Common Lisp</span> type system.  <a class="function-reference" href="chapter-4.xhtml#function-typep">typep</a> does not recognize <code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
+</span></code> as
+a <a class="glossary-reference" href="chapter-26.xhtml#glossary-type specifier">type specifier</a>, and <a class="function-reference" href="chapter-4.xhtml#function-type-of">type-of</a> returns <code><span class="syntax-root"><a class="function-reference" href="chapter-14.xhtml#function-list">list</a>
+</span></code> when
+given a <code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
+</span></code> structure.  There is no way to distinguish a data
+structure constructed by <code><span class="syntax-root"><span class="syntax-interned-symbol">make-binop</span>
+</span></code> from any other <a class="glossary-reference" href="chapter-26.xhtml#glossary-list">list</a> that 
+happens to have the correct structure.<br/>There is not any way to recover the structure name <code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
+</span></code> from
+a structure created by <code><span class="syntax-root"><span class="syntax-interned-symbol">make-binop</span>
+</span></code>.  This can only be done
 if the structure is named.
 A named structure has the property that, given an instance of the
 structure, the structure name (that names the type) can be reliably
@@ -491,9 +492,9 @@ when applied to such a structure, returns the structure name
 as the <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> of the <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">object</a>;
 <a class="function-reference" href="chapter-4.xhtml#function-typep">typep</a> recognizes
 the structure name as a valid <a class="glossary-reference" href="chapter-26.xhtml#glossary-type specifier">type specifier</a>.<br/>For structures defined with a <span class="keyword">:type</span> option, <a class="function-reference" href="chapter-4.xhtml#function-type-of">type-of</a> 
-returns a <a class="glossary-reference" href="chapter-26.xhtml#glossary-type specifier">type specifier</a> such as <pre><code><span class="syntax-root"><a class="function-reference" href="chapter-14.xhtml#function-list">list</a>
-</span></code></pre> or <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-15.xhtml#function-vector">vector</a> <a class="section-reference" href="chapter-26.xhtml#section-T">T</a>)</span>
-</span></code></pre>,
+returns a <a class="glossary-reference" href="chapter-26.xhtml#glossary-type specifier">type specifier</a> such as <code><span class="syntax-root"><a class="function-reference" href="chapter-14.xhtml#function-list">list</a>
+</span></code> or <code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-15.xhtml#function-vector">vector</a> <a class="section-reference" href="chapter-26.xhtml#section-T">T</a>)</span>
+</span></code>,
 depending on the type supplied to the <span class="keyword">:type</span> option.
 The structure name does not become a valid <a class="glossary-reference" href="chapter-26.xhtml#glossary-type specifier">type specifier</a>.
 However,
@@ -505,59 +506,59 @@ predicate for the conceptual type to be defined:
 the automatically defined
 <span class="parameter">name-p</span> predicate for the structure operates by first
 checking that its argument is of the proper type (<a class="type-reference" href="chapter-14.xhtml#type-list">list</a>, 
-<pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-15.xhtml#function-vector">vector</a> <a class="section-reference" href="chapter-26.xhtml#section-T">T</a>)</span>
-</span></code></pre>,
+<code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-15.xhtml#function-vector">vector</a> <a class="section-reference" href="chapter-26.xhtml#section-T">T</a>)</span>
+</span></code>,
 or whatever) and then checking whether the first component contains
-the appropriate type name.<br/>Consider the <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
-</span></code></pre> example shown above, modified only to
+the appropriate type name.<br/>Consider the <code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
+</span></code> example shown above, modified only to
 include the <span class="keyword">:named</span> option:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="#macro-defstruct">defstruct</a> <span class="syntax-cons">(<span class="syntax-interned-symbol">binop</span> <span class="syntax-cons">(<span class="syntax-keyword-symbol">:type</span> <a class="function-reference" href="chapter-14.xhtml#function-list">list</a>)</span> <span class="syntax-keyword-symbol">:named</span>)</span>
   <span class="syntax-cons">(<span class="syntax-interned-symbol">operator</span> <span class="syntax-quote">'<span class="syntax-interned-symbol">?</span></span> <span class="syntax-keyword-symbol">:type</span> <a class="symbol-reference" href="chapter-2.xhtml#symbol-symbol">symbol</a>)</span>
   <span class="syntax-interned-symbol">operand-1</span>
   <span class="syntax-interned-symbol">operand-2</span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-interned-symbol">BINOP</span>
 </span></code></pre>
-As before, this defines a constructor function <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">make-binop</span>
-</span></code></pre> and three
-selector functions <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operator</span>
-</span></code></pre>, <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operand-1</span>
-</span></code></pre>,
-and <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operand-2</span>
-</span></code></pre>.  It also defines a predicate <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop-p</span>
-</span></code></pre>.
-The effect of <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">make-binop</span>
-</span></code></pre> is now to construct a list of length four:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">make-binop</span> <span class="syntax-keyword-symbol">:operator</span> <span class="syntax-quote">'<a class="function-reference" href="chapter-12.xhtml#function-+">+</a></span> <span class="syntax-keyword-symbol">:operand-1</span> <span class="syntax-quote">'<span class="syntax-interned-symbol">x</span></span> <span class="syntax-keyword-symbol">:operand-2</span> <span class="syntax-number">5</span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-cons">(<span class="syntax-interned-symbol">BINOP</span> <a class="function-reference" href="chapter-12.xhtml#function-+">+</a> <span class="syntax-interned-symbol">X</span> <span class="syntax-number">5</span>)</span>
+As before, this defines a constructor function <code><span class="syntax-root"><span class="syntax-interned-symbol">make-binop</span>
+</span></code> and three
+selector functions <code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operator</span>
+</span></code>, <code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operand-1</span>
+</span></code>,
+and <code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operand-2</span>
+</span></code>.  It also defines a predicate <code><span class="syntax-root"><span class="syntax-interned-symbol">binop-p</span>
+</span></code>.
+The effect of <code><span class="syntax-root"><span class="syntax-interned-symbol">make-binop</span>
+</span></code> is now to construct a list of length four:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">make-binop</span> <span class="syntax-keyword-symbol">:operator</span> <span class="syntax-quote">'<a class="function-reference" href="chapter-12.xhtml#function-+">+</a></span> <span class="syntax-keyword-symbol">:operand-1</span> <span class="syntax-quote">'<span class="syntax-interned-symbol">x</span></span> <span class="syntax-keyword-symbol">:operand-2</span> <span class="syntax-number">5</span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-cons">(<span class="syntax-interned-symbol">BINOP</span> <a class="function-reference" href="chapter-12.xhtml#function-+">+</a> <span class="syntax-interned-symbol">X</span> <span class="syntax-number">5</span>)</span>
 <span class="syntax-cons">(<span class="syntax-interned-symbol">make-binop</span> <span class="syntax-keyword-symbol">:operand-2</span> <span class="syntax-number">4</span> <span class="syntax-keyword-symbol">:operator</span> <span class="syntax-quote">'<a class="function-reference" href="chapter-12.xhtml#function-*">*</a></span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-cons">(<span class="syntax-interned-symbol">BINOP</span> <a class="function-reference" href="chapter-12.xhtml#function-*">*</a> <a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a> <span class="syntax-number">4</span>)</span>
 </span></code></pre>
 The structure has the same layout as before except that the structure name
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
-</span></code></pre> is included as the first list element.
+<code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
+</span></code> is included as the first list element.
 The selector functions
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operator</span>
-</span></code></pre>, <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operand-1</span>
-</span></code></pre>,
-and <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operand-2</span>
-</span></code></pre> are essentially equivalent to <a class="function-reference" href="chapter-14.xhtml#function-cadr">cadr</a>,
+<code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operator</span>
+</span></code>, <code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operand-1</span>
+</span></code>,
+and <code><span class="syntax-root"><span class="syntax-interned-symbol">binop-operand-2</span>
+</span></code> are essentially equivalent to <a class="function-reference" href="chapter-14.xhtml#function-cadr">cadr</a>,
 <a class="function-reference" href="chapter-14.xhtml#function-caddr">caddr</a>, and <a class="function-reference" href="chapter-14.xhtml#function-cadddr">cadddr</a>, respectively.
-The predicate <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop-p</span>
-</span></code></pre> is more or less equivalent to this
+The predicate <code><span class="syntax-root"><span class="syntax-interned-symbol">binop-p</span>
+</span></code> is more or less equivalent to this
 definition:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="chapter-5.xhtml#macro-defun">defun</a> <span class="syntax-interned-symbol">binop-p</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">x</span>)</span>
   <span class="syntax-cons">(<a class="macro-reference" href="chapter-5.xhtml#macro-and">and</a> <span class="syntax-cons">(<a class="function-reference" href="chapter-14.xhtml#function-consp">consp</a> <span class="syntax-interned-symbol">x</span>)</span> <span class="syntax-cons">(<a class="function-reference" href="chapter-5.xhtml#function-eq">eq</a> <span class="syntax-cons">(<a class="function-reference" href="chapter-14.xhtml#function-car">car</a> <span class="syntax-interned-symbol">x</span>)</span> <span class="syntax-quote">'<span class="syntax-interned-symbol">binop</span></span>)</span>)</span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-interned-symbol">BINOP-P</span>
 </span></code></pre>
-The name <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
-</span></code></pre> is still not a valid <a class="glossary-reference" href="chapter-26.xhtml#glossary-type specifier">type specifier</a> recognizable
-to <a class="function-reference" href="chapter-4.xhtml#function-typep">typep</a>, but at least there is a way of distinguishing <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
-</span></code></pre>
+The name <code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
+</span></code> is still not a valid <a class="glossary-reference" href="chapter-26.xhtml#glossary-type specifier">type specifier</a> recognizable
+to <a class="function-reference" href="chapter-4.xhtml#function-typep">typep</a>, but at least there is a way of distinguishing <code><span class="syntax-root"><span class="syntax-interned-symbol">binop</span>
+</span></code>
 structures from other similarly defined structures.<br/>
 </dd><dt><span class="keyword">:predicate</span></dt><dd>This option takes one argument, which specifies the name of the type predicate.
 If the argument is not supplied or if the option itself is not
 supplied, the name of the predicate is made by concatenating the
-name of the structure to the string <pre><code><span class="syntax-root"><span class="syntax-string">"-P"</span>
-</span></code></pre>, interning the name
+name of the structure to the string <code><span class="syntax-root"><span class="syntax-string">"-P"</span>
+</span></code>, interning the name
 in whatever <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">package</a> is current at the time <a class="macro-reference" href="#macro-defstruct">defstruct</a>
 is expanded.
 If the argument is provided and is <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>, no predicate is defined.
 A predicate can be defined only if the structure is named;
 if <span class="keyword">:type</span> is supplied and <span class="keyword">:named</span> is not supplied,
-then <span class="keyword">:predicate</span> must either be unsupplied or have the value <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>.<br/></dd><dt><span class="keyword">:print-function</span>, <span class="keyword">:print-object</span></dt><dd>The <span class="keyword">:print-function</span> and <span class="keyword">:print-object</span> 
+then <span class="keyword">:predicate</span> must either be unsupplied or have the value <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>.<br/></dd><div class="issue-annotation"><span class="issue-reference error">issue:Issue DEFSTRUCT-PRINT-FUNCTION-AGAIN:X3J13-MAR-93</span><dt><span class="keyword">:print-function</span>, <span class="keyword">:print-object</span></dt><dd>The <span class="keyword">:print-function</span> and <span class="keyword">:print-object</span> 
 options
 specify that a <a class="function-reference" href="chapter-22.xhtml#function-print-object">print-object</a>
 <a class="glossary-reference" href="chapter-26.xhtml#glossary-method">method</a> for <span class="glossary-reference error">glossary:structures</span> of type <span class="parameter">structure-name</span> should be generated.
@@ -571,8 +572,8 @@ the designated printer function is called on three <a class="glossary-reference"
 	      (a <a class="glossary-reference" href="chapter-26.xhtml#glossary-generalized instance">generalized instance</a> of <span class="parameter">structure-name</span>).<br/></li><li>a <a class="glossary-reference" href="chapter-26.xhtml#glossary-stream">stream</a> to print to.<br/></li><li>an <a class="glossary-reference" href="chapter-26.xhtml#glossary-integer">integer</a> indicating the current depth.
 	      The magnitude of this integer may vary between <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementations</a>;
 	      however, it can reliably be compared against <a class="variable-reference" href="chapter-22.xhtml#variable-*print-level*">*print-level*</a>
-	      to determine whether depth abbreviation is appropriate.<br/></li></ul><br/>Specifying <pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-keyword-symbol">:print-function</span> <span class="parameter">printer-name</span>)</span>
-</span></code></pre>
+	      to determine whether depth abbreviation is appropriate.<br/></li></ul><br/>Specifying <code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-keyword-symbol">:print-function</span> <span class="parameter">printer-name</span>)</span>
+</span></code>
 is approximately equivalent to specifying:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="chapter-7.xhtml#macro-defmethod">defmethod</a> <a class="function-reference" href="chapter-22.xhtml#function-print-object">print-object</a> <span class="syntax-cons">(<span class="syntax-cons">(<span class="syntax-interned-symbol">object</span> <span class="parameter">structure-name</span>)</span> <a class="type-reference" href="chapter-21.xhtml#type-stream">stream</a>)</span>
   <span class="syntax-cons">(<a class="function-reference" href="chapter-5.xhtml#function-funcall">funcall</a> <span class="syntax-cons">(<a class="special-operator-reference" href="chapter-5.xhtml#special-operator-function">function</a> <span class="parameter">printer-name</span>)</span> <span class="syntax-interned-symbol">object</span> <a class="type-reference" href="chapter-21.xhtml#type-stream">stream</a> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>⟨</mi><mi>⟨</mi></math><span class="parameter">current-print-depth</span><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>⟩</mi><mi>⟩</mi></math>)</span>)</span>
 </span></code></pre><br/>where the <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>⟨</mi><mi>⟨</mi></math><span class="parameter">current-print-depth</span><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>⟩</mi><mi>⟩</mi></math> represents the printer's belief of
@@ -583,16 +584,16 @@ descends recursively, or whether <span class="parameter">current-print-depth</sp
 value as printing descends recursively and <span class="parameter">*print-level*</span> remains
 constant during the same traversal.<br/>If the <span class="keyword">:print-object</span> option is used, then
 when a structure of type <span class="parameter">structure-name</span> is to be printed,
-the designated printer function is called on two arguments:<br/><ul><li>the structure to be printed.<br/></li><li>the stream to print to.<br/></li></ul><br/>Specifying <pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-keyword-symbol">:print-object</span> <span class="parameter">printer-name</span>)</span>
-</span></code></pre> is equivalent to specifying:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="chapter-7.xhtml#macro-defmethod">defmethod</a> <a class="function-reference" href="chapter-22.xhtml#function-print-object">print-object</a> <span class="syntax-cons">(<span class="syntax-cons">(<span class="syntax-interned-symbol">object</span> <span class="parameter">structure-name</span>)</span> <a class="type-reference" href="chapter-21.xhtml#type-stream">stream</a>)</span>
+the designated printer function is called on two arguments:<br/><ul><li>the structure to be printed.<br/></li><li>the stream to print to.<br/></li></ul><br/>Specifying <code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-keyword-symbol">:print-object</span> <span class="parameter">printer-name</span>)</span>
+</span></code> is equivalent to specifying:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="chapter-7.xhtml#macro-defmethod">defmethod</a> <a class="function-reference" href="chapter-22.xhtml#function-print-object">print-object</a> <span class="syntax-cons">(<span class="syntax-cons">(<span class="syntax-interned-symbol">object</span> <span class="parameter">structure-name</span>)</span> <a class="type-reference" href="chapter-21.xhtml#type-stream">stream</a>)</span>
   <span class="syntax-cons">(<a class="function-reference" href="chapter-5.xhtml#function-funcall">funcall</a> <span class="syntax-cons">(<a class="special-operator-reference" href="chapter-5.xhtml#special-operator-function">function</a> <span class="parameter">printer-name</span>)</span> <span class="syntax-interned-symbol">object</span> <a class="type-reference" href="chapter-21.xhtml#type-stream">stream</a>)</span>)</span>
-</span></code></pre><br/>    If no <span class="keyword">:type</span> option is supplied,
+</span></code></pre><br/><div class="issue-annotation"><a class="issue-reference" href="issues/defstruct-print-function-inheritance.xhtml#issue-defstruct-print-function-inheritance:yes">Issue DEFSTRUCT-PRINT-FUNCTION-INHERITANCE:YES</a><div class="issue-annotation"><span class="issue-reference error">issue:Issue DEFSTRUCT-PRINT-FUNCTION-AGAIN:X3J13-MAR-93</span>    If no <span class="keyword">:type</span> option is supplied,
 and if either a <span class="keyword">:print-function</span> or a <span class="keyword">:print-object</span> option is supplied,
 and if no <span class="parameter">printer-name</span> is supplied,
 then a <a class="function-reference" href="chapter-22.xhtml#function-print-object">print-object</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-method">method</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-specialized">specialized</a> for <span class="parameter">structure-name</span>
 is generated that calls a function that implements the default printing behavior for
-structures using <pre><code><span class="syntax-root">#S
-</span></code></pre> notation; see <span class="section-reference error">section:PrintingStructures.</span><br/>If neither a <span class="keyword">:print-function</span> 
+structures using <code><span class="syntax-root">#S
+</span></code> notation; see <span class="section-reference error">section:PrintingStructures.</span><br/>If neither a <span class="keyword">:print-function</span> 
        nor a <span class="keyword">:print-object</span> option 
 is supplied,
 then <a class="macro-reference" href="#macro-defstruct">defstruct</a> does not generate a <a class="function-reference" href="chapter-22.xhtml#function-print-object">print-object</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-method">method</a>
@@ -600,31 +601,31 @@ then <a class="macro-reference" href="#macro-defstruct">defstruct</a> does not g
 either from a structure named in an <span class="keyword">:include</span> option 
     or from the default behavior for printing structures;
 see the <a class="glossary-reference" href="chapter-26.xhtml#glossary-function">function</a> <a class="function-reference" href="chapter-22.xhtml#function-print-object">print-object</a> and <a class="section-reference" href="chapter-22.xhtml#section-PrintingStructures">Printing Structures</a>.
-
-When <a class="variable-reference" href="chapter-22.xhtml#variable-*print-circle*">*print-circle*</a> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a>,
+</div></div>
+<div class="issue-annotation"><a class="issue-reference" href="issues/print-circle-structure.xhtml#issue-print-circle-structure:user-functions-work">Issue PRINT-CIRCLE-STRUCTURE:USER-FUNCTIONS-WORK</a>When <a class="variable-reference" href="chapter-22.xhtml#variable-*print-circle*">*print-circle*</a> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a>,
 a user-defined print function can print <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">objects</a> 
 to the supplied <a class="glossary-reference" href="chapter-26.xhtml#glossary-stream">stream</a> using  
     <a class="function-reference" href="chapter-22.xhtml#function-write">write</a>,
     <a class="function-reference" href="chapter-22.xhtml#function-prin1">prin1</a>,
     <a class="function-reference" href="chapter-22.xhtml#function-princ">princ</a>, 
  or <a class="function-reference" href="chapter-22.xhtml#function-format">format</a>
-and expect circularities to be detected and printed using the <pre><code><span class="syntax-root">#<span class="explicit-italic"> n</span>#
-</span></code></pre> syntax.
+and expect circularities to be detected and printed using the <code><span class="syntax-root">#<span class="explicit-italic"> n</span>#
+</span></code> syntax.
 This applies to <a class="glossary-reference" href="chapter-26.xhtml#glossary-method">methods</a> on <a class="function-reference" href="chapter-22.xhtml#function-print-object">print-object</a> in addition to
 <span class="keyword">:print-function</span> options.
 If a user-defined print function prints to a <a class="glossary-reference" href="chapter-26.xhtml#glossary-stream">stream</a> other than the one
 that was supplied, then circularity detection starts over for that <a class="glossary-reference" href="chapter-26.xhtml#glossary-stream">stream</a>. 
 See the <a class="glossary-reference" href="chapter-26.xhtml#glossary-variable">variable</a> <a class="variable-reference" href="chapter-22.xhtml#variable-*print-circle*">*print-circle*</a>.
- 
+</div> 
 
-</dd><dt><span class="keyword">:type</span></dt><dd><span class="keyword">:type</span> explicitly specifies the representation to be used for
+</dd></div><dt><span class="keyword">:type</span></dt><dd><span class="keyword">:type</span> explicitly specifies the representation to be used for
 the structure.  Its argument must be one of these <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">types</a>:<br/><dl><dt><a class="type-reference" href="chapter-15.xhtml#type-vector">vector</a></dt><dd>This produces the same result as specifying <span class="explicit-mono">(vector t)</span>.
 The structure is represented
 as a general <a class="glossary-reference" href="chapter-26.xhtml#glossary-vector">vector</a>, storing components as vector elements.
 The first component is vector 
-element 1 if the structure is <span class="keyword">:named</span>, and element 0 otherwise.<br/>
-</dd><dt><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-15.xhtml#function-vector">vector</a> <span class="parameter">element-type</span>)</span>
-</span></code></pre></dt><dd>The structure is represented as a (possibly specialized) <a class="glossary-reference" href="chapter-26.xhtml#glossary-vector">vector</a>, storing
+element 1 if the structure is <span class="keyword">:named</span>, and element 0 otherwise.<br/><span class="reviewer-note" id="reviewer-note-do-any-implementatio"><span class="reviewer-note-tooltip"><span class="reviewer">Barmar</span>: Do any implementations create non-simple vectors?</span>‣</span>
+</dd><dt><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-15.xhtml#function-vector">vector</a> <span class="parameter">element-type</span>)</span>
+</span></code></dt><dd>The structure is represented as a (possibly specialized) <a class="glossary-reference" href="chapter-26.xhtml#glossary-vector">vector</a>, storing
 components as vector elements.  Every component must be of a <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> 
 that can be stored in a <a class="glossary-reference" href="chapter-26.xhtml#glossary-vector">vector</a> of the <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> specified.  
 The first component is vector
@@ -652,40 +653,40 @@ should return precisely what this one does<br/><pre><code><span class="syntax-ro
 the structure is represented as an <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">object</a> of <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> <a class="type-reference" href="chapter-4.xhtml#type-structure-object">structure-object</a>.<br/>
 <a class="macro-reference" href="#macro-defstruct">defstruct</a> without a <span class="keyword">:type</span> option defines a <a class="glossary-reference" href="chapter-26.xhtml#glossary-class">class</a> with
 the structure name as its name. The <a class="glossary-reference" href="chapter-26.xhtml#glossary-metaclass">metaclass</a> of structure
-<span class="glossary-reference error">glossary:instances</span> is <a class="type-reference" href="chapter-4.xhtml#type-structure-class">structure-class</a>.  <br/></dd></dl><br/>The consequences of redefining a <a class="macro-reference" href="#macro-defstruct">defstruct</a> structure are undefined.
-<br/>In the case where no <a class="macro-reference" href="#macro-defstruct">defstruct</a> options have been supplied, 
+<span class="glossary-reference error">glossary:instances</span> is <a class="type-reference" href="chapter-4.xhtml#type-structure-class">structure-class</a>.  <br/></dd></dl><br/><span class="issue-annotation"><a class="issue-reference" href="issues/defstruct-redefinition.xhtml#issue-defstruct-redefinition:error">Issue DEFSTRUCT-REDEFINITION:ERROR</a>The consequences of redefining a <a class="macro-reference" href="#macro-defstruct">defstruct</a> structure are undefined.
+</span><br/>In the case where no <a class="macro-reference" href="#macro-defstruct">defstruct</a> options have been supplied, 
 the following functions are automatically defined to operate 
-on instances of the new structure:<br/><dl><dt> Predicate</dt><dd>A predicate with the name <pre><code><span class="syntax-root"><span class="parameter">structure-name</span>-p
-</span></code></pre> is defined to
+on instances of the new structure:<br/><dl><dt> Predicate</dt><dd>A predicate with the name <code><span class="syntax-root"><span class="parameter">structure-name</span>-p
+</span></code> is defined to
 test membership in the structure type.  The predicate 
-<pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="parameter">structure-name</span>-p <span class="parameter">object</span>)</span>
-</span></code></pre> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a> if an <span class="parameter">object</span> 
+<code><span class="syntax-root"><span class="syntax-cons">(<span class="parameter">structure-name</span>-p <span class="parameter">object</span>)</span>
+</span></code> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a> if an <span class="parameter">object</span> 
 is of this <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a>; otherwise it is <a class="glossary-reference" href="chapter-26.xhtml#glossary-false">false</a>.  <a class="function-reference" href="chapter-4.xhtml#function-typep">typep</a> can also
 be used with the name of the new <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> to test whether an 
 <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">object</a>
 belongs to the <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a>. 
 Such a function call has the form 
-<pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-4.xhtml#function-typep">typep</a> <span class="parameter">object</span> <span class="syntax-quote">'<span class="parameter">structure-name</span></span>)</span>
-</span></code></pre>.<br/></dd><dt> Component reader functions</dt><dd><a class="glossary-reference" href="chapter-26.xhtml#glossary-reader">Reader</a> functions are defined to <a class="glossary-reference" href="chapter-26.xhtml#glossary-read">read</a> the components of the
+<code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-4.xhtml#function-typep">typep</a> <span class="parameter">object</span> <span class="syntax-quote">'<span class="parameter">structure-name</span></span>)</span>
+</span></code>.<br/></dd><dt> Component reader functions</dt><dd><a class="glossary-reference" href="chapter-26.xhtml#glossary-reader">Reader</a> functions are defined to <a class="glossary-reference" href="chapter-26.xhtml#glossary-read">read</a> the components of the
 structure.  For each slot name, there is a corresponding
-<a class="glossary-reference" href="chapter-26.xhtml#glossary-reader">reader</a> function with the name <pre><code><span class="syntax-root"><span class="parameter">structure-name</span>-<span class="parameter">slot-name</span>
-</span></code></pre>.
+<a class="glossary-reference" href="chapter-26.xhtml#glossary-reader">reader</a> function with the name <code><span class="syntax-root"><span class="parameter">structure-name</span>-<span class="parameter">slot-name</span>
+</span></code>.
 This function <a class="glossary-reference" href="chapter-26.xhtml#glossary-read">reads</a> the contents of that slot.  
 Each <a class="glossary-reference" href="chapter-26.xhtml#glossary-reader">reader</a> function takes one argument, which is
 an instance of the structure type.  
 <a class="macro-reference" href="chapter-5.xhtml#macro-setf">setf</a> can be used with any of these <a class="glossary-reference" href="chapter-26.xhtml#glossary-reader">reader</a> functions
-to alter the slot contents.<br/></dd><dt> Constructor function</dt><dd>A constructor function with the name <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">make-\param{structure-name}</span>
-</span></code></pre>
+to alter the slot contents.<br/></dd><dt> Constructor function</dt><dd>A constructor function with the name <code><span class="syntax-root"><span class="syntax-interned-symbol">make-\param{structure-name}</span>
+</span></code>
 is defined.  This function creates and returns new 
-instances of the structure type.<br/></dd><dt> Copier function</dt><dd>A copier function with the name <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">copy-\param{structure-name}</span>
-</span></code></pre> is defined.
+instances of the structure type.<br/></dd><dt> Copier function</dt><dd>A copier function with the name <code><span class="syntax-root"><span class="syntax-interned-symbol">copy-\param{structure-name}</span>
+</span></code> is defined.
 The copier function takes an object of the structure type and creates a
 new object of the same  type that is a copy of the first.  The copier
 function creates a new structure with the same component entries
 as the original.  Corresponding components of the two structure instances
 are <a class="function-reference" href="chapter-5.xhtml#function-eql">eql</a>.
 </dd></dl><br/>
-If a <a class="macro-reference" href="#macro-defstruct">defstruct</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-form">form</a> appears as a <a class="glossary-reference" href="chapter-26.xhtml#glossary-top level form">top level form</a>,
+<div class="issue-annotation"><span class="issue-reference error">issue:Issue COMPILE-FILE-HANDLING-OF-TOP-LEVEL-FORMS:CLARIFY</span>If a <a class="macro-reference" href="#macro-defstruct">defstruct</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-form">form</a> appears as a <a class="glossary-reference" href="chapter-26.xhtml#glossary-top level form">top level form</a>,
 the <a class="glossary-reference" href="chapter-26.xhtml#glossary-compiler">compiler</a> must make the <a class="glossary-reference" href="chapter-26.xhtml#glossary-structure">structure</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> name recognized
 as a valid <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> name in subsequent declarations (as for <a class="macro-reference" href="chapter-4.xhtml#macro-deftype">deftype</a>)
 and make the structure slot readers known to <a class="macro-reference" href="chapter-5.xhtml#macro-setf">setf</a>.  In addition, the
@@ -695,71 +696,71 @@ so that further <a class="macro-reference" href="#macro-defstruct">defstruct</a>
 The functions which <a class="macro-reference" href="#macro-defstruct">defstruct</a> generates are not defined 
 in the compile time environment, although the <a class="glossary-reference" href="chapter-26.xhtml#glossary-compiler">compiler</a> may save enough
 information about the functions to code subsequent calls inline.
-The <pre><code><span class="syntax-root">#S
-</span></code></pre> <a class="glossary-reference" href="chapter-26.xhtml#glossary-reader macro">reader macro</a> might or might not recognize the newly defined 
+The <code><span class="syntax-root">#S
+</span></code> <a class="glossary-reference" href="chapter-26.xhtml#glossary-reader macro">reader macro</a> might or might not recognize the newly defined 
 <a class="glossary-reference" href="chapter-26.xhtml#glossary-structure">structure</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> name at compile time.  
-
-</dd></dl><dl><dt class="label">Examples</dt><dd>An example of a structure definition follows:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="#macro-defstruct">defstruct</a> <span class="syntax-interned-symbol">ship</span>
+</div>
+</dd></dl><div class="removable-text"><span class="removable-text-tooltip">This passage is <a href="chapter-1.xhtml#section-RemovableText">removable text</a> which is not formally part of the standard.</span><dl><dt class="label">Examples</dt><dd>An example of a structure definition follows:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="#macro-defstruct">defstruct</a> <span class="syntax-interned-symbol">ship</span>
   <span class="syntax-interned-symbol">x-position</span>
   <span class="syntax-interned-symbol">y-position</span>
   <span class="syntax-interned-symbol">x-velocity</span>
   <span class="syntax-interned-symbol">y-velocity</span>
   <span class="syntax-interned-symbol">mass</span>)</span>
 </span></code></pre>
-This declares that every <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">ship</span>
-</span></code></pre> is an <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">object</a> 
+This declares that every <code><span class="syntax-root"><span class="syntax-interned-symbol">ship</span>
+</span></code> is an <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">object</a> 
 with five named components.
-The evaluation of this form does the following:<br/><ol><li>It defines <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">ship-x-position</span>
-</span></code></pre> to be a function
-of one argument, a ship, that returns the <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">x-position</span>
-</span></code></pre>
-of the ship; <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">ship-y-position</span>
-</span></code></pre>
+The evaluation of this form does the following:<br/><ol><li>It defines <code><span class="syntax-root"><span class="syntax-interned-symbol">ship-x-position</span>
+</span></code> to be a function
+of one argument, a ship, that returns the <code><span class="syntax-root"><span class="syntax-interned-symbol">x-position</span>
+</span></code>
+of the ship; <code><span class="syntax-root"><span class="syntax-interned-symbol">ship-y-position</span>
+</span></code>
 and the other components are given similar function definitions.
 These functions are called the <a class="glossary-reference" href="chapter-26.xhtml#glossary-access">access</a> functions, as they
-are used to <a class="glossary-reference" href="chapter-26.xhtml#glossary-access">access</a> elements of the structure.<br/></li><li><pre><code><span class="syntax-root"><span class="syntax-interned-symbol">ship</span>
-</span></code></pre> becomes the name of a <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> of which instances
-of ships are elements.  <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">ship</span>
-</span></code></pre> becomes acceptable to <a class="function-reference" href="chapter-4.xhtml#function-typep">typep</a>,
-for example; <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-4.xhtml#function-typep">typep</a> <span class="syntax-interned-symbol">x</span> <span class="syntax-quote">'<span class="syntax-interned-symbol">ship</span></span>)</span>
-</span></code></pre> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a> if <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">x</span>
-</span></code></pre> is a ship
-and false if <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">x</span>
-</span></code></pre> is any <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">object</a> other than a ship.
+are used to <a class="glossary-reference" href="chapter-26.xhtml#glossary-access">access</a> elements of the structure.<br/></li><li><code><span class="syntax-root"><span class="syntax-interned-symbol">ship</span>
+</span></code> becomes the name of a <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> of which instances
+of ships are elements.  <code><span class="syntax-root"><span class="syntax-interned-symbol">ship</span>
+</span></code> becomes acceptable to <a class="function-reference" href="chapter-4.xhtml#function-typep">typep</a>,
+for example; <code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-4.xhtml#function-typep">typep</a> <span class="syntax-interned-symbol">x</span> <span class="syntax-quote">'<span class="syntax-interned-symbol">ship</span></span>)</span>
+</span></code> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a> if <code><span class="syntax-root"><span class="syntax-interned-symbol">x</span>
+</span></code> is a ship
+and false if <code><span class="syntax-root"><span class="syntax-interned-symbol">x</span>
+</span></code> is any <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">object</a> other than a ship.
 
-</li><li>A function named <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">ship-p</span>
-</span></code></pre> of 
+</li><li>A function named <code><span class="syntax-root"><span class="syntax-interned-symbol">ship-p</span>
+</span></code> of 
 one argument is defined; it is a predicate
-that is <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a> if its argument is a ship and is <a class="glossary-reference" href="chapter-26.xhtml#glossary-false">false</a> otherwise.<br/></li><li>A function called <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">make-ship</span>
-</span></code></pre> is defined that, when invoked,
+that is <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a> if its argument is a ship and is <a class="glossary-reference" href="chapter-26.xhtml#glossary-false">false</a> otherwise.<br/></li><li>A function called <code><span class="syntax-root"><span class="syntax-interned-symbol">make-ship</span>
+</span></code> is defined that, when invoked,
 creates a data structure with five components, suitable for use with
 the <a class="glossary-reference" href="chapter-26.xhtml#glossary-access">access</a> functions.  Thus executing<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="special-operator-reference" href="chapter-5.xhtml#special-operator-setq">setq</a> <span class="syntax-interned-symbol">ship2</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">make-ship</span>)</span>)</span>
 </span></code></pre>
-sets <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">ship2</span>
-</span></code></pre> to a newly created <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">ship</span>
-</span></code></pre> <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">object</a>.
+sets <code><span class="syntax-root"><span class="syntax-interned-symbol">ship2</span>
+</span></code> to a newly created <code><span class="syntax-root"><span class="syntax-interned-symbol">ship</span>
+</span></code> <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">object</a>.
 One can supply the initial values of any desired component in the call
-to <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">make-ship</span>
-</span></code></pre> by using keyword arguments in this way:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="special-operator-reference" href="chapter-5.xhtml#special-operator-setq">setq</a> <span class="syntax-interned-symbol">ship2</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">make-ship</span> <span class="syntax-keyword-symbol">:mass</span> <span class="syntax-interned-symbol">*default-ship-mass*</span>
+to <code><span class="syntax-root"><span class="syntax-interned-symbol">make-ship</span>
+</span></code> by using keyword arguments in this way:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="special-operator-reference" href="chapter-5.xhtml#special-operator-setq">setq</a> <span class="syntax-interned-symbol">ship2</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">make-ship</span> <span class="syntax-keyword-symbol">:mass</span> <span class="syntax-interned-symbol">*default-ship-mass*</span>
                        <span class="syntax-keyword-symbol">:x-position</span> <span class="syntax-number">0</span>
                        <span class="syntax-keyword-symbol">:y-position</span> <span class="syntax-number">0</span>)</span>)</span>
 </span></code></pre>
 This constructs a new ship and initializes three of its components.
 This function is called the ``constructor function''
-because it constructs a new structure.<br/></li><li>A function called <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">copy-ship</span>
-</span></code></pre> of one argument
-is defined that, when given a <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">ship</span>
-</span></code></pre> <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">object</a>,
-creates a new <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">ship</span>
-</span></code></pre> <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">object</a> that is a copy of the given one.
+because it constructs a new structure.<br/></li><li>A function called <code><span class="syntax-root"><span class="syntax-interned-symbol">copy-ship</span>
+</span></code> of one argument
+is defined that, when given a <code><span class="syntax-root"><span class="syntax-interned-symbol">ship</span>
+</span></code> <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">object</a>,
+creates a new <code><span class="syntax-root"><span class="syntax-interned-symbol">ship</span>
+</span></code> <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">object</a> that is a copy of the given one.
 This function is called the ``copier function.''
-</li></ol><br/><a class="macro-reference" href="chapter-5.xhtml#macro-setf">setf</a> can be used to alter the components of a <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">ship</span>
-</span></code></pre>:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="chapter-5.xhtml#macro-setf">setf</a> <span class="syntax-cons">(<span class="syntax-interned-symbol">ship-x-position</span> <span class="syntax-interned-symbol">ship2</span>)</span> <span class="syntax-number">100</span>)</span>
+</li></ol><br/><a class="macro-reference" href="chapter-5.xhtml#macro-setf">setf</a> can be used to alter the components of a <code><span class="syntax-root"><span class="syntax-interned-symbol">ship</span>
+</span></code>:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="chapter-5.xhtml#macro-setf">setf</a> <span class="syntax-cons">(<span class="syntax-interned-symbol">ship-x-position</span> <span class="syntax-interned-symbol">ship2</span>)</span> <span class="syntax-number">100</span>)</span>
 </span></code></pre>
-This alters the <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">x-position</span>
-</span></code></pre> of <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">ship2</span>
-</span></code></pre> to be <pre><code><span class="syntax-root"><span class="syntax-number">100</span>
-</span></code></pre>.
+This alters the <code><span class="syntax-root"><span class="syntax-interned-symbol">x-position</span>
+</span></code> of <code><span class="syntax-root"><span class="syntax-interned-symbol">ship2</span>
+</span></code> to be <code><span class="syntax-root"><span class="syntax-number">100</span>
+</span></code>.
 This works because <a class="macro-reference" href="#macro-defstruct">defstruct</a> behaves as if
 it generates an appropriate <a class="macro-reference" href="chapter-5.xhtml#macro-defsetf">defsetf</a>
 for each <a class="glossary-reference" href="chapter-26.xhtml#glossary-access">access</a> function.<br/><br/><pre><code><span class="syntax-root">;;;
@@ -851,20 +852,20 @@ for each <a class="glossary-reference" href="chapter-26.xhtml#glossary-access">a
 ;a, b, and c set, and the rest are collected into d
  <span class="syntax-cons">(<a class="special-operator-reference" href="chapter-5.xhtml#special-operator-setq">setq</a> <span class="syntax-interned-symbol">x</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">create-dfs-boa</span> <span class="syntax-number">1</span> <span class="syntax-number">2</span> <span class="syntax-number">3</span> <span class="syntax-number">4</span> <span class="syntax-number">5</span> <span class="syntax-number">6</span>)</span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-vector">#(<span class="syntax-interned-symbol">DFS-BOA...</span>)</span>
  <span class="syntax-cons">(<span class="syntax-interned-symbol">dfs-boa-d</span> <span class="syntax-interned-symbol">x</span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-cons">(<span class="syntax-number">4</span> <span class="syntax-number">5</span> <span class="syntax-number">6</span>)</span>
-</span></code></pre><br/></dd></dl><dl><dt class="label">Affected By</dt><dd><span class="none">None</span>.<br/></dd></dl><dl><dt class="label">Exceptional Situations</dt><dd>If any two slot names (whether present directly or inherited by the <span class="keyword">:include</span> option)
+</span></code></pre><br/></dd></dl></div><dl><dt class="label">Affected By</dt><dd><span class="none">None</span>.<br/></dd></dl><dl><dt class="label">Exceptional Situations</dt><dd><div class="issue-annotation"><a class="issue-reference" href="issues/defstruct-slots-constraints-name.xhtml#issue-defstruct-slots-constraints-name:duplicates-error">Issue DEFSTRUCT-SLOTS-CONSTRAINTS-NAME:DUPLICATES-ERROR</a>If any two slot names (whether present directly or inherited by the <span class="keyword">:include</span> option)
 are the <a class="glossary-reference" href="chapter-26.xhtml#glossary-same">same</a> under <a class="function-reference" href="chapter-16.xhtml#function-string=">string=</a>,
 <a class="macro-reference" href="#macro-defstruct">defstruct</a> should signal an error of <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> <a class="type-reference" href="chapter-5.xhtml#type-program-error">program-error</a>.
-
-The consequences are undefined if the <span class="parameter">included-structure-name</span> 
+</div>
+<div class="issue-annotation"><a class="issue-reference" href="issues/data-types-hierarchy-underspecified.xhtml#issue-data-types-hierarchy-underspecified">Issue DATA-TYPES-HIERARCHY-UNDERSPECIFIED</a>The consequences are undefined if the <span class="parameter">included-structure-name</span> 
 does not name a <span class="glossary-reference error">glossary:structure type</span>.
-
-</dd></dl><dl><dt class="label">See Also</dt><dd><a class="function-reference" href="chapter-25.xhtml#function-documentation">documentation</a>,
+</div>
+</dd></dl><div class="removable-text"><span class="removable-text-tooltip">This passage is <a href="chapter-1.xhtml#section-RemovableText">removable text</a> which is not formally part of the standard.</span><dl><dt class="label">See Also</dt><dd><a class="function-reference" href="chapter-25.xhtml#function-documentation">documentation</a>,
 <a class="function-reference" href="chapter-22.xhtml#function-print-object">print-object</a>,
 <a class="macro-reference" href="chapter-5.xhtml#macro-setf">setf</a>,
 <a class="function-reference" href="chapter-4.xhtml#function-subtypep">subtypep</a>,
 <a class="function-reference" href="chapter-4.xhtml#function-type-of">type-of</a>,
 <a class="function-reference" href="chapter-4.xhtml#function-typep">typep</a>,
-<a class="section-reference" href="chapter-3.xhtml#section-Compilation">Compilation</a><br/></dd></dl><dl><dt class="label">Notes</dt><dd>The <span class="parameter">printer-name</span> should observe the values of
+<a class="section-reference" href="chapter-3.xhtml#section-Compilation">Compilation</a><br/></dd></dl></div><div class="removable-text"><span class="removable-text-tooltip">This passage is <a href="chapter-1.xhtml#section-RemovableText">removable text</a> which is not formally part of the standard.</span><dl><dt class="label">Notes</dt><dd>The <span class="parameter">printer-name</span> should observe the values of
 such printer-control variables as <a class="variable-reference" href="chapter-22.xhtml#variable-*print-escape*">*print-escape*</a>.<br/>The restriction against issuing a warning for type mismatches between
 a <span class="parameter">slot-initform</span> and the corresponding slot's <span class="keyword">:type</span> option is
 necessary because a <span class="parameter">slot-initform</span> must be specified in order to
@@ -872,8 +873,8 @@ specify slot options; in some cases, no suitable default may exist.<br/>The mech
 be usable with <a class="macro-reference" href="chapter-5.xhtml#macro-setf">setf</a> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a>; 
 for example, it may use <a class="glossary-reference" href="chapter-26.xhtml#glossary-setf function">setf functions</a>, <a class="glossary-reference" href="chapter-26.xhtml#glossary-setf expander">setf expanders</a>, or
 some other <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a> mechanism known to that
-<a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a>'s <a class="glossary-reference" href="chapter-26.xhtml#glossary-code">code</a> for <a class="macro-reference" href="chapter-5.xhtml#macro-setf">setf</a>.<br/></dd></dl></div><br/><br/><br/><div class="component" id="function-copy-structure"><div class="header"><span class="left"><span class="name" id="function-copy-structure">copy-structure</span></span><span class="right"><span class="ftype">Function</span></span></div><br/>
-<dl><dt class="label">Syntax</dt><dd><span class="function-definition"><span class="name">copy-structure</span>&nbsp;<span class="lambda-list">structure</span>&nbsp;→&nbsp;<span class="return-values">copy</span></span><br/><br/></dd></dl><dl><dt class="label">Arguments and Values</dt><dd><span class="parameter">structure</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-structure">structure</a>.<br/><span class="parameter">copy</span>&mdash;a copy of the <span class="parameter">structure</span>.<br/></dd></dl><dl><dt class="label">Description</dt><dd>Returns a <a class="glossary-reference" href="chapter-26.xhtml#glossary-copy">copy</a><sub>6</sub> of the <span class="parameter">structure</span>.<br/>Only the <span class="parameter">structure</span> itself is copied; not the values of the slots.<br/></dd></dl><dl><dt class="label">Examples</dt><dd><span class="none">None</span>.<br/></dd></dl><dl><dt class="label">Side Effects</dt><dd><span class="none">None</span>.<br/></dd></dl><dl><dt class="label">Affected By</dt><dd><span class="none">None</span>.<br/></dd></dl><dl><dt class="label">Exceptional Situations</dt><dd><span class="none">None</span>.<br/></dd></dl><dl><dt class="label">See Also</dt><dd>the <span class="keyword">:copier</span> option to <a class="macro-reference" href="#macro-defstruct">defstruct</a><br/></dd></dl><dl><dt class="label">Notes</dt><dd>The <span class="parameter">copy</span> is the <a class="glossary-reference" href="chapter-26.xhtml#glossary-same">same</a> as the given <span class="parameter">structure</span>
-under <a class="function-reference" href="chapter-5.xhtml#function-equalp">equalp</a>, but not under <a class="function-reference" href="chapter-5.xhtml#function-equal">equal</a>.<br/></dd></dl>
+<a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a>'s <a class="glossary-reference" href="chapter-26.xhtml#glossary-code">code</a> for <a class="macro-reference" href="chapter-5.xhtml#macro-setf">setf</a>.<br/></dd></dl></div></div><br/><br/><br/><div class="component" id="function-copy-structure"><div class="header"><span class="left"><span class="name" id="function-copy-structure">copy-structure</span></span><span class="right"><span class="ftype">Function</span></span></div><br/><div class="issue-annotation"><a class="issue-reference" href="issues/defstruct-copier.xhtml#issue-defstruct-copier:argument-type">Issue DEFSTRUCT-COPIER:ARGUMENT-TYPE</a>
+<dl><dt class="label">Syntax</dt><dd><span class="function-definition"><span class="name">copy-structure</span>&nbsp;<span class="lambda-list">structure</span>&nbsp;→&nbsp;<span class="return-values">copy</span></span><br/><br/></dd></dl><dl><dt class="label">Arguments and Values</dt><dd><span class="parameter">structure</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-structure">structure</a>.<br/><span class="parameter">copy</span>&mdash;a copy of the <span class="parameter">structure</span>.<br/></dd></dl><dl><dt class="label">Description</dt><dd>Returns a <a class="glossary-reference" href="chapter-26.xhtml#glossary-copy">copy</a><sub>6</sub> of the <span class="parameter">structure</span>.<br/>Only the <span class="parameter">structure</span> itself is copied; not the values of the slots.<br/></dd></dl><div class="removable-text"><span class="removable-text-tooltip">This passage is <a href="chapter-1.xhtml#section-RemovableText">removable text</a> which is not formally part of the standard.</span><dl><dt class="label">Examples</dt><dd><span class="none">None</span>.<br/></dd></dl></div><dl><dt class="label">Side Effects</dt><dd><span class="none">None</span>.<br/></dd></dl><dl><dt class="label">Affected By</dt><dd><span class="none">None</span>.<br/></dd></dl><dl><dt class="label">Exceptional Situations</dt><dd><span class="none">None</span>.<br/></dd></dl><div class="removable-text"><span class="removable-text-tooltip">This passage is <a href="chapter-1.xhtml#section-RemovableText">removable text</a> which is not formally part of the standard.</span><dl><dt class="label">See Also</dt><dd>the <span class="keyword">:copier</span> option to <a class="macro-reference" href="#macro-defstruct">defstruct</a><br/></dd></dl></div><div class="removable-text"><span class="removable-text-tooltip">This passage is <a href="chapter-1.xhtml#section-RemovableText">removable text</a> which is not formally part of the standard.</span><dl><dt class="label">Notes</dt><dd>The <span class="parameter">copy</span> is the <a class="glossary-reference" href="chapter-26.xhtml#glossary-same">same</a> as the given <span class="parameter">structure</span>
+under <a class="function-reference" href="chapter-5.xhtml#function-equalp">equalp</a>, but not under <a class="function-reference" href="chapter-5.xhtml#function-equal">equal</a>.<br/></dd></dl></div></div>
 </div><br/>
 </section></section></div></main><footer>Copyright © 2021 Jan Moringen</footer></body></html>

@@ -70,8 +70,8 @@ Commercial Lisp machines from Xerox, Lisp Machines (LMI), and
 Symbolics were on the market by 1981.
 For further information about Lisp Machine Lisp, see <span class="explicit-italic"> Lisp Machine Manual</span>.<br/>During the late 1970's, Lisp Machine Lisp began to expand towards a
 much fuller language.  Sophisticated lambda lists, 
-<pre><code><span class="syntax-root"><a class="macro-reference" href="chapter-5.xhtml#macro-setf">setf</a>
-</span></code></pre>, multiple values, and structures
+<code><span class="syntax-root"><a class="macro-reference" href="chapter-5.xhtml#macro-setf">setf</a>
+</span></code>, multiple values, and structures
 like those in <span class="explicit-roman">Common Lisp</span> are the results of early
 experimentation with programming styles by the Lisp Machine group.
 Jonl White and others migrated these features to MacLisp.
@@ -246,8 +246,8 @@ There is still a corresponding glossary entry, and is formally equivalent
 to a use of ``<a class="glossary-reference" href="chapter-26.xhtml#glossary-name">name</a>,'' but the hope is that making such uses 
 conspicuous will save the reader a trip to the glossary in some cases.<br/></dd><dt><span class="symbol-reference error">symbol:name</span></dt><dd>Denotes a symbol in the <a class="package-reference" href="#package-common-lisp">common-lisp</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">package</a>.
 For information about <a class="glossary-reference" href="chapter-26.xhtml#glossary-case">case</a> conventions,
-see <span class="section-reference error">section:CaseInSymbols.</span><br/></dd><dt><pre><code><span class="syntax-root"><span class="syntax-interned-symbol">name</span>
-</span></code></pre></dt><dd>Denotes a sample <a class="glossary-reference" href="chapter-26.xhtml#glossary-name">name</a> or piece of <a class="glossary-reference" href="chapter-26.xhtml#glossary-code">code</a> that a programmer
+see <span class="section-reference error">section:CaseInSymbols.</span><br/></dd><dt><code><span class="syntax-root"><span class="syntax-interned-symbol">name</span>
+</span></code></dt><dd>Denotes a sample <a class="glossary-reference" href="chapter-26.xhtml#glossary-name">name</a> or piece of <a class="glossary-reference" href="chapter-26.xhtml#glossary-code">code</a> that a programmer
 might write in <span class="explicit-roman">Common Lisp</span>.<br/>This font is also used for certain <a class="glossary-reference" href="chapter-26.xhtml#glossary-standardized">standardized</a> names that are not
 names of <a class="glossary-reference" href="chapter-26.xhtml#glossary-external symbol">external symbols</a> of the <a class="package-reference" href="#package-common-lisp">common-lisp</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">package</a>, 
 such as <a class="glossary-reference" href="chapter-26.xhtml#glossary-keyword">keywords</a><sub>1</sub>,
@@ -263,18 +263,18 @@ This section discusses the syntax of BNF expressions.<br/><section id="section-S
 to be spliced into a larger structure and the elements can appear in
 any order. The symbol <math xmlns="http://www.w3.org/1998/Math/MathML">O</math> represents a description of the syntax of
 some number of syntactic elements to be spliced; that description must
-be of the form<br/><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><msub><mrow>O</mrow><mo>1 </mo></msub><mi>|</mi> <mi>…</mi> <mi>|</mi><msub><mrow> O</mrow><mo>l</mo></msub></math> where each <math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mrow>O</mrow><mo>i</mo></msub></math> can be of the form <math xmlns="http://www.w3.org/1998/Math/MathML">S</math> or of
+be of the form<br/><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><msub><mrow>O</mrow><mo>1 </mo></msub><mi>|</mi> <mi>…</mi> <mi>|</mi><msub><mrow> O</mrow><mo>l</mo></msub></math><div class="issue-annotation"><span class="issue-reference error">issue:Issue LOOP-MISCELLANEOUS-REPAIRS:FIX</span> where each <math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mrow>O</mrow><mo>i</mo></msub></math> can be of the form <math xmlns="http://www.w3.org/1998/Math/MathML">S</math> or of
 the form <math xmlns="http://www.w3.org/1998/Math/MathML">S</math><span class="explicit-roman">*</span> or of the form <math xmlns="http://www.w3.org/1998/Math/MathML">\hbox<math xmlns="http://www.w3.org/1998/Math/MathML">S</math><msup><mrow/><mo>1</mo></msup></math>.
-The expression <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>[</mi><mi>[</mi></math> <math xmlns="http://www.w3.org/1998/Math/MathML">O</math><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>]</mi><mi>]</mi></math> means that a list of the form<br/><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><msub><mrow>(O</mrow><mo><msub><mrow>i</mrow><mo>1</mo></msub></mo></msub><mi>…</mi><msub><mrow>O</mrow><mo><msub><mrow>i</mrow><mo>j</mo></msub></mo></msub>)1<mo>≤</mo>j</math> is spliced into the enclosing expression,
+</div>The expression <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>[</mi><mi>[</mi></math> <math xmlns="http://www.w3.org/1998/Math/MathML">O</math><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>]</mi><mi>]</mi></math> means that a list of the form<br/><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><msub><mrow>(O</mrow><mo><msub><mrow>i</mrow><mo>1</mo></msub></mo></msub><mi>…</mi><msub><mrow>O</mrow><mo><msub><mrow>i</mrow><mo>j</mo></msub></mo></msub>)1<mo>≤</mo>j</math> is spliced into the enclosing expression,
 such that if <math xmlns="http://www.w3.org/1998/Math/MathML">n <mo>≠</mo>m</math> and <math xmlns="http://www.w3.org/1998/Math/MathML">1<mo>≤</mo>n,m<mo>≤</mo>j</math>,
 then either <math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mrow>O</mrow><mo><msub><mrow>i</mrow><mo>n</mo></msub></mo></msub><mo>≠</mo><msub><mrow>O</mrow><mo><msub><mrow>i</mrow><mo>m</mo></msub></mo></msub></math>
          or <math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mrow>O</mrow><mo><msub><mrow>i</mrow><mo>n</mo></msub></mo></msub><msub><mrow>= O</mrow><mo><msub><mrow>i</mrow><mo>m</mo></msub></mo></msub><msub><mrow>= Q</mrow><mo>k</mo></msub></math>, 
 where for some <math xmlns="http://www.w3.org/1998/Math/MathML">1<mo>≤</mo>k <mo>≤</mo>n</math>, <math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mrow>O</mrow><mo>k</mo></msub></math> is of the form <math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mrow>Q</mrow><mo>k</mo></msub></math><span class="explicit-roman">*</span>.
-Furthermore, for each <math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mrow>O</mrow><mo><msub><mrow>i</mrow><mo>n</mo></msub></mo></msub></math> that is of the form <math xmlns="http://www.w3.org/1998/Math/MathML">\hbox<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mrow>Q</mrow><mo>k</mo></msub></math><msup><mrow/><mo>1</mo></msup></math>,
+<div class="issue-annotation"><span class="issue-reference error">issue:Issue LOOP-MISCELLANEOUS-REPAIRS:FIX</span>Furthermore, for each <math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mrow>O</mrow><mo><msub><mrow>i</mrow><mo>n</mo></msub></mo></msub></math> that is of the form <math xmlns="http://www.w3.org/1998/Math/MathML">\hbox<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mrow>Q</mrow><mo>k</mo></msub></math><msup><mrow/><mo>1</mo></msup></math>,
 that element is required to appear somewhere in the list to be spliced.
-
-For example, the expression<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>[</mi><mi>[</mi></math> A | B<span class="explicit-roman">*</span> | C<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>]</mi><mi>]</mi></math> <span class="syntax-interned-symbol">y</span>)</span>
-</span></code></pre><br/> means that at most one <span class="explicit-mono">A</span>, any number of <span class="explicit-mono">B</span>'s, and
+</div>
+For example, the expression<br/><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>[</mi><mi>[</mi></math> A | B<span class="explicit-roman">*</span> | C<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>]</mi><mi>]</mi></math> <span class="syntax-interned-symbol">y</span>)</span>
+</span></code><br/> means that at most one <span class="explicit-mono">A</span>, any number of <span class="explicit-mono">B</span>'s, and
 at most one <span class="explicit-mono">C</span> can occur in any order.
 It is a description of any of these:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <span class="syntax-interned-symbol">y</span>)</span>
 <span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <span class="syntax-interned-symbol">B</span> <span class="syntax-interned-symbol">A</span> <span class="syntax-interned-symbol">C</span> <span class="syntax-interned-symbol">y</span>)</span>
@@ -283,11 +283,11 @@ It is a description of any of these:<br/><pre><code><span class="syntax-root"><s
 </span></code></pre><br/> but not any of these:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <span class="syntax-interned-symbol">B</span> <span class="syntax-interned-symbol">B</span> <span class="syntax-interned-symbol">A</span> <span class="syntax-interned-symbol">A</span> <span class="syntax-interned-symbol">C</span> <span class="syntax-interned-symbol">C</span> <span class="syntax-interned-symbol">y</span>)</span>
 <span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <span class="syntax-interned-symbol">C</span> <span class="syntax-interned-symbol">B</span> <span class="syntax-interned-symbol">C</span> <span class="syntax-interned-symbol">y</span>)</span>
 </span></code></pre><br/> In the first case, both <span class="explicit-mono">A</span> and <span class="explicit-mono">C</span> appear too often,
-and in the second case <span class="explicit-mono">C</span> appears too often.<br/>
+and in the second case <span class="explicit-mono">C</span> appears too often.<br/><div class="issue-annotation"><span class="issue-reference error">issue:Issue LOOP-MISCELLANEOUS-REPAIRS:FIX</span>
 The notation <math xmlns="http://www.w3.org/1998/Math/MathML">\hbox<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>[</mi><mi>[</mi></math> <math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mrow>O</mrow><mo>1</mo></msub></math> | <math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mrow>O</mrow><mo>2</mo></msub></math> | <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>…</mi></math><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>]</mi><mi>]</mi></math><msup><mrow/><mo>+</mo></msup></math> 
 adds the additional restriction that at least one item from among the possible
-choices must be used.  For example:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <math xmlns="http://www.w3.org/1998/Math/MathML">\hbox<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>[</mi><mi>[</mi></math> A | B<span class="explicit-roman">*</span> | C<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>]</mi><mi>]</mi></math><msup><mrow/><mo>+</mo></msup></math> <span class="syntax-interned-symbol">y</span>)</span>
-</span></code></pre><br/> means that at most one <span class="explicit-mono">A</span>, any number of <span class="explicit-mono">B</span>'s, and
+choices must be used.  For example:<br/><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <math xmlns="http://www.w3.org/1998/Math/MathML">\hbox<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>[</mi><mi>[</mi></math> A | B<span class="explicit-roman">*</span> | C<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>]</mi><mi>]</mi></math><msup><mrow/><mo>+</mo></msup></math> <span class="syntax-interned-symbol">y</span>)</span>
+</span></code><br/> means that at most one <span class="explicit-mono">A</span>, any number of <span class="explicit-mono">B</span>'s, and
 at most one <span class="explicit-mono">C</span> can occur in any order, but that in any case at least
 one of these options must be selected.
 It is a description of any of these:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <span class="syntax-interned-symbol">B</span> <span class="syntax-interned-symbol">y</span>)</span>
@@ -299,8 +299,8 @@ It is a description of any of these:<br/><pre><code><span class="syntax-root"><s
 <span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <span class="syntax-interned-symbol">C</span> <span class="syntax-interned-symbol">B</span> <span class="syntax-interned-symbol">C</span> <span class="syntax-interned-symbol">y</span>)</span>
 </span></code></pre><br/> In the first case, no item was used;
 in the second case, both <span class="explicit-mono">A</span> and <span class="explicit-mono">C</span> appear too often;
-and in the third case <span class="explicit-mono">C</span> appears too often.<br/>Also, the expression:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>[</mi><mi>[</mi></math> <math xmlns="http://www.w3.org/1998/Math/MathML">\hboxA<msup><mrow/><mo>1</mo></msup></math> | <math xmlns="http://www.w3.org/1998/Math/MathML">\hboxB<msup><mrow/><mo>1</mo></msup></math> | C<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>]</mi><mi>]</mi></math> <span class="syntax-interned-symbol">y</span>)</span>
-</span></code></pre><br/> can generate exactly these and no others:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <span class="syntax-interned-symbol">A</span> <span class="syntax-interned-symbol">B</span> <span class="syntax-interned-symbol">C</span> <span class="syntax-interned-symbol">y</span>)</span>
+and in the third case <span class="explicit-mono">C</span> appears too often.<br/>Also, the expression:<br/><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>[</mi><mi>[</mi></math> <math xmlns="http://www.w3.org/1998/Math/MathML">\hboxA<msup><mrow/><mo>1</mo></msup></math> | <math xmlns="http://www.w3.org/1998/Math/MathML">\hboxB<msup><mrow/><mo>1</mo></msup></math> | C<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>]</mi><mi>]</mi></math> <span class="syntax-interned-symbol">y</span>)</span>
+</span></code><br/> can generate exactly these and no others:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <span class="syntax-interned-symbol">A</span> <span class="syntax-interned-symbol">B</span> <span class="syntax-interned-symbol">C</span> <span class="syntax-interned-symbol">y</span>)</span>
 <span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <span class="syntax-interned-symbol">A</span> <span class="syntax-interned-symbol">C</span> <span class="syntax-interned-symbol">B</span> <span class="syntax-interned-symbol">y</span>)</span>
 <span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <span class="syntax-interned-symbol">A</span> <span class="syntax-interned-symbol">B</span> <span class="syntax-interned-symbol">y</span>)</span>
 <span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <span class="syntax-interned-symbol">B</span> <span class="syntax-interned-symbol">A</span> <span class="syntax-interned-symbol">C</span> <span class="syntax-interned-symbol">y</span>)</span>
@@ -308,20 +308,20 @@ and in the third case <span class="explicit-mono">C</span> appears too often.<br
 <span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <span class="syntax-interned-symbol">B</span> <span class="syntax-interned-symbol">A</span> <span class="syntax-interned-symbol">y</span>)</span>
 <span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <span class="syntax-interned-symbol">C</span> <span class="syntax-interned-symbol">A</span> <span class="syntax-interned-symbol">B</span> <span class="syntax-interned-symbol">y</span>)</span>
 <span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <span class="syntax-interned-symbol">C</span> <span class="syntax-interned-symbol">B</span> <span class="syntax-interned-symbol">A</span> <span class="syntax-interned-symbol">y</span>)</span>
-</span></code></pre><br/>
+</span></code></pre><br/></div>
 </section><section id="section-IndirectioninModifiedBNFSyntax"><h5 class="section-title">Indirection in Modified BNF Syntax</h5>An indirection extension is introduced in order to make this
 new syntax more readable:<br/><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">\hbox<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">O</span></math> If <span class="parameter">O</span> is a non-terminal symbol, the right-hand side
 of its definition is substituted for the entire expression 
 <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">O</span>.  For example, the following BNF is equivalent to
-the BNF in the previous example:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>[</mi><mi>[</mi></math> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">O</span><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>]</mi><mi>]</mi></math> <span class="syntax-interned-symbol">y</span>)</span>
-</span></code></pre>
+the BNF in the previous example:<br/><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">x</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>[</mi><mi>[</mi></math> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">O</span><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>]</mi><mi>]</mi></math> <span class="syntax-interned-symbol">y</span>)</span>
+</span></code>
 <br/>
 
 
-<tr><td>O</td><td>::=</td><td><pre><code><span class="syntax-root"><span class="syntax-interned-symbol">A</span>
-</span></code></pre> | <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">B</span>
-</span></code></pre><span class="explicit-roman">*</span> | <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">C</span>
-</span></code></pre></td></tr>
+<tr><td>O</td><td>::=</td><td><code><span class="syntax-root"><span class="syntax-interned-symbol">A</span>
+</span></code> | <code><span class="syntax-root"><span class="syntax-interned-symbol">B</span>
+</span></code><span class="explicit-roman">*</span> | <code><span class="syntax-root"><span class="syntax-interned-symbol">C</span>
+</span></code></td></tr>
 <br/>
 
 <br/></section><section id="section-AdditionalUsesforIndirectDefinitionsinModifiedBNFSyntax"><h5 class="section-title">Additional Uses for Indirect Definitions in Modified BNF Syntax</h5>In some cases, an auxiliary definition in the BNF might appear to be unused
@@ -343,9 +343,9 @@ its environment.<br/><dl><dt><math xmlns="http://www.w3.org/1998/Math/MathML"><m
 For example:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-+">+</a> <span class="syntax-number">4</span> <span class="syntax-number">5</span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-number">9</span> 
 </span></code></pre>
 This means that the result of
-evaluating the <a class="glossary-reference" href="chapter-26.xhtml#glossary-form">form</a> <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-+">+</a> <span class="syntax-number">4</span> <span class="syntax-number">5</span>)</span>
-</span></code></pre> is <pre><code><span class="syntax-root"><span class="syntax-number">9</span>
-</span></code></pre>.<br/>If a <a class="glossary-reference" href="chapter-26.xhtml#glossary-form">form</a> returns <a class="glossary-reference" href="chapter-26.xhtml#glossary-multiple values">multiple values</a>, those values might
+evaluating the <a class="glossary-reference" href="chapter-26.xhtml#glossary-form">form</a> <code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-+">+</a> <span class="syntax-number">4</span> <span class="syntax-number">5</span>)</span>
+</span></code> is <code><span class="syntax-root"><span class="syntax-number">9</span>
+</span></code>.<br/>If a <a class="glossary-reference" href="chapter-26.xhtml#glossary-form">form</a> returns <a class="glossary-reference" href="chapter-26.xhtml#glossary-multiple values">multiple values</a>, those values might
 be shown separated by spaces, line breaks, or commas.
 For example:<br/><pre><code><span class="syntax-root"> <span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-truncate">truncate</a> <span class="syntax-number">7</span> <span class="syntax-number">5</span>)</span>
 <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-number">1</span> <span class="syntax-number">2</span>
@@ -355,22 +355,22 @@ For example:<br/><pre><code><span class="syntax-root"> <span class="syntax-cons"
  <span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-truncate">truncate</a> <span class="syntax-number">7</span> <span class="syntax-number">5</span>)</span>
 <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-number">1</span><span class="syntax-verbatim">,</span> <span class="syntax-number">2</span>
 </span></code></pre><br/>Each of the above three examples is equivalent, and specifies
-that <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-truncate">truncate</a> <span class="syntax-number">7</span> <span class="syntax-number">5</span>)</span>
-</span></code></pre> returns two values, which are <pre><code><span class="syntax-root"><span class="syntax-number">1</span>
-</span></code></pre> and <pre><code><span class="syntax-root"><span class="syntax-number">2</span>
-</span></code></pre>.<br/>Some <a class="glossary-reference" href="chapter-26.xhtml#glossary-conforming implementation">conforming implementations</a> actually type an arrow (or some
+that <code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-truncate">truncate</a> <span class="syntax-number">7</span> <span class="syntax-number">5</span>)</span>
+</span></code> returns two values, which are <code><span class="syntax-root"><span class="syntax-number">1</span>
+</span></code> and <code><span class="syntax-root"><span class="syntax-number">2</span>
+</span></code>.<br/>Some <a class="glossary-reference" href="chapter-26.xhtml#glossary-conforming implementation">conforming implementations</a> actually type an arrow (or some
 other indicator) before showing return values, while others do not.<br/></dd><dt><math xmlns="http://www.w3.org/1998/Math/MathML"><mover>or<mi>→</mi></mover></math></dt><dd>The notation ``<math xmlns="http://www.w3.org/1998/Math/MathML"><mover>or<mi>→</mi></mover></math>'' is used to denote one of several possible
 alternate results.  The example<br/><pre><code><span class="syntax-root"> <span class="syntax-cons">(<a class="function-reference" href="chapter-13.xhtml#function-char-name">char-name</a> <span class="syntax-character">#\a</span>)</span>
 <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <a class="section-reference" href="#section-NIL">NIL</a>
 <math xmlns="http://www.w3.org/1998/Math/MathML"><mover>or<mi>→</mi></mover></math> <span class="syntax-string">"LOWERCASE-a"</span>
 <math xmlns="http://www.w3.org/1998/Math/MathML"><mover>or<mi>→</mi></mover></math> <span class="syntax-string">"Small-A"</span>
 <math xmlns="http://www.w3.org/1998/Math/MathML"><mover>or<mi>→</mi></mover></math> <span class="syntax-string">"LA01"</span>
-</span></code></pre><br/>indicates that <a class="symbol-reference" href="#symbol-nil">nil</a>, <pre><code><span class="syntax-root"><span class="syntax-string">"LOWERCASE-a"</span>
-</span></code></pre>, <pre><code><span class="syntax-root"><span class="syntax-string">"Small-A"</span>
-</span></code></pre>, <pre><code><span class="syntax-root"><span class="syntax-string">"LA01"</span>
-</span></code></pre> are
-among the possible results of <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-13.xhtml#function-char-name">char-name</a> #\a)</span>
-</span></code></pre>&mdash;each with equal preference.
+</span></code></pre><br/>indicates that <a class="symbol-reference" href="#symbol-nil">nil</a>, <code><span class="syntax-root"><span class="syntax-string">"LOWERCASE-a"</span>
+</span></code>, <code><span class="syntax-root"><span class="syntax-string">"Small-A"</span>
+</span></code>, <code><span class="syntax-root"><span class="syntax-string">"LA01"</span>
+</span></code> are
+among the possible results of <code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-13.xhtml#function-char-name">char-name</a> #\a)</span>
+</span></code>&mdash;each with equal preference.
 Unless explicitly specified otherwise, it should not be assumed that the set of possible 
 results shown is exhaustive.
 Formally, the above example is equivalent to<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-13.xhtml#function-char-name">char-name</a> <span class="syntax-character">#\a</span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a>
@@ -388,15 +388,15 @@ that the result might be possible.  For example,<br/><pre><code><span class="syn
 </span></code></pre>
 This means that the results and observable side-effects of evaluating
 the <a class="glossary-reference" href="chapter-26.xhtml#glossary-form">form</a>
-<pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-gcd">gcd</a> <span class="syntax-interned-symbol">x</span> <span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-gcd">gcd</a> <span class="syntax-interned-symbol">y</span> <span class="syntax-interned-symbol">z</span>)</span>)</span>
-</span></code></pre>  are always the same as the results
+<code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-gcd">gcd</a> <span class="syntax-interned-symbol">x</span> <span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-gcd">gcd</a> <span class="syntax-interned-symbol">y</span> <span class="syntax-interned-symbol">z</span>)</span>)</span>
+</span></code>  are always the same as the results
 and observable side-effects of
-<pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-gcd">gcd</a> <span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-gcd">gcd</a> <span class="syntax-interned-symbol">x</span> <span class="syntax-interned-symbol">y</span>)</span> <span class="syntax-interned-symbol">z</span>)</span>
-</span></code></pre>  for any 
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">x</span>
-</span></code></pre>, <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">y</span>
-</span></code></pre>, and <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">z</span>
-</span></code></pre>.<br/>
+<code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-gcd">gcd</a> <span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-gcd">gcd</a> <span class="syntax-interned-symbol">x</span> <span class="syntax-interned-symbol">y</span>)</span> <span class="syntax-interned-symbol">z</span>)</span>
+</span></code>  for any 
+<code><span class="syntax-root"><span class="syntax-interned-symbol">x</span>
+</span></code>, <code><span class="syntax-root"><span class="syntax-interned-symbol">y</span>
+</span></code>, and <code><span class="syntax-root"><span class="syntax-interned-symbol">z</span>
+</span></code>.<br/>
 </dd><dt><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>▷</mi></math></dt><dd><span class="explicit-roman">Common Lisp</span> specifies input and output with respect to a non-interactive stream model.
 The specific details of how interactive input and output are mapped onto that
 non-interactive model are <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-defined">implementation-defined</a>.<br/>For example, <a class="glossary-reference" href="chapter-26.xhtml#glossary-conforming implementation">conforming implementations</a> are permitted to differ in issues 
@@ -414,15 +414,15 @@ lines where interactive input and output occurs.  Within such a scenario,
 <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>▷</mi></math> 7
 <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-number">8</span>
 </span></code></pre><br/>shows an interaction in which
-  ``<pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-+">+</a> <span class="syntax-number">1</span> <span class="syntax-cons">(<a class="function-reference" href="chapter-22.xhtml#function-print">print</a> <span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-+">+</a> <span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-sqrt">sqrt</a> <span class="syntax-cons">(<a class="function-reference" href="chapter-23.xhtml#function-read">read</a>)</span>)</span> <span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-sqrt">sqrt</a> <span class="syntax-cons">(<a class="function-reference" href="chapter-23.xhtml#function-read">read</a>)</span>)</span>)</span>)</span>)</span>
-</span></code></pre>''
+  ``<code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-+">+</a> <span class="syntax-number">1</span> <span class="syntax-cons">(<a class="function-reference" href="chapter-22.xhtml#function-print">print</a> <span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-+">+</a> <span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-sqrt">sqrt</a> <span class="syntax-cons">(<a class="function-reference" href="chapter-23.xhtml#function-read">read</a>)</span>)</span> <span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-sqrt">sqrt</a> <span class="syntax-cons">(<a class="function-reference" href="chapter-23.xhtml#function-read">read</a>)</span>)</span>)</span>)</span>)</span>
+</span></code>''
     is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-form">form</a> to be <span class="glossary-reference error">glossary:evaluated</span>,
-  ``<pre><code><span class="syntax-root"><span class="syntax-number">9</span> <span class="syntax-number">16</span> 
-</span></code></pre>'' is interactive input,
-  ``<pre><code><span class="syntax-root"><span class="syntax-number">7</span>
-</span></code></pre>'' is interactive output, and 
-  ``<pre><code><span class="syntax-root"><span class="syntax-number">8</span>
-</span></code></pre>'' is the <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> <span class="glossary-reference error">glossary:yielded</span> from the <a class="glossary-reference" href="chapter-26.xhtml#glossary-evaluation">evaluation</a>.<br/>The use of this notation is intended to disguise small differences 
+  ``<code><span class="syntax-root"><span class="syntax-number">9</span> <span class="syntax-number">16</span> 
+</span></code>'' is interactive input,
+  ``<code><span class="syntax-root"><span class="syntax-number">7</span>
+</span></code>'' is interactive output, and 
+  ``<code><span class="syntax-root"><span class="syntax-number">8</span>
+</span></code>'' is the <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> <span class="glossary-reference error">glossary:yielded</span> from the <a class="glossary-reference" href="chapter-26.xhtml#glossary-evaluation">evaluation</a>.<br/>The use of this notation is intended to disguise small differences 
 in interactive input and output behavior between <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementations</a>.<br/>Sometimes, the non-interactive stream model calls for a <a class="glossary-reference" href="chapter-26.xhtml#glossary-newline">newline</a>.
 How that <a class="glossary-reference" href="chapter-26.xhtml#glossary-newline">newline</a> character is interactively entered is an 
 <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-defined">implementation-defined</a> detail of the user interface, but in that
@@ -438,56 +438,56 @@ the <a class="glossary-reference" href="chapter-26.xhtml#glossary-lisp reader">L
 As such, case in <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbols</a> is not, by default, significant.
 Throughout this document, except as explicitly noted otherwise,
 the case in which a <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a> appears is not significant; 
-that is, <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">HELLO</span>
-</span></code></pre>, <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">Hello</span>
-</span></code></pre>, <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">hElLo</span>
-</span></code></pre>, and <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">hello</span>
-</span></code></pre> are
-all equivalent ways to denote a symbol whose name is <pre><code><span class="syntax-root"><span class="syntax-string">"HELLO"</span>
-</span></code></pre>.<br/>The characters <a class="glossary-reference" href="chapter-26.xhtml#glossary-backslash">backslash</a> and <a class="glossary-reference" href="chapter-26.xhtml#glossary-vertical-bar">vertical-bar</a> are used to explicitly
+that is, <code><span class="syntax-root"><span class="syntax-interned-symbol">HELLO</span>
+</span></code>, <code><span class="syntax-root"><span class="syntax-interned-symbol">Hello</span>
+</span></code>, <code><span class="syntax-root"><span class="syntax-interned-symbol">hElLo</span>
+</span></code>, and <code><span class="syntax-root"><span class="syntax-interned-symbol">hello</span>
+</span></code> are
+all equivalent ways to denote a symbol whose name is <code><span class="syntax-root"><span class="syntax-string">"HELLO"</span>
+</span></code>.<br/>The characters <a class="glossary-reference" href="chapter-26.xhtml#glossary-backslash">backslash</a> and <a class="glossary-reference" href="chapter-26.xhtml#glossary-vertical-bar">vertical-bar</a> are used to explicitly
 quote the <a class="glossary-reference" href="chapter-26.xhtml#glossary-case">case</a> and other parsing-related 
 aspects
 of characters.  As such,
-the notations <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">|hello|</span>
-</span></code></pre> and <pre><code><span class="syntax-root">\h\e\l\l\o
-</span></code></pre> are equivalent ways
-to refer to a symbol whose name is <pre><code><span class="syntax-root"><span class="syntax-string">"hello"</span>
-</span></code></pre>, and which is <a class="glossary-reference" href="chapter-26.xhtml#glossary-distinct">distinct</a> from
-any symbol whose name is <pre><code><span class="syntax-root"><span class="syntax-string">"HELLO"</span>
-</span></code></pre>.<br/>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbols</a> that correspond to <span class="explicit-roman">Common Lisp</span> <a class="glossary-reference" href="chapter-26.xhtml#glossary-defined name">defined names</a>
+the notations <code><span class="syntax-root"><span class="syntax-interned-symbol">|hello|</span>
+</span></code> and <code><span class="syntax-root">\h\e\l\l\o
+</span></code> are equivalent ways
+to refer to a symbol whose name is <code><span class="syntax-root"><span class="syntax-string">"hello"</span>
+</span></code>, and which is <a class="glossary-reference" href="chapter-26.xhtml#glossary-distinct">distinct</a> from
+any symbol whose name is <code><span class="syntax-root"><span class="syntax-string">"HELLO"</span>
+</span></code>.<br/>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbols</a> that correspond to <span class="explicit-roman">Common Lisp</span> <a class="glossary-reference" href="chapter-26.xhtml#glossary-defined name">defined names</a>
 have <a class="glossary-reference" href="chapter-26.xhtml#glossary-uppercase">uppercase</a> names even though their names generally appear
 in <a class="glossary-reference" href="chapter-26.xhtml#glossary-lowercase">lowercase</a> in this document.<br/></section><section id="section-Numbers"><h5 class="section-title">Numbers</h5>Although <span class="explicit-roman">Common Lisp</span> provides a variety of ways for programs to manipulate the
 input and output radix for rational numbers, all numbers in this document
-are in decimal notation unless explicitly noted otherwise.<br/></section><section id="section-UseoftheDotCharacter"><h5 class="section-title">Use of the Dot Character</h5>The dot appearing by itself in an <a class="glossary-reference" href="chapter-26.xhtml#glossary-expression">expression</a> such as<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="parameter">item1</span> <span class="parameter">item2</span> <span class="explicit-mono">.</span> <span class="parameter">tail</span>)</span>
-</span></code></pre><br/>means that <span class="parameter">tail</span> represents a <a class="glossary-reference" href="chapter-26.xhtml#glossary-list">list</a> of <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">objects</a> 
-at the end of a list.  For example,<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">A</span> <span class="syntax-interned-symbol">B</span> <span class="syntax-interned-symbol">C</span> <span class="explicit-mono">.</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">D</span> <span class="syntax-interned-symbol">E</span> <span class="syntax-interned-symbol">F</span>)</span>)</span>
-</span></code></pre><br/>is notationally equivalent to:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">A</span> <span class="syntax-interned-symbol">B</span> <span class="syntax-interned-symbol">C</span> <span class="syntax-interned-symbol">D</span> <span class="syntax-interned-symbol">E</span> <span class="syntax-interned-symbol">F</span>)</span>
-</span></code></pre><br/>Although <a class="glossary-reference" href="chapter-26.xhtml#glossary-dot">dot</a> is a valid constituent character in a symbol, no 
+are in decimal notation unless explicitly noted otherwise.<br/></section><section id="section-UseoftheDotCharacter"><h5 class="section-title">Use of the Dot Character</h5>The dot appearing by itself in an <a class="glossary-reference" href="chapter-26.xhtml#glossary-expression">expression</a> such as<br/><code><span class="syntax-root"><span class="syntax-cons">(<span class="parameter">item1</span> <span class="parameter">item2</span> <span class="explicit-mono">.</span> <span class="parameter">tail</span>)</span>
+</span></code><br/>means that <span class="parameter">tail</span> represents a <a class="glossary-reference" href="chapter-26.xhtml#glossary-list">list</a> of <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">objects</a> 
+at the end of a list.  For example,<br/><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">A</span> <span class="syntax-interned-symbol">B</span> <span class="syntax-interned-symbol">C</span> <span class="explicit-mono">.</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">D</span> <span class="syntax-interned-symbol">E</span> <span class="syntax-interned-symbol">F</span>)</span>)</span>
+</span></code><br/>is notationally equivalent to:<br/><code><span class="syntax-root"><span class="syntax-cons">(<span class="syntax-interned-symbol">A</span> <span class="syntax-interned-symbol">B</span> <span class="syntax-interned-symbol">C</span> <span class="syntax-interned-symbol">D</span> <span class="syntax-interned-symbol">E</span> <span class="syntax-interned-symbol">F</span>)</span>
+</span></code><br/>Although <a class="glossary-reference" href="chapter-26.xhtml#glossary-dot">dot</a> is a valid constituent character in a symbol, no 
 <a class="glossary-reference" href="chapter-26.xhtml#glossary-standardized">standardized</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbols</a> contain the character <a class="glossary-reference" href="chapter-26.xhtml#glossary-dot">dot</a>,
 so a period that follows a reference to a <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a> at the end of
 a sentence in this document should always be interpreted as a period
 and never as part of the <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a>'s <a class="glossary-reference" href="chapter-26.xhtml#glossary-name">name</a>.
 For example, within this document, a sentence such as
  ``This sample sentence refers to the symbol <a class="function-reference" href="chapter-14.xhtml#function-car">car</a>.'' 
-refers to a symbol whose name is <pre><code><span class="syntax-root"><span class="syntax-string">"CAR"</span>
-</span></code></pre> (with three letters),
-and never to a four-letter symbol <pre><code><span class="syntax-root"><span class="syntax-string">"CAR."</span>
-</span></code></pre><br/></section><section id="section-NIL"><h5 class="section-title">NIL</h5><a id="index/term-nil"></a><a id="index/term-()"></a><a id="symbol-nil"></a><br/><a class="symbol-reference" href="#symbol-nil">nil</a> has a variety of meanings.
-It is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a> in the <a class="package-reference" href="#package-common-lisp">common-lisp</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">package</a> with the <a class="glossary-reference" href="chapter-26.xhtml#glossary-name">name</a> <pre><code><span class="syntax-root"><span class="syntax-string">"NIL"</span>
-</span></code></pre>,
+refers to a symbol whose name is <code><span class="syntax-root"><span class="syntax-string">"CAR"</span>
+</span></code> (with three letters),
+and never to a four-letter symbol <code><span class="syntax-root"><span class="syntax-string">"CAR."</span>
+</span></code><br/></section><section id="section-NIL"><h5 class="section-title">NIL</h5><a id="index/term-nil"></a><a id="index/term-()"></a><a id="symbol-nil"></a><br/><a class="symbol-reference" href="#symbol-nil">nil</a> has a variety of meanings.
+It is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a> in the <a class="package-reference" href="#package-common-lisp">common-lisp</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">package</a> with the <a class="glossary-reference" href="chapter-26.xhtml#glossary-name">name</a> <code><span class="syntax-root"><span class="syntax-string">"NIL"</span>
+</span></code>,
 it is <a class="glossary-reference" href="chapter-26.xhtml#glossary-boolean">boolean</a> (and <a class="glossary-reference" href="chapter-26.xhtml#glossary-generalized boolean">generalized boolean</a>) <a class="glossary-reference" href="chapter-26.xhtml#glossary-false">false</a>,
 it is the <a class="glossary-reference" href="chapter-26.xhtml#glossary-empty list">empty list</a>,
-and it is the <a class="glossary-reference" href="chapter-26.xhtml#glossary-name">name</a> of the <a class="glossary-reference" href="chapter-26.xhtml#glossary-empty type">empty type</a> (a <a class="glossary-reference" href="chapter-26.xhtml#glossary-subtype">subtype</a> of all <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">types</a>).<br/>Within <span class="explicit-roman">Common Lisp</span>, <a class="symbol-reference" href="#symbol-nil">nil</a> can be notated interchangeably as either <pre><code><span class="syntax-root"><a class="section-reference" href="#section-NIL">NIL</a>
-</span></code></pre> or <pre><code><span class="syntax-root"><span class="syntax-symbol">()</span>
-</span></code></pre>.
+and it is the <a class="glossary-reference" href="chapter-26.xhtml#glossary-name">name</a> of the <a class="glossary-reference" href="chapter-26.xhtml#glossary-empty type">empty type</a> (a <a class="glossary-reference" href="chapter-26.xhtml#glossary-subtype">subtype</a> of all <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">types</a>).<br/>Within <span class="explicit-roman">Common Lisp</span>, <a class="symbol-reference" href="#symbol-nil">nil</a> can be notated interchangeably as either <code><span class="syntax-root"><a class="section-reference" href="#section-NIL">NIL</a>
+</span></code> or <code><span class="syntax-root"><span class="syntax-symbol">()</span>
+</span></code>.
 By convention, the choice of notation offers a hint as to which of its many
 roles it is playing.<br/><span class="float" id="figure-Notations for NIL"><table><tbody><tr><td><span class="explicit-bold"> For Evaluation?</span></td><td><span class="explicit-bold"> Notation</span></td><td><span class="explicit-bold"> Typically Implied Role</span></td></tr><tr><td>
-Yes</td><td><pre><code><span class="syntax-root"><a class="section-reference" href="#section-NIL">NIL</a>
-</span></code></pre></td><td>use as a <a class="glossary-reference" href="chapter-26.xhtml#glossary-boolean">boolean</a>.</td></tr><tr><td>Yes</td><td><pre><code><span class="syntax-root"><span class="syntax-quote">'<a class="section-reference" href="#section-NIL">NIL</a></span>
-</span></code></pre></td><td>use as a <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a>.</td></tr><tr><td>Yes</td><td><pre><code><span class="syntax-root"><span class="syntax-quote">'<span class="syntax-symbol">()</span></span>
-</span></code></pre></td><td>use as an <a class="glossary-reference" href="chapter-26.xhtml#glossary-empty list">empty list</a></td></tr><tr><td>No</td><td><pre><code><span class="syntax-root"><a class="section-reference" href="#section-NIL">NIL</a>
-</span></code></pre></td><td>use as a <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a> or <a class="glossary-reference" href="chapter-26.xhtml#glossary-boolean">boolean</a>.</td></tr><tr><td>No</td><td><pre><code><span class="syntax-root"><span class="syntax-symbol">()</span>
-</span></code></pre></td><td>use as an <a class="glossary-reference" href="chapter-26.xhtml#glossary-empty list">empty list</a>.</td></tr></tbody></table><div class="caption">Notations for NIL</div></span><br/>Within this document only, <a class="symbol-reference" href="#symbol-nil">nil</a> is also sometimes notated as <a class="glossary-reference" href="chapter-26.xhtml#glossary-false">false</a> to
+Yes</td><td><code><span class="syntax-root"><a class="section-reference" href="#section-NIL">NIL</a>
+</span></code></td><td>use as a <a class="glossary-reference" href="chapter-26.xhtml#glossary-boolean">boolean</a>.</td></tr><tr><td>Yes</td><td><code><span class="syntax-root"><span class="syntax-quote">'<a class="section-reference" href="#section-NIL">NIL</a></span>
+</span></code></td><td>use as a <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a>.</td></tr><tr><td>Yes</td><td><code><span class="syntax-root"><span class="syntax-quote">'<span class="syntax-symbol">()</span></span>
+</span></code></td><td>use as an <a class="glossary-reference" href="chapter-26.xhtml#glossary-empty list">empty list</a></td></tr><tr><td>No</td><td><code><span class="syntax-root"><a class="section-reference" href="#section-NIL">NIL</a>
+</span></code></td><td>use as a <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a> or <a class="glossary-reference" href="chapter-26.xhtml#glossary-boolean">boolean</a>.</td></tr><tr><td>No</td><td><code><span class="syntax-root"><span class="syntax-symbol">()</span>
+</span></code></td><td>use as an <a class="glossary-reference" href="chapter-26.xhtml#glossary-empty list">empty list</a>.</td></tr></tbody></table><div class="caption">Notations for NIL</div></span><br/>Within this document only, <a class="symbol-reference" href="#symbol-nil">nil</a> is also sometimes notated as <a class="glossary-reference" href="chapter-26.xhtml#glossary-false">false</a> to
 emphasize its role as a <a class="glossary-reference" href="chapter-26.xhtml#glossary-boolean">boolean</a>.<br/>For example:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-22.xhtml#function-print">print</a> <span class="syntax-symbol">()</span>)</span>                          ;avoided
 <span class="syntax-cons">(<a class="macro-reference" href="chapter-5.xhtml#macro-defun">defun</a> <span class="syntax-interned-symbol">three</span> <a class="section-reference" href="#section-NIL">NIL</a> <span class="syntax-number">3</span>)</span>                 ;avoided 
 <span class="syntax-quote">'<span class="syntax-cons">(<a class="section-reference" href="#section-NIL">NIL</a> <a class="section-reference" href="#section-NIL">NIL</a>)</span></span>                          ;list of two symbols
@@ -512,9 +512,9 @@ that is, that the <a class="glossary-reference" href="chapter-26.xhtml#glossary-
 or a ``<a class="glossary-reference" href="chapter-26.xhtml#glossary-designator">designator</a> for a <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>⟨</mi><mi>⟨</mi></math><span class="explicit-italic"> type</span><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>⟩</mi><mi>⟩</mi></math>'' 
 can be found in the Glossary entry for ``<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>⟨</mi><mi>⟨</mi></math><span class="explicit-italic"> type</span><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>⟩</mi><mi>⟩</mi></math> <a class="glossary-reference" href="chapter-26.xhtml#glossary-designator">designator</a>.'')<br/>For example, ``<a class="symbol-reference" href="#symbol-nil">nil</a>'' and ``the <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of <a class="variable-reference" href="chapter-21.xhtml#variable-*standard-output*">*standard-output*</a>'' are operationally
 indistinguishable as <a class="glossary-reference" href="chapter-26.xhtml#glossary-stream designator">stream designators</a>.  Similarly, 
-the <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a> <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">foo</span>
-</span></code></pre> and the <a class="glossary-reference" href="chapter-26.xhtml#glossary-string">string</a> <pre><code><span class="syntax-root"><span class="syntax-string">"FOO"</span>
-</span></code></pre> 
+the <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a> <code><span class="syntax-root"><span class="syntax-interned-symbol">foo</span>
+</span></code> and the <a class="glossary-reference" href="chapter-26.xhtml#glossary-string">string</a> <code><span class="syntax-root"><span class="syntax-string">"FOO"</span>
+</span></code> 
 are operationally indistinguishable as <a class="glossary-reference" href="chapter-26.xhtml#glossary-string designator">string designators</a>.  <br/>Except as otherwise noted, in a situation where the denoted <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">object</a> 
 might be used multiple times, it is <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a>
 whether the <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">object</a> is coerced only once or whether the coercion occurs
@@ -544,23 +544,23 @@ from which the <a class="glossary-reference" href="chapter-26.xhtml#glossary-val
 example), it is common in the Lisp community to use one of the words
 ``foo,'' ``bar,'' ``baz,'' and ``quux.''  For example, in<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="chapter-5.xhtml#macro-defun">defun</a> <span class="syntax-interned-symbol">foo</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">x</span>)</span> <span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-+">+</a> <span class="syntax-interned-symbol">x</span> <span class="syntax-number">1</span>)</span>)</span>
 </span></code></pre>
-the use of the name <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">foo</span>
-</span></code></pre> is just a shorthand way of saying 
+the use of the name <code><span class="syntax-root"><span class="syntax-interned-symbol">foo</span>
+</span></code> is just a shorthand way of saying 
 ``please substitute your favorite name here.''<br/>These nonsense words have gained such prevalance of usage, that it is
 commonplace for newcomers to the community to begin to wonder if there
 is an attached semantics which they are overlooking&mdash;there is not.<br/></section></section><section id="section-ErrorTerms"><h3 class="section-title">Error Terminology</h3><a id="index/text-error terminology"></a>
 <br/>Situations in which errors might, should, or must be signaled are described
 in the standard.  The wording used to describe such situations is intended
 to have precise meaning. The following list is a glossary of those meanings.<br/><dl><dt><span class="explicit-bold"> Safe code</span></dt><dd><a id="index/term-safe"></a><br/>This is <a class="glossary-reference" href="chapter-26.xhtml#glossary-code">code</a> processed with the <span class="declaration-reference error">declaration:safety</span> optimization 
-at its highest setting (<pre><code><span class="syntax-root"><span class="syntax-number">3</span>
-</span></code></pre>).  <span class="declaration-reference error">declaration:safety</span> is a lexical property
-of code.  The phrase ``the function <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">F</span>
-</span></code></pre> should signal an error'' 
-means that if <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">F</span>
-</span></code></pre> is invoked from code processed with the highest
+at its highest setting (<code><span class="syntax-root"><span class="syntax-number">3</span>
+</span></code>).  <span class="declaration-reference error">declaration:safety</span> is a lexical property
+of code.  The phrase ``the function <code><span class="syntax-root"><span class="syntax-interned-symbol">F</span>
+</span></code> should signal an error'' 
+means that if <code><span class="syntax-root"><span class="syntax-interned-symbol">F</span>
+</span></code> is invoked from code processed with the highest
 <span class="declaration-reference error">declaration:safety</span> optimization, an error is signaled.
-It is <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a> whether <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">F</span>
-</span></code></pre> or the calling 
+It is <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a> whether <code><span class="syntax-root"><span class="syntax-interned-symbol">F</span>
+</span></code> or the calling 
 code signals the error.<br/></dd><dt><span class="explicit-bold"> Unsafe code</span></dt><dd><a id="index/term-unsafe"></a><br/>This is code processed with lower safety levels.<br/>Unsafe code might do error checking.  Implementations are permitted to
 treat all code as safe code all the time.<br/></dd><dt><span class="explicit-bold"> An error is signaled</span></dt><dd><a id="index/term-signal"></a><a id="index/text-is signaled"></a><a id="index/text-must signal"></a><br/>This means that an error is signaled in both safe and unsafe code.
 <a class="glossary-reference" href="chapter-26.xhtml#glossary-conforming code">Conforming code</a> may rely on the fact that the error is signaled
@@ -585,8 +585,8 @@ In <a class="glossary-reference" href="chapter-26.xhtml#glossary-unsafe">unsafe<
    if its second <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument">argument</a> is not a <a class="glossary-reference" href="chapter-26.xhtml#glossary-proper list">proper list</a>''
 does not imply that an error is always signaled.  The <a class="glossary-reference" href="chapter-26.xhtml#glossary-form">form</a><br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-17.xhtml#function-find">find</a> <span class="syntax-quote">'<span class="syntax-interned-symbol">a</span></span> <span class="syntax-quote">'<span class="syntax-cons">(<span class="syntax-interned-symbol">a</span> <span class="syntax-interned-symbol">b</span> <span class="syntax-symbol">.</span> <span class="syntax-interned-symbol">c</span>)</span></span>)</span>
 </span></code></pre><br/>must either signal an error of <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> <a class="type-reference" href="chapter-4.xhtml#type-type-error">type-error</a> in <a class="glossary-reference" href="chapter-26.xhtml#glossary-safe">safe</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-code">code</a>,
-else return <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">A</span>
-</span></code></pre>.
+else return <code><span class="syntax-root"><span class="syntax-interned-symbol">A</span>
+</span></code>.
 In <a class="glossary-reference" href="chapter-26.xhtml#glossary-unsafe">unsafe</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-code">code</a>, the consequences are undefined.
 By contrast,<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-17.xhtml#function-find">find</a> <span class="syntax-quote">'<span class="syntax-interned-symbol">d</span></span> <span class="syntax-quote">'<span class="syntax-cons">(<span class="syntax-interned-symbol">a</span> <span class="syntax-interned-symbol">b</span> <span class="syntax-symbol">.</span> <span class="syntax-interned-symbol">c</span>)</span></span>)</span>
 </span></code></pre><br/>must signal an error of <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> <a class="type-reference" href="chapter-4.xhtml#type-type-error">type-error</a> in <a class="glossary-reference" href="chapter-26.xhtml#glossary-safe">safe</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-code">code</a>.
@@ -621,12 +621,12 @@ For example, ``<a class="function-reference" href="chapter-21.xhtml#function-ope
 <a class="glossary-reference" href="chapter-26.xhtml#glossary-form">form</a> are not specified.  However, the issue of whether or not
 any side-effects or transfer of control occurs is still well-specified.<br/>A program can be well-specified even if it uses a function whose
 returns values are unspecified.  For example, even if the return
-values of some function <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">F</span>
-</span></code></pre> are unspecified, an expression such as
-<pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-17.xhtml#function-length">length</a> <span class="syntax-cons">(<a class="function-reference" href="chapter-14.xhtml#function-list">list</a> <span class="syntax-cons">(<span class="syntax-interned-symbol">F</span>)</span>)</span>)</span>
-</span></code></pre> is still well-specified because it does not
-rely on any particular aspect of the value or values returned by <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">F</span>
-</span></code></pre>.<br/></dd><dt><span class="explicit-bold"> Implementations may be extended to cover this situation</span></dt><dd><a id="index/text-extensions"></a><br/>This means that the <a class="glossary-reference" href="chapter-26.xhtml#glossary-situation">situation</a> has undefined consequences;
+values of some function <code><span class="syntax-root"><span class="syntax-interned-symbol">F</span>
+</span></code> are unspecified, an expression such as
+<code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-17.xhtml#function-length">length</a> <span class="syntax-cons">(<a class="function-reference" href="chapter-14.xhtml#function-list">list</a> <span class="syntax-cons">(<span class="syntax-interned-symbol">F</span>)</span>)</span>)</span>
+</span></code> is still well-specified because it does not
+rely on any particular aspect of the value or values returned by <code><span class="syntax-root"><span class="syntax-interned-symbol">F</span>
+</span></code>.<br/></dd><dt><span class="explicit-bold"> Implementations may be extended to cover this situation</span></dt><dd><a id="index/text-extensions"></a><br/>This means that the <a class="glossary-reference" href="chapter-26.xhtml#glossary-situation">situation</a> has undefined consequences;
 however, a <a class="glossary-reference" href="chapter-26.xhtml#glossary-conforming implementation">conforming implementation</a> is free to treat
 the situation in a more specific way.  
 For example, an <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> might define 
@@ -643,10 +643,10 @@ Implementations are required to document each such extension. All
 <a class="glossary-reference" href="chapter-26.xhtml#glossary-conforming code">conforming code</a> is required to treat the syntax as meaningless. The
 standard might disallow certain extensions while allowing others. For
 example, ``no implementation is free to extend the syntax of
-<a class="macro-reference" href="chapter-7.xhtml#macro-defclass">defclass</a>.''<br/></dd><dt><span class="explicit-bold"> A warning might be issued</span></dt><dd><a id="index/text-warning"></a><br/>This means that <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementations</a> are encouraged to issue a warning
+<a class="macro-reference" href="chapter-7.xhtml#macro-defclass">defclass</a>.''<br/></dd><div class="issue-annotation"><a class="issue-reference" href="issues/error-terminology-warning.xhtml#issue-error-terminology-warning:might">Issue ERROR-TERMINOLOGY-WARNING:MIGHT</a><dt><span class="explicit-bold"> A warning might be issued</span></dt><dd><a id="index/text-warning"></a><br/>This means that <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementations</a> are encouraged to issue a warning
 if the context is appropriate (<span class="explicit-italic"> e.g.</span>,  when compiling).  However, a
 <a class="glossary-reference" href="chapter-26.xhtml#glossary-conforming implementation">conforming implementation</a> is not required to issue a warning.
-</dd></dl><br/></section><section id="section-RemovableText"><h3 class="section-title">Sections Not Formally Part Of This Standard</h3><br/>
+</dd></div></dl><br/></section><section id="section-RemovableText"><h3 class="section-title">Sections Not Formally Part Of This Standard</h3><br/>
 Front matter and back matter, such as the ``Table of Contents,'' 
 ``Index,'' ``Figures,'' ``Credits,'' and ``Appendix'' are not considered formally 
 part of this standard, so that we retain the flexibility needed to update
@@ -734,8 +734,8 @@ This field does not include conditions that could
 be signaled by <a class="glossary-reference" href="chapter-26.xhtml#glossary-function">functions</a> passed to and called by this <a class="glossary-reference" href="chapter-26.xhtml#glossary-operator">operator</a>
 as arguments or through dynamic variables, nor by executing subforms of this
 operator if it is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-macro">macro</a> or <a class="glossary-reference" href="chapter-26.xhtml#glossary-special operator">special operator</a>.<br/></section><section id="section-The``InitialValue''SectionofaDictionaryEntry"><h4 class="section-title">The ``Initial Value'' Section of a Dictionary Entry</h4>This information describes the initial <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of a <a class="glossary-reference" href="chapter-26.xhtml#glossary-dynamic variable">dynamic variable</a>.
-Since this variable might change, see <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> restrictions in the ``Value Type'' section.<br/></section><section id="section-The``ArgumentPrecedenceOrder''SectionofaDictionaryEntry"><h4 class="section-title">The ``Argument Precedence Order'' Section of a Dictionary Entry</h4>This information describes the <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument precedence order">argument precedence order</a>.
-If it is omitted, the <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument precedence order">argument precedence order</a> is the default (left to right).<br/></section>
+Since this variable might change, see <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> restrictions in the ``Value Type'' section.<br/></section><div class="issue-annotation"><span class="issue-reference error">issue:Issue DOCUMENTATION-FUNCTION-TANGLED:REQUIRE-ARGUMENT</span><section id="section-The``ArgumentPrecedenceOrder''SectionofaDictionaryEntry"><h4 class="section-title">The ``Argument Precedence Order'' Section of a Dictionary Entry</h4>This information describes the <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument precedence order">argument precedence order</a>.
+If it is omitted, the <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument precedence order">argument precedence order</a> is the default (left to right).<br/></section></div>
 <section id="section-The``MethodSignature''SectionofaDictionaryEntry"><h4 class="section-title">The ``Method Signature'' Section of a Dictionary Entry</h4>The description of a <a class="glossary-reference" href="chapter-26.xhtml#glossary-generic function">generic function</a> includes descriptions of the
 <a class="glossary-reference" href="chapter-26.xhtml#glossary-method">methods</a> that are defined on that <a class="glossary-reference" href="chapter-26.xhtml#glossary-generic function">generic function</a> by the standard.  
 A method signature is used to describe the <a class="glossary-reference" href="chapter-26.xhtml#glossary-parameter">parameters</a> and 
@@ -750,8 +750,8 @@ by the <a class="glossary-reference" href="chapter-26.xhtml#glossary-method">met
        (<span class="explicit-italic"> i.e.</span>,  a <a class="glossary-reference" href="chapter-26.xhtml#glossary-generalized instance">generalized instance</a> of the <a class="glossary-reference" href="chapter-26.xhtml#glossary-class">class</a> <a class="type-reference" href="chapter-4.xhtml#type-t">t</a>).
 In addition, there is an <a class="glossary-reference" href="chapter-26.xhtml#glossary-optional parameter">optional parameter</a> <span class="parameter">z</span> and a
 <a class="glossary-reference" href="chapter-26.xhtml#glossary-keyword parameter">keyword parameter</a> <span class="parameter">k</span>.  This <a class="glossary-reference" href="chapter-26.xhtml#glossary-signature">signature</a> also indicates that this
-method on <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">F</span>
-</span></code></pre> is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-primary method">primary method</a> and has no <a class="glossary-reference" href="chapter-26.xhtml#glossary-qualifier">qualifiers</a>.<br/>For each <a class="glossary-reference" href="chapter-26.xhtml#glossary-parameter">parameter</a>, the <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument">argument</a> supplied must be in the
+method on <code><span class="syntax-root"><span class="syntax-interned-symbol">F</span>
+</span></code> is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-primary method">primary method</a> and has no <a class="glossary-reference" href="chapter-26.xhtml#glossary-qualifier">qualifiers</a>.<br/>For each <a class="glossary-reference" href="chapter-26.xhtml#glossary-parameter">parameter</a>, the <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument">argument</a> supplied must be in the
 intersection of the <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> specified in the description of the
 corresponding <a class="glossary-reference" href="chapter-26.xhtml#glossary-generic function">generic function</a> and the <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> given in 
 the <a class="glossary-reference" href="chapter-26.xhtml#glossary-signature">signature</a> of some <a class="glossary-reference" href="chapter-26.xhtml#glossary-method">method</a> (including not only those 
@@ -831,13 +831,13 @@ declarative means are available in <a class="glossary-reference" href="chapter-2
 restriction, however they generally do not manifest themselves in a
 <a class="glossary-reference" href="chapter-26.xhtml#glossary-lambda list">lambda list</a>.  For descriptive purposes within this specification,<br/><span class="function-definition"><span class="name">F</span>&nbsp;<span class="lambda-list"><span class="lambda-list-keyword">&amp;rest</span> <math xmlns="http://www.w3.org/1998/Math/MathML">\hboxarguments<msup><mrow/><mo>+</mo></msup></math></span>&nbsp;→&nbsp;|</span><br/> means the same as<br/><span class="function-definition"><span class="name">F</span>&nbsp;<span class="lambda-list"><span class="lambda-list-keyword">&amp;rest</span> arguments</span>&nbsp;→&nbsp;|</span><br/> but introduces the additional requirement that there be 
 at least one <span class="parameter">argument</span>.<br/></section><section id="section-Returnvaluesinthe``Syntax''Section"><h5 class="section-title">Return values in the ``Syntax'' Section</h5>An evaluation arrow ``<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math>'' precedes a list of <span class="glossary-reference error">glossary:values</span> to be returned.
-For example:<br/><span class="function-definition"><span class="name">F</span>&nbsp;<span class="lambda-list">a b c</span>&nbsp;→&nbsp;<span class="return-values">x</span></span><br/><br/> indicates that <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">F</span>
-</span></code></pre> is an operator that has three <a class="glossary-reference" href="chapter-26.xhtml#glossary-required parameter">required parameters</a>
+For example:<br/><span class="function-definition"><span class="name">F</span>&nbsp;<span class="lambda-list">a b c</span>&nbsp;→&nbsp;<span class="return-values">x</span></span><br/><br/> indicates that <code><span class="syntax-root"><span class="syntax-interned-symbol">F</span>
+</span></code> is an operator that has three <a class="glossary-reference" href="chapter-26.xhtml#glossary-required parameter">required parameters</a>
 (<span class="explicit-italic"> i.e.</span>,  <span class="parameter">a</span>, <span class="parameter">b</span>, and <span class="parameter">c</span>) and that returns one <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> (<span class="explicit-italic"> i.e.</span>,  <span class="parameter">x</span>).
 If more than one <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> is returned by an operator, the <a class="glossary-reference" href="chapter-26.xhtml#glossary-name">names</a> of the
 <span class="glossary-reference error">glossary:values</span> are separated by commas, as in:<br/><span class="function-definition"><span class="name">F</span>&nbsp;<span class="lambda-list">a b c</span>&nbsp;→&nbsp;<span class="return-values">x, y, z</span></span><br/><br/><section id="section-NoArgumentsorValuesinthe``Syntax''Section"><h6 class="section-title">No Arguments or Values in the ``Syntax'' Section</h6>If no <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument">arguments</a> are permitted, or no <span class="glossary-reference error">glossary:values</span> are returned, 
-a special notation is used to make this more visually apparent.  For example,<br/><span class="function-definition"><span class="name">F</span>&nbsp;<span class="lambda-list"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>⟨</mi></math><span class="explicit-italic"> no <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument">arguments</a></span><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>⟩</mi></math></span>&nbsp;→&nbsp;<span class="return-values"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>⟨</mi></math><span class="explicit-italic"> no <span class="glossary-reference error">glossary:values</span></span><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>⟩</mi></math></span></span><br/><br/>indicates that <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">F</span>
-</span></code></pre> is an operator that accepts no <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument">arguments</a> and returns
+a special notation is used to make this more visually apparent.  For example,<br/><span class="function-definition"><span class="name">F</span>&nbsp;<span class="lambda-list"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>⟨</mi></math><span class="explicit-italic"> no <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument">arguments</a></span><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>⟩</mi></math></span>&nbsp;→&nbsp;<span class="return-values"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>⟨</mi></math><span class="explicit-italic"> no <span class="glossary-reference error">glossary:values</span></span><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>⟩</mi></math></span></span><br/><br/>indicates that <code><span class="syntax-root"><span class="syntax-interned-symbol">F</span>
+</span></code> is an operator that accepts no <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument">arguments</a> and returns
 no <span class="glossary-reference error">glossary:values</span>.<br/></section><section id="section-UnconditionalTransferofControlinthe``Syntax''Section"><h6 class="section-title">Unconditional Transfer of Control in the ``Syntax'' Section</h6>Some <a class="glossary-reference" href="chapter-26.xhtml#glossary-operator">operators</a> perform an unconditional transfer of control, and
 so never have any return values.  Such <a class="glossary-reference" href="chapter-26.xhtml#glossary-operator">operators</a> are notated using
 a notation such as the following:<br/><span class="function-definition"><span class="name">F</span>&nbsp;<span class="lambda-list">a b c</span>&nbsp;→&nbsp;|</span><br/></section></section></section><section id="section-The``ValidContext''SectionofaDictionaryEntry"><h4 class="section-title">The ``Valid Context'' Section of a Dictionary Entry</h4>This information is used by dictionary entries such as ``Declarations''
@@ -871,23 +871,23 @@ in a manner consistent with this specification.<br/><section id="section-Resolut
 same situation but in conflicting ways, the passage that appears
 to describe the situation in the most specific way (not necessarily the
 passage that provides the most constrained kind of error detection) 
-takes precedence.<br/><section id="section-ExamplesofResolutionofApparentConflicts&#10;&#9;&#9;&#9;inExceptionalSituations"><h6 class="section-title">Examples of Resolution of Apparent Conflicts 
-			  in Exceptional Situations</h6>Suppose that function <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">foo</span>
-</span></code></pre> is a member of a set <math xmlns="http://www.w3.org/1998/Math/MathML">S</math> of <a class="glossary-reference" href="chapter-26.xhtml#glossary-function">functions</a> that
+takes precedence.<br/><div class="removable-text"><span class="removable-text-tooltip">This passage is <a href="chapter-1.xhtml#section-RemovableText">removable text</a> which is not formally part of the standard.</span><section id="section-ExamplesofResolutionofApparentConflicts&#10;&#9;&#9;&#9;inExceptionalSituations"><h6 class="section-title">Examples of Resolution of Apparent Conflicts 
+			  in Exceptional Situations</h6>Suppose that function <code><span class="syntax-root"><span class="syntax-interned-symbol">foo</span>
+</span></code> is a member of a set <math xmlns="http://www.w3.org/1998/Math/MathML">S</math> of <a class="glossary-reference" href="chapter-26.xhtml#glossary-function">functions</a> that
 operate on numbers.  Suppose that one passage states that an error must be
-signaled if any <a class="glossary-reference" href="chapter-26.xhtml#glossary-function">function</a> in <math xmlns="http://www.w3.org/1998/Math/MathML">S</math> is ever given an argument of <pre><code><span class="syntax-root"><span class="syntax-number">17</span>
-</span></code></pre>.
+signaled if any <a class="glossary-reference" href="chapter-26.xhtml#glossary-function">function</a> in <math xmlns="http://www.w3.org/1998/Math/MathML">S</math> is ever given an argument of <code><span class="syntax-root"><span class="syntax-number">17</span>
+</span></code>.
 Suppose that an apparently conflicting passage states that the consequences 
-are undefined if <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">foo</span>
-</span></code></pre> receives an argument of <pre><code><span class="syntax-root"><span class="syntax-number">17</span>
-</span></code></pre>.  Then the second passage
-(the one specifically about <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">foo</span>
-</span></code></pre>) would dominate because the description of
+are undefined if <code><span class="syntax-root"><span class="syntax-interned-symbol">foo</span>
+</span></code> receives an argument of <code><span class="syntax-root"><span class="syntax-number">17</span>
+</span></code>.  Then the second passage
+(the one specifically about <code><span class="syntax-root"><span class="syntax-interned-symbol">foo</span>
+</span></code>) would dominate because the description of
 the situational context is the most specific, and it would not be required that
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">foo</span>
-</span></code></pre> signal an error on an argument of <pre><code><span class="syntax-root"><span class="syntax-number">17</span>
-</span></code></pre> even though other functions in 
-the set <math xmlns="http://www.w3.org/1998/Math/MathML">S</math> would be required to do so.<br/></section></section></section><section id="section-ConformanceStatement"><h4 class="section-title">Conformance Statement</h4>A <a class="glossary-reference" href="chapter-26.xhtml#glossary-conforming implementation">conforming implementation</a> shall produce a conformance statement 
+<code><span class="syntax-root"><span class="syntax-interned-symbol">foo</span>
+</span></code> signal an error on an argument of <code><span class="syntax-root"><span class="syntax-number">17</span>
+</span></code> even though other functions in 
+the set <math xmlns="http://www.w3.org/1998/Math/MathML">S</math> would be required to do so.<br/></section></div></section></section><section id="section-ConformanceStatement"><h4 class="section-title">Conformance Statement</h4>A <a class="glossary-reference" href="chapter-26.xhtml#glossary-conforming implementation">conforming implementation</a> shall produce a conformance statement 
 as a consequence of using the implementation, or that statement
 shall be included in the accompanying documentation.  If the implementation
 conforms in all respects with this standard, the conformance statement
@@ -929,25 +929,25 @@ that might return different <span class="glossary-reference error">glossary:valu
 <span class="syntax-cons">(<a class="function-reference" href="chapter-12.xhtml#function-&gt;">&gt;</a> <a class="constant-reference" href="chapter-5.xhtml#constant-lambda-parameters-limit">lambda-parameters-limit</a> <span class="syntax-number">93</span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a>
 <span class="syntax-cons">(<a class="function-reference" href="chapter-13.xhtml#function-char-name">char-name</a> <span class="syntax-character">#\A</span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a>
 </span></code></pre> <br/><section id="section-ReadTimeConditionals"><h5 class="section-title">Use of Read-Time Conditionals</h5><br/>
-Use of <pre><code><span class="syntax-root">#+
-</span></code></pre> and <pre><code><span class="syntax-root">#-
-</span></code></pre> does not automatically disqualify a program
-from being conforming.  A program which uses <pre><code><span class="syntax-root">#+
-</span></code></pre> and <pre><code><span class="syntax-root">#-
-</span></code></pre> is 
+Use of <code><span class="syntax-root">#+
+</span></code> and <code><span class="syntax-root">#-
+</span></code> does not automatically disqualify a program
+from being conforming.  A program which uses <code><span class="syntax-root">#+
+</span></code> and <code><span class="syntax-root">#-
+</span></code> is 
 considered conforming if there is no set of <span class="glossary-reference error">glossary:features</span> in which the
 program would not be conforming.  Of course, <a class="glossary-reference" href="chapter-26.xhtml#glossary-conforming program">conforming programs</a> are
 not necessarily working programs.  The following program is conforming:<br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="chapter-5.xhtml#macro-defun">defun</a> <span class="syntax-interned-symbol">foo</span> <span class="syntax-symbol">()</span>
   #+ACME <span class="syntax-cons">(<span class="syntax-interned-symbol">acme:initialize-something</span>)</span>
   <span class="syntax-cons">(<a class="function-reference" href="chapter-22.xhtml#function-print">print</a> <span class="syntax-quote">'<span class="syntax-interned-symbol">hello-there</span></span>)</span>)</span>
 </span></code></pre><br/>However, this program might or might not work, depending on whether the
-presence of the feature <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">ACME</span>
-</span></code></pre> really implies that a function named
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">acme:initialize-something</span>
-</span></code></pre> is present in the environment.  In effect,
-using <pre><code><span class="syntax-root">#+
-</span></code></pre> or <pre><code><span class="syntax-root">#-
-</span></code></pre> in a <a class="glossary-reference" href="chapter-26.xhtml#glossary-conforming program">conforming program</a> means that the variable
+presence of the feature <code><span class="syntax-root"><span class="syntax-interned-symbol">ACME</span>
+</span></code> really implies that a function named
+<code><span class="syntax-root"><span class="syntax-interned-symbol">acme:initialize-something</span>
+</span></code> is present in the environment.  In effect,
+using <code><span class="syntax-root">#+
+</span></code> or <code><span class="syntax-root">#-
+</span></code> in a <a class="glossary-reference" href="chapter-26.xhtml#glossary-conforming program">conforming program</a> means that the variable
 <a class="variable-reference" href="chapter-24.xhtml#variable-*features*">*features*</a><a id="symbol-*features*"></a>
 becomes just one more piece of input data to that 
 program.  Like any other data coming into a program, the programmer
@@ -955,14 +955,14 @@ is responsible for assuring that the program does not make unwarranted
 assumptions on the basis of input data.<br/></section></section><section id="section-CharacterSetforPortableCode"><h4 class="section-title">Character Set for Portable Code</h4><span class="glossary-reference error">glossary:Portable code</span> is written using only <a class="glossary-reference" href="chapter-26.xhtml#glossary-standard character">standard characters</a>.<br/></section></section>
 </section><section id="section-LanguageExtensions"><h2 class="section-title">Language Extensions</h2>
 
- 
+<div class="issue-annotation"><a class="issue-reference" href="issues/extensions-position.xhtml#issue-extensions-position:documentation">Issue EXTENSIONS-POSITION:DOCUMENTATION</a> 
 A language extension is any documented <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-defined">implementation-defined</a> behavior
 of a <a class="glossary-reference" href="chapter-26.xhtml#glossary-defined name">defined name</a> in this standard that varies from the
 behavior described in this standard, or a documented consequence of a
 situation that the standard specifies as undefined, unspecified, or
 extendable by the implementation.  For example, if this standard says
 that ``the results are unspecified,'' an extension would be to specify
-the results.<br/>
+the results.<br/><span class="reviewer-note" id="reviewer-note-this-contradicts-pre"><span class="reviewer-note-tooltip"><span class="reviewer">Barmar</span>: This contradicts previous definitions of conforming code.</span>‣</span>
 If the correct behavior of a program depends on the results provided
 by an extension, only implementations with the same extension will
 execute the program correctly.  Note that such a program might be
@@ -970,18 +970,18 @@ non-conforming.  Also, if this standard says that ``an implementation
 may be extended,'' a conforming, but possibly non-portable, program
 can be written using an extension.<br/>An implementation can have extensions, provided they do not alter the
 behavior of conforming code and provided they are not explicitly
-prohibited by this standard.<br/>          
+prohibited by this standard.<br/></div>          
 The term ``extension'' refers only to extensions available upon
 startup.  An implementation is free to allow or prohibit redefinition
 of an extension.<br/>The following list contains specific guidance to implementations 
 concerning certain types of extensions.
-<dl><dt><span class="explicit-bold"> Extra return values</span></dt><dd> 
+<dl><dt><span class="explicit-bold"> Extra return values</span></dt><dd><span class="issue-annotation"><span class="issue-reference error">issue:Issue EXTRA-RETURN-VALUES:NO</span> 
 An implementation must return exactly
 the number of return values specified by this standard unless the
 standard specifically indicates otherwise.
+</span>
 
-
-</dd><dt><span class="explicit-bold"> Unsolicited messages</span></dt><dd> 
+</dd><dt><span class="explicit-bold"> Unsolicited messages</span></dt><dd><div class="issue-annotation"><a class="issue-reference" href="issues/unsolicited-messages.xhtml#issue-unsolicited-messages:not-to-system-user-streams">Issue UNSOLICITED-MESSAGES:NOT-TO-SYSTEM-USER-STREAMS</a> 
 No output can be produced by a function other than that specified in
 the standard or due to the signaling of <a class="glossary-reference" href="chapter-26.xhtml#glossary-condition">conditions</a>
 detected by the function.<br/>Unsolicited output, such as garbage collection notifications and
@@ -990,17 +990,17 @@ that is the value of a <a class="glossary-reference" href="chapter-26.xhtml#glos
 standard, but can go indirectly to <a class="glossary-reference" href="chapter-26.xhtml#glossary-terminal i/o">terminal I/O</a> by using a
 <a class="glossary-reference" href="chapter-26.xhtml#glossary-synonym stream">synonym stream</a> to <a class="variable-reference" href="chapter-21.xhtml#variable-*terminal-io*">*terminal-io*</a>.<br/>Progress reports from such functions as <a class="function-reference" href="chapter-24.xhtml#function-load">load</a> and
 <a class="function-reference" href="chapter-3.xhtml#function-compile">compile</a> are considered solicited, and are not covered by
-this prohibition.<br/> 
-</dd><dt><span class="explicit-bold"> Implementation of macros and special forms</span></dt><dd>
+this prohibition.<br/></div> 
+</dd><dt><span class="explicit-bold"> Implementation of macros and special forms</span></dt><dd><span class="issue-annotation"><span class="issue-reference error">issue:Issue MACRO-AS-FUNCTION:DISALLOW</span>
 <a class="glossary-reference" href="chapter-26.xhtml#glossary-macro">Macros</a> and <a class="glossary-reference" href="chapter-26.xhtml#glossary-special operator">special operators</a> defined in this standard
 must not be <a class="glossary-reference" href="chapter-26.xhtml#glossary-function">functions</a>.
- <br/></dd></dl>
+</span> <br/></dd></dl>
 
 </section><section id="section-LanguageSubsets"><h2 class="section-title">Language Subsets</h2>
 
-The language described in this standard contains no subsets,
+<span class="issue-annotation"><span class="issue-reference error">issue:Issue SUBSETTING-POSITION:NONE</span>The language described in this standard contains no subsets,
 though subsets are not forbidden.
-
+</span>
 For a language to be considered a subset,
 it must have the property that any valid <a class="glossary-reference" href="chapter-26.xhtml#glossary-program">program</a> in that language
 has equivalent semantics and will run directly
@@ -1016,25 +1016,25 @@ standard; see <span class="section-reference error">section:ReqLangFeatures.</sp
 however, it is considered good programming style to avoid them.
 It is permissible for the compiler to produce <a class="glossary-reference" href="chapter-26.xhtml#glossary-style warning">style warnings</a> 
 about the use of such features at compile time, 
-but there should be no such warnings at program execution time.<br/><section id="section-DeprecatedFunctions"><h3 class="section-title">Deprecated Functions</h3>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-function">functions</a> in Figure <span class="explicit-mono">()</span>&ndash; are deprecated.
+but there should be no such warnings at program execution time.<br/><section id="section-DeprecatedFunctions"><h3 class="section-title">Deprecated Functions</h3><div class="issue-annotation"><span class="issue-reference error">issue:Issue REQUIRE-PATHNAME-DEFAULTS-AGAIN:X3J13-DEC-91</span><div class="issue-annotation"><a class="issue-reference" href="issues/test-not-if-not.xhtml#issue-test-not-if-not:flush-all">Issue TEST-NOT-IF-NOT:FLUSH-ALL</a><div class="issue-annotation"><span class="issue-reference error">issue:Issue GENTEMP-BAD-IDEA:DEPRECATE</span>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-function">functions</a> in Figure <span class="explicit-mono">()</span>&ndash; are deprecated.
 <span class="float" id="figure-Deprecated Functions"><table><tbody><tr><td><a class="function-reference" href="chapter-14.xhtml#function-assoc-if-not">assoc-if-not</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-nsubst-if-not">nsubst-if-not</a></td><td><a class="function-reference" href="chapter-24.xhtml#function-require">require</a></td></tr><tr><td><a class="function-reference" href="chapter-17.xhtml#function-count-if-not">count-if-not</a></td><td><a class="function-reference" href="chapter-17.xhtml#function-nsubstitute-if-not">nsubstitute-if-not</a></td><td><a class="function-reference" href="chapter-10.xhtml#function-set">set</a></td></tr><tr><td><a class="function-reference" href="chapter-17.xhtml#function-delete-if-not">delete-if-not</a></td><td><a class="function-reference" href="chapter-17.xhtml#function-position-if-not">position-if-not</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-subst-if-not">subst-if-not</a></td></tr><tr><td><a class="function-reference" href="chapter-17.xhtml#function-find-if-not">find-if-not</a></td><td><a class="function-reference" href="chapter-24.xhtml#function-provide">provide</a></td><td><a class="function-reference" href="chapter-17.xhtml#function-substitute-if-not">substitute-if-not</a></td></tr><tr><td><a class="function-reference" href="chapter-10.xhtml#function-gentemp">gentemp</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-rassoc-if-not">rassoc-if-not</a></td><td/></tr><tr><td><a class="function-reference" href="chapter-14.xhtml#function-member-if-not">member-if-not</a></td><td><a class="function-reference" href="chapter-17.xhtml#function-remove-if-not">remove-if-not</a></td><td/></tr></tbody></table><div class="caption">Deprecated Functions</div></span>
-
-</section><section id="section-DeprecatedArgumentConventions"><h3 class="section-title">Deprecated Argument Conventions</h3>The ability to pass a numeric <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument">argument</a> to <a class="function-reference" href="chapter-10.xhtml#function-gensym">gensym</a> has been deprecated.
-
-The <span class="keyword">:test-not</span> <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument">argument</a> to the <a class="glossary-reference" href="chapter-26.xhtml#glossary-function">functions</a> in Figure <span class="explicit-mono">()</span>&ndash; are deprecated.<br/><span class="float" id="figure-Functions with Deprecated :TEST-NOT Arguments"><table><tbody><tr><td><a class="function-reference" href="chapter-14.xhtml#function-adjoin">adjoin</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-nset-difference">nset-difference</a></td><td><a class="function-reference" href="chapter-17.xhtml#function-search">search</a></td></tr><tr><td><a class="function-reference" href="chapter-14.xhtml#function-assoc">assoc</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-nset-exclusive-or">nset-exclusive-or</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-set-difference">set-difference</a></td></tr><tr><td><a class="function-reference" href="chapter-17.xhtml#function-count">count</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-nsublis">nsublis</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-set-exclusive-or">set-exclusive-or</a></td></tr><tr><td><a class="function-reference" href="chapter-17.xhtml#function-delete">delete</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-nsubst">nsubst</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-sublis">sublis</a></td></tr><tr><td><a class="function-reference" href="chapter-17.xhtml#function-delete-duplicates">delete-duplicates</a></td><td><a class="function-reference" href="chapter-17.xhtml#function-nsubstitute">nsubstitute</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-subsetp">subsetp</a></td></tr><tr><td><a class="function-reference" href="chapter-17.xhtml#function-find">find</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-nunion">nunion</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-subst">subst</a></td></tr><tr><td><a class="function-reference" href="chapter-14.xhtml#function-intersection">intersection</a></td><td><a class="function-reference" href="chapter-17.xhtml#function-position">position</a></td><td><a class="function-reference" href="chapter-17.xhtml#function-substitute">substitute</a></td></tr><tr><td><a class="function-reference" href="chapter-14.xhtml#function-member">member</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-rassoc">rassoc</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-tree-equal">tree-equal</a></td></tr><tr><td><a class="function-reference" href="chapter-17.xhtml#function-mismatch">mismatch</a></td><td><a class="function-reference" href="chapter-17.xhtml#function-remove">remove</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-union">union</a></td></tr><tr><td><a class="function-reference" href="chapter-14.xhtml#function-nintersection">nintersection</a></td><td><a class="function-reference" href="chapter-17.xhtml#function-remove-duplicates">remove-duplicates</a></td><td/></tr></tbody></table><div class="caption">Functions with Deprecated :TEST-NOT Arguments</div></span>
-The use of the situation names <a class="symbol-reference" href="chapter-3.xhtml#symbol-compile">compile</a>, <a class="symbol-reference" href="chapter-3.xhtml#symbol-load">load</a>, and <a class="symbol-reference" href="chapter-2.xhtml#symbol-eval">eval</a>
+</div></div></div>
+</section><section id="section-DeprecatedArgumentConventions"><h3 class="section-title">Deprecated Argument Conventions</h3><span class="issue-annotation"><a class="issue-reference" href="issues/gensym-name-stickiness.xhtml#issue-gensym-name-stickiness:like-teflon">Issue GENSYM-NAME-STICKINESS:LIKE-TEFLON</a>The ability to pass a numeric <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument">argument</a> to <a class="function-reference" href="chapter-10.xhtml#function-gensym">gensym</a> has been deprecated.
+</span>
+<div class="issue-annotation"><a class="issue-reference" href="issues/test-not-if-not.xhtml#issue-test-not-if-not:flush-all">Issue TEST-NOT-IF-NOT:FLUSH-ALL</a>The <span class="keyword">:test-not</span> <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument">argument</a> to the <a class="glossary-reference" href="chapter-26.xhtml#glossary-function">functions</a> in Figure <span class="explicit-mono">()</span>&ndash; are deprecated.<br/><span class="float" id="figure-Functions with Deprecated :TEST-NOT Arguments"><table><tbody><tr><td><a class="function-reference" href="chapter-14.xhtml#function-adjoin">adjoin</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-nset-difference">nset-difference</a></td><td><a class="function-reference" href="chapter-17.xhtml#function-search">search</a></td></tr><tr><td><a class="function-reference" href="chapter-14.xhtml#function-assoc">assoc</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-nset-exclusive-or">nset-exclusive-or</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-set-difference">set-difference</a></td></tr><tr><td><a class="function-reference" href="chapter-17.xhtml#function-count">count</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-nsublis">nsublis</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-set-exclusive-or">set-exclusive-or</a></td></tr><tr><td><a class="function-reference" href="chapter-17.xhtml#function-delete">delete</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-nsubst">nsubst</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-sublis">sublis</a></td></tr><tr><td><a class="function-reference" href="chapter-17.xhtml#function-delete-duplicates">delete-duplicates</a></td><td><a class="function-reference" href="chapter-17.xhtml#function-nsubstitute">nsubstitute</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-subsetp">subsetp</a></td></tr><tr><td><a class="function-reference" href="chapter-17.xhtml#function-find">find</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-nunion">nunion</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-subst">subst</a></td></tr><tr><td><a class="function-reference" href="chapter-14.xhtml#function-intersection">intersection</a></td><td><a class="function-reference" href="chapter-17.xhtml#function-position">position</a></td><td><a class="function-reference" href="chapter-17.xhtml#function-substitute">substitute</a></td></tr><tr><td><a class="function-reference" href="chapter-14.xhtml#function-member">member</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-rassoc">rassoc</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-tree-equal">tree-equal</a></td></tr><tr><td><a class="function-reference" href="chapter-17.xhtml#function-mismatch">mismatch</a></td><td><a class="function-reference" href="chapter-17.xhtml#function-remove">remove</a></td><td><a class="function-reference" href="chapter-14.xhtml#function-union">union</a></td></tr><tr><td><a class="function-reference" href="chapter-14.xhtml#function-nintersection">nintersection</a></td><td><a class="function-reference" href="chapter-17.xhtml#function-remove-duplicates">remove-duplicates</a></td><td/></tr></tbody></table><div class="caption">Functions with Deprecated :TEST-NOT Arguments</div></span></div>
+<div class="issue-annotation"><span class="issue-reference error">issue:Issue EVAL-WHEN-NON-TOP-LEVEL:GENERALIZE-EVAL-NEW-KEYWORDS</span><span class="issue-annotation"><span class="issue-reference error">issue:Issue EVAL-WHEN-OBSOLETE-KEYWORDS:X3J13-MAR-1993</span>The use of the situation names <a class="symbol-reference" href="chapter-3.xhtml#symbol-compile">compile</a>, <a class="symbol-reference" href="chapter-3.xhtml#symbol-load">load</a>, and <a class="symbol-reference" href="chapter-2.xhtml#symbol-eval">eval</a>
 in <a class="special-operator-reference" href="chapter-3.xhtml#special-operator-eval-when">eval-when</a> is deprecated.
-
-</section><section id="section-DeprecatedVariables"><h3 class="section-title">Deprecated Variables</h3>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-variable">variable</a> <a class="variable-reference" href="chapter-24.xhtml#variable-*modules*">*modules*</a> is deprecated.
-
-</section><section id="section-DeprecatedReaderSyntax"><h3 class="section-title">Deprecated Reader Syntax</h3>The <pre><code><span class="syntax-root">#S
-</span></code></pre> <a class="glossary-reference" href="chapter-26.xhtml#glossary-reader macro">reader macro</a> forces keyword names into the <a class="package-reference" href="chapter-11.xhtml#package-keyword">keyword</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">package</a>;
+</span></div>
+</section><section id="section-DeprecatedVariables"><h3 class="section-title">Deprecated Variables</h3><span class="issue-annotation"><span class="issue-reference error">issue:Issue REQUIRE-PATHNAME-DEFAULTS-AGAIN:X3J13-DEC-91</span>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-variable">variable</a> <a class="variable-reference" href="chapter-24.xhtml#variable-*modules*">*modules*</a> is deprecated.
+</span>
+</section><section id="section-DeprecatedReaderSyntax"><h3 class="section-title">Deprecated Reader Syntax</h3><div class="issue-annotation"><a class="issue-reference" href="issues/structure-read-print-syntax.xhtml#issue-structure-read-print-syntax:keywords">Issue STRUCTURE-READ-PRINT-SYNTAX:KEYWORDS</a>The <code><span class="syntax-root">#S
+</span></code> <a class="glossary-reference" href="chapter-26.xhtml#glossary-reader macro">reader macro</a> forces keyword names into the <a class="package-reference" href="chapter-11.xhtml#package-keyword">keyword</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">package</a>;
 see <span class="section-reference error">section:SharpsignS.</span>
 This feature is deprecated;
 in the future, keyword names will be taken in the package they are read in,
 so <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbols</a> that are actually in the <a class="package-reference" href="chapter-11.xhtml#package-keyword">keyword</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">package</a>
 should be used if that is what is desired.
-
+</div>
 </section>
 </section><section id="section-CLsymbols"><h2 class="section-title">Symbols in the COMMON-LISP Package</h2>
 

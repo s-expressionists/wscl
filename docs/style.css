@@ -58,6 +58,8 @@ main {
     width: 60em;
     max-width: 80vw;
     margin-left: 5vw;
+    text-align: justify;
+    hyphens: auto;
 }
 
 footer {
@@ -103,12 +105,12 @@ table {
 
 .keyword {
     color: pink;
-    font-family: mono;
+    font-family: monospace;
 }
 
 .lambda-list-keyword {
     color: brown;
-    font-family: mono;
+    font-family: monospace;
 }
 
 .glossary-reference,.newterm,.f {
@@ -122,47 +124,47 @@ table {
 
 .package-reference {
     color: darkolivegreen;
-    font-family: mono;
+    font-family: monospace;
 }
 
 .lambda-list-keyword-reference {
     color: brown;
-    font-family: mono;
+    font-family: monospace;
 }
 
 .type-reference {
     color: forestgreen;
-    font-family: mono;
+    font-family: monospace;
 }
 
 .declaration-reference {
     color: darkorange;
-    font-family: mono;
+    font-family: monospace;
 }
 
 .special-operator-reference {
     color: violet;
-    font-family: mono;
+    font-family: monospace;
 }
 
 .function-reference {
     color: darkblue;
-    font-family: mono;
+    font-family: monospace;
 }
 
 .macro-reference {
     color: darkviolet;
-    font-family: mono;
+    font-family: monospace;
 }
 
 .variable-reference {
     color: darkred;
-    font-family: mono;
+    font-family: monospace;
 }
 
 .constant-reference {
     color: brown;
-    font-family: mono;
+    font-family: monospace;
 }
 
 .issue-reference, .proposal-reference {
@@ -170,13 +172,13 @@ table {
 }
 
 .parameter {
-    font-family: mono;
+    font-family: monospace;
     font-style: italic;
 }
 
 code { /* TODO border, background */
     color: purple;
-    font-family: mono;
+    font-family: monospace;
 }
 
 .name { /* TODO Explain */
@@ -187,7 +189,7 @@ code { /* TODO border, background */
 
 div.issue {
     background: lightpink;
-    font-family: mono;
+    font-family: monospace;
 }
 
 div.component {
@@ -204,11 +206,11 @@ div.component {
 
 .ftype {
     color: darkgreen;
-    font-family: mono;
+    font-family: monospace;
 }
 
 .component .name {
-    font-family: mono;
+    font-family: monospace;
 }
 
 .component .label {

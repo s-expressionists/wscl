@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
   "http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta charset="utf-8"/><link rel="stylesheet" type="text/css" href="style.css"/><script src="permalink.js"/><script src="navigation.js"/><title>Well-specified Common Lisp — Appendix</title></head><body><main><nav class="sidebar"><span class="name">Entry Points</span><br/><ol><li><a href="chap-0.xhtml#section-Figures">Table of Contents</a></li><li><a href="symbol-index.xhtml#section-SymbolIndex">Symbol Index</a></li><li><a href="figure-index.xhtml#section-FigureIndex">Figure Index</a></li><li><a href="issue-index.xhtml#section-IssueIndices">Issue Index</a></li><li><a href="note-indices.xhtml#section-ReviewerNoteIndex">Note Indices</a></li><li><a href="chapter-26.xhtml#section-Glossary">Glossary</a></li></ol><hr/><span class="name">Appendix</span><br/><ol class="local-toc"><li><a href="#section-RemovedFeatures">Removed Language Features</a><ol> <li><a href="#section-Requirementsforremovedanddeprecatedfeatures">Requirements for removed and deprecated features</a><ol> </ol></li><li><a href="#section-RemovedTypes">Removed Types</a><ol> </ol></li><li><a href="#section-RemovedOperators">Removed Operators</a><ol> </ol></li><li><a href="#section-RemovedArgumentConventions">Removed Argument Conventions</a><ol> </ol></li><li><a href="#section-RemovedVariables">Removed Variables</a><ol> </ol></li><li><a href="#section-RemovedReaderSyntax">Removed Reader Syntax</a><ol> </ol></li><li><a href="#section-PackagesNoLongerRequired">Packages No Longer Required</a><ol> </ol></li></ol></li></ol></nav><div class="content"><section id="section-ChapA"><h1 class="section-title">A. Appendix</h1><section id="section-RemovedFeatures"><h2 class="section-title">Removed Language Features</h2>
 
-<section id="section-Requirementsforremovedanddeprecatedfeatures"><h3 class="section-title">Requirements for removed and deprecated features</h3>For this standard,
+<section id="section-Requirementsforremovedanddeprecatedfeatures"><h3 class="section-title">Requirements for removed and deprecated features</h3><div class="issue-annotation"><span class="issue-reference error">issue:Issue DEPRECATION-POSITION:LIMITED</span>For this standard,
     some features from the language described in <span class="explicit-italic"> Common Lisp: The Language</span> have been removed,
 and others have been deprecated (and will most likely not appear
 in future <span class="explicit-roman">Common Lisp</span> standards).
@@ -13,53 +13,53 @@ does not interfere with the correct function of <a class="glossary-reference" hr
 For example, symbols corresponding to the names of removed functions
 may not appear in the the <a class="package-reference" href="chapter-1.xhtml#package-common-lisp">common-lisp</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">package</a>.
 (Note, however, that this specification has been devised in such a way 
-that there can be a package named <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">LISP</span>
-</span></code></pre> which can contain such symbols.)<br/><a class="glossary-reference" href="chapter-26.xhtml#glossary-conforming implementation">Conforming implementations</a> must implement all deprecated features.
-For a list of deprecated features, see <span class="section-reference error">section:DeprecatedFeatures.</span>
-</section><section id="section-RemovedTypes"><h3 class="section-title">Removed Types</h3>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">string-char</span>
-</span></code></pre><a id="index/code-string-char"></a> was removed.
-
+that there can be a package named <code><span class="syntax-root"><span class="syntax-interned-symbol">LISP</span>
+</span></code> which can contain such symbols.)<br/><a class="glossary-reference" href="chapter-26.xhtml#glossary-conforming implementation">Conforming implementations</a> must implement all deprecated features.
+For a list of deprecated features, see <span class="section-reference error">section:DeprecatedFeatures.</span></div>
+</section><section id="section-RemovedTypes"><h3 class="section-title">Removed Types</h3><div class="issue-annotation"><span class="issue-reference error">issue:Issue CHARACTER-PROPOSAL:2-1-1</span>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> <code><span class="syntax-root"><span class="syntax-interned-symbol">string-char</span>
+</span></code><a id="index/code-string-char"></a> was removed.
+</div>
 </section><section id="section-RemovedOperators"><h3 class="section-title">Removed Operators</h3>The functions
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">int-char</span>
-</span></code></pre><a id="index/code-int-char"></a>,
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">char-bits</span>
-</span></code></pre><a id="index/code-char-bits"></a>,
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">char-font</span>
-</span></code></pre><a id="index/code-char-font"></a>,
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">make-char</span>
-</span></code></pre><a id="index/code-make-char"></a>,
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">char-bit</span>
-</span></code></pre><a id="index/code-char-bit"></a>,
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">set-char-bit</span>
-</span></code></pre><a id="index/code-set-char-bit"></a>,
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">string-char-p</span>
-</span></code></pre><a id="index/code-string-char-p"></a>,
-and
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">commonp</span>
-</span></code></pre><a id="index/code-commonp"></a>were removed.<br/>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-special operator">special operator</a> <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">compiler-let</span>
-</span></code></pre> was removed.
-
-</section><section id="section-RemovedArgumentConventions"><h3 class="section-title">Removed Argument Conventions</h3>The <span class="parameter">font</span> argument to <a class="function-reference" href="chapter-13.xhtml#function-digit-char">digit-char</a><a id="symbol-digit-char"></a> was removed.
+<div class="issue-annotation"><span class="issue-reference error">issue:Issue CHARACTER-PROPOSAL:2-1-1</span><code><span class="syntax-root"><span class="syntax-interned-symbol">int-char</span>
+</span></code><a id="index/code-int-char"></a>,
+<code><span class="syntax-root"><span class="syntax-interned-symbol">char-bits</span>
+</span></code><a id="index/code-char-bits"></a>,
+<code><span class="syntax-root"><span class="syntax-interned-symbol">char-font</span>
+</span></code><a id="index/code-char-font"></a>,
+<code><span class="syntax-root"><span class="syntax-interned-symbol">make-char</span>
+</span></code><a id="index/code-make-char"></a>,
+<code><span class="syntax-root"><span class="syntax-interned-symbol">char-bit</span>
+</span></code><a id="index/code-char-bit"></a>,
+<code><span class="syntax-root"><span class="syntax-interned-symbol">set-char-bit</span>
+</span></code><a id="index/code-set-char-bit"></a>,
+<code><span class="syntax-root"><span class="syntax-interned-symbol">string-char-p</span>
+</span></code><a id="index/code-string-char-p"></a>,
+</div><div class="issue-annotation"><a class="issue-reference" href="issues/common-type.xhtml#issue-common-type:remove">Issue COMMON-TYPE:REMOVE</a>and
+<code><span class="syntax-root"><span class="syntax-interned-symbol">commonp</span>
+</span></code><a id="index/code-commonp"></a></div><div class="issue-annotation"><span class="issue-reference error">issue:Issue REQUIRE-PATHNAME-DEFAULTS-AGAIN:X3J13-DEC-91</span><span class="issue-annotation"><a class="issue-reference" href="issues/require-pathname-defaults.xhtml#issue-require-pathname-defaults:eliminate">Issue REQUIRE-PATHNAME-DEFAULTS:ELIMINATE</a></span></div>were removed.<br/><div class="issue-annotation"><span class="issue-reference error">issue:Issue COMPILER-LET-CONFUSION:ELIMINATE</span>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-special operator">special operator</a> <code><span class="syntax-root"><span class="syntax-interned-symbol">compiler-let</span>
+</span></code> was removed.
+</div>
+</section><section id="section-RemovedArgumentConventions"><h3 class="section-title">Removed Argument Conventions</h3><div class="issue-annotation"><span class="issue-reference error">issue:Issue CHARACTER-PROPOSAL:2-1-1</span>The <span class="parameter">font</span> argument to <a class="function-reference" href="chapter-13.xhtml#function-digit-char">digit-char</a><a id="symbol-digit-char"></a> was removed.
 The <span class="parameter">bits</span> and <span class="parameter">font</span> arguments to <a class="function-reference" href="chapter-13.xhtml#function-code-char">code-char</a><a id="symbol-code-char"></a> 
 were removed.
-
-
+</div>
+<div class="issue-annotation"><span class="issue-reference error">issue:Issue REQUIRE-PATHNAME-DEFAULTS-YET-AGAIN:RESTORE-ARGUMENT</span><span class="issue-annotation"><span class="issue-reference error">issue:Issue REQUIRE-PATHNAME-DEFAULTS-AGAIN:X3J13-DEC-91</span></span></div>
 </section><section id="section-RemovedVariables"><h3 class="section-title">Removed Variables</h3>The variables
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">char-font-limit</span>
-</span></code></pre><a id="index/code-char-font-limit"></a>,
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">char-bits-limit</span>
-</span></code></pre><a id="index/code-char-bits-limit"></a>,
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">char-control-bit</span>
-</span></code></pre><a id="index/code-char-control-bit"></a>,
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">char-meta-bit</span>
-</span></code></pre><a id="index/code-char-meta-bit"></a>,
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">char-super-bit</span>
-</span></code></pre><a id="index/code-char-super-bit"></a>,
-<pre><code><span class="syntax-root"><span class="syntax-interned-symbol">char-hyper-bit</span>
-</span></code></pre><a id="index/code-char-hyper-bit"></a>,
-and <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">*break-on-warnings*</span>
-</span></code></pre><a id="index/code-*break-on-warnings*"></a>were removed.<br/></section><section id="section-RemovedReaderSyntax"><h3 class="section-title">Removed Reader Syntax</h3>The ``<pre><code><span class="syntax-root">#<span class="syntax-verbatim">,</span>
-</span></code></pre>'' <a class="glossary-reference" href="chapter-26.xhtml#glossary-reader macro">reader macro</a> in <a class="glossary-reference" href="chapter-26.xhtml#glossary-standard syntax">standard syntax</a> was removed.<br/></section><section id="section-PackagesNoLongerRequired"><h3 class="section-title">Packages No Longer Required</h3>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">packages</a> 
+<div class="issue-annotation"><span class="issue-reference error">issue:Issue CHARACTER-PROPOSAL:2-1-1</span><code><span class="syntax-root"><span class="syntax-interned-symbol">char-font-limit</span>
+</span></code><a id="index/code-char-font-limit"></a>,
+<code><span class="syntax-root"><span class="syntax-interned-symbol">char-bits-limit</span>
+</span></code><a id="index/code-char-bits-limit"></a>,
+<code><span class="syntax-root"><span class="syntax-interned-symbol">char-control-bit</span>
+</span></code><a id="index/code-char-control-bit"></a>,
+<code><span class="syntax-root"><span class="syntax-interned-symbol">char-meta-bit</span>
+</span></code><a id="index/code-char-meta-bit"></a>,
+<code><span class="syntax-root"><span class="syntax-interned-symbol">char-super-bit</span>
+</span></code><a id="index/code-char-super-bit"></a>,
+<code><span class="syntax-root"><span class="syntax-interned-symbol">char-hyper-bit</span>
+</span></code><a id="index/code-char-hyper-bit"></a>,
+</div><div class="issue-annotation"><a class="issue-reference" href="issues/break-on-warnings-obsolete.xhtml#issue-break-on-warnings-obsolete:remove">Issue BREAK-ON-WARNINGS-OBSOLETE:REMOVE</a>and <code><span class="syntax-root"><span class="syntax-interned-symbol">*break-on-warnings*</span>
+</span></code><a id="index/code-*break-on-warnings*"></a></div><div class="issue-annotation"><span class="issue-reference error">issue:Issue REQUIRE-PATHNAME-DEFAULTS-AGAIN:X3J13-DEC-91</span><span class="issue-annotation"><a class="issue-reference" href="issues/require-pathname-defaults.xhtml#issue-require-pathname-defaults:eliminate">Issue REQUIRE-PATHNAME-DEFAULTS:ELIMINATE</a></span></div>were removed.<br/></section><section id="section-RemovedReaderSyntax"><h3 class="section-title">Removed Reader Syntax</h3>The ``<code><span class="syntax-root">#<span class="syntax-verbatim">,</span>
+</span></code>'' <a class="glossary-reference" href="chapter-26.xhtml#glossary-reader macro">reader macro</a> in <a class="glossary-reference" href="chapter-26.xhtml#glossary-standard syntax">standard syntax</a> was removed.<br/></section><section id="section-PackagesNoLongerRequired"><h3 class="section-title">Packages No Longer Required</h3>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">packages</a> 
      <a class="package-reference" href="#package-lisp">lisp</a><a id="package-lisp"></a>,
      <a class="package-reference" href="#package-user">user</a><a id="package-user"></a>,
  and <a class="package-reference" href="#package-system">system</a><a id="package-system"></a>
