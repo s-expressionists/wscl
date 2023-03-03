@@ -1,0 +1,39 @@
+name: Render WSCL
+
+on: [push]
+
+jobs:
+  render-html:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: install-platform-dependencies
+        run: |
+          DEBIAN_FRONTEND=noninteractive sudo apt-get update -y         \
+           && DEBIAN_FRONTEND=noninteractive sudo apt-get install -y    \
+                curl libzstd1
+
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # - name: fetch-converter-binary
+      #   run: |
+      #     DOWNLOAD_URL=$(curl -s 'https://api.github.com/repos/scymtym/dpans-conversion/actions/artifacts?per_page=9' \
+      #                    | jq '[.artifacts[] | {name : .name, archive_download_url : .archive_download_url}]'         \
+      #                    | jq -r '.[] | select (.name == "dpans-converter") | .archive_download_url')
+      #     echo "Downloading dpans-converter binary from ${DOWNLOAD_URL}"
+      #     curl --header "authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+      #       "${DOWNLOAD_URL}" > dpans-converter.zip
+      #     unzip dpans-converter.zip
+      #     chmod +x dpans-converter
+
+      - name: fetch-converter-binary
+        run: |
+          curl -L https://github.com/scymtym/dpans-conversion/releases/download/test-release/dpans-converter-x86-64-linux \
+            > dpans-converter
+          chmod +x dpans-converter
+
+      - name: render-html
+        run: |
+          ./dpans-converter "$(pwd)/" /tmp/output/ --format html --with-sidebar true
