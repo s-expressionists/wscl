@@ -36,7 +36,12 @@ jobs:
 
       - name: render-html
         run: |
-          ./dpans-converter "$(pwd)/" /tmp/output/ --format html --with-sidebar true
+          ./dpans-converter "$(pwd)/" /tmp/output/ --format html \
+            --issue-annotations     true                         \
+            --reviewer-annotations  true                         \
+            --editor-annotations    true                         \
+            --removable-annotations true                         \
+            --with-sidebar          true
 
       - name: deploy-pages
         uses: peaceiris/actions-gh-pages@v3
