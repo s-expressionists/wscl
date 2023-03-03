@@ -1,0 +1,23 @@
+a.permalink {
+    color: #777;
+}
+
+a.permalink:hover {
+    text-decoration: none;
+}
+
+.section-title .permalink {
+    display: none
+}
+
+.section-title:hover .permalink {
+    display: inline;
+}
+
+.name .permalink {
+    display: none;
+}
+
+.name:hover .permalink {
+    display: inline;
+}

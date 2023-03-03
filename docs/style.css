@@ -1,0 +1,377 @@
+@import 'navigation.css';
+@import 'permalink.css';
+@import 'syntax.css';
+
+/* General defaults */
+
+body {
+    /* margin: 40px auto; */
+    line-height: 1.4;
+    font-size: 16px;
+    color: #444;
+    padding: 0 10px;
+}
+
+a {
+    color: #444;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+    text-decoration-style: dashed;
+}
+
+.title {
+    font-size: xx-large;
+}
+
+.subtitle {
+    font-size: x-large;
+}
+
+h1,h2,h3 {
+    line-height: 1.2;
+}
+
+.sidenote { /*used?*/
+    display: block;
+    float: right;
+    width: 30%;
+    border: 2px solid #888;
+    margin: 20px;
+    padding: 3px;
+}
+
+th {
+    text-align: left;
+}
+
+/* Layout */
+
+main {
+    display: grid;
+    grid-template-columns: 20% 80%;
+}
+
+.content {
+    width: 60em;
+    max-width: 80vw;
+    margin-left: 5vw;
+}
+
+footer {
+    text-align: center;
+    font-size: small;
+}
+
+/* Meta TODO remove when finished*/
+
+.error {
+    color: red;
+}
+
+/* Typographic */
+
+.explicit-bold {
+    font-weight: bold;
+}
+
+.explicit-italic {
+    font-style: italic;
+}
+
+.explicit-mono {
+    font-family: monospace;
+}
+
+.explicit-roman {
+    font-style: normal;
+}
+
+.float .caption {
+    text-align: center;
+    font-style: italic;
+}
+
+table {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Semantic */
+
+.keyword {
+    color: pink;
+    font-family: mono;
+}
+
+.lambda-list-keyword {
+    color: brown;
+    font-family: mono;
+}
+
+.glossary-reference,.newterm,.f {
+    color: #400000;
+    text-decoration: none;
+    font-style: italic;
+}
+
+.section-reference {
+}
+
+.package-reference {
+    color: darkolivegreen;
+    font-family: mono;
+}
+
+.lambda-list-keyword-reference {
+    color: brown;
+    font-family: mono;
+}
+
+.type-reference {
+    color: forestgreen;
+    font-family: mono;
+}
+
+.declaration-reference {
+    color: darkorange;
+    font-family: mono;
+}
+
+.special-operator-reference {
+    color: violet;
+    font-family: mono;
+}
+
+.function-reference {
+    color: darkblue;
+    font-family: mono;
+}
+
+.macro-reference {
+    color: darkviolet;
+    font-family: mono;
+}
+
+.variable-reference {
+    color: darkred;
+    font-family: mono;
+}
+
+.constant-reference {
+    color: brown;
+    font-family: mono;
+}
+
+.issue-reference, .proposal-reference {
+    font-weight: bold;
+}
+
+.parameter {
+    font-family: mono;
+    font-style: italic;
+}
+
+code { /* TODO border, background */
+    color: purple;
+    font-family: mono;
+}
+
+.name { /* TODO Explain */
+    font-weight: bold;
+}
+
+/* Components */
+
+div.issue {
+    background: lightpink;
+    font-family: mono;
+}
+
+div.component {
+    background: beige;
+}
+
+.component .header {
+    background: lightblue;
+}
+
+.component .header .right {
+    float: right;
+}
+
+.ftype {
+    color: darkgreen;
+    font-family: mono;
+}
+
+.component .name {
+    font-family: mono;
+}
+
+.component .label {
+    font-weight: bold;
+}
+
+.none {
+    color: gray;
+    font-style: italic;
+}
+
+/* Glossary */
+
+.glossary-entry .term:first-child {
+    font-weight: bold;
+}
+
+/* Removable text -- not formally part of the standard */
+
+.removable-text {
+    opacity: .7;
+    /* color: #777; */
+
+    border-color: #aaa;
+    border-left-style: dashed;
+    border-right-style: dashed;
+    border-width: 3px;
+    border-radius: 5px;
+
+    padding: 0px 3px 0px 3px;
+    margin-left: 0px 6px 0px 6px;
+}
+.removable-text .removable-text-tooltip {
+    visibility: hidden;
+
+    opacity: 1;
+    color: #444;
+    background: #aaa;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #444;
+    border-radius: 4px;
+
+    padding: 4px 4px;
+
+    position: absolute;
+    z-index: 1;
+    transform: translateY(-1.5em);
+}
+.removable-text:hover > .removable-text-tooltip {
+    visibility: visible;
+}
+
+/* Notes */
+
+.reviewer-note {
+    color: red;
+}
+.reviewer-note .reviewer {
+    font-style: italic;
+}
+.reviewer-note > .reviewer-note-tooltip::before {
+    content: "Reviewer Note ";
+}
+.reviewer-note > .reviewer-note-tooltip {
+    visibility: hidden;
+
+    color: #444;
+    background: pink;
+    border-style: solid;
+    border-width: 1px;
+    border-color: red;
+    border-radius: 4px;
+
+    padding: 4px 4px;
+
+    position: absolute;
+    z-index: 1;
+    transform: translateY(-1.5em);
+}
+.reviewer-note:hover > .reviewer-note-tooltip {
+    visibility: visible;
+}
+
+.editor-note {
+    color: blue;
+}
+.editor-note .editor {
+    font-style: italic;
+}
+.editor-note > .editor-note-tooltip::before {
+    content: "Editor Note by ";
+}
+.editor-note > .editor-note-tooltip {
+    visibility: hidden;
+
+    color: #444;
+    background: lightblue;
+    border-style: solid;
+    border-width: 1px;
+    border-color: blue;
+    border-radius: 4px;
+
+    padding: 4px 4px;
+
+    position: absolute;
+    z-index: 1;
+    transform: translateY(-1.5em);
+}
+.editor-note:hover > .editor-note-tooltip {
+    visibility: visible;
+}
+
+/* Issue annotations */
+
+.issue-annotation {
+    border-color: blueviolet;
+    border-left-style: solid;
+    border-right-style: solid;
+    border-width: 3px;
+    border-radius: 5px;
+
+    padding: 0px 3px 0px 3px;
+    margin-left: 0px 6px 0px 6px;
+}
+.issue-annotation .issue-reference {
+    visibility: hidden;
+
+    color: #444;
+    background: #aa6bf2;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #8a2be2;
+    border-radius: 4px;
+
+    padding: 4px 4px;
+
+    position: absolute;
+    z-index: 1;
+    transform: translateY(-1.5em);
+}
+.issue-annotation:hover > .issue-reference {
+    visibility: visible;
+}
+
+.issue-annotation .issue-annotation {
+    border-color: orangered;
+}
+
+.issue-annotation .issue-annotation .issue-annotation {
+    border-color: greenyellow;
+}
+
+.issue-annotation .issue-annotation .issue-annotation .issue-annotation {
+    border-color: aquamarine;
+}
+
+/* Issues */
+
+.status-passed {
+    background: #cec;
+}
+
+.status-unknown {
+    background: beige;
+}

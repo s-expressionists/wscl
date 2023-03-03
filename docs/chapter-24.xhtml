@@ -1,0 +1,564 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+  "http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta charset="utf-8"/><link rel="stylesheet" type="text/css" href="style.css"/><script src="permalink.js"/><script src="navigation.js"/><title>Well-specified Common Lisp — System Construction</title></head><body><main><nav class="sidebar"><span class="name">Entry Points</span><br/><ol><li><a href="chap-0.xhtml#section-Figures">Table of Contents</a></li><li><a href="symbol-index.xhtml#section-SymbolIndex">Symbol Index</a></li><li><a href="figure-index.xhtml#section-FigureIndex">Figure Index</a></li><li><a href="issue-index.xhtml#section-IssueIndices">Issue Index</a></li><li><a href="note-indices.xhtml#section-ReviewerNoteIndex">Note Indices</a></li><li><a href="chapter-26.xhtml#section-Glossary">Glossary</a></li></ol><hr/><span class="name">System Construction</span><br/><ol class="local-toc"><li><a href="#section-SystemConstructionConcepts">System Construction Concepts</a><ol> <li><a href="#section-Loading">Loading</a><ol> </ol></li><li><a href="#section-Features">Features</a><ol> <li><a href="#section-FeatureExpressions">Feature Expressions</a><ol> <li><a href="#section-FeatureExpExamples">Examples of Feature Expressions</a><ol> </ol></li></ol></li></ol></li></ol></li><li><a href="#section-Dictionary">Dictionary</a><ol> <li><a href="#function-compile-file">compile-file</a></li><li><a href="#function-compile-file-pathname">compile-file-pathname</a></li><li><a href="#function-load">load</a></li><li><a href="#macro-with-compilation-unit">with-compilation-unit</a></li><li><a href="#variable-*features*">*features*</a></li><li><a href="#variable-*compile-file-pathname*">*compile-file-pathname*, *compile-file-truename*</a></li><li><a href="#variable-*load-pathname*">*load-pathname*, *load-truename*</a></li><li><a href="#variable-*compile-print*">*compile-print*, *compile-verbose*</a></li><li><a href="#variable-*load-print*">*load-print*, *load-verbose*</a></li><li><a href="#variable-*modules*">*modules*</a></li><li><a href="#function-provide">provide, require</a></li></ol></li></ol></nav><div class="content"><section id="section-ChapTwentyFour"><h1 class="section-title">24. System Construction</h1><section id="section-SystemConstructionConcepts"><h2 class="section-title">System Construction Concepts</h2>
+<section id="section-Loading"><h3 class="section-title">Loading</h3>To <a class="function-reference" href="#function-load">load</a> a <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">file</a> is to treat its contents as <a class="glossary-reference" href="chapter-26.xhtml#glossary-code">code</a>
+and <a class="glossary-reference" href="chapter-26.xhtml#glossary-execute">execute</a> that <a class="glossary-reference" href="chapter-26.xhtml#glossary-code">code</a>.
+The <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">file</a> may contain <span class="newterm">source code</span> or <span class="newterm">compiled code</span>.<br/>A <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">file</a> containing <a class="glossary-reference" href="chapter-26.xhtml#glossary-source code">source code</a> is called a <span class="newterm">source file</span>.
+<span class="glossary-reference error">glossary:Loading</span> a <a class="glossary-reference" href="chapter-26.xhtml#glossary-source file">source file</a> is accomplished essentially 
+by sequentially <span class="glossary-reference error">glossary:reading</span><sub>2</sub> the <a class="glossary-reference" href="chapter-26.xhtml#glossary-form">forms</a> in the file,
+<span class="glossary-reference error">glossary:evaluating</span> each immediately after it is <a class="glossary-reference" href="chapter-26.xhtml#glossary-read">read</a>.<br/>A <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">file</a> containing <a class="glossary-reference" href="chapter-26.xhtml#glossary-compiled code">compiled code</a> is called a <span class="newterm">compiled file</span>.
+<span class="glossary-reference error">glossary:Loading</span> a <a class="glossary-reference" href="chapter-26.xhtml#glossary-compiled file">compiled file</a> is similar to <span class="glossary-reference error">glossary:loading</span> a <a class="glossary-reference" href="chapter-26.xhtml#glossary-source file">source file</a>,
+except that the <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">file</a> does not contain text but rather an
+<a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a> representation of pre-digested <a class="glossary-reference" href="chapter-26.xhtml#glossary-expression">expressions</a>
+created by the <a class="glossary-reference" href="chapter-26.xhtml#glossary-compiler">compiler</a>.  Often, a <a class="glossary-reference" href="chapter-26.xhtml#glossary-compiled file">compiled file</a> can be <a class="glossary-reference" href="chapter-26.xhtml#glossary-load">loaded</a>
+more quickly than a <a class="glossary-reference" href="chapter-26.xhtml#glossary-source file">source file</a>.
+See <span class="section-reference error">section:Compilation.</span><br/>The way in which a <a class="glossary-reference" href="chapter-26.xhtml#glossary-source file">source file</a> is distinguished from a <a class="glossary-reference" href="chapter-26.xhtml#glossary-compiled file">compiled file</a> 
+is <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a>.<br/></section><section id="section-Features"><h3 class="section-title">Features</h3><br/>A <span class="newterm">feature</span> is an aspect or attribute
+     of <span class="explicit-roman">Common Lisp</span>, 
+     of the <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a>,
+  or of the <a class="glossary-reference" href="chapter-26.xhtml#glossary-environment">environment</a>.
+A <a class="glossary-reference" href="chapter-26.xhtml#glossary-feature">feature</a> is identified by a <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a>.<br/>A <a class="glossary-reference" href="chapter-26.xhtml#glossary-feature">feature</a> is said to be <span class="newterm">present</span> in a <a class="glossary-reference" href="chapter-26.xhtml#glossary-lisp image">Lisp image</a>
+if and only if the <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a> naming it is an <a class="glossary-reference" href="chapter-26.xhtml#glossary-element">element</a> of the
+<a class="glossary-reference" href="chapter-26.xhtml#glossary-list">list</a> held by the <a class="glossary-reference" href="chapter-26.xhtml#glossary-variable">variable</a> <a class="variable-reference" href="#variable-*features*">*features*</a>, 
+which is called the <span class="newterm">features list</span>.<br/><section id="section-FeatureExpressions"><h4 class="section-title">Feature Expressions</h4><br/>Boolean combinations of <span class="glossary-reference error">glossary:features</span>, called <span class="newterm">feature expressions</span>,
+are used by the <pre><code><span class="syntax-root">#+
+</span></code></pre> and <pre><code><span class="syntax-root">#-
+</span></code></pre> <a class="glossary-reference" href="chapter-26.xhtml#glossary-reader macro">reader macros</a> in order to
+direct conditional <span class="glossary-reference error">glossary:reading</span> of <a class="glossary-reference" href="chapter-26.xhtml#glossary-expression">expressions</a> by the <a class="glossary-reference" href="chapter-26.xhtml#glossary-lisp reader">Lisp reader</a>.<br/>The rules for interpreting a <a class="glossary-reference" href="chapter-26.xhtml#glossary-feature expression">feature expression</a> are as follows:<br/><dl><dt><a class="glossary-reference" href="chapter-26.xhtml#glossary-feature">feature</a></dt><dd>If a <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a> naming a <a class="glossary-reference" href="chapter-26.xhtml#glossary-feature">feature</a> is used as a <a class="glossary-reference" href="chapter-26.xhtml#glossary-feature expression">feature expression</a>,
+the <a class="glossary-reference" href="chapter-26.xhtml#glossary-feature expression">feature expression</a> succeeds if that <a class="glossary-reference" href="chapter-26.xhtml#glossary-feature">feature</a> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-present">present</a>;
+otherwise it fails.<br/></dd><dt><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-5.xhtml#function-not">not</a> <span class="parameter">feature-conditional</span>)</span>
+</span></code></pre></dt><dd>A <span class="symbol-reference error">symbol:not</span> <a class="glossary-reference" href="chapter-26.xhtml#glossary-feature expression">feature expression</a> succeeds 
+if its argument <span class="parameter">feature-conditional</span> fails;
+otherwise, it succeeds.<br/></dd><dt><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="chapter-5.xhtml#macro-and">and</a> <math xmlns="http://www.w3.org/1998/Math/MathML"><mo>{</mo></math><span class="parameter">feature-conditional</span><math xmlns="http://www.w3.org/1998/Math/MathML"><mo>}</mo></math><span class="explicit-roman">*</span>)</span>
+</span></code></pre></dt><dd>An <a class="symbol-reference" href="chapter-7.xhtml#symbol-and">and</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-feature expression">feature expression</a> succeeds 
+if all of its argument <span class="parameter">feature-conditionals</span> succeed;
+otherwise, it fails.<br/></dd><dt><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="chapter-5.xhtml#macro-or">or</a> <math xmlns="http://www.w3.org/1998/Math/MathML"><mo>{</mo></math><span class="parameter">feature-conditional</span><math xmlns="http://www.w3.org/1998/Math/MathML"><mo>}</mo></math><span class="explicit-roman">*</span>)</span>
+</span></code></pre></dt><dd>An <a class="symbol-reference" href="chapter-7.xhtml#symbol-or">or</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-feature expression">feature expression</a> succeeds 
+if any of its argument <span class="parameter">feature-conditionals</span> succeeds;
+otherwise, it fails.<br/></dd></dl><br/><section id="section-FeatureExpExamples"><h5 class="section-title">Examples of Feature Expressions</h5>
+For example, suppose that
+ in <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> A, the <span class="glossary-reference error">glossary:features</span> <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">spice</span>
+</span></code></pre> and <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">perq</span>
+</span></code></pre> are <a class="glossary-reference" href="chapter-26.xhtml#glossary-present">present</a>,
+			     but the <a class="glossary-reference" href="chapter-26.xhtml#glossary-feature">feature</a> <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">lispm</span>
+</span></code></pre> is not <a class="glossary-reference" href="chapter-26.xhtml#glossary-present">present</a>;
+ in <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> B, the feature <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">lispm</span>
+</span></code></pre> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-present">present</a>,
+			     but the <span class="glossary-reference error">glossary:features</span> <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">spice</span>
+</span></code></pre> and <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">perq</span>
+</span></code></pre> are
+			      not <a class="glossary-reference" href="chapter-26.xhtml#glossary-present">present</a>;
+ and 
+ in <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> C, none of the features <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">spice</span>
+</span></code></pre>, <span class="glossary-reference error">glossary:lispm</span>, or <pre><code><span class="syntax-root"><span class="syntax-interned-symbol">perq</span>
+</span></code></pre> are
+			     <a class="glossary-reference" href="chapter-26.xhtml#glossary-present">present</a>.
+Figure <span class="explicit-mono">()</span>&ndash; shows some sample <a class="glossary-reference" href="chapter-26.xhtml#glossary-expression">expressions</a>, and how they would be 
+<a class="glossary-reference" href="chapter-26.xhtml#glossary-read">read</a><sub>2</sub> in these <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementations</a>.<br/><span class="float" id="figure-Features examples"><table><tbody><tr><td colspan="2"><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-14.xhtml#function-cons">cons</a> #+spice <span class="syntax-string">"Spice"</span> #-spice <span class="syntax-string">"Lispm"</span> <span class="syntax-interned-symbol">x</span>)</span>
+</span></code></pre> </td><td> </td></tr><tr><td>
+ in <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> A <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>…</mi></math> </td><td> <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-14.xhtml#function-cons">cons</a> <span class="syntax-string">"Spice"</span> <span class="syntax-interned-symbol">X</span>)</span>
+</span></code></pre> </td></tr><tr><td> in <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> B <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>…</mi></math> </td><td> <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-14.xhtml#function-cons">cons</a> <span class="syntax-string">"Lispm"</span> <span class="syntax-interned-symbol">X</span>)</span>
+</span></code></pre> </td></tr><tr><td> in <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> C <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>…</mi></math> </td><td> <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-14.xhtml#function-cons">cons</a> <span class="syntax-string">"Lispm"</span> <span class="syntax-interned-symbol">X</span>)</span>
+</span></code></pre> </td></tr><tr><td colspan="2">
+<pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-14.xhtml#function-cons">cons</a> #+spice <span class="syntax-string">"Spice"</span> #+LispM <span class="syntax-string">"Lispm"</span> <span class="syntax-interned-symbol">x</span>)</span>
+</span></code></pre> </td><td> </td></tr><tr><td>
+ in <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> A <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>…</mi></math> </td><td> <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-14.xhtml#function-cons">cons</a> <span class="syntax-string">"Spice"</span> <span class="syntax-interned-symbol">X</span>)</span>
+</span></code></pre> </td></tr><tr><td> in <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> B <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>…</mi></math> </td><td> <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-14.xhtml#function-cons">cons</a> <span class="syntax-string">"Lispm"</span> <span class="syntax-interned-symbol">X</span>)</span>
+</span></code></pre> </td></tr><tr><td> in <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> C <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>…</mi></math> </td><td> <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-14.xhtml#function-cons">cons</a> <span class="syntax-interned-symbol">X</span>)</span>
+</span></code></pre> </td></tr><tr><td colspan="2">
+<pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="special-operator-reference" href="chapter-5.xhtml#special-operator-setq">setq</a> <span class="syntax-interned-symbol">a</span> <span class="syntax-quote">'<span class="syntax-cons">(<span class="syntax-number">1</span> <span class="syntax-number">2</span> #+perq <span class="syntax-number">43</span> #+<span class="syntax-cons">(<a class="function-reference" href="chapter-5.xhtml#function-not">not</a> <span class="syntax-interned-symbol">perq</span>)</span> <span class="syntax-number">27</span>)</span></span>)</span>
+</span></code></pre> </td><td> </td></tr><tr><td>
+ in <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> A <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>…</mi></math> </td><td> <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="special-operator-reference" href="chapter-5.xhtml#special-operator-setq">setq</a> <span class="syntax-interned-symbol">A</span> <span class="syntax-quote">'<span class="syntax-cons">(<span class="syntax-number">1</span> <span class="syntax-number">2</span> <span class="syntax-number">43</span>)</span></span>)</span>
+</span></code></pre> </td></tr><tr><td> in <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> B <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>…</mi></math> </td><td> <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="special-operator-reference" href="chapter-5.xhtml#special-operator-setq">setq</a> <span class="syntax-interned-symbol">A</span> <span class="syntax-quote">'<span class="syntax-cons">(<span class="syntax-number">1</span> <span class="syntax-number">2</span> <span class="syntax-number">27</span>)</span></span>)</span>
+</span></code></pre> </td></tr><tr><td> in <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> C <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>…</mi></math> </td><td> <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="special-operator-reference" href="chapter-5.xhtml#special-operator-setq">setq</a> <span class="syntax-interned-symbol">A</span> <span class="syntax-quote">'<span class="syntax-cons">(<span class="syntax-number">1</span> <span class="syntax-number">2</span> <span class="syntax-number">27</span>)</span></span>)</span>
+</span></code></pre> </td></tr><tr><td colspan="2">
+<pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="special-operator-reference" href="chapter-5.xhtml#special-operator-let">let</a> <span class="syntax-cons">(<span class="syntax-cons">(<span class="syntax-interned-symbol">a</span> <span class="syntax-number">3</span>)</span> #+<span class="syntax-cons">(<a class="macro-reference" href="chapter-5.xhtml#macro-or">or</a> <span class="syntax-interned-symbol">spice</span> <span class="syntax-interned-symbol">lispm</span>)</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">b</span> <span class="syntax-number">3</span>)</span>)</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">foo</span> <span class="syntax-interned-symbol">a</span>)</span>)</span>
+</span></code></pre> </td><td> </td></tr><tr><td>
+ in <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> A <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>…</mi></math> </td><td> <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="special-operator-reference" href="chapter-5.xhtml#special-operator-let">let</a> <span class="syntax-cons">(<span class="syntax-cons">(<span class="syntax-interned-symbol">A</span> <span class="syntax-number">3</span>)</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">B</span> <span class="syntax-number">3</span>)</span>)</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">FOO</span> <span class="syntax-interned-symbol">A</span>)</span>)</span>
+</span></code></pre> </td></tr><tr><td> in <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> B <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>…</mi></math> </td><td> <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="special-operator-reference" href="chapter-5.xhtml#special-operator-let">let</a> <span class="syntax-cons">(<span class="syntax-cons">(<span class="syntax-interned-symbol">A</span> <span class="syntax-number">3</span>)</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">B</span> <span class="syntax-number">3</span>)</span>)</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">FOO</span> <span class="syntax-interned-symbol">A</span>)</span>)</span>
+</span></code></pre> </td></tr><tr><td> in <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> C <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>…</mi></math> </td><td> <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="special-operator-reference" href="chapter-5.xhtml#special-operator-let">let</a> <span class="syntax-cons">(<span class="syntax-cons">(<span class="syntax-interned-symbol">A</span> <span class="syntax-number">3</span>)</span>)</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">FOO</span> <span class="syntax-interned-symbol">A</span>)</span>)</span>
+</span></code></pre> </td></tr><tr><td colspan="2">
+<pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-14.xhtml#function-cons">cons</a> #+Lispm <span class="syntax-string">"#+Spice"</span> #+Spice <span class="syntax-string">"foo"</span> #-<span class="syntax-cons">(<a class="macro-reference" href="chapter-5.xhtml#macro-or">or</a> <span class="syntax-interned-symbol">Lispm</span> <span class="syntax-interned-symbol">Spice</span>)</span> <span class="syntax-number">7</span> <span class="syntax-interned-symbol">x</span>)</span>
+</span></code></pre> </td><td> </td></tr><tr><td>
+ in <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> A <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>…</mi></math> </td><td> <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-14.xhtml#function-cons">cons</a> <span class="syntax-string">"foo"</span> <span class="syntax-interned-symbol">X</span>)</span>
+</span></code></pre>      </td></tr><tr><td> in <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> B <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>…</mi></math> </td><td> <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-14.xhtml#function-cons">cons</a> <span class="syntax-string">"#+Spice"</span> <span class="syntax-interned-symbol">X</span>)</span>
+</span></code></pre> </td></tr><tr><td> in <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> C <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>…</mi></math> </td><td> <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-14.xhtml#function-cons">cons</a> <span class="syntax-number">7</span> <span class="syntax-interned-symbol">X</span>)</span>
+</span></code></pre>          </td></tr></tbody></table><div class="caption">Features examples</div></span>
+</section></section></section>
+</section><br/><section id="section-Dictionary"><h2 class="section-title">Dictionary</h2>
+
+
+<br/><div class="component" id="function-compile-file"><div class="header"><span class="left"><span class="name" id="function-compile-file">compile-file</span></span><span class="right"><span class="ftype">Function</span></span></div><br/><dl><dt class="label">Syntax</dt><dd><span class="function-definition"><span class="name">compile-file</span>&nbsp;<span class="lambda-list">input-file <span class="lambda-list-keyword">&amp;key</span> output-file verbose
+					         print external-format</span>&nbsp;→&nbsp;<span class="return-values">output-truename, warnings-p, failure-p</span></span><br/>
+</dd></dl><dl><dt class="label">Arguments and Values</dt><dd><span class="parameter">input-file</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname designator">pathname designator</a>.
+  (Default fillers for unspecified components are taken from
+   <a class="variable-reference" href="chapter-19.xhtml#variable-*default-pathname-defaults*">*default-pathname-defaults*</a>.)<br/><span class="parameter">output-file</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname designator">pathname designator</a>.
+  The default is <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-defined">implementation-defined</a>.<br/><span class="parameter">verbose</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-generalized boolean">generalized boolean</a>.
+  The default is the <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of <a class="variable-reference" href="#variable-*compile-verbose*">*compile-verbose*</a>.<br/><span class="parameter">print</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-generalized boolean">generalized boolean</a>.
+  The default is the <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of <a class="variable-reference" href="#variable-*compile-print*">*compile-print*</a>.
+
+<span class="parameter">external-format</span>&mdash;an <a class="glossary-reference" href="chapter-26.xhtml#glossary-external file format designator">external file format designator</a>.
+  The default is <span class="keyword">:default</span>.
+<span class="parameter">output-truename</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname">pathname</a> (the <a class="function-reference" href="chapter-20.xhtml#function-truename">truename</a> of the output <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">file</a>),
+   or <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>.<br/><span class="parameter">warnings-p</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-generalized boolean">generalized boolean</a>.<br/><span class="parameter">failure-p</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-generalized boolean">generalized boolean</a>.<br/> <br/></dd></dl><dl><dt class="label">Description</dt><dd><a class="function-reference" href="#function-compile-file">compile-file</a> transforms the contents of the file specified 
+by <span class="parameter">input-file</span> into <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a> binary data 
+which are placed in the file specified by <span class="parameter">output-file</span>.<br/>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">file</a> to which <span class="parameter">input-file</span> refers should be a <a class="glossary-reference" href="chapter-26.xhtml#glossary-source file">source file</a>.
+<span class="parameter">output-file</span> can be used to specify an output <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname">pathname</a>;
+the actual <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname">pathname</a> of the <a class="glossary-reference" href="chapter-26.xhtml#glossary-compiled file">compiled file</a> 
+to which <a class="glossary-reference" href="chapter-26.xhtml#glossary-compiled code">compiled code</a> will be output 
+is computed as if by calling <a class="function-reference" href="#function-compile-file-pathname">compile-file-pathname</a>.
+
+If <span class="parameter">input-file</span> or <span class="parameter">output-file</span> is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-logical pathname">logical pathname</a>,
+it is translated into a <a class="glossary-reference" href="chapter-26.xhtml#glossary-physical pathname">physical pathname</a> as if by calling
+<a class="function-reference" href="chapter-19.xhtml#function-translate-logical-pathname">translate-logical-pathname</a>.
+
+If <span class="parameter">verbose</span> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a>,
+<a class="function-reference" href="#function-compile-file">compile-file</a> prints a message in the form of a comment
+(<span class="explicit-italic"> i.e.</span>,  with a leading <a class="glossary-reference" href="chapter-26.xhtml#glossary-semicolon">semicolon</a>)
+to <a class="glossary-reference" href="chapter-26.xhtml#glossary-standard output">standard output</a> indicating what <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">file</a> is being <a class="glossary-reference" href="chapter-26.xhtml#glossary-compile">compiled</a>
+and other useful information.
+If <span class="parameter">verbose</span> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-false">false</a>,
+<a class="function-reference" href="#function-compile-file">compile-file</a> does not print 
+this information.
+
+If <span class="parameter">print</span> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a>,
+information about <a class="glossary-reference" href="chapter-26.xhtml#glossary-top level form">top level forms</a> in the file being
+compiled is printed to <a class="glossary-reference" href="chapter-26.xhtml#glossary-standard output">standard output</a>.
+Exactly what is printed is <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a>, 
+but nevertheless some information is printed.
+If <span class="parameter">print</span> is <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>, no information is printed.
+
+The <span class="parameter">external-format</span> specifies the <a class="glossary-reference" href="chapter-26.xhtml#glossary-external file format">external file format</a> 
+to be used when opening the <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">file</a>; see the <a class="glossary-reference" href="chapter-26.xhtml#glossary-function">function</a> <a class="function-reference" href="chapter-21.xhtml#function-open">open</a>.
+<a class="function-reference" href="#function-compile-file">compile-file</a> and <a class="function-reference" href="#function-load">load</a> must cooperate in such a way that
+the resulting <a class="glossary-reference" href="chapter-26.xhtml#glossary-compiled file">compiled file</a> can be <a class="glossary-reference" href="chapter-26.xhtml#glossary-load">loaded</a>
+without specifying an <a class="glossary-reference" href="chapter-26.xhtml#glossary-external file format">external file format</a> anew; see the <a class="glossary-reference" href="chapter-26.xhtml#glossary-function">function</a> <a class="function-reference" href="#function-load">load</a>.
+
+<a class="function-reference" href="#function-compile-file">compile-file</a> binds <a class="variable-reference" href="chapter-23.xhtml#variable-*readtable*">*readtable*</a> and <a class="variable-reference" href="chapter-11.xhtml#variable-*package*">*package*</a>
+to the values they held before processing the file.
+
+<a class="variable-reference" href="#variable-*compile-file-truename*">*compile-file-truename*</a> is bound by <a class="function-reference" href="#function-compile-file">compile-file</a> 
+to hold the <a class="glossary-reference" href="chapter-26.xhtml#glossary-truename">truename</a> of the <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname">pathname</a> of the file being compiled.
+
+<a class="variable-reference" href="#variable-*compile-file-pathname*">*compile-file-pathname*</a> is bound by <a class="function-reference" href="#function-compile-file">compile-file</a>
+to hold a <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname">pathname</a> denoted by the first argument to <a class="function-reference" href="#function-compile-file">compile-file</a>,
+merged against the defaults;
+that is, <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-19.xhtml#function-pathname">pathname</a> <span class="syntax-cons">(<a class="function-reference" href="chapter-19.xhtml#function-merge-pathnames">merge-pathnames</a> <span class="parameter">input-file</span>)</span>)</span>
+</span></code></pre>.
+
+The compiled <a class="glossary-reference" href="chapter-26.xhtml#glossary-function">functions</a> contained in the <a class="glossary-reference" href="chapter-26.xhtml#glossary-compiled file">compiled file</a> become available
+for use when the <a class="glossary-reference" href="chapter-26.xhtml#glossary-compiled file">compiled file</a> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-load">loaded</a> into Lisp.
+Any function definition that is processed by the
+compiler, including <pre><code><span class="syntax-root">#<span class="syntax-quote">'<span class="syntax-cons">(<a class="macro-reference" href="chapter-3.xhtml#macro-lambda">lambda</a> <span class="syntax-interned-symbol">...</span>)</span></span>
+</span></code></pre> forms and local function
+definitions made by <a class="special-operator-reference" href="chapter-5.xhtml#special-operator-flet">flet</a>, <a class="special-operator-reference" href="chapter-5.xhtml#special-operator-labels">labels</a> and <a class="macro-reference" href="chapter-5.xhtml#macro-defun">defun</a> forms, 
+result in an <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">object</a> of <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> <a class="type-reference" href="chapter-4.xhtml#type-compiled-function">compiled-function</a>.  
+
+The <a class="glossary-reference" href="chapter-26.xhtml#glossary-primary value">primary value</a> returned by <a class="function-reference" href="#function-compile-file">compile-file</a>, <span class="parameter">output-truename</span>,
+is the <a class="function-reference" href="chapter-20.xhtml#function-truename">truename</a> of the output file, or <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a> if the file could not be created.  <br/>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-secondary value">secondary value</a>, <span class="parameter">warnings-p</span>, is <a class="glossary-reference" href="chapter-26.xhtml#glossary-false">false</a>
+if no <a class="glossary-reference" href="chapter-26.xhtml#glossary-condition">conditions</a> of <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> <a class="type-reference" href="chapter-9.xhtml#type-error">error</a> or <a class="type-reference" href="chapter-9.xhtml#type-warning">warning</a>
+were detected by the compiler, and <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a> otherwise.<br/>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-tertiary value">tertiary value</a>, <span class="parameter">failure-p</span>, is <a class="glossary-reference" href="chapter-26.xhtml#glossary-false">false</a>
+if no <a class="glossary-reference" href="chapter-26.xhtml#glossary-condition">conditions</a> of <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> <a class="type-reference" href="chapter-9.xhtml#type-error">error</a> or <a class="type-reference" href="chapter-9.xhtml#type-warning">warning</a>
+(other than <a class="type-reference" href="chapter-9.xhtml#type-style-warning">style-warning</a>)
+were detected by the compiler, and <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a> otherwise.
+
+For general information about how <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">files</a> are processed by the <a class="glossary-reference" href="chapter-26.xhtml#glossary-file compiler">file compiler</a>,
+see <span class="section-reference error">section:FileCompilation.</span><br/> 
+<a class="glossary-reference" href="chapter-26.xhtml#glossary-program">Programs</a> to be compiled by the <a class="glossary-reference" href="chapter-26.xhtml#glossary-file compiler">file compiler</a> must only contain
+<a class="glossary-reference" href="chapter-26.xhtml#glossary-externalizable object">externalizable objects</a>; for details on such <a class="glossary-reference" href="chapter-26.xhtml#glossary-object">objects</a>,
+see <span class="section-reference error">section:LiteralsInCompiledFiles.</span>
+For information on how to extend the set of <a class="glossary-reference" href="chapter-26.xhtml#glossary-externalizable object">externalizable objects</a>,
+see the <a class="glossary-reference" href="chapter-26.xhtml#glossary-function">function</a> <a class="function-reference" href="chapter-7.xhtml#function-make-load-form">make-load-form</a> and <a class="section-reference" href="chapter-3.xhtml#section-CallingMakeLoadForm">Additional Constraints on Externalizable Objects</a>.
+
+</dd></dl><dl><dt class="label">Examples</dt><dd><span class="none">None</span>.<br/></dd></dl><dl><dt class="label">Affected By</dt><dd><a class="variable-reference" href="chapter-21.xhtml#variable-*error-output*">*error-output*</a>,
+<a class="variable-reference" href="chapter-21.xhtml#variable-*standard-output*">*standard-output*</a>, <a class="variable-reference" href="#variable-*compile-verbose*">*compile-verbose*</a>, <a class="variable-reference" href="#variable-*compile-print*">*compile-print*</a>
+The computer's file system.
+</dd></dl><dl><dt class="label">Exceptional Situations</dt><dd>For information about errors detected during the compilation process, 
+see <span class="section-reference error">section:FileCompilerExceptions.</span><br/>An error of <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> <a class="type-reference" href="chapter-20.xhtml#type-file-error">file-error</a> might be signaled if
+<span class="explicit-mono">(wild-pathname-p <span class="parameter">input-file</span>)</span> returns true.
+
+If either the attempt to open the <a class="glossary-reference" href="chapter-26.xhtml#glossary-source file">source file</a> for input
+       or the attempt to open the <a class="glossary-reference" href="chapter-26.xhtml#glossary-compiled file">compiled file</a> for output
+fails,
+an error of <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> <a class="type-reference" href="chapter-20.xhtml#type-file-error">file-error</a> is signaled.
+
+</dd></dl><dl><dt class="label">See Also</dt><dd><a class="function-reference" href="chapter-3.xhtml#function-compile">compile</a>,
+<a class="symbol-reference" href="chapter-3.xhtml#symbol-declare">declare</a>,
+<a class="special-operator-reference" href="chapter-3.xhtml#special-operator-eval-when">eval-when</a>,
+<a class="type-reference" href="chapter-19.xhtml#type-pathname">pathname</a>,
+<a class="type-reference" href="chapter-19.xhtml#type-logical-pathname">logical-pathname</a>,
+<a class="section-reference" href="chapter-20.xhtml#section-FileSystemConcepts">File System Concepts</a>,
+<a class="section-reference" href="chapter-19.xhtml#section-PathnamesAsFilenames">Pathnames as Filenames</a>
+</dd></dl><dl><dt class="label">Notes</dt><dd><span class="none">None</span>.<br/> 
+</dd></dl></div><br/><br/><br/><div class="component" id="function-compile-file-pathname"><div class="header"><span class="left"><span class="name" id="function-compile-file-pathname">compile-file-pathname</span></span><span class="right"><span class="ftype">Function</span></span></div><br/>
+<dl><dt class="label">Syntax</dt><dd><span class="function-definition"><span class="name">compile-file-pathname</span>&nbsp;<span class="lambda-list">input-file <span class="lambda-list-keyword">&amp;key</span> output-file <span class="lambda-list-keyword">&amp;allow-other-keys</span></span>&nbsp;→&nbsp;<span class="return-values">pathname</span></span><br/>
+</dd></dl><dl><dt class="label">Arguments and Values</dt><dd><span class="parameter">input-file</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname designator">pathname designator</a>.
+  (Default fillers for unspecified components are taken from
+   <a class="variable-reference" href="chapter-19.xhtml#variable-*default-pathname-defaults*">*default-pathname-defaults*</a>.)<br/><span class="parameter">output-file</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname designator">pathname designator</a>.
+ The default is <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-defined">implementation-defined</a>.<br/><span class="parameter">pathname</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname">pathname</a>.<br/></dd></dl><dl><dt class="label">Description</dt><dd>Returns the <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname">pathname</a> that <a class="function-reference" href="#function-compile-file">compile-file</a> would write into,
+if given the same arguments.<br/>The defaults for the <span class="parameter">output-file</span> 
+are taken from the <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname">pathname</a> 
+that results from merging the <span class="parameter">input-file</span> 
+with the <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of <a class="variable-reference" href="chapter-19.xhtml#variable-*default-pathname-defaults*">*default-pathname-defaults*</a>,
+except that the type component 
+should default to the appropriate
+<a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-defined">implementation-defined</a> default type for <a class="glossary-reference" href="chapter-26.xhtml#glossary-compiled file">compiled files</a>.
+
+If <span class="parameter">input-file</span> is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-logical pathname">logical pathname</a> and <span class="parameter">output-file</span> 
+is unsupplied, the result is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-logical pathname">logical pathname</a>.
+If <span class="parameter">input-file</span> is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-logical pathname">logical pathname</a>, 
+it is translated into a physical pathname as if by calling 
+<a class="function-reference" href="chapter-19.xhtml#function-translate-logical-pathname">translate-logical-pathname</a>.
+If <span class="parameter">input-file</span> is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-stream">stream</a>, 
+the <a class="glossary-reference" href="chapter-26.xhtml#glossary-stream">stream</a> can be either open or closed.
+<a class="function-reference" href="#function-compile-file-pathname">compile-file-pathname</a> returns the same <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname">pathname</a> after a
+file is closed as it did when the file was open.
+It is an error if <span class="parameter">input-file</span> is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-stream">stream</a> that is 
+created with <a class="function-reference" href="chapter-21.xhtml#function-make-two-way-stream">make-two-way-stream</a>, <a class="function-reference" href="chapter-21.xhtml#function-make-echo-stream">make-echo-stream</a>,             
+<a class="function-reference" href="chapter-21.xhtml#function-make-broadcast-stream">make-broadcast-stream</a>, <a class="function-reference" href="chapter-21.xhtml#function-make-concatenated-stream">make-concatenated-stream</a>,
+<a class="function-reference" href="chapter-21.xhtml#function-make-string-input-stream">make-string-input-stream</a>, <a class="function-reference" href="chapter-21.xhtml#function-make-string-output-stream">make-string-output-stream</a>.
+
+If an implementation supports additional keyword arguments to <a class="function-reference" href="#function-compile-file">compile-file</a>, 
+<a class="function-reference" href="#function-compile-file-pathname">compile-file-pathname</a> must accept the same arguments.<br/></dd></dl><dl><dt class="label">Examples</dt><dd>See <a class="function-reference" href="chapter-19.xhtml#function-logical-pathname-translations">logical-pathname-translations</a>.<br/></dd></dl><dl><dt class="label">Affected By</dt><dd><span class="none">None</span>.<br/></dd></dl><dl><dt class="label">Exceptional Situations</dt><dd>An error of <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> <a class="type-reference" href="chapter-20.xhtml#type-file-error">file-error</a> might be signaled if either <span class="parameter">input-file</span> or
+<span class="parameter">output-file</span> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-wild">wild</a>.
+
+</dd></dl><dl><dt class="label">See Also</dt><dd><a class="function-reference" href="#function-compile-file">compile-file</a>,
+<a class="type-reference" href="chapter-19.xhtml#type-pathname">pathname</a>,
+<a class="type-reference" href="chapter-19.xhtml#type-logical-pathname">logical-pathname</a>,
+<a class="section-reference" href="chapter-20.xhtml#section-FileSystemConcepts">File System Concepts</a>,
+<a class="section-reference" href="chapter-19.xhtml#section-PathnamesAsFilenames">Pathnames as Filenames</a>
+</dd></dl><dl><dt class="label">Notes</dt><dd><span class="none">None</span>.<br/>
+</dd></dl>
+</div><br/><br/><br/><div class="component" id="function-load"><div class="header"><span class="left"><span class="name" id="function-load">load</span></span><span class="right"><span class="ftype">Function</span></span></div><br/><dl><dt class="label">Syntax</dt><dd><span class="function-definition"><span class="name">load</span>&nbsp;<span class="lambda-list">filespec <span class="lambda-list-keyword">&amp;key</span> verbose print
+					       if-does-not-exist external-format</span>&nbsp;→&nbsp;<span class="return-values">generalized-boolean</span></span><br/>
+</dd></dl><dl><dt class="label">Arguments and Values</dt><dd><span class="parameter">filespec</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-stream">stream</a>, or a <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname designator">pathname designator</a>.
+ The default is taken from <a class="variable-reference" href="chapter-19.xhtml#variable-*default-pathname-defaults*">*default-pathname-defaults*</a>.<br/><span class="parameter">verbose</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-generalized boolean">generalized boolean</a>.
+  The default is the <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of <a class="variable-reference" href="#variable-*load-verbose*">*load-verbose*</a>.<br/><span class="parameter">print</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-generalized boolean">generalized boolean</a>.
+  The default is the <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of <a class="variable-reference" href="#variable-*load-print*">*load-print*</a>.<br/><span class="parameter">if-does-not-exist</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-generalized boolean">generalized boolean</a>.
+  The default is <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a>.<br/><span class="parameter">external-format</span>&mdash;an <a class="glossary-reference" href="chapter-26.xhtml#glossary-external file format designator">external file format designator</a>.
+  The default is <span class="keyword">:default</span>.
+<span class="parameter">generalized-boolean</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-generalized boolean">generalized boolean</a>.<br/></dd></dl><dl><dt class="label">Description</dt><dd><a class="function-reference" href="#function-load">load</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-load">loads</a> the <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">file</a> named by <span class="parameter">filespec</span>
+into the <span class="explicit-roman">Lisp</span> environment.<br/>The manner in which a <a class="glossary-reference" href="chapter-26.xhtml#glossary-source file">source file</a>
+is distinguished from a <a class="glossary-reference" href="chapter-26.xhtml#glossary-compiled file">compiled file</a> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a>.
+If the file specification is not complete and both a <a class="glossary-reference" href="chapter-26.xhtml#glossary-source file">source file</a> and a 
+<a class="glossary-reference" href="chapter-26.xhtml#glossary-compiled file">compiled file</a> exist which might match,
+then which of those files <a class="function-reference" href="#function-load">load</a> selects is <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a>.<br/>If <span class="parameter">filespec</span> is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-stream">stream</a>,
+<a class="function-reference" href="#function-load">load</a> determines what kind of <a class="glossary-reference" href="chapter-26.xhtml#glossary-stream">stream</a> it is 
+and loads directly from the <a class="glossary-reference" href="chapter-26.xhtml#glossary-stream">stream</a>.
+If <span class="parameter">filespec</span> is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-logical pathname">logical pathname</a>,
+it is translated into a <a class="glossary-reference" href="chapter-26.xhtml#glossary-physical pathname">physical pathname</a>
+as if by calling <a class="function-reference" href="chapter-19.xhtml#function-translate-logical-pathname">translate-logical-pathname</a>.
+
+<a class="function-reference" href="#function-load">load</a> sequentially executes each <a class="glossary-reference" href="chapter-26.xhtml#glossary-form">form</a> it encounters
+in the <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">file</a> named by <span class="parameter">filespec</span>.
+If the <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">file</a> is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-source file">source file</a>
+and the <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> chooses to perform <a class="glossary-reference" href="chapter-26.xhtml#glossary-implicit compilation">implicit compilation</a>,
+<a class="function-reference" href="#function-load">load</a> must recognize <a class="glossary-reference" href="chapter-26.xhtml#glossary-top level form">top level forms</a> 
+as described in <a class="section-reference" href="chapter-3.xhtml#section-TopLevelForms">Processing of Top Level Forms</a>
+and arrange for each <a class="glossary-reference" href="chapter-26.xhtml#glossary-top level form">top level form</a> to be executed 
+before beginning <a class="glossary-reference" href="chapter-26.xhtml#glossary-implicit compilation">implicit compilation</a> of the next.
+(Note, however, that processing of <a class="special-operator-reference" href="chapter-3.xhtml#special-operator-eval-when">eval-when</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-form">forms</a>
+by <a class="function-reference" href="#function-load">load</a> is controlled by the <span class="keyword">:execute</span> situation.)
+
+If <span class="parameter">verbose</span> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a>,
+<a class="function-reference" href="#function-load">load</a> prints a message in the form of a comment
+(<span class="explicit-italic"> i.e.</span>,  with a leading <a class="glossary-reference" href="chapter-26.xhtml#glossary-semicolon">semicolon</a>)
+to <a class="glossary-reference" href="chapter-26.xhtml#glossary-standard output">standard output</a> indicating what <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">file</a> is being <a class="glossary-reference" href="chapter-26.xhtml#glossary-load">loaded</a>
+and other useful information.
+If <span class="parameter">verbose</span> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-false">false</a>, 
+<a class="function-reference" href="#function-load">load</a> does not print this information.<br/>If <span class="parameter">print</span> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a>,
+<a class="function-reference" href="#function-load">load</a> incrementally prints information to <a class="glossary-reference" href="chapter-26.xhtml#glossary-standard output">standard output</a>
+showing the progress of the <span class="glossary-reference error">glossary:loading</span> process.
+For a <a class="glossary-reference" href="chapter-26.xhtml#glossary-source file">source file</a>,
+this information might mean printing the <span class="glossary-reference error">glossary:values</span> 
+<span class="glossary-reference error">glossary:yielded</span> by each <a class="glossary-reference" href="chapter-26.xhtml#glossary-form">form</a> in the <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">file</a>
+as soon as those <span class="glossary-reference error">glossary:values</span> are returned.
+For a <a class="glossary-reference" href="chapter-26.xhtml#glossary-compiled file">compiled file</a>, 
+what is printed might not reflect precisely the contents of the <a class="glossary-reference" href="chapter-26.xhtml#glossary-source file">source file</a>,
+but some information is generally printed.
+If <span class="parameter">print</span> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-false">false</a>,
+<a class="function-reference" href="#function-load">load</a> does not print this information.<br/>If the file named by <span class="parameter">filespec</span> is successfully loaded,
+<a class="function-reference" href="#function-load">load</a> returns <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a>.
+
+ <br/>If the file does not exist, 
+the specific action taken depends on <span class="parameter">if-does-not-exist</span>:
+if it is <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>, <a class="function-reference" href="#function-load">load</a> returns <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>;
+otherwise, <a class="function-reference" href="#function-load">load</a> signals an error.<br/>The <span class="parameter">external-format</span> specifies the <a class="glossary-reference" href="chapter-26.xhtml#glossary-external file format">external file format</a> 
+to be used when opening the <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">file</a> (see the <a class="glossary-reference" href="chapter-26.xhtml#glossary-function">function</a> <a class="function-reference" href="chapter-21.xhtml#function-open">open</a>),
+except that when the <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">file</a> named by <span class="parameter">filespec</span> is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-compiled file">compiled file</a>,
+the <span class="parameter">external-format</span> is ignored.
+<a class="function-reference" href="#function-compile-file">compile-file</a> and <a class="function-reference" href="#function-load">load</a> cooperate 
+in an <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a> way to assure 
+the preservation of the <a class="glossary-reference" href="chapter-26.xhtml#glossary-similarity">similarity</a> of <a class="glossary-reference" href="chapter-26.xhtml#glossary-character">characters</a> 
+referred to in the <a class="glossary-reference" href="chapter-26.xhtml#glossary-source file">source file</a> 
+at the time the <a class="glossary-reference" href="chapter-26.xhtml#glossary-source file">source file</a> was processed by the <a class="glossary-reference" href="chapter-26.xhtml#glossary-file compiler">file compiler</a> 
+under a given <a class="glossary-reference" href="chapter-26.xhtml#glossary-external file format">external file format</a>,
+regardless of the value of <span class="parameter">external-format</span> 
+at the time the <a class="glossary-reference" href="chapter-26.xhtml#glossary-compiled file">compiled file</a> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-load">loaded</a>.
+
+<a class="function-reference" href="#function-load">load</a> binds <a class="variable-reference" href="chapter-23.xhtml#variable-*readtable*">*readtable*</a> and <a class="variable-reference" href="chapter-11.xhtml#variable-*package*">*package*</a>
+to the values they held before <span class="glossary-reference error">glossary:loading</span> the file.
+
+   
+<a class="variable-reference" href="#variable-*load-truename*">*load-truename*</a> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-bound">bound</a> by <a class="function-reference" href="#function-load">load</a> to hold 
+the <a class="glossary-reference" href="chapter-26.xhtml#glossary-truename">truename</a> of the <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname">pathname</a> of the file being <a class="glossary-reference" href="chapter-26.xhtml#glossary-load">loaded</a>.<br/><a class="variable-reference" href="#variable-*load-pathname*">*load-pathname*</a> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-bound">bound</a> by <a class="function-reference" href="#function-load">load</a> to hold 
+a <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname">pathname</a> that represents <span class="parameter">filespec</span> merged against the defaults.
+That is, <span class="explicit-mono">(pathname (merge-pathnames <span class="parameter">filespec</span>))</span>.
+   <br/></dd></dl><dl><dt class="label">Examples</dt><dd><pre><code><span class="syntax-root">;Establish a data file...
+ <span class="syntax-cons">(<a class="macro-reference" href="chapter-21.xhtml#macro-with-open-file">with-open-file</a> <span class="syntax-cons">(<span class="syntax-interned-symbol">str</span> <span class="syntax-string">"data.in"</span> <span class="syntax-keyword-symbol">:direction</span> <span class="syntax-keyword-symbol">:output</span> <span class="syntax-keyword-symbol">:if-exists</span> <span class="syntax-keyword-symbol">:error</span>)</span>
+   <span class="syntax-cons">(<a class="function-reference" href="chapter-22.xhtml#function-print">print</a> <span class="syntax-number">1</span> <span class="syntax-interned-symbol">str</span>)</span> <span class="syntax-cons">(<a class="function-reference" href="chapter-22.xhtml#function-print">print</a> <span class="syntax-quote">'<span class="syntax-cons">(<a class="special-operator-reference" href="chapter-5.xhtml#special-operator-setq">setq</a> <span class="syntax-interned-symbol">a</span> <span class="syntax-number">888</span>)</span></span> <span class="syntax-interned-symbol">str</span>)</span> <a class="section-reference" href="chapter-26.xhtml#section-T">T</a>)</span>
+<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <a class="section-reference" href="chapter-26.xhtml#section-T">T</a>
+ <span class="syntax-cons">(<a class="function-reference" href="#function-load">load</a> <span class="syntax-string">"data.in"</span>)</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a>
+ <span class="syntax-interned-symbol">a</span> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <span class="syntax-number">888</span>
+ <span class="syntax-cons">(<a class="function-reference" href="#function-load">load</a> <span class="syntax-cons">(<a class="special-operator-reference" href="chapter-5.xhtml#special-operator-setq">setq</a> <span class="syntax-interned-symbol">p</span> <span class="syntax-cons">(<a class="function-reference" href="chapter-19.xhtml#function-merge-pathnames">merge-pathnames</a> <span class="syntax-string">"data.in"</span>)</span>)</span> <span class="syntax-keyword-symbol">:verbose</span> <a class="section-reference" href="chapter-26.xhtml#section-T">T</a>)</span>
+; Loading contents of file /fred/data.in
+; Finished loading /fred/data.in
+<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a>
+ <span class="syntax-cons">(<a class="function-reference" href="#function-load">load</a> <span class="syntax-interned-symbol">p</span> <span class="syntax-keyword-symbol">:print</span> <a class="section-reference" href="chapter-26.xhtml#section-T">T</a>)</span> 
+; Loading contents of file /fred/data.in
+;  1
+;  888
+; Finished loading /fred/data.in
+<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>→</mi></math> <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a>
+</span></code></pre><br/>
+<pre><code><span class="syntax-root"> ;----[Begin file SETUP]----
+ <span class="syntax-cons">(<a class="macro-reference" href="chapter-11.xhtml#macro-in-package">in-package</a> <span class="syntax-string">"MY-STUFF"</span>)</span>
+ <span class="syntax-cons">(<a class="macro-reference" href="chapter-3.xhtml#macro-defmacro">defmacro</a> <span class="syntax-interned-symbol">compile-truename</span> <span class="syntax-symbol">()</span> <span class="syntax-quasiquote">`<span class="syntax-quote">'<span class="syntax-unquote">,<a class="variable-reference" href="#variable-*compile-file-truename*">*compile-file-truename*</a></span></span></span>)</span>
+ <span class="syntax-cons">(<a class="macro-reference" href="chapter-5.xhtml#macro-defvar">defvar</a> <span class="syntax-interned-symbol">*my-compile-truename*</span> <span class="syntax-cons">(<span class="syntax-interned-symbol">compile-truename</span>)</span> <span class="syntax-string">"Just for debugging."</span>)</span>
+ <span class="syntax-cons">(<a class="macro-reference" href="chapter-5.xhtml#macro-defvar">defvar</a> <span class="syntax-interned-symbol">*my-load-pathname*</span> <a class="variable-reference" href="#variable-*load-pathname*">*load-pathname*</a>)</span>
+ <span class="syntax-cons">(<a class="macro-reference" href="chapter-5.xhtml#macro-defun">defun</a> <span class="syntax-interned-symbol">load-my-system</span> <span class="syntax-symbol">()</span>
+   <span class="syntax-cons">(<a class="macro-reference" href="chapter-6.xhtml#macro-dolist">dolist</a> <span class="syntax-cons">(<span class="syntax-interned-symbol">module-name</span> <span class="syntax-quote">'<span class="syntax-cons">(<span class="syntax-string">"FOO"</span> <span class="syntax-string">"BAR"</span> <span class="syntax-string">"BAZ"</span>)</span></span>)</span>
+     <span class="syntax-cons">(<a class="function-reference" href="#function-load">load</a> <span class="syntax-cons">(<a class="function-reference" href="chapter-19.xhtml#function-merge-pathnames">merge-pathnames</a> <span class="syntax-interned-symbol">module-name</span> <span class="syntax-interned-symbol">*my-load-pathname*</span>)</span>)</span>)</span>)</span>
+ ;----[End of file SETUP]----
+
+ 
+ <span class="syntax-cons">(<a class="function-reference" href="#function-load">load</a> <span class="syntax-string">"SETUP"</span>)</span>
+ <span class="syntax-cons">(<span class="syntax-interned-symbol">load-my-system</span>)</span>
+</span></code></pre>
+</dd></dl><dl><dt class="label">Affected By</dt><dd>The implementation, and the host computer's file system.<br/></dd></dl><dl><dt class="label">Exceptional Situations</dt><dd>If <span class="keyword">:if-does-not-exist</span> is supplied and is <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a>, or is not supplied,
+<a class="function-reference" href="#function-load">load</a> signals an error of <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> <a class="type-reference" href="chapter-20.xhtml#type-file-error">file-error</a> if the file named by
+<span class="parameter">filespec</span> does not exist,
+or if the <a class="glossary-reference" href="chapter-26.xhtml#glossary-file system">file system</a> cannot perform the requested operation.
+
+An error of <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> <a class="type-reference" href="chapter-20.xhtml#type-file-error">file-error</a> might be signaled if
+<pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-19.xhtml#function-wild-pathname-p">wild-pathname-p</a> <span class="parameter">filespec</span>)</span>
+</span></code></pre> returns <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a>.
+
+</dd></dl><dl><dt class="label">See Also</dt><dd><a class="function-reference" href="chapter-9.xhtml#function-error">error</a>,
+<a class="function-reference" href="chapter-19.xhtml#function-merge-pathnames">merge-pathnames</a>,
+<a class="variable-reference" href="#variable-*load-verbose*">*load-verbose*</a>,
+<a class="variable-reference" href="chapter-19.xhtml#variable-*default-pathname-defaults*">*default-pathname-defaults*</a>,
+<a class="type-reference" href="chapter-19.xhtml#type-pathname">pathname</a>,
+<a class="type-reference" href="chapter-19.xhtml#type-logical-pathname">logical-pathname</a>,
+<a class="section-reference" href="chapter-20.xhtml#section-FileSystemConcepts">File System Concepts</a>,
+<a class="section-reference" href="chapter-19.xhtml#section-PathnamesAsFilenames">Pathnames as Filenames</a>
+</dd></dl><dl><dt class="label">Notes</dt><dd><span class="none">None</span>.<br/> 
+</dd></dl></div><br/><br/><br/><div class="component" id="macro-with-compilation-unit"><div class="header"><span class="left"><span class="name" id="macro-with-compilation-unit">with-compilation-unit</span></span><span class="right"><span class="ftype">Macro</span></span></div><br/>
+<dl><dt class="label">Syntax</dt><dd><span class="function-definition"><span class="name">with-compilation-unit</span>&nbsp;<span class="lambda-list"><span class="explicit-roman">(</span><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>[</mi><mi>[</mi></math> <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>↓</mi></math><span class="parameter">option</span><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>]</mi><mi>]</mi></math><span class="explicit-roman">)</span>
+		   <math xmlns="http://www.w3.org/1998/Math/MathML"><mo>{</mo></math><span class="parameter">form</span><math xmlns="http://www.w3.org/1998/Math/MathML"><mo>}</mo></math><span class="explicit-roman">*</span></span>&nbsp;→&nbsp;<span class="return-values"><math xmlns="http://www.w3.org/1998/Math/MathML"><mo>{</mo></math><span class="parameter">result</span><math xmlns="http://www.w3.org/1998/Math/MathML"><mo>}</mo></math><span class="explicit-roman">*</span></span></span><br/><br/><tr><td>option</td><td>::=</td><td><span class="keyword">:override</span> override</td></tr><br/></dd></dl><dl><dt class="label">Arguments and Values</dt><dd><span class="parameter">override</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-generalized boolean">generalized boolean</a>; evaluated.
+ The default is <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>.<br/><span class="parameter">forms</span>&mdash;an <a class="glossary-reference" href="chapter-26.xhtml#glossary-implicit progn">implicit progn</a>.<br/><span class="parameter">results</span>&mdash;the <span class="glossary-reference error">glossary:values</span> returned by the <a class="glossary-reference" href="chapter-26.xhtml#glossary-form">forms</a>.<br/></dd></dl><dl><dt class="label">Description</dt><dd>Executes <span class="parameter">forms</span> from left to right.
+Within the <a class="glossary-reference" href="chapter-26.xhtml#glossary-dynamic environment">dynamic environment</a> of <a class="macro-reference" href="#macro-with-compilation-unit">with-compilation-unit</a>,
+actions deferred by the compiler until the end of compilation will be
+deferred until the end of the outermost call to <a class="macro-reference" href="#macro-with-compilation-unit">with-compilation-unit</a>.<br/>The set of <span class="glossary-reference error">glossary:options</span> permitted may be extended by the implementation,
+but the only <a class="glossary-reference" href="chapter-26.xhtml#glossary-standardized">standardized</a> keyword is <span class="keyword">:override</span>.<br/>If nested dynamically only the outer call to 
+<a class="macro-reference" href="#macro-with-compilation-unit">with-compilation-unit</a> has any effect unless the value
+associated with <span class="keyword">:override</span> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a>, in which case warnings are
+deferred only to the end of the innermost call for which <span class="parameter">override</span> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-true">true</a>.<br/>The function <a class="function-reference" href="#function-compile-file">compile-file</a> 
+provides the effect of <br/><pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="macro-reference" href="#macro-with-compilation-unit">with-compilation-unit</a> <span class="syntax-cons">(<span class="syntax-keyword-symbol">:override</span> <a class="section-reference" href="chapter-1.xhtml#section-NIL">NIL</a>)</span> <span class="syntax-interned-symbol">...</span>)</span>
+</span></code></pre>
+around its <a class="glossary-reference" href="chapter-26.xhtml#glossary-code">code</a>.<br/>Any <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a> extensions can only be provided as the
+result of an explicit programmer request by use of an
+<a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a> keyword.  <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">Implementations</a> are forbidden
+from attaching additional meaning to a use of this macro which involves either
+no keywords or just the keyword <span class="keyword">:override</span>.<br/></dd></dl><dl><dt class="label">Examples</dt><dd>If an <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> would normally defer certain kinds of warnings,
+such as warnings about undefined functions, to the end of a compilation
+unit (such as a <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">file</a>), the following example shows how to cause those
+warnings to be deferred to the end of the compilation of several files.<br/><pre><code><span class="syntax-root"> <span class="syntax-cons">(<a class="macro-reference" href="chapter-5.xhtml#macro-defun">defun</a> <span class="syntax-interned-symbol">compile-files</span> <span class="syntax-cons">(<a class="lambda-list-keyword-reference" href="chapter-3.xhtml#lambda-list-keyword-rest">&amp;REST</a> <span class="syntax-interned-symbol">files</span>)</span>
+   <span class="syntax-cons">(<a class="macro-reference" href="#macro-with-compilation-unit">with-compilation-unit</a> <span class="syntax-symbol">()</span>
+     <span class="syntax-cons">(<a class="function-reference" href="chapter-14.xhtml#function-mapcar">mapcar</a> <span class="syntax-function">#'<span class="syntax-cons">(<a class="macro-reference" href="chapter-3.xhtml#macro-lambda">lambda</a> <span class="syntax-cons">(<span class="syntax-interned-symbol">file</span>)</span> <span class="syntax-cons">(<a class="function-reference" href="#function-compile-file">compile-file</a> <span class="syntax-interned-symbol">file</span>)</span>)</span></span> <span class="syntax-interned-symbol">files</span>)</span>)</span>)</span>
+
+ <span class="syntax-cons">(<span class="syntax-interned-symbol">compile-files</span> <span class="syntax-string">"A"</span> <span class="syntax-string">"B"</span> <span class="syntax-string">"C"</span>)</span>
+</span></code></pre><br/>Note however that if the implementation does not normally defer any warnings,
+use of <span class="glossary-reference error">glossary:with-compilation-unit</span> might not have any effect.<br/></dd></dl><dl><dt class="label">Affected By</dt><dd><span class="none">None</span>.<br/></dd></dl><dl><dt class="label">Exceptional Situations</dt><dd><span class="none">None</span>.<br/></dd></dl><dl><dt class="label">See Also</dt><dd><a class="function-reference" href="chapter-3.xhtml#function-compile">compile</a>, <a class="function-reference" href="#function-compile-file">compile-file</a><br/></dd></dl><dl><dt class="label">Notes</dt><dd><span class="none">None</span>.<br/></dd></dl>
+</div><br/><br/>
+<br/><div class="component" id="variable-*features*"><div class="header"><span class="left"><span class="name" id="variable-*features*">*features*</span></span><span class="right"><span class="ftype">Variable</span></span></div><br/><dl><dt class="label">Value Type</dt><dd>a <a class="glossary-reference" href="chapter-26.xhtml#glossary-proper list">proper list</a>.<br/></dd></dl><dl><dt class="label">Initial Value</dt><dd><a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a>.<br/></dd></dl><dl><dt class="label">Description</dt><dd>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of <a class="variable-reference" href="#variable-*features*">*features*</a> is called the <a class="glossary-reference" href="chapter-26.xhtml#glossary-features list">features list</a>.  
+It is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-list">list</a> of <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbols</a>, called <span class="glossary-reference error">glossary:features</span>, 
+that correspond to some aspect of the <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> or <a class="glossary-reference" href="chapter-26.xhtml#glossary-environment">environment</a>.<br/>Most <span class="glossary-reference error">glossary:features</span> have <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a> meanings;
+The following meanings have been assigned to feature names:<br/><dl><dt><span class="keyword">:cltl1</span></dt><dd>If present, indicates that the <a class="package-reference" href="chapter-A.xhtml#package-lisp">lisp</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">package</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-purports to conform">purports to conform</a>
+to the 1984 specification <span class="explicit-italic"> Common Lisp: The Language</span>.  
+It is possible, but not required, for a <a class="glossary-reference" href="chapter-26.xhtml#glossary-conforming implementation">conforming implementation</a> 
+to have this feature because this specification specifies that 
+its <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbols</a> are to be in the <a class="package-reference" href="chapter-1.xhtml#package-common-lisp">common-lisp</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">package</a>, 
+not the <a class="package-reference" href="chapter-A.xhtml#package-lisp">lisp</a> package.<br/></dd><dt><span class="keyword">:cltl2</span></dt><dd>If present, indicates that the implementation <a class="glossary-reference" href="chapter-26.xhtml#glossary-purports to conform">purports to conform</a>
+to <span class="explicit-italic"> Common Lisp: The Language, Second Edition</span>.
+This feature must not be present in any <a class="glossary-reference" href="chapter-26.xhtml#glossary-conforming implementation">conforming implementation</a>,
+since conformance to that document is not compatible with conformance
+to this specification.
+The name, however, is reserved by this specification in order to help
+programs distinguish implementations which conform to that document
+from implementations which conform to this specification.<br/></dd><dt><span class="keyword">:ieee-floating-point</span></dt><dd>If present, indicates that the implementation <a class="glossary-reference" href="chapter-26.xhtml#glossary-purports to conform">purports to conform</a>
+to the requirements of <span class="explicit-italic"> IEEE Standard for Binary Floating-Point Arithmetic</span>.<br/></dd><dt><span class="keyword">:x3j13</span></dt><dd>If present, indicates that the implementation conforms to some
+particular working draft of this specification, 
+or to some subset of features that approximates a belief about
+what this specification might turn out to contain.
+A <a class="glossary-reference" href="chapter-26.xhtml#glossary-conforming implementation">conforming implementation</a> might or might not contain
+such a feature.
+(This feature is intended primarily as a stopgap in order to 
+provide implementors something to use prior to the availability
+of a draft standard, in order to discourage them from introducing
+the <span class="keyword">:draft-ansi-cl</span> and <span class="keyword">:ansi-cl</span> <span class="glossary-reference error">glossary:features</span> prematurely.)<br/></dd><dt><span class="keyword">:draft-ansi-cl</span></dt><dd>If present, indicates that the <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> 
+<a class="glossary-reference" href="chapter-26.xhtml#glossary-purports to conform">purports to conform</a> to the first full draft of this specification,
+which went to public review in 1992.
+A <a class="glossary-reference" href="chapter-26.xhtml#glossary-conforming implementation">conforming implementation</a>
+which has the <span class="keyword">:draft-ansi-cl-2</span> or <span class="keyword">:ansi-cl</span> <a class="glossary-reference" href="chapter-26.xhtml#glossary-feature">feature</a>
+is not permitted to retain the <span class="keyword">:draft-ansi-cl</span> <a class="glossary-reference" href="chapter-26.xhtml#glossary-feature">feature</a>
+since incompatible changes were made subsequent to the first draft.<br/></dd><dt><span class="keyword">:draft-ansi-cl-2</span></dt><dd>If present, indicates that a second full draft of this specification
+has gone to public review, and that the <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> 
+<a class="glossary-reference" href="chapter-26.xhtml#glossary-purports to conform">purports to conform</a> to that specification.
+(If additional public review drafts are produced, this keyword
+ will continue to refer to the second draft, and additional keywords
+ will be added to identify conformance with such later drafts.
+ As such, the meaning of this keyword can be relied upon not to
+ change over time.)
+A <a class="glossary-reference" href="chapter-26.xhtml#glossary-conforming implementation">conforming implementation</a> which has the <span class="keyword">:ansi-cl</span>
+<a class="glossary-reference" href="chapter-26.xhtml#glossary-feature">feature</a> is only permitted to retain the <span class="keyword">:draft-ansi-cl</span> 
+<a class="glossary-reference" href="chapter-26.xhtml#glossary-feature">feature</a> if the finally approved standard is not incompatible
+with the draft standard.<br/></dd><dt><span class="keyword">:ansi-cl</span></dt><dd>If present, indicates that this specification has been adopted by ANSI
+as an official standard, and that the <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> 
+<a class="glossary-reference" href="chapter-26.xhtml#glossary-purports to conform">purports to conform</a>.<br/></dd><dt><span class="keyword">:common-lisp</span></dt><dd>This feature must appear in <a class="variable-reference" href="#variable-*features*">*features*</a> for any implementation that
+has one or more of the features <span class="keyword">:x3j13</span>, <span class="keyword">:draft-ansi-cl</span>,
+or <span class="keyword">:ansi-cl</span>.  It is intended that it should also appear in
+implementations which have the features <span class="keyword">:cltl1</span> or <span class="keyword">:cltl2</span>,
+but this specification cannot force such behavior.  The intent is 
+that this feature should identify the language family named ``Common Lisp,''
+rather than some specific dialect within that family.<br/></dd></dl>
+</dd></dl><dl><dt class="label">Examples</dt><dd><span class="none">None</span>.<br/></dd></dl><dl><dt class="label">Affected By</dt><dd><span class="none">None</span>.<br/></dd></dl><dl><dt class="label">See Also</dt><dd><a class="section-reference" href="chapter-1.xhtml#section-ReadTimeConditionals">Use of Read-Time Conditionals</a>,
+<a class="section-reference" href="chapter-2.xhtml#section-StandardMacroChars">Standard Macro Characters</a><br/></dd></dl><dl><dt class="label">Notes</dt><dd>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of <a class="variable-reference" href="#variable-*features*">*features*</a> is used by the <pre><code><span class="syntax-root">#+
+</span></code></pre> and <pre><code><span class="syntax-root">#-
+</span></code></pre> reader syntax.<br/><a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">Symbols</a> in the <a class="glossary-reference" href="chapter-26.xhtml#glossary-features list">features list</a> may be in any <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">package</a>,
+but in practice they are generally in the <a class="package-reference" href="chapter-11.xhtml#package-keyword">keyword</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">package</a>.
+This is because <a class="package-reference" href="chapter-11.xhtml#package-keyword">keyword</a> is the <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">package</a> used by default
+when <span class="glossary-reference error">glossary:reading</span><sub>2</sub> <a class="glossary-reference" href="chapter-26.xhtml#glossary-feature expression">feature expressions</a> 
+in the <pre><code><span class="syntax-root">#+
+</span></code></pre> and <pre><code><span class="syntax-root">#-
+</span></code></pre> <a class="glossary-reference" href="chapter-26.xhtml#glossary-reader macro">reader macros</a>.
+<a class="glossary-reference" href="chapter-26.xhtml#glossary-code">Code</a> that needs to name a <a class="glossary-reference" href="chapter-26.xhtml#glossary-feature">feature</a><sub>2</sub> in a
+<a class="glossary-reference" href="chapter-26.xhtml#glossary-package">package</a> <math xmlns="http://www.w3.org/1998/Math/MathML">P</math> (other than <a class="package-reference" href="chapter-11.xhtml#package-keyword">keyword</a>) can do so
+by making explicit use of a <a class="glossary-reference" href="chapter-26.xhtml#glossary-package prefix">package prefix</a> for <math xmlns="http://www.w3.org/1998/Math/MathML">P</math>,
+but note that such <a class="glossary-reference" href="chapter-26.xhtml#glossary-code">code</a> must also assure that the <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">package</a> <math xmlns="http://www.w3.org/1998/Math/MathML">P</math> 
+exists in order for the <a class="glossary-reference" href="chapter-26.xhtml#glossary-feature expression">feature expression</a> to be <a class="glossary-reference" href="chapter-26.xhtml#glossary-read">read</a><sub>2</sub>&mdash;even
+in cases where the <a class="glossary-reference" href="chapter-26.xhtml#glossary-feature expression">feature expression</a> is expected to fail.
+
+It is generally considered wise for an <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> to include 
+one or more <span class="glossary-reference error">glossary:features</span> identifying the specific <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a>,
+so that conditional expressions can be written which distinguish 
+idiosyncrasies of one <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a> from those of another.  
+Since features are normally <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbols</a> in the <a class="package-reference" href="chapter-11.xhtml#package-keyword">keyword</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">package</a>
+where name collisions might easily result, and since no uniquely defined mechanism
+is designated for deciding who has the right to use which <a class="glossary-reference" href="chapter-26.xhtml#glossary-symbol">symbol</a> for
+what reason, a conservative strategy is to prefer names derived from 
+one's own company or product name, since those names are often trademarked
+and are hence less likely to be used unwittingly by another <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation">implementation</a>.<br/></dd></dl></div><br/><br/><br/><div class="component" id="variable-*compile-file-pathname*"><div class="header"><span class="left"><span class="name" id="variable-*compile-file-pathname*">*compile-file-pathname*</span>, <span class="name" id="variable-*compile-file-truename*">*compile-file-truename*</span></span><span class="right"><span class="ftype">Variable</span></span></div><br/>
+<dl><dt class="label">Value Type</dt><dd>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of <a class="variable-reference" href="#variable-*compile-file-pathname*">*compile-file-pathname*</a> must always be a <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname">pathname</a>          or <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>.
+The <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of <a class="variable-reference" href="#variable-*compile-file-truename*">*compile-file-truename*</a> must always be a <a class="glossary-reference" href="chapter-26.xhtml#glossary-physical pathname">physical pathname</a> or <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>.<br/></dd></dl><dl><dt class="label">Initial Value</dt><dd><a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>.<br/></dd></dl><dl><dt class="label">Description</dt><dd>During a call to <a class="function-reference" href="#function-compile-file">compile-file</a>,
+  <a class="variable-reference" href="#variable-*compile-file-pathname*">*compile-file-pathname*</a> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-bound">bound</a> to 
+  the <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname">pathname</a> denoted by the first argument to <a class="function-reference" href="#function-compile-file">compile-file</a>,
+  merged against the defaults;
+  that is, it is <a class="glossary-reference" href="chapter-26.xhtml#glossary-bound">bound</a> to <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-19.xhtml#function-pathname">pathname</a> <span class="syntax-cons">(<a class="function-reference" href="chapter-19.xhtml#function-merge-pathnames">merge-pathnames</a> <span class="parameter">input-file</span>)</span>)</span>
+</span></code></pre>.
+During the same time interval,
+  <a class="variable-reference" href="#variable-*compile-file-truename*">*compile-file-truename*</a> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-bound">bound</a> to
+  the <a class="glossary-reference" href="chapter-26.xhtml#glossary-truename">truename</a> of the <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">file</a> being <a class="glossary-reference" href="chapter-26.xhtml#glossary-compile">compiled</a>.<br/>At other times, the <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of these <a class="glossary-reference" href="chapter-26.xhtml#glossary-variable">variables</a> is <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>.<br/>If a <a class="glossary-reference" href="chapter-26.xhtml#glossary-break loop">break loop</a> is entered while <a class="function-reference" href="#function-compile-file">compile-file</a> is ongoing,
+it is <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a> whether these <a class="glossary-reference" href="chapter-26.xhtml#glossary-variable">variables</a> retain 
+the <span class="glossary-reference error">glossary:values</span> they had just prior to entering the <a class="glossary-reference" href="chapter-26.xhtml#glossary-break loop">break loop</a> 
+or whether they are <a class="glossary-reference" href="chapter-26.xhtml#glossary-bound">bound</a> to <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>.<br/>The consequences are unspecified if 
+an attempt is made to <a class="glossary-reference" href="chapter-26.xhtml#glossary-assign">assign</a> or <a class="glossary-reference" href="chapter-26.xhtml#glossary-bind">bind</a> either of these <a class="glossary-reference" href="chapter-26.xhtml#glossary-variable">variables</a>.<br/></dd></dl><dl><dt class="label">Examples</dt><dd><span class="none">None</span>.<br/></dd></dl><dl><dt class="label">Affected By</dt><dd>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-file system">file system</a>.<br/></dd></dl><dl><dt class="label">See Also</dt><dd><a class="function-reference" href="#function-compile-file">compile-file</a><br/></dd></dl><dl><dt class="label">Notes</dt><dd><span class="none">None</span>.<br/>
+</dd></dl>
+</div><br/><br/><br/><div class="component" id="variable-*load-pathname*"><div class="header"><span class="left"><span class="name" id="variable-*load-pathname*">*load-pathname*</span>, <span class="name" id="variable-*load-truename*">*load-truename*</span></span><span class="right"><span class="ftype">Variable</span></span></div>
+
+<dl><dt class="label">Value Type</dt><dd>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of <a class="variable-reference" href="#variable-*load-pathname*">*load-pathname*</a> must always be a <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname">pathname</a>          or <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>.
+The <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of <a class="variable-reference" href="#variable-*load-truename*">*load-truename*</a> must always be a <a class="glossary-reference" href="chapter-26.xhtml#glossary-physical pathname">physical pathname</a> or <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>.<br/></dd></dl><dl><dt class="label">Initial Value</dt><dd><a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>.<br/></dd></dl><dl><dt class="label">Description</dt><dd>During a call to <a class="function-reference" href="#function-load">load</a>,
+  <a class="variable-reference" href="#variable-*load-pathname*">*load-pathname*</a> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-bound">bound</a> to 
+  the <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname">pathname</a> denoted by the the first argument to <a class="function-reference" href="#function-load">load</a>,
+  merged against the defaults; 
+  that is, it is <a class="glossary-reference" href="chapter-26.xhtml#glossary-bound">bound</a> to <pre><code><span class="syntax-root"><span class="syntax-cons">(<a class="function-reference" href="chapter-19.xhtml#function-pathname">pathname</a> <span class="syntax-cons">(<a class="function-reference" href="chapter-19.xhtml#function-merge-pathnames">merge-pathnames</a> <span class="parameter">filespec</span>)</span>)</span>
+</span></code></pre>.
+During the same time interval,
+  <a class="variable-reference" href="#variable-*load-truename*">*load-truename*</a> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-bound">bound</a> to
+  the <a class="glossary-reference" href="chapter-26.xhtml#glossary-truename">truename</a> of the <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">file</a> being loaded.<br/>At other times, the <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of these <a class="glossary-reference" href="chapter-26.xhtml#glossary-variable">variables</a> is <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>.<br/>If a <a class="glossary-reference" href="chapter-26.xhtml#glossary-break loop">break loop</a> is entered while <a class="function-reference" href="#function-load">load</a> is ongoing,
+it is <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a> whether these <a class="glossary-reference" href="chapter-26.xhtml#glossary-variable">variables</a> retain 
+the <span class="glossary-reference error">glossary:values</span> they had just prior to entering the <a class="glossary-reference" href="chapter-26.xhtml#glossary-break loop">break loop</a> 
+or whether they are <a class="glossary-reference" href="chapter-26.xhtml#glossary-bound">bound</a> to <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>.<br/>The consequences are unspecified if 
+an attempt is made to <a class="glossary-reference" href="chapter-26.xhtml#glossary-assign">assign</a> or <a class="glossary-reference" href="chapter-26.xhtml#glossary-bind">bind</a> either of these <a class="glossary-reference" href="chapter-26.xhtml#glossary-variable">variables</a>.<br/></dd></dl><dl><dt class="label">Examples</dt><dd><span class="none">None</span>.<br/></dd></dl><dl><dt class="label">Affected By</dt><dd>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-file system">file system</a>.<br/></dd></dl><dl><dt class="label">See Also</dt><dd><a class="function-reference" href="#function-load">load</a><br/></dd></dl><dl><dt class="label">Notes</dt><dd><span class="none">None</span>.<br/></dd></dl>
+</div><br/><br/><br/><div class="component" id="variable-*compile-print*"><div class="header"><span class="left"><span class="name" id="variable-*compile-print*">*compile-print*</span>, <span class="name" id="variable-*compile-verbose*">*compile-verbose*</span></span><span class="right"><span class="ftype">Variable</span></span></div><br/>
+<dl><dt class="label">Value Type</dt><dd>a <a class="glossary-reference" href="chapter-26.xhtml#glossary-generalized boolean">generalized boolean</a>.<br/></dd></dl><dl><dt class="label">Initial Value</dt><dd><a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a>.<br/></dd></dl><dl><dt class="label">Description</dt><dd>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of <a class="variable-reference" href="#variable-*compile-print*">*compile-print*</a>   is the default value of the <span class="keyword">:print</span> <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument">argument</a>
+to <a class="function-reference" href="#function-compile-file">compile-file</a>.
+The <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of <a class="variable-reference" href="#variable-*compile-verbose*">*compile-verbose*</a> is the default value of the <span class="keyword">:verbose</span> <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument">argument</a>
+to <a class="function-reference" href="#function-compile-file">compile-file</a>.<br/></dd></dl><dl><dt class="label">Examples</dt><dd><span class="none">None</span>.<br/></dd></dl><dl><dt class="label">Affected By</dt><dd><span class="none">None</span>.<br/></dd></dl><dl><dt class="label">See Also</dt><dd><a class="function-reference" href="#function-compile-file">compile-file</a><br/></dd></dl><dl><dt class="label">Notes</dt><dd><span class="none">None</span>.<br/></dd></dl>
+</div><br/><br/>
+<br/><div class="component" id="variable-*load-print*"><div class="header"><span class="left"><span class="name" id="variable-*load-print*">*load-print*</span>, <span class="name" id="variable-*load-verbose*">*load-verbose*</span></span><span class="right"><span class="ftype">Variable</span></span></div>
+
+<dl><dt class="label">Value Type</dt><dd>a <a class="glossary-reference" href="chapter-26.xhtml#glossary-generalized boolean">generalized boolean</a>.<br/></dd></dl><dl><dt class="label">Initial Value</dt><dd>The initial <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of <a class="variable-reference" href="#variable-*load-print*">*load-print*</a>   is <a class="glossary-reference" href="chapter-26.xhtml#glossary-false">false</a>.
+The initial <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of <a class="variable-reference" href="#variable-*load-verbose*">*load-verbose*</a> is <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a>.<br/></dd></dl><dl><dt class="label">Description</dt><dd>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of <a class="variable-reference" href="#variable-*load-print*">*load-print*</a>   is the default value of the <span class="keyword">:print</span> <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument">argument</a>   to <a class="function-reference" href="#function-load">load</a>.
+The <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of <a class="variable-reference" href="#variable-*load-verbose*">*load-verbose*</a> is the default value of the <span class="keyword">:verbose</span> <a class="glossary-reference" href="chapter-26.xhtml#glossary-argument">argument</a> to <a class="function-reference" href="#function-load">load</a>.<br/></dd></dl><dl><dt class="label">Examples</dt><dd><span class="none">None</span>.<br/></dd></dl><dl><dt class="label">Affected By</dt><dd><span class="none">None</span>.<br/>
+</dd></dl><dl><dt class="label">See Also</dt><dd><a class="function-reference" href="#function-load">load</a><br/></dd></dl><dl><dt class="label">Notes</dt><dd><span class="none">None</span>.<br/></dd></dl>
+</div><br/><br/><br/><div class="component" id="variable-*modules*"><div class="header"><span class="left"><span class="name" id="variable-*modules*">*modules*</span></span><span class="right"><span class="ftype">Variable</span></span></div><br/>
+<dl><dt class="label">Value Type</dt><dd>a <a class="glossary-reference" href="chapter-26.xhtml#glossary-list">list</a> of <a class="glossary-reference" href="chapter-26.xhtml#glossary-string">strings</a>.<br/></dd></dl><dl><dt class="label">Initial Value</dt><dd><a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a>.<br/></dd></dl><dl><dt class="label">Description</dt><dd>The <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of <a class="variable-reference" href="#variable-*modules*">*modules*</a> is a list of names of the modules
+that have been loaded into the current <a class="glossary-reference" href="chapter-26.xhtml#glossary-lisp image">Lisp image</a>.<br/></dd></dl><dl><dt class="label">Examples</dt><dd><span class="none">None</span>.<br/></dd></dl><dl><dt class="label">Affected By</dt><dd><a class="function-reference" href="#function-provide">provide</a><br/></dd></dl><dl><dt class="label">See Also</dt><dd><a class="function-reference" href="#function-provide">provide</a>,
+<a class="function-reference" href="#function-require">require</a><br/></dd></dl><dl><dt class="label">Notes</dt><dd>The variable <a class="variable-reference" href="#variable-*modules*">*modules*</a> is deprecated.<br/></dd></dl>
+</div><br/><br/><br/><div class="component" id="function-provide"><div class="header"><span class="left"><span class="name" id="function-provide">provide</span>, <span class="name" id="function-require">require</span></span><span class="right"><span class="ftype">Function</span></span></div><br/>
+<dl><dt class="label">Syntax</dt><dd><span class="function-definition"><span class="name">provide</span>&nbsp;<span class="lambda-list">module-name</span>&nbsp;→&nbsp;<span class="return-values"><a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a></span></span><br/>
+<span class="function-definition"><span class="name">require</span>&nbsp;<span class="lambda-list">module-name <span class="lambda-list-keyword">&amp;optional</span> pathname-list</span>&nbsp;→&nbsp;<span class="return-values"><a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a></span></span><br/>
+</dd></dl><dl><dt class="label">Arguments and Values</dt><dd><span class="parameter">module-name</span>&mdash;a <a class="glossary-reference" href="chapter-26.xhtml#glossary-string designator">string designator</a>.<br/><span class="parameter">pathname-list</span>&mdash;<a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>, or
+			a <a class="glossary-reference" href="chapter-26.xhtml#glossary-designator">designator</a> 
+			  for a <a class="glossary-reference" href="chapter-26.xhtml#glossary-non-empty">non-empty</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-list">list</a> of <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname designator">pathname designators</a>.
+ The default is <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>.
+</dd></dl><dl><dt class="label">Description</dt><dd><a class="function-reference" href="#function-provide">provide</a> adds the <span class="parameter">module-name</span> to the <a class="glossary-reference" href="chapter-26.xhtml#glossary-list">list</a> held by
+<a class="variable-reference" href="#variable-*modules*">*modules*</a>, if such a name is not already present.<br/><a class="function-reference" href="#function-require">require</a> tests for the presence of the <span class="parameter">module-name</span> in the
+<a class="glossary-reference" href="chapter-26.xhtml#glossary-list">list</a> held by <a class="variable-reference" href="#variable-*modules*">*modules*</a>.
+If it is present, <a class="function-reference" href="#function-require">require</a> immediately returns.
+Otherwise, an attempt is made to load an appropriate set of <a class="glossary-reference" href="chapter-26.xhtml#glossary-file">files</a> as follows:
+The <span class="parameter">pathname-list</span> argument, if <a class="glossary-reference" href="chapter-26.xhtml#glossary-non-nil">non-nil</a>, 
+ specifies a list of <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname">pathnames</a> to be loaded in order, from left to right.
+If the <span class="parameter">pathname-list</span> is <a class="symbol-reference" href="chapter-1.xhtml#symbol-nil">nil</a>,
+an <a class="glossary-reference" href="chapter-26.xhtml#glossary-implementation-dependent">implementation-dependent</a> mechanism will be invoked in an attempt
+to load the module named <span class="parameter">module-name</span>;
+if no such module can be loaded, an error of <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> <a class="type-reference" href="chapter-9.xhtml#type-error">error</a> is signaled.
+
+Both functions use <a class="function-reference" href="chapter-16.xhtml#function-string=">string=</a> to test for the presence of a <span class="parameter">module-name</span>.<br/></dd></dl><dl><dt class="label">Examples</dt><dd>
+<pre><code><span class="syntax-root">;;; This illustrates a nonportable use of REQUIRE, because it
+;;; depends on the implementation-dependent file-loading mechanism.
+
+<span class="syntax-cons">(<a class="function-reference" href="#function-require">require</a> <span class="syntax-string">"CALCULUS"</span>)</span>
+
+;;; This use of REQUIRE is nonportable because of the literal 
+;;; physical pathname.  
+
+<span class="syntax-cons">(<a class="function-reference" href="#function-require">require</a> <span class="syntax-string">"CALCULUS"</span> <span class="syntax-string">"/usr/lib/lisp/calculus"</span>)</span>
+
+;;; One form of portable usage involves supplying a logical pathname,
+;;; with appropriate translations defined elsewhere.
+
+<span class="syntax-cons">(<a class="function-reference" href="#function-require">require</a> <span class="syntax-string">"CALCULUS"</span> <span class="syntax-string">"lib:calculus"</span>)</span>
+
+;;; Another form of portable usage involves using a variable or
+;;; table lookup function to determine the pathname, which again
+;;; must be initialized elsewhere.
+
+<span class="syntax-cons">(<a class="function-reference" href="#function-require">require</a> <span class="syntax-string">"CALCULUS"</span> <span class="syntax-interned-symbol">*calculus-module-pathname*</span>)</span>
+</span></code></pre>
+</dd></dl><dl><dt class="label">Side Effects</dt><dd><a class="function-reference" href="#function-provide">provide</a> modifies <a class="variable-reference" href="#variable-*modules*">*modules*</a>.<br/></dd></dl><dl><dt class="label">Affected By</dt><dd>The specific action taken by <a class="function-reference" href="#function-require">require</a> is affected by calls to <a class="function-reference" href="#function-provide">provide</a>
+(or, in general, any changes to the <a class="glossary-reference" href="chapter-26.xhtml#glossary-value">value</a> of <a class="variable-reference" href="#variable-*modules*">*modules*</a>).<br/></dd></dl><dl><dt class="label">Exceptional Situations</dt><dd>Should signal an error of <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> <a class="type-reference" href="chapter-4.xhtml#type-type-error">type-error</a>
+			      if <span class="parameter">module-name</span> is not a <a class="glossary-reference" href="chapter-26.xhtml#glossary-string designator">string designator</a>.<br/>If <a class="function-reference" href="#function-require">require</a> fails to perform the requested operation 
+due to a problem while interacting with the <a class="glossary-reference" href="chapter-26.xhtml#glossary-file system">file system</a>,
+an error of <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> <a class="type-reference" href="chapter-20.xhtml#type-file-error">file-error</a> is signaled.
+
+An error of <a class="glossary-reference" href="chapter-26.xhtml#glossary-type">type</a> <a class="type-reference" href="chapter-20.xhtml#type-file-error">file-error</a> might be signaled if any <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname">pathname</a> 
+in <span class="parameter">pathname-list</span> is a <a class="glossary-reference" href="chapter-26.xhtml#glossary-designator">designator</a> for a <a class="glossary-reference" href="chapter-26.xhtml#glossary-wild">wild</a> <a class="glossary-reference" href="chapter-26.xhtml#glossary-pathname">pathname</a>.
+
+</dd></dl><dl><dt class="label">See Also</dt><dd><a class="variable-reference" href="#variable-*modules*">*modules*</a>,
+<a class="section-reference" href="chapter-19.xhtml#section-PathnamesAsFilenames">Pathnames as Filenames</a>
+</dd></dl><dl><dt class="label">Notes</dt><dd>The functions <a class="function-reference" href="#function-provide">provide</a> and <a class="function-reference" href="#function-require">require</a> are deprecated.<br/>If a module consists of a single <a class="glossary-reference" href="chapter-26.xhtml#glossary-package">package</a>,
+it is customary for the package and module names to be the same.<br/></dd></dl>
+</div><br/>
+</section></section></div></main><footer>Copyright © 2021 Jan Moringen</footer></body></html>
