@@ -811,7 +811,11 @@ The following could be an acceptable definition of
 
 \label Exceptional Situations::
 
-The consequences are undefined if the local function named \param{name}
+The consequences are undefined if the local
+\issue{WITH-HASH-TABLE-ITERATOR-BINDING-TYPE}
+function
+\endissue{WITH-HASH-TABLE-ITERATOR-BINDING-TYPE}
+named \param{name}
 \term{established} by \macref{with-hash-table-iterator} is called after it has
 returned \term{false} as its \term{primary value}.
 
