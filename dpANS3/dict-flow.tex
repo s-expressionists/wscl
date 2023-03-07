@@ -307,7 +307,9 @@ but the \param{function-name} denotes a \term{macro} or
 
 \label Exceptional Situations::
 
+\issue{SETF-FDEFINITION-TYPE-ERROR:SIGNAL-ERROR}
 \Shouldchecktype{function-name}{a \term{function name}}
+\endissue{SETF-FDEFINITION-TYPE-ERROR:SIGNAL-ERROR}
 
 An error \oftype{undefined-function} is signaled 
 in the non-\macref{setf} case if \param{function-name} is not \term{fbound}.
