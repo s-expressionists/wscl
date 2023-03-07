@@ -126,10 +126,12 @@ The package system is modified.
 
 \label Exceptional Situations::
 
+\issue{EXPORT-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 If any of the \param{symbols} is not \term{accessible} at all in \param{package},
 an error \oftype{package-error} is signaled that is \term{correctable} 
 by permitting the \term{user}
 to interactively specify whether that \term{symbol} should be \term{imported}.
+\endissue{EXPORT-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 %!!! Sandra: Something about name conflicts here?
 
