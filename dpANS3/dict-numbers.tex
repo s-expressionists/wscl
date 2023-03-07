@@ -1183,6 +1183,7 @@ is an \term{integer}  if both   \f{x} and \f{y} are \term{integers},
 is a  \term{rational} if both   \f{x} and \f{y} are \term{rationals}, and
 is a  \term{float}    if either \f{x} or  \f{y} is  a \term{float}.
 
+\issue{FFLOOR-ETC-QUOTIENT-TYPE:FLOAT-CONTAGION}
 \funref{ffloor}, \funref{fceiling}, \funref{ftruncate}, and \funref{fround} 
 handle arguments of different \term{types} in the following way:
 If  \param{number}  is     a \term{float},
@@ -1190,6 +1191,7 @@ and \param{divisor} is not a \term{float} of longer format,
 then the first result is a \term{float} of the same \term{type} as \param{number}.
 Otherwise, the first result is of the \term{type} determined by \term{contagion} rules;
 \seesection\NumericContagionRules.
+\endissue{FFLOOR-ETC-QUOTIENT-TYPE:FLOAT-CONTAGION}
 
 \label Examples::
 
