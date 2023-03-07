@@ -1335,7 +1335,9 @@ across the change.
 Current state of the package system.
 
 \label Exceptional Situations::
+
 %% 11.0.0 54
+\issue{UNINTERN-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 Giving a shadowing symbol to \funref{unintern} 
 can uncover a name conflict that had
 previously been resolved by the shadowing.  If package A uses packages
@@ -1345,6 +1347,7 @@ from A will reveal a name
 conflict between \f{b:x} and \f{c:x} if those two \term{symbols} are distinct.
 In this case \funref{unintern} will signal an error.
 %!!! Barmar: Of type??
+\endissue{UNINTERN-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
