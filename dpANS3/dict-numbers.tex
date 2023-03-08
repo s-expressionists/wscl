@@ -1176,12 +1176,14 @@ then the \param{quotient} has been rounded to the even (divisible by two) intege
 \endlist
 
 %!!! Cross reference
+\issue{FLOOR-ETC-REMAINDER-TYPE:CONTAGION}
 All of these functions perform type conversion operations on \param{numbers}.
 
 The \param{remainder}
 is an \term{integer}  if both   \f{x} and \f{y} are \term{integers},
 is a  \term{rational} if both   \f{x} and \f{y} are \term{rationals}, and
 is a  \term{float}    if either \f{x} or  \f{y} is  a \term{float}.
+\endissue{FLOOR-ETC-REMAINDER-TYPE:CONTAGION}
 
 \funref{ffloor}, \funref{fceiling}, \funref{ftruncate}, and \funref{fround} 
 handle arguments of different \term{types} in the following way:
