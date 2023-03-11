@@ -1,0 +1,81 @@
+Issue:          ARRAY-UPGRADING-UNDECIDABLE
+Forum:          Cleanup
+References:     UPGRADED-ARRAY-ELEMENT-TYPE, UPGRADED-COMPLEX-PART-TYPE,
+                MAKE-ARRAY
+Category:       CLARIFICATION, CHANGE
+Status:         draft
+Edit history:   2005-08-04, Version 1 by Paul F. Dietz
+                2021-07-15, version 2 by Bike (reformat, edit, add U-C-P-T)
+
+Problem Description:
+
+  UPGRADED-ARRAY-ELEMENT-TYPE, the definition of 'subtype' in the glossary, and
+  section 15.1.2.1 imply that UPGRADED-ARRAY-ELEMENT-TYPE must be computable on
+  all types, and that it can be used to distinguish between SATISFIES types that
+  are type-equivalent to BIT and CHARACTER, respectively. This can easily be
+  shown to be undecidable.
+
+  A similar problem exists for UPGRADED-COMPLEX-PART-TYPE.
+
+Proposal (ARRAY-UPGRADING-UNDECIDABLE:RESTRICT):
+
+  Modify the semantics of UPGRADED-ARRAY-ELEMENT-TYPE and
+  UPGRADED-COMPLEX-PART-TYPE so that their behavior on types for which SUBTYPEP
+  is permitted to fail is unspecified. In particular, it is allowed to violate
+  the subtype constraints in section 15.1.2.1 if the type being upgraded
+  contains or can be expanded to a type that contains OR, AND, NOT, compound
+  FUNCTION types, or SATISFIES.
+
+Test case:
+
+  (defun foo (x) (and (integerp x) (eql x 0)))
+  (upgraded-array-element-type '(satisfies foo))
+  ;;; If (satisfies foo) is a subtype of BIT, which it is, the implementation
+  ;;; has to return a subtype of BIT, due to the third paragraph of 15.1.2.1,
+  ;;; which says that if Tx is a subtype of Ty, the upgraded array element type
+  ;;; of Tx is a subtype of that of Ty, in combination with the description of
+  ;;; UPGRADED-ARRAY-ELEMENT-TYPE specifying that the upgrade of BIT is BIT.
+  ;;; As such, to return the correct result, an implementation must determine
+  ;;; that (satisfies foo) is a subtype of BIT, i.e. that FOO returns true only
+  ;;; on elements of BIT, which is impossible per Rice's theorem.
+
+Rationale:
+
+  As currently specified, the function cannot be correctly implemented.
+
+Current practice:
+
+  Ignore the problem and do not implement U-A-E-T or U-C-P-T properly on complex
+  compound types.
+
+Cost to Implementors:
+
+  None.
+
+Cost to Users:
+
+  None.
+
+Cost of Non-Adoption:
+
+  Inconsistency between implementations and the standard.
+
+Benefits:
+
+  Eliminates an impossible requirement.
+
+Discussion:
+
+  It may be desirable to require UPGRADED-ARRAY-ELEMENT-TYPE to respect ordering
+  constraints on two types T1 and T2 if (SUBTYPEP T1 T2) is true, even if T1 and
+  T2 contain any of the compound type specifiers listed above.
+
+  Bike says: I think a cleaner phrasing might be to rewrite 15.1.2.1 to say that
+  "if a type Tx is a _recognizable_ subtype of another type Ty, then the
+  upgraded array element type of Tx must be a _recognizable_ subtype of the
+  upgraded array element type of Ty". This would keep the definition of what
+  types the implementation actually has to handle localized to the definition of
+  SUBTYPEP. I also think it might surprise people if an implementation punts on
+  very obvious subtypes, for example reporting that the U-A-E-T of
+  (and bit (satisfies bar)) is T. But that could be somewhat fixed by
+  strengthening the definition of SUBTYPEP.
