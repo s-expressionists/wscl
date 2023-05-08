@@ -1,0 +1,93 @@
+Issue:          ARITHMETIC-ERROR-TYPE-ERROR
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         proposed
+Edit History:   26-Jul-21, Version 1 by Robert Strandh.
+References:     ARITHMETIC-ERROR-OPERANDS, ARITHMETIC-ERROR-OPERATION
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the description of the
+  functions ARITHMETIC-ERROR-OPERANDS and ARITHMETIC-ERROR-OPERATION
+  indicates no exceptional situations.  The section "Arguments and
+  Values" mentions that the condition argument must be a condition of
+  type ARITHMETIC-ERROR, which by default means that the consequences
+  are undefined if an object that is not a condition of type
+  ARITHMETIC-ERROR is given as an argument.
+
+Proposal (ARITHMETIC-ERROR-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE):
+
+  This proposal changes the description of the functions
+  ARITHMETIC-ERROR-OPERANDS and ARITHMETIC-ERROR-OPERATION, so that
+  the section "Exceptional Situations" instead reads:
+
+  "The functions ARITHMETIC-ERROR-OPERANDS and
+   ARITHMETIC-ERROR-OPERATION should signal an error of type
+   TYPE-ERROR if the condition argument is not a condition of type
+   ARITHMETIC-ERROR."
+
+Test Cases:
+
+  (defun one (object)
+    (declare (optimize (safety 3)))
+    (arithmetic-error-operands object))
+
+  (defun two (object)
+    (declare (optimize (safety 3)))
+    (arithmetic-error-operation object))
+
+  (one 234) => ERROR: The value 234 is not of type ARITHMETIC-ERROR.
+  (two 234) => ERROR: The value 234 is not of type ARITHMETIC-ERROR.
+
+Rationale:
+
+  We think it was a simple omission from the draft ANSI specification
+  to indicate no exceptional situations.
+
+Current Practice:
+
+  SBCL 2.1.3
+    (one 234) => [signals a type error, but with expected type CONDITION]
+    (two 234) => [signals a type error, but with expected type CONDITION]
+
+  TODO: check other implementations.
+
+Cost to Implementors:
+
+  Very small.  We believe that most implementations are already
+  signaling an error in safe code.  Some implementations may signal a
+  simple error, and those implementation would need to signal a
+  TYPE-ERROR instead.  Some implementations, like SBCL may signal a
+  type error but with expected type CONDITION, and those
+  implementations would have to change so that CELL-ERROR is the
+  expected type instead.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Application programmers may need to add explicit checks to be
+  certain that their code is conforming.
+
+Benefits:
+
+  Application programmers may rely on an error being
+  signaled in safe code, and thus avoid having to
+  add explicit checks in portable code.
+
+Aesthetics:
+
+  No influence.
+
+Discussion:
+
+  TODO
+  
+  If these operators were readers (or accessors) instead of mere functions, 
+  these issues wouldn't occur at all (no-applicable-method would be called 
+  and signal the type-error).  
+  Would it be possible to gather all those cases in a single issue?
+  And take note for a new version of the standard?
+  

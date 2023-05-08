@@ -1,0 +1,58 @@
+Issue:          USE-PACKAGE-REMOVE-INCORRECT-TERMINOLOGY
+Forum:          Cleanup
+Category:       CORRECTION
+Status:         proposed
+Edit History:   23-Jul-21, Version 1 by Robert Strandh.
+References:     USE-PACKAGE
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the description of the
+  function USE-PACKAGE contains the phrase "USE-PACKAGE checks for
+  name conflicts between the newly imported symbols and those already
+  accessible in package".  However, USE-PACKAGE does not "import" any
+  symbols, because "import" means to "make the symbol be present in
+  the package", and the description of USE-PACKAGE states that
+  "USE-PACKAGE does not cause any new symbols to be present in package
+  but only makes them accessible by inheritance".
+
+Proposal (USE-PACKAGE-REMOVE-INCORRECT-TERMINOLOGY:NO-IMPORT):
+
+  This proposal changes the description of the USE-PACKAGE function,
+  so that the phrase "USE-PACKAGE checks for name conflicts between
+  the newly imported symbols and those already accessible in package"
+  is replaced by:
+
+  "USE-PACKAGE checks for name conflicts between the symbols about to
+  be made accessible and those already accessible in package".
+
+Rationale:
+
+  The current phrase uses "import" informally, but since this is a
+  term with a clear definition in the glossary, the term should not be
+  used informally this way.
+
+Cost to Implementors:
+
+  None.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Confusion concerning the use of terminology that may result in
+  additional cost for implementors and users.
+
+Benefits:
+
+  More consistent terminology.
+
+Aesthetics:
+
+  Improved thanks to more consistent terminology.
+
+Discussion:
+
+  TODO

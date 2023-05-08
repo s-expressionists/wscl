@@ -1,0 +1,77 @@
+Issue:          DEFPARAMETER-NON-TOPLEVEL-SEMANTICS
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         proposed
+Edit History:   21-Jun-21, Version 1 by Jan Moringen,
+                21-Jun-21, Version 2 by Jan Moringen based on feedback
+                by _death and Bike
+References:     DEFVAR, DEFPARAMETER
+Related Issues: DEFVAR-INIT-TIME, DEFVAR-INITIALIZATION
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the descriptions of
+  DEFVAR and DEFPARAMETER do not specify which binding is affected
+  when the specified initial value is assigned.
+
+  For DEFVAR, it is not specified which binding is affected (if any)
+  in case no initial value is supplied.
+
+Test Case:
+
+  (defparameter *foo* 1)
+  (list (let ((*foo* 2))
+          (defparameter *foo* 3)
+          *foo*)
+        *foo*)
+
+  (defvar *foo* 1)
+  (list (let ((*foo* 2))
+          (defvar *foo*)
+          *foo*)
+        *foo*)
+
+Proposal (SLOT-VALUE-MISSING-SETF:TOPLEVEL):
+
+  Under this proposal, the above test cases would evaluate to (2 3)
+  and (? ?) respectively.
+
+Proposal (SLOT-VALUE-MISSING-SETF:LEXICAL):
+
+  Under this proposal, The above test case would evaluate to (3 1) and
+  (? 1) respectively.
+
+Current Practice:
+
+  TODO
+
+Cost to Implementors:
+
+  TODO
+
+Cost to Users:
+
+  TODO
+
+Cost of non-adoption:
+
+  TODO
+
+Benefits:
+
+  TODO
+
+Aesthetics:
+
+  TODO
+
+Discussion:
+
+  TODO
+  
+  The test case is not clear, because the same variable name is used for both the 
+  defparameter and the defvar examples.  Perhaps adding a (unintern '*foo*) would 
+  help undestand the test case for defvar too.
+  I can't say anything about the expected results given this ambituity.
+  
+  
