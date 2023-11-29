@@ -1,0 +1,49 @@
+Issue:          PROG2-RETURN-VALUE
+Forum:          Cleanup
+Category:       CLARIFICATION, CHANGE
+Status:         proposed
+Edit history:   2004-06-16, Version 1 by Christophe Rhodes
+                2021-07-15, version 2 by Bike (reformat for WSCL, etc)
+References:     PROG2
+
+Problem Description:
+
+  The Description section in the specification for PROG2 states that it returns
+  the primary value of the first form in the body. This is in contradiction with
+  the Syntax description as well as with common sense.
+
+Proposal (PROG2-RETURN-VALUE:SECOND-FORM):
+
+  Alter the Description section for PROG2 to specify that the return value is
+  the primary value of the second form in the body.
+
+Test case:
+
+  (prog2 1 2)
+  ;;; Under the Description definition, returns 1. By common sense, returns 2.
+
+Rationale:
+
+  Bugfix.
+
+Current practice:
+
+  No known implementation is incompatible with proposal
+  PROG2-RETURN-VALUE:SECOND-FORM.
+
+Cost to Implementors:
+
+  None.
+
+Cost to Users:
+
+  None.
+
+Cost of Non-Adoption:
+
+  Continued need to explain the infelicities of the specification editing
+  process.
+
+Benefits:
+
+  Specification will match reality more closely.

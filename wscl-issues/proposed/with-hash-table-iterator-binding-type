@@ -1,0 +1,51 @@
+Issue:          WITH-HASH-TABLE-ITERATOR-BINDING-TYPE
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         proposed
+Edit history:   2004-07-20, Version 1 by Bruno Haible
+                2021-07-15, version 2 by Bike (reformat for WSCL, etc)
+References:     WITH-HASH-TABLE-ITERATOR
+
+Problem Description:
+
+  The Exceptional Situations section for WITH-HASH-TABLE-ITERATOR claims it
+  establishes a local function, and refers to it being called. Should be a
+  local macro.
+
+Proposal (WITH-HASH-TABLE-ITERATOR-BINDING-TYPE:CLARIFY-MACRO):
+
+  Delete the Exceptional Situations section, since it's not actually describing
+  signaling behavior. Add a line in the Description section saying something
+  like "The consequences are undefined if an invocation (name) takes place
+  after a previous invocation has returned false as its primary value."
+
+Rationale:
+
+  The rest of the page is quite clear that the name is bound to a macro,
+  including a specific mention of using MACROLET to bind it.
+
+Current practice:
+
+  No known implementation binds the name as a function instead of a macro.
+
+Cost to Implementors:
+
+  None.
+
+Cost to Users:
+
+  None.
+
+Benefits:
+
+  Clarity.
+
+Aesthetics:
+
+Discussion:
+
+  Bruno Haible says: I agree, should be local macro. But since macros cannot be
+  called, it needs reformulation.
+
+  Bike says: I reformulated it in terms of the "invocation" phrase used within
+  the Description section.
