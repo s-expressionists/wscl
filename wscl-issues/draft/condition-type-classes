@@ -1,0 +1,160 @@
+Issue:          CONDITION-TYPE-CLASSES
+Forum:          Cleanup
+Related issues: CLOS-CONDITIONS, CLOS-CONDITIONS-AGAIN, CONDITION-SLOTS,
+                DEFINE-CONDITION-SYNTAX
+Category:       CHANGE
+Status:         draft
+Edit History:   14-Jul-21, Version 1 by Bike.
+References:     DEFINE-CONDITION, CONDITION, MAKE-CONDITION, SIGNAL, WARN, ERROR
+
+Problem Description:
+
+  The draft ANSI Common Lisp specification defines conditions to work very
+  similarly to standard objects, but stops short of even making condition types
+  actual classes. The term "condition type" is used throughout to refer to what
+  DEFINE-CONDITION defines. This is sometimes inconsistent; for example the
+  entry on DEFINE-CONDITION itself mentions the possibility of specializing a
+  generic function on a condition type, which would only be possible if
+  condition types were classes.
+
+  This has some strange implications if taken to its arcane conclusion. For
+  example, MAKE-CONDITION is defined to take a type specifier for a subtype of
+  CONDITION. As written, there is no reason for, for example, an argument of
+  (and foo (satisfies bar)) not to work, as it says "subtype" rather than
+  "recognizable subtype". Even if this was reduced to "recognizable subtype",
+  it would still be possible to for example use (and simple-condition
+  program-error) to obtain an instance of a simple program error class if such
+  a thing exists.
+
+  Additionally, CLOS machinery has some features that could be useful for
+  conditions. For example, the behavior of DEFINE-CONDITION for an existing
+  condition type (i.e. a redefinition) is not defined, whereas DEFCLASS has rich
+  machinery for dealing with redefinitions. This is not covered in this issue,
+  but making condition types classes would be a prerequisite for further
+  development.
+
+  The original reason conditions weren't fully integrated into CLOS is because
+  when the standard was formulated, there were doubts about CLOS, and some were
+  considering CLOSless subsets of the language. These efforts seem to have
+  petered out. As such there do not seem to be compelling reasons not to
+  fully integrate CLOS with conditions.
+
+Proposal (CONDITION-TYPE-CLASSES:MINIMAL):
+
+  Amend the definition of DEFINE-CLASS to specify that it creates classes, and
+  not just types. Replace uses of "condition type" throughout the standard with
+  "condition class", "subclass of condition", "class", etc. as appropriate.
+  Remove the restriction that conforming code cannot specialize PRINT-OBJECT on
+  condition types. Redefine operators that take condition type arguments, that
+  is, SIGNAL, WARN, ERROR, CERROR, MAKE-CONDITION, to instead take a condition
+  class or the name of a condition class (i.e. a class that is a subclass of
+  CONDITION). State that the metaclass for conditions (that is, the class of the
+  class CONDITION) is not defined and, in particular, is not required to be
+  STANDARD-CLASS. Strike the text stating that whether user-defined condition
+  types have slots is undefined, but maintain the text leaving the slots of the
+  standard condition types, if any, undefined.
+
+  Rationale:
+
+    Least amount of change that allows condition types to be classes.
+
+Proposal (CONDITION-TYPE-CLASSES:MEDIUM):
+
+  As MINIMAL. Additionally, remove the restrictions that slot access functions
+  (SLOT-VALUE etc.) cannot be used on conditions. Whether (SETF SLOT-VALUE) and
+  SLOT-MAKUNBOUND work could be left undefined, or they could be defined to
+  signal errors.
+
+  Rationale:
+
+    More regularity with respect to standard objects.
+
+Proposal (CONDITION-TYPE-CLASSES:MOST):
+
+  As MEDIUM. Additionally, remove the restriction that MAKE-INSTANCE cannot be
+  used to create conditions. Define that the initialization protocol for
+  standard objects is used for conditions as well; i.e. that INITIALIZE-INSTANCE
+  and SHARED-INITIALIZE are called and have the same behavior. (Because the
+  condition metaclass is still not defined, there is no way to specialize
+  ALLOCATE-INSTANCE or MAKE-INSTANCE, so those are not required to be called.)
+  This renders MAKE-CONDITION superfluous, except that unlike MAKE-INSTANCE it
+  only accepts classes that are subclasses of CONDITION.
+
+  Rationale:
+
+    Even more regularity.
+
+Examples:
+
+  ;;; Currently undefined whether this returns a class or NIL.
+  ;;; Under any proposal here, returns a class.
+  (find-class 'simple-error)
+
+  ;;; Currently defined, could return a SIMPLE-ERROR.
+  ;;; Under any proposal here, undefined behavior, as the provided class or
+  ;;; class name isn't actually a class or class name.
+  (make-condition '(and error simple-condition) ...)
+
+  ;;; If FOO returns true on some objects of type SIMPLE-CONDITION, this is
+  ;;; defined and must return such an object. Otherwise, undefined behavior.
+  ;;; Obviously an implementation can't actually determine this.
+  ;;; Under any proposal here, undefined behavior.
+  (make-condition '(and simple-condition (satisfies foo)) ...)
+
+  ;;; Currently undefined, since condition types might not be classes, and so
+  ;;; cannot be specialized on. Even in an implementation where they are, there
+  ;;; is no guarantee that this method will ever be called.
+  ;;; Under MINIMAL and MEDIUM, specializing on the condition class is okay, but
+  ;;; there is no guarantee that the method will be called. Under MOST, the
+  ;;; method will be called any time a condition is created.
+  (define-condition my-condition ...)
+  (defmethod initialize-instance :after ((c my-condition) &rest initargs)
+    (declare (ignore initargs))
+    (print "Made a MY-CONDITION"))
+  
+Current Practice:
+
+  Condition types are classes in SBCL, CCL, and Clasp. In CCL and Clasp, their
+  metaclass is STANDARD-CLASS. In SBCL, it is SB-PCL::CONDITION-CLASS. In CCL
+  and Clasp, INITIALIZE-INSTANCE and SHARED-INITIALIZE are called when making a
+  condition, but in SBCL they don't seem to be. SLOT-VALUE works in all three,
+  as does SLOT-BOUNDP. (SETF SLOT-VALUE) and SLOT-MAKUNBOUND seem to function in
+  CCL and Clasp but not SBCL.
+
+Cost to Implementors:
+
+  All implementations checked so far already make condition types classes,
+  meaning MINIMAL would take no further effort. MEDIUM also seems to be already
+  implemented by these implementations. Requiring INITIALIZE-INSTANCE and
+  SHARED-INITIALIZE to be called during instantiation may require some changes.
+
+Cost to Users:
+
+  These proposals mostly add behavior, so none, except that anyone relying on
+  MAKE-CONDITION (or SIGNAL, etc.) to deal with complex types will be left in
+  the lurch.
+
+Benefits:
+
+  Regularity. Allows specializing generic functions on condition types, which is
+  sometimes done already. Allows some specialization of condition creation,
+  although it should be noted that without the ability to alter slot values,
+  some common uses of INITIALIZE-INSTANCE/SHARED-INITIALIZE specialization are
+  impossible. It would be possible to define a method on one or both that
+  inserts additional initargs to the call to the next method, though.
+
+Cost of non-adoption:
+
+  Existing code specializing on condition types remains nonconforming. Standard
+  is irregular.
+
+Discussion:
+
+  Defining the condition metaclass could be worthwhile, but this could require
+  additional standard symbols, and also would involve a bit more work by
+  implementations in which the condition metaclass is just STANDARD-CLASS.
+
+  Defining SHARED-INITIALIZE and INITIALIZE-INSTANCE to have behavior for
+  condition classes has the slightly odd consequence that there is no specific
+  method signature for that behavior, since it is left ambiguous whether
+  CONDITION is a subclass of STANDARD-OBJECT.

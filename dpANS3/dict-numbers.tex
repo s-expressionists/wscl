@@ -1176,13 +1176,16 @@ then the \param{quotient} has been rounded to the even (divisible by two) intege
 \endlist
 
 %!!! Cross reference
+\issue{FLOOR-ETC-REMAINDER-TYPE:CONTAGION}
 All of these functions perform type conversion operations on \param{numbers}.
 
 The \param{remainder}
 is an \term{integer}  if both   \f{x} and \f{y} are \term{integers},
 is a  \term{rational} if both   \f{x} and \f{y} are \term{rationals}, and
 is a  \term{float}    if either \f{x} or  \f{y} is  a \term{float}.
+\endissue{FLOOR-ETC-REMAINDER-TYPE:CONTAGION}
 
+\issue{FFLOOR-ETC-QUOTIENT-TYPE:FLOAT-CONTAGION}
 \funref{ffloor}, \funref{fceiling}, \funref{ftruncate}, and \funref{fround} 
 handle arguments of different \term{types} in the following way:
 If  \param{number}  is     a \term{float},
@@ -1190,6 +1193,7 @@ and \param{divisor} is not a \term{float} of longer format,
 then the first result is a \term{float} of the same \term{type} as \param{number}.
 Otherwise, the first result is of the \term{type} determined by \term{contagion} rules;
 \seesection\NumericContagionRules.
+\endissue{FFLOOR-ETC-QUOTIENT-TYPE:FLOAT-CONTAGION}
 
 \label Examples::
 
@@ -2408,8 +2412,10 @@ For three or more arguments,
 
 \label Description::
 
+\issue{INCF-DECF-VALUE-NOT-SPECIFIED:SPECIFY-VALUE-AFTER-UPDATE}
 \macref{incf} and \macref{decf} are used for incrementing and
 decrementing the \term{value} of \param{place}, respectively.
+\endissue{INCF-DECF-VALUE-NOT-SPECIFIED:SPECIFY-VALUE-AFTER-UPDATE}
 
 The \param{delta} is 
     added to        (in the case of \macref{incf})
@@ -3646,7 +3652,11 @@ is to reveal how an implementation does its \term{upgrading}.
 
 \label Affected By:\None.
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{INVALID-TYPE-SPECIFIER}
+\None.
+\endissue{INVALID-TYPE-SPECIFIER}
 
 \label See Also::
 
@@ -5706,7 +5716,11 @@ the offending operation in the offending call that signaled the \param{condition
 
 \label Affected By:\None!
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{ARITHMETIC-ERROR-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\None.
+\endissue{ARITHMETIC-ERROR-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 

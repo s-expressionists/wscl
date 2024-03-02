@@ -307,7 +307,9 @@ but the \param{function-name} denotes a \term{macro} or
 
 \label Exceptional Situations::
 
+\issue{SETF-FDEFINITION-TYPE-ERROR:SIGNAL-ERROR}
 \Shouldchecktype{function-name}{a \term{function name}}
+\endissue{SETF-FDEFINITION-TYPE-ERROR:SIGNAL-ERROR}
 
 An error \oftype{undefined-function} is signaled 
 in the non-\macref{setf} case if \param{function-name} is not \term{fbound}.
@@ -1521,12 +1523,14 @@ and if it was previously \term{unbound}, it remains \term{unbound}.
 If \param{documentation} is supplied, it is attached to \param{name} as a
 \term{documentation string} of kind \misc{variable}. 
 
+\issue{DEFPARAMETER-NON-TOPLEVEL-SEMANTICS}
 \issue{DEFINING-MACROS-NON-TOP-LEVEL:ALLOW}
 \macref{defparameter} and \macref{defvar} normally appear as a \term{top level form}, 
 but it is meaningful for them to appear as \term{non-top-level forms}.  However,
 the compile-time side effects described below only take place when
 they appear as \term{top level forms}.
 \endissue{DEFINING-MACROS-NON-TOP-LEVEL:ALLOW}
+\endissue{DEFPARAMETER-NON-TOPLEVEL-SEMANTICS}
 
 \label Examples::
 
@@ -2491,9 +2495,11 @@ to \param{tag}, control is transferred to
 whichever matching \param{tag} 
 is contained in the innermost \specref{tagbody} form that
 contains the \specref{go}.
+\issue{GO-NON-EXISTENT-TAG:SIGNAL-ERROR-IN-SAFE-CODE}
 The consequences are undefined
 if there is no matching \param{tag} lexically visible
 to the point of the \specref{go}.
+\endissue{GO-NON-EXISTENT-TAG:SIGNAL-ERROR-IN-SAFE-CODE}
 
 % This is all said in a concept section now.  --sjl 7 Mar 92
 %\issue{EXIT-EXTENT:MINIMAL}
@@ -2578,7 +2584,11 @@ before the \specref{go} \term{form} is executed.
 
 \label Affected By:\None.
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{GO-NON-EXISTENT-TAG:SIGNAL-ERROR-IN-SAFE-CODE}
+\None.
+\endissue{GO-NON-EXISTENT-TAG:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -2749,7 +2759,11 @@ exits normally before the \macref{return-from} \term{form} is attempted.
 
 \label Affected By:\None.
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{RETURN-FROM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\None.
+\endissue{RETURN-FROM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -5940,7 +5954,10 @@ the \term{primary value} \term{yielded} by \param{first-form}.
      then \param{second-form},
  and then \param{forms},
 \term{yielding} as its only \term{value}
-the \term{primary value} \term{yielded} by \param{first-form}.
+the \term{primary value} \term{yielded} by
+\issue{PROG2-RETURN-VALUE:SECOND-FORM}
+\param{first-form}.
+\endissue{PROG2-RETURN-VALUE:SECOND-FORM}
 
 %% I hope this is implied by the above. -kmp 22-Oct-91
 %The arguments are evaluated in the order in which they are given.

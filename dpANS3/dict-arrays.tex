@@ -869,8 +869,10 @@ that is not a \term{simple array}.
 
 %% 17.6.0 7
 \param{initial-element}---an \term{object}.
+\issue{ADJUST-ARRAY-DISPLACED-TO-CONSTRAINTS:ALLOW-NIL}
   \param{Initial-element} must not be supplied if either 
   \param{initial-contents} or \param{displaced-to} is supplied.
+\endissue{ADJUST-ARRAY-DISPLACED-TO-CONSTRAINTS:ALLOW-NIL}
 %!!! How to express this default??
 
 %!!! "array contents designator" ? -kmp 14-May-91
@@ -879,8 +881,10 @@ that is not a \term{simple array}.
  is composed of nested \term{sequences}, the depth of which must equal
  the rank of \param{array}.  Otherwise, \term{array} is zero-dimensional and
  \param{initial-contents} supplies the single element.
+\issue{ADJUST-ARRAY-DISPLACED-TO-CONSTRAINTS:ALLOW-NIL}
  \param{initial-contents} must not be supplied if either 
  \param{initial-element} or \param{displaced-to} is given.
+\endissue{ADJUST-ARRAY-DISPLACED-TO-CONSTRAINTS:ALLOW-NIL}
 
 %% 17.6.0 8
 \param{fill-pointer}---a \term{valid fill pointer} for the
@@ -895,7 +899,9 @@ that is not a \term{simple array}.
 \issue{ARRAY-DIMENSION-LIMIT-IMPLICATIONS:ALL-FIXNUM}
 \param{displaced-index-offset}---an \objectoftype{(fixnum 0 \i{n})} 
  where \i{n} is {\tt (array-total-size \param{displaced-to})}.
- \param{displaced-index-offset} may be supplied only if \param{displaced-to} is supplied.
+\issue{ADJUST-ARRAY-DISPLACED-TO-CONSTRAINTS:ALLOW-NIL}
+  \param{displaced-index-offset} may be supplied only if \param{displaced-to} is supplied.
+\endissue{ADJUST-ARRAY-DISPLACED-TO-CONSTRAINTS:ALLOW-NIL}
 %!!! Default?
 \endissue{ARRAY-DIMENSION-LIMIT-IMPLICATIONS:ALL-FIXNUM}
 
@@ -1167,8 +1173,10 @@ is a 3-by-5 array with contents
 
 \label Exceptional Situations::
 
+\issue{ADJUST-ARRAY-DISPLACED-TO-CONSTRAINTS:ALLOW-NIL}
 An error \oftype{error} is signaled if \param{fill-pointer} is supplied
 and \term{non-nil} but \param{array} has no \term{fill pointer}.
+\endissue{ADJUST-ARRAY-DISPLACED-TO-CONSTRAINTS:ALLOW-NIL}
 
 %\issue{ADJUST-ARRAY-NOT-ADJUSTABLE:DONKEY}
 %An error \oftype{error} is signaled if an attempt
@@ -1324,7 +1332,15 @@ refers to element (2, 1) of the array.
 
 \label Affected By:\None.
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{AREF-ACCESSOR-DIMENSION-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\issue{AREF-ACCESSOR-RANK-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\issue{AREF-ACCESSOR-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\None.
+\endissue{AREF-ACCESSOR-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\endissue{AREF-ACCESSOR-RANK-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\endissue{AREF-ACCESSOR-DIMENSION-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -2012,6 +2028,8 @@ which is referred to by the given \param{index}.
 
 \label Description::
 
+\issue{ARRAY-UPGRADING-UNDECIDABLE:RESTRICT}
+
 Returns the \term{element type} of 
 the most \term{specialized} \term{array} representation capable of 
 holding items of the \term{type} denoted by \param{typespec}.
@@ -2036,13 +2054,19 @@ an implementation does its \term{upgrading}.
 The \param{environment} is used to expand any \term{derived type specifiers}
 that are mentioned in the \param{typespec}.
 
+\endissue{ARRAY-UPGRADING-UNDECIDABLE:RESTRICT}
+
 \label Examples:\None.
 
 \label Side Effects:\None.
 
 \label Affected By:\None.
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{INVALID-TYPE-SPECIFIER}
+\None.
+\endissue{INVALID-TYPE-SPECIFIER}
 
 \label See Also::
 

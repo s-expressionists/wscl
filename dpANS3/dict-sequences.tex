@@ -312,6 +312,7 @@ The \term{implementation}.
 
 \label Exceptional Situations::
 
+\issue{INVALID-TYPE-SPECIFIER}
 The consequences are unspecified if \param{initial-element} 
 is not an \term{object} which can be stored in the resulting \term{sequence}.
 
@@ -325,6 +326,7 @@ An error \oftype{type-error} must be signaled if the \param{result-type} is neit
 An error \oftype{type-error} should be signaled if \param{result-type} specifies 
 the number of elements and \param{size} is different from that number.
 \endissue{SEQUENCE-TYPE-LENGTH:MUST-MATCH}
+\endissue{INVALID-TYPE-SPECIFIER}
 
 \label See Also::
 
@@ -516,6 +518,7 @@ otherwise, an error is signaled.
 
 \label Exceptional Situations::
 
+\issue{INVALID-TYPE-SPECIFIER}
 \issue{CONCATENATE-SEQUENCE:SIGNAL-ERROR}
 An error \oftype{type-error} must be signaled if the \param{result-type} is 
      not a \term{recognizable subtype} of \typeref{list},
@@ -531,6 +534,7 @@ if \param{result-type} specifies the
 number of elements and the minimum length of the \param{sequences} 
 is different from that number.
 \endissue{SEQUENCE-TYPE-LENGTH:MUST-MATCH}
+\endissue{INVALID-TYPE-SPECIFIER}
 
 \label See Also::
 
@@ -827,7 +831,9 @@ which may change the side-effects, if any, of those functions.
 
 \label Exceptional Situations::
 
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 \Lazychecktype{sequence}{a \term{proper sequence}}
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -1243,7 +1249,9 @@ otherwise \nil\ is returned.
 
 \label Exceptional Situations::
 
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 \Lazychecktype{sequence}{a \term{proper sequence}}
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -1348,7 +1356,9 @@ regardless of the value of \term{start}, \term{end}, or \term{from-end}.
 
 \label Exceptional Situations::
 
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 \Lazychecktype{sequence}{a \term{proper sequence}}
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -1446,7 +1456,11 @@ element of the rightmost matching subsequence is returned.
 
 \label Affected By:\None.
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\None.
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -1546,7 +1560,11 @@ an index relative to \param{sequence-1}.
 
 \label Affected By:\None.
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\None.
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -1843,7 +1861,9 @@ modify \param{sequence}.
 
 \label Exceptional Situations::
 
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 \Lazychecktype{sequence}{a \term{proper sequence}}
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
                         
 \label See Also::
 
@@ -2103,6 +2123,7 @@ otherwise, an error is signaled.
 
 \label Exceptional Situations::
 
+\issue{INVALID-TYPE-SPECIFIER}
 \issue{CONCATENATE-SEQUENCE:SIGNAL-ERROR}
 An error must be signaled if the \param{result-type} is neither
      a \term{recognizable subtype} of \typeref{list},
@@ -2115,6 +2136,7 @@ if \param{result-type} specifies the number of elements
 and the sum of the lengths of \param{sequence-1} and \param{sequence-2} 
 is different from that number.
 \endissue{SEQUENCE-TYPE-LENGTH:MUST-MATCH}
+\endissue{INVALID-TYPE-SPECIFIER}
 
 \label See Also::
 
@@ -2355,7 +2377,9 @@ For \funref{delete}, \funref{delete-if}, and \funref{delete-if-not},
 
 \label Exceptional Situations::
 
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 \Lazychecktype{sequence}{a \term{proper sequence}}
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -2506,7 +2530,9 @@ permuting them to produce the resulting \term{vector}.
 
 \label Exceptional Situations::
 
+\issue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 \Shouldchecktype{sequence}{a \term{proper sequence}}
+\endissue{TEST-NOT-PROGRAM-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 

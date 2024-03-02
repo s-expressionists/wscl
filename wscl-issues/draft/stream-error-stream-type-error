@@ -1,0 +1,98 @@
+Issue:          STREAM-ERROR-STREAM-TYPE-ERROR
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         draft
+Edit History:   22-Jul-21, Version 1 by Robert Strandh.
+                18-Sep-21, Version 2 by Tarn W. Burton (update current practice)
+References:     STREAM-ERROR-STREAM
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the description of the
+  function STREAM-ERROR-STREAM indicates no exceptional situations.
+  The section "Arguments and Values" mentions that the condition
+  argument must be a condition of type STREAM-ERROR, which by default
+  means that the consequences are undefined if an object that is not a
+  condition of type STREAM-ERROR is given as an argument.
+
+Proposal (STREAM-ERROR-STREAM-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE):
+
+  This proposal changes the description of the STREAM-ERROR-STREAM
+  function, so that the section "Exceptional Situations" instead
+  reads:
+
+  "The function STREAM-ERROR-STREAM should signal an error of type
+  TYPE-ERROR if the condition argument is not a condition of type
+  STREAM-ERROR."
+
+Test Cases:
+
+  (defun one (object)
+    (declare (optimize (safety 3)))
+    (stream-error-stream object))
+
+  (one 234) => [signals TYPE-ERROR with expected type STREAM-ERROR]
+
+Rationale:
+
+  We think it was a simple omission from the draft ANSI specification
+  to indicate no exceptional situations.
+
+Current Practice:
+
+  ABCL 1.8.1-dev-fasl43
+    (one 234) => [signals TYPE-ERROR with expected type STREAM-ERROR]
+
+  ACL 10.1
+    (one 234) => [signals PROGRAM-ERROR]
+
+  CCL 1.12-f98
+    (one 234) => [signals ERROR]
+
+  CLISP 2.49.93+
+    (one 234) => [signals TYPE-ERROR with expected type STREAM-ERROR]
+
+  CMU 2019-05-27 16:42:54 (21D Unicode)
+    (one 234) => [signals TYPE-ERROR]
+
+  ECL 21.2.1-e68e6827
+    (one 234) => [signals SIMPLE-ERROR]
+
+  LWPE 7.1.2
+    (one 234) => [signals SIMPLE-ERROR]
+
+  SBCL 2.1.7
+    (one 234) => [signals TYPE-ERROR with expected type CONDITION]
+
+Cost to Implementors:
+
+  Very small.  We believe that most implementations are already
+  signaling an error in safe code.  Some implementations may signal a
+  simple error, and those implementation would need to signal a
+  TYPE-ERROR instead.  Some implementations, like SBCL may signal a
+  type error but with expected type CONDITION, and those
+  implementations would have to change so that STREAM-ERROR is the
+  expected type instead.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Application programmers may need to add explicit checks to be
+  certain that their code is conforming.
+
+Benefits:
+
+  Application programmers may rely on an error being
+  signaled in safe code, and thus avoid having to
+  add explicit checks in portable code.
+
+Aesthetics:
+
+  No influence.
+
+Discussion:
+
+  TODO

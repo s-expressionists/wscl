@@ -1,0 +1,115 @@
+Issue:          AREF-ACCESSOR-RANK-ERROR
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         draft
+Edit History:   12-Jul-21, Version 1 by Robert Strandh
+                11-Aug-21, Version 2 by Tarn W. Burton (update current practice)
+References:     AREF
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the description of
+  the accessor AREF indicates no exceptional situations.
+
+  It is therefore unclear what the behavior should be if AREF were
+  given a number of indices that is not that of the rank of the
+  array given as an argument.
+
+Proposal (AREF-ACCESSOR-RANK-ERROR:SIGNAL-ERROR-IN-SAFE-CODE):
+
+  This proposal changes the description of the AREF accessor, so that
+  the section "Exceptional Situations" contains the following text:
+
+  "The accessor AREF should signal an error of type TYPE-ERROR if the
+  number of indices given is different from the rank of the array
+  passed as an argument."
+
+Test Cases:
+
+  (defun one (object)
+    (declare (optimize (safety 3)))
+    (aref object 0 0))
+
+  (one (make-array 1 :initial-element nil)) =>
+     ERROR: The value #(nil) is not of type ARRAY * (* *)
+
+  (defun two (object)
+    (declare (optimize (safety 3)))
+    (setf (aref object 0 0) 345))
+
+  (two (make-array 1 :initial-element nil)) =>
+     ERROR: The value #(nil) is not of type ARRAY * (* *)
+
+Rationale:
+
+  We think it was a simple omission from the draft ANSI specification
+  to not specify the behavior in this situation.
+
+Current Practice:
+
+  ABCL 1.8.1-dev-fasl43
+    (one (make-array 1 :initial-element nil)) => [signals program-error]
+    (two (make-array 1 :initial-element nil)) => [signals program-error]
+
+  ACL 10.1
+    (one (make-array 1 :initial-element nil)) => [signals simple-error]
+    (two (make-array 1 :initial-element nil)) => [signals simple-error]
+
+  CCL 1.12-f98
+    (one (make-array 1 :initial-element nil)) => [signals type-error]
+    (two (make-array 1 :initial-element nil)) => [signals type-error]
+
+  CLASP cclasp-boehmprecise-0.4.2-4548-g80d9caef9-cst
+    (one (make-array 1 :initial-element nil)) => [signals program-error]
+    (two (make-array 1 :initial-element nil)) => [signals program-error]
+
+  CLISP 2.49.93+
+    (one (make-array 1 :initial-element nil)) => [signals simple-error]
+    (two (make-array 1 :initial-element nil)) => [signals simple-error]
+
+  CMU 2019-05-27 16:42:54 (21D Unicode)
+    (one (make-array 1 :initial-element nil)) => [signals program-error]
+    (two (make-array 1 :initial-element nil)) => [signals program-error]
+
+  ECL 21.2.1-e68e6827
+    (one (make-array 1 :initial-element nil)) => [signals simple-error]
+    (two (make-array 1 :initial-element nil)) => [signals simple-error]
+
+  LWPE 7.1.2
+    (one (make-array 1 :initial-element nil)) => [signals error]
+    (two (make-array 1 :initial-element nil)) => [signals error]
+
+  SBCL 2.1.7
+    (one (make-array 1 :initial-element nil)) => [signals type-error]
+    (two (make-array 1 :initial-element nil)) => [signals type-error]
+
+Cost to Implementors:
+
+  Very small.  We believe that most implementations are already
+  signaling an error in safe code.  Some implementations may signal a
+  simple error, and those implementation would need to signal a
+  type-error instead.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Application programmers may need to add numerous
+  explicit checks to be certain that their code
+  is conforming.
+
+Benefits:
+
+  Application programmers may rely on an error being
+  signaled in safe code, and thus avoid having to
+  add explicit checks in portable code.
+
+Aesthetics:
+
+  No influence.
+
+Discussion:
+
+  TODO

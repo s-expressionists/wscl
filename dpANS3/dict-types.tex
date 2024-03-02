@@ -857,10 +857,12 @@ Specializing.
 
 \reviewer{Barmar: Missing \keyref{key}}%!!!
 
+\issue{VALUES-\&ALLOW-OTHER-KEYS:DISALLOW}
 \auxbnf{value-typespec}{\starparam{typespec}
 			\ttbrac{{\opt} {\starparam{typespec}}}
 			\ttbrac{{\rest} typespec}
 			\ttbrac{\keyref{allow-other-keys}}}
+\endissue{VALUES-\&ALLOW-OTHER-KEYS:DISALLOW}
 
 \label Compound Type Specifier Arguments::
 
@@ -1100,6 +1102,7 @@ All the following \term{forms} should signal an error:
 
 \label Exceptional Situations::
 
+\issue{INVALID-TYPE-SPECIFIER}
 If a coercion is not possible, an error \oftype{type-error} is signaled.
 
 \f{(coerce x 'nil)} always signals an error \oftype{type-error}.
@@ -1117,6 +1120,7 @@ if the \term{symbol} names a \term{macro} or a \term{special operator}.
 An error \oftype{type-error} should be signaled if \param{result-type}
 specifies the number of elements and \param{object} is of a different length.
 \endissue{SEQUENCE-TYPE-LENGTH:MUST-MATCH}
+\endissue{INVALID-TYPE-SPECIFIER}
 
 \label See Also::
 
@@ -1221,11 +1225,13 @@ in subsequent \term{type} declarations.
 The \term{programmer} must ensure that the body of a \macref{deftype} form 
 can be \term{evaluated} at compile time if the \param{name} is
 referenced in subsequent \term{type} declarations.  
+\issue{SUBTYPEP-UNKNOWN-TYPES}
 If the expansion of a \term{type specifier} is not defined fully at compile time
 (perhaps because it expands into an unknown \term{type specifier} or a
 \typeref{satisfies} of a named \term{function} that isn't defined in the
 compile-time environment), an \term{implementation} may ignore any references to
 this \term{type} in declarations and/or signal a warning.
+\endissue{SUBTYPEP-UNKNOWN-TYPES}
 \endissue{COMPILE-FILE-HANDLING-OF-TOP-LEVEL-FORMS:CLARIFY}
 
 \label Examples::
@@ -1326,6 +1332,7 @@ that might result.
 }
 
 \issue{SUBTYPEP-TOO-VAGUE:CLARIFY-MORE}
+\issue{SUBTYPEP-UNKNOWN-TYPES}
 
 \funref{subtypep} is permitted to return the 
 \term{values} \term{false} and \term{false} only when at least
@@ -1368,6 +1375,7 @@ an implementation supports only a single type of floating-point numbers,
 in that implementation \f{(subtypep 'float 'long-float)} 
 returns the \term{values} \term{true} and \term{true} 
 (since the two \term{types} are identical).
+\endissue{SUBTYPEP-UNKNOWN-TYPES}
 \endissue{SUBTYPEP-TOO-VAGUE:CLARIFY-MORE}
 
 \issue{ARRAY-TYPE-ELEMENT-TYPE-SEMANTICS:UNIFY-UPGRADING}
@@ -1504,7 +1512,11 @@ these names should always refer to the same sets of
 
 \label Affected By:\None.
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{INVALID-TYPE-SPECIFIER}
+\None.
+\endissue{INVALID-TYPE-SPECIFIER}
 
 \label See Also::
 
@@ -1824,12 +1836,14 @@ denote the same \term{type}.  Notice that
 \label Exceptional Situations::
 
 %% 4.5.0.0 10
+\issue{INVALID-TYPE-SPECIFIER}
 An error \oftype{error} is signaled if \param{type-specifier} is \f{values}, 
 or a \term{type specifier} list whose first element is either
 \misc{function} or \misc{values}.
 
 The consequences are undefined if
 the \param{type-specifier} is not a \term{type specifier}.
+\endissue{INVALID-TYPE-SPECIFIER}
 
 \label See Also::
 
@@ -1926,7 +1940,13 @@ offending datum in the \term{situation} represented by the \param{condition}.
 
 \label Affected By:\None.
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{TYPE-ERROR-DATUM-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\issue{TYPE-ERROR-EXPECTED-TYPE-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\None.
+\endissue{TYPE-ERROR-EXPECTED-TYPE-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\endissue{TYPE-ERROR-DATUM-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 

@@ -1,0 +1,120 @@
+Issue:          INVALID-TYPE-SPECIFIER
+Forum:          Cleanup
+Related issues: DEFTYPE-DESTRUCTURING, DEFTYPE-KEY, TYPE-SPECIFIER-ABBREVIATION
+Category:       CHANGE
+Status:         draft
+Edit History:   14-Jul-21, Version 1 by Bike.
+References:     TYPEP, SUBTYPEP, COERCE, MAKE-SEQUENCE, MAP, MERGE
+                UPGRADED-ARRAY-ELEMENT-TYPE, UPGRADED-COMPLEX-PART-TYPE
+
+Problem Description:
+
+  The draft ANSI Common Lisp specification mentions the possibility of "invalid"
+  type specifiers, but does not define what functions that operate on type
+  specifiers should do in such a situation.
+
+  For example, the description of the MOD type specifier reads in part
+    "The symbol MOD is not valid as a type specifier"
+
+  A strict reading of the definition of SUBTYPEP makes it seem that the form
+  (subtypep 'mod 'mod) is not permitted to return anything. Since MOD is not a
+  valid type specifier, it cannot be a subtype or not be a subtype of anything,
+  but NIL NIL cannot be returned because neither specifier argument involves
+  any of the verboten symbols.
+
+  (typep o 'mod) explicitly has undefined consequences. Behavior is not
+  specified for (coerce o 'mod), unless "If a coercion is not possible, an error
+  of type TYPE-ERROR is signaled" is taken to mean that COERCE must signal a
+  type error if it runs into any problem. UPGRADED-ARRAY-ELEMENT-TYPE and
+  UPGRADED-COMPLEX-PART-TYPE do not mention this possibility.
+
+  MAKE-SEQUENCE, MAP, and MERGE are specified to signal a type error if their
+  type specifier argument is not a recognizable subtype of LIST or VECTOR, and
+  since MOD is not a type specifier, it is presumably not a recognizable subtype
+  of anything.
+
+  Other possible invalid or non type specifiers include types defined by DEFTYPE
+  but used with invalid syntax, and objects that are not symbols or conses or
+  classes (e.g. numbers).
+
+Proposal (INVALID-TYPE-SPECIFIER:TYPE-ERROR):
+
+  Amend the definitions of TYPEP, SUBTYPEP, COERCE, UPGRADED-ARRAY-ELEMENT-TYPE,
+  UPGRADED-COMPLEX-PART-TYPE, MAKE-SEQUENCE, MAP, and MERGE to make clear that,
+  if given an invalid type specifier, they signal an error of type TYPE-ERROR.
+
+  Rationale:
+
+    Extrapolates from the more specific signal behavior in MAKE-SEQUENCE etc.
+
+    There does not seem to be any particular value in loosening the requirement
+    so that an error must only be signaled in safe code. SUBTYPEP is generally
+    not performance-critical, and implementations concerned with the performance
+    of TYPEP, COERCE, and the sequence functions do compile-time processing of
+    the type specifier regardless. And uses of these functions with non-constant
+    type specifiers are not very common.
+
+Proposal (INVALID-TYPE-SPECIFIER:ERROR):
+
+  Amend the definitions of TYPEP, SUBTYPEP, COERCE, UPGRADED-ARRAY-ELEMENT-TYPE,
+  UPGRADED-COMPLEX-PART-TYPE, MAKE-SEQUENCE, MAP, and MERGE to make clear that,
+  if given an invalid type specifier, they signal an error of type TYPE-ERROR.
+
+  Rationale:
+
+    While this might loosen the specification of MAKE-SEQUENCE etc., the problem
+    with requiring a TYPE-ERROR is that the type of type specifiers is not
+    really expressible short of some complicated use of SATISFIES. This does not
+    seem to be a very useful use of TYPE-ERROR.
+
+    For example, SBCL does sometimes signal a "not a type specifier" type error.
+    The type it uses is (or cons symbol sb-kernel:classoid class), which
+    obviously includes many invalid type specifiers, such as MOD.
+
+Examples:
+
+  (subtypep 5 5)
+  (typep 5 'mod)
+  (deftype foo (bar) (declare (ignore bar)) 't) (typep 5 'foo)
+
+Current Practice:
+
+  Test 1 is (subtypep 5 5)
+  Test 2 is (subtypep 5 6)
+  Test 3 is (typep 5 'mod)
+  Test 4 is (deftype foo (bar) (declare (ignore bar)) 't) (typep 5 'foo)
+
+         Test 1         Test 2          Test 3        Test 4
+  SBCL   T T            type-error      error         error
+  CCL    program-error  program-error   program-error program-error
+  Clasp  T T            error           program-error program-error
+
+  CCL conforms to ERROR. SBCL and Clasp conform to error except that their
+  implementations of SUBTYPEP return true immediately if the arguments are EQUAL
+  even if they are not valid type specifiers. (Notably, SBCL has different
+  behavior if the test form is compiled - it signals a TYPE-ERROR.)
+
+  Other implementation behaviors that could be checked include giving a
+  non-type-error on (make-sequence 'mod) from macroexpanding the type,
+  returning REAL from UPGRADED-COMPLEX-PART-TYPE without doing any checking,
+  and others, but this may not be worth recording.
+
+Cost to Implementors:
+
+  Either proposal would require some implementations to perform more checking.
+  TYPE-ERROR would require implementations to figure out how to write a type
+  for type specifiers, and to be sure to handle macroexpansion errors within
+  their implementations of the type system.
+
+Cost to Users:
+
+  None.
+
+Benefits:
+
+  Either proposal gives more coherent behavior. Either proposal legitimizes the
+  rare but existent idiom of using (values (ignore-errors (subtypep foo t)))
+  to determine if FOO is a valid type specifier, though this could perhaps be
+  handled better by an extension of the type system.
+
+Discussion:

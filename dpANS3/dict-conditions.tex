@@ -266,7 +266,11 @@ and if the \param{condition} is \oftype{unbound-slot}, this is
 
 \label Affected By:\None.
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{CELL-ERROR-NAME-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\None.
+\endissue{CELL-ERROR-NAME-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -2235,6 +2239,7 @@ The default if \kwd{allocation} is not supplied is \kwd{instance}.
 \label Description::
 
 %!!! Barrett: Some of this stuff
+\issue{CONDITION-TYPE-CLASSES}
 \macref{define-condition} defines a new condition type called \param{name}, 
 which is a \term{subtype} of 
 \issue{CLOS-CONDITIONS:INTEGRATE}
@@ -2423,6 +2428,7 @@ and it must be possible to reference the \term{condition} \term{type} as the
 \param{parent-type} of another \term{condition} \term{type} in a subsequent
 \macref{define-condition} \term{form} in the \term{file} being compiled.
 \endissue{COMPILE-FILE-HANDLING-OF-TOP-LEVEL-FORMS:CLARIFY}
+\endissue{CONDITION-TYPE-CLASSES}
 
 \label Examples::
 
@@ -4045,11 +4051,13 @@ the presence of a \term{restart} having the same name.
 
 \label Exceptional Situations::
 
+\issue{ABORT-FUNCTION:SIGNAL-ERROR-ON-RETURN}
 If an appropriate \misc{abort} \term{restart}
  is not available for \thefunction{abort},
 or an appropriate \misc{muffle-warning} \term{restart} 
  is not available for \thefunction{muffle-warning},
 an error \oftype{control-error} is signaled.
+\endissue{ABORT-FUNCTION:SIGNAL-ERROR-ON-RETURN}
 
 \label See Also::
 

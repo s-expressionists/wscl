@@ -126,10 +126,12 @@ The package system is modified.
 
 \label Exceptional Situations::
 
+\issue{EXPORT-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 If any of the \param{symbols} is not \term{accessible} at all in \param{package},
 an error \oftype{package-error} is signaled that is \term{correctable} 
 by permitting the \term{user}
 to interactively specify whether that \term{symbol} should be \term{imported}.
+\endissue{EXPORT-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 %!!! Sandra: Something about name conflicts here?
 
@@ -233,7 +235,11 @@ both values are \nil.
 \funref{unexport},
 \funref{unuse-package}
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{FIND-SYMBOL-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\None.
+\endissue{FIND-SYMBOL-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -302,7 +308,11 @@ The set of \term{packages} created by the \term{implementation}.
 \funref{make-package},
 \funref{rename-package}
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{FIND-PACKAGE-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\None.
+\endissue{FIND-PACKAGE-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -447,11 +457,13 @@ Current state of the package system.
 
 \label Exceptional Situations::
 
+\issue{IMPORT-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 \funref{import} signals a \term{correctable} error \oftype{package-error}
 if any of the \param{symbols} to be \term{imported} has the \term{same} \term{name}
 (under \funref{string=}) as some distinct \term{symbol} (under \funref{eql})
 already \term{accessible} in the \param{package}, even if the conflict is
 with a \term{shadowing symbol} of the \param{package}.
+\endissue{IMPORT-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
                      
@@ -651,7 +663,11 @@ way that the package consistency rules do not hold across the change.
 
 Current state of the package system.
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{SHADOW-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\None.
+\endissue{SHADOW-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -1248,9 +1264,11 @@ Current state of the package system.
 
 \label Exceptional Situations::
 
+\issue{UNEXPORT-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 If \funref{unexport} is given a \term{symbol}
 not \term{accessible} in \param{package} at all, 
 an error \oftype{package-error} is signaled.
+\endissue{UNEXPORT-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 The consequences are undefined if \param{package} is \thepackage{keyword}
 %added for Sandra:
@@ -1325,7 +1343,9 @@ across the change.
 Current state of the package system.
 
 \label Exceptional Situations::
+
 %% 11.0.0 54
+\issue{UNINTERN-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 Giving a shadowing symbol to \funref{unintern} 
 can uncover a name conflict that had
 previously been resolved by the shadowing.  If package A uses packages
@@ -1335,6 +1355,7 @@ from A will reveal a name
 conflict between \f{b:x} and \f{c:x} if those two \term{symbols} are distinct.
 In this case \funref{unintern} will signal an error.
 %!!! Barmar: Of type??
+\endissue{UNINTERN-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -1513,9 +1534,11 @@ as \term{internal symbols}.
 in \param{package} but only makes them \term{accessible} by inheritance.
 
 %% 11.0.0 39
+\issue{USE-PACKAGE-REMOVE-INCORRECT-TERMINOLOGY:NO-IMPORT}
 \funref{use-package} checks for
 name conflicts between the newly imported symbols and those already
 \term{accessible} in \param{package}.  
+\endissue{USE-PACKAGE-REMOVE-INCORRECT-TERMINOLOGY:NO-IMPORT}
 %% 11.0.0 58
 A name conflict in \funref{use-package} 
 between two external symbols inherited
@@ -2382,7 +2405,9 @@ of other \term{packages} that use \param{package}.
 
 \label Exceptional Situations::
 
+\issue{PACKAGE-USED-BY-LIST-TYPE-ERROR:ALLOW-STRING-DESIGNATOR}
 \Shouldchecktype{package}{a \term{package}}
+\endissue{PACKAGE-USED-BY-LIST-TYPE-ERROR:ALLOW-STRING-DESIGNATOR}
 
 \label See Also::
 
@@ -2548,7 +2573,11 @@ in the \term{situation} represented by the \param{condition}.
 
 \label Affected By:\None.
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{PACKAGE-ERROR-PACKAGE-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\None.
+\endissue{PACKAGE-ERROR-PACKAGE-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 

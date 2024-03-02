@@ -263,7 +263,11 @@ the entry count is \f{0}.
 \funref{remhash},
 \SETFof{gethash}
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{HASH-TABLE-COUNT-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\None.
+\endissue{HASH-TABLE-COUNT-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -567,7 +571,11 @@ left-to-right evaluation rules, but its \term{value} is ignored.
 
 \label Affected By:\None.
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{GETHASH-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\None.
+\endissue{GETHASH-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -618,7 +626,11 @@ The \param{hash-table} is modified.
 
 \label Affected By:\None.
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{REMHASH-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\None.
+\endissue{REMHASH-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also:\None.
 
@@ -687,7 +699,11 @@ None, other than any which might be done by the \param{function}.
 
 \label Affected By:\None.
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{MAPHASH-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\None.
+\endissue{MAPHASH-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also::
 
@@ -811,7 +827,11 @@ The following could be an acceptable definition of
 
 \label Exceptional Situations::
 
-The consequences are undefined if the local function named \param{name}
+The consequences are undefined if the local
+\issue{WITH-HASH-TABLE-ITERATOR-BINDING-TYPE}
+function
+\endissue{WITH-HASH-TABLE-ITERATOR-BINDING-TYPE}
+named \param{name}
 \term{established} by \macref{with-hash-table-iterator} is called after it has
 returned \term{false} as its \term{primary value}.
 
@@ -863,7 +883,11 @@ The \param{hash-table} is modified.
 
 \label Affected By:\None.
 
-\label Exceptional Situations:\None.
+\label Exceptional Situations:
+
+\issue{CLRHASH-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
+\None.
+\endissue{CLRHASH-TYPE-ERROR:SIGNAL-ERROR-IN-SAFE-CODE}
 
 \label See Also:\None.
 
