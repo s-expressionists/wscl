@@ -1,0 +1,61 @@
+Issue:          MAPC-ETC-REMOVE-RESULT-TYPE
+Forum:          Cleanup
+Category:       CLEANUP
+Status:         proposed
+Edit History:   02-Mar-24, Version 1 by Robert Strandh,
+References:     MAPC, MAPCAR, MAPCAN, MAPL, MAPLIST, MAPCON
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the dictionary entry
+  for the functions MAPC, MAPCAR, MAPCAN, MAPL, MAPLIST, and MAPCON
+  contains the phrase "RESULT-TYPE specifies the type of the resulting
+  SEQUENCE".  But, unlike the sequence function MAP, these functions
+  do not take an argument for specifying the result type.  Each one of
+  them returns a list.
+
+Proposal:
+
+  Remove the phrase "RESULT-TYPE specifies the type of the resulting
+  SEQUENCE." from the dictionary entry.
+
+Test cases:
+
+  Not applicable.
+
+Rationale:
+
+  The functions specified in this dictionary entry do not take an
+  argument for specifying the result type.  The offending phrase was
+  likely copied from the dictionary entry for the sequence function
+  MAP.
+
+Current practice:
+
+  Not applicable.
+
+Cost to implementors:
+
+  None.
+
+Cost to users:
+
+  None.
+
+Cost of non-adoption:
+
+  Programmers reading the dictionary entry for these functions can be
+  confused by the phrase mentioning result type.
+
+Benefits:
+
+  Eliminate possible confusion for programmers reading the relevant
+  dictionary entry.
+
+Aesthetics:
+
+  The quality of the description of the functions is improved.
+
+Discussion:
+
+  Not required.
