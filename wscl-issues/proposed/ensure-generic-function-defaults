@@ -10,20 +10,21 @@ Problem Description:
   In the draft ANSI Common Lisp specification, the description of the
   function ENSURE-GENERIC-FUNCTION does not mention any default values
   for any of the keyword parameters, thereby giving the impression
-  that these parameters are in fact mandatory.  The phrase "If
-  function-name specifies a generic function that has a different
+  that these parameters are in fact mandatory.  Consider the phrase
+  "If function-name specifies a generic function that has a different
   value for any of the following arguments, the generic function is
-  modified to have the new value: :argument-precedence-order,
-  :declare, :documentation, :method-combination.", and the phrases
-  mentioning the keyword parameters :lambda-list,
-  :generic-function-class, and :method-class, clearly do not work if
-  the corresponding keyword argument is not supplied by the caller,
-  because the corresponding parameter would then have the value NIL.
+  modified to have the new value: :ARGUMENT-PRECEDENCE-ORDER,
+  :DECLARE, :DOCUMENTATION, :METHOD-COMBINATION.", and the phrases
+  mentioning the keyword parameters :LAMBDA-LIST,
+  :GENERIC-FUNCTION-CLASS, and :METHOD-CLASS.  The situations
+  described by those phrases clearly do not work if the corresponding
+  keyword argument is not supplied by the caller, because the
+  corresponding parameter would then have the value NIL.
 
   So if some client code, say code that results from the expansion of
-  the DEFMETHOD macro would like to use ENSURE-GENERIC-FUNCTION to
+  the DEFMETHOD macro, would like to use ENSURE-GENERIC-FUNCTION to
   make sure a generic function with the appropriate name exists, it
-  can not do so, because it would run the risk or supplying the wrong
+  cannot do so because it would run the risk or supplying the wrong
   values of one or more of these keyword arguments, thereby
   inadvertently modifying an existing generic function.
 
@@ -31,7 +32,7 @@ Problem Description:
   valid default values of keyword parameters that are not supplied,
   which is what this issue report suggests. 
 
-  Furthermore, for the keyword argument :generic-function-class the
+  Furthermore, for the keyword argument :GENERIC-FUNCTION-CLASS the
   description, uses a term "compatible", to refer to the relation
   between the class of an existing generic function, and the class
   supplied by this argument.  However, the concept of compatibility is
@@ -51,41 +52,41 @@ Proposal (ENSURE-GENERIC-FUNCTION-REASONABLE-DEFAULTS):
     If function-name is a list, it must be of the form (setf
     symbol).
 
-    If function-name is not fbound in the global environment, a new
+    If function-name is not FBOUND in the global environment, a new
     generic function is created.  In that case, the following default
     values for the parameters apply:
 
-       If the argument :generic-function-class was not supplied, it
+       If the argument :GENERIC-FUNCTION-CLASS was not supplied, it
        defaults to the class named STANDARD-GENERIC-FUNCTION.
 
-       If the argument :method-class was not supplied, it defaults to
+       If the argument :METHOD-CLASS was not supplied, it defaults to
        the class named STANDARD-METHOD.
 
-       If the argument :lambda-list was not supplied, but the argument
-       :argument-precedence-order was supplied, then an error is
-       signaled.  If neither the argument :lambda-list nor the
-       argument :argument-precedence-order was supplied, then the
+       If the argument :LAMBDA-LIST was not supplied, but the argument
+       :ARGUMENT-PRECEDENCE-ORDER was supplied, then an error is
+       signaled.  If neither the argument :LAMBDA-LIST nor the
+       argument :ARGUMENT-PRECEDENCE-ORDER was supplied, then the
        lambda list of the resulting generic function is not
        initialized.  It will then be initialized when a method is
        added, and then with a lambda list that is congruent with that
        of the method.
 
-       If the argument :argument-precedence-order was not supplied,
-       but the argument :lambda-list was supplied, then the argument
-       :argument-precedence-order defaults to the list of required
-       parameters in the :lambda-list argument, in the order they
-       appear.  If the argument :argument-precedence-order was
+       If the argument :ARGUMENT-PRECEDENCE-ORDER was not supplied,
+       but the argument :LAMBDA-LIST was supplied, then the argument
+       :ARGUMENT-PRECEDENCE-ORDER defaults to the list of required
+       parameters in the :LAMBDA-LIST argument, in the order they
+       appear.  If the argument :ARGUMENT-PRECEDENCE-ORDER was
        supplied, but it is not a proper list containing a permutation
-       of the required parameters in the argument :lambda-list, an
+       of the required parameters in the argument :LAMBDA-LIST, an
        error is signaled.
 
-       If the argument :method-combination was not supplied, it
+       If the argument :METHOD-COMBINATION was not supplied, it
        defaults to the standard method combination.
 
-       If the argument :documentation was not supplied, it defaults to
+       If the argument :DOCUMENTATION was not supplied, it defaults to
        NIL.
 
-       If the argument :declare was not supplied, it defaults to NIL.
+       If the argument :DECLARE was not supplied, it defaults to NIL.
 
     If function-name is a symbol, and (fdefinition function-name) is
     an ordinary function, a macro, or a special operator, an error is
@@ -93,67 +94,67 @@ Proposal (ENSURE-GENERIC-FUNCTION-REASONABLE-DEFAULTS):
 
     If function-name specifies an existing generic function:
 
-      If the argument :generic-function-class was not supplied, or if
+      If the argument :GENERIC-FUNCTION-CLASS was not supplied, or if
       the value of the argument is the same as the class of the
       existing generic function, then the class of the existing
       generic function is not modified.  If the argument
-      :generic-function-class was supplied, and is different from the
+      :GENERIC-FUNCTION-CLASS was supplied, and is different from the
       class of the existing generic function, then an error is
       signaled.
 
-      If the argument :method-class was not supplied, or if the value
+      If the argument :METHOD-CLASS was not supplied, or if the value
       of the argument is the same as the method-class of the existing
       generic function, then the method-class of the existing generic
-      function is not modified.  If the argument :method-class was
+      function is not modified.  If the argument :METHOD-CLASS was
       supplied and is different from the method-class of the existing
       generic function, then the method-class of the existing generic
       function is modified, but existing methods are not removed or
       modified.
 
-      If the argument :lambda-list was not supplied, the lambda list
+      If the argument :LAMBDA-LIST was not supplied, the lambda list
       of the existing generic function is not modified.  If the
-      argument :lambda-list was supplied, and the value is congruent
+      argument :LAMBDA-LIST was supplied, and the value is congruent
       with the lambda lists of every existing method (which is
       trivially true if there are no existing methods), then the
       lambda list of the existing generic function is modified
       accordingly.  Otherwise, an error is signaled.  If the argument
-      :lambda-list was supplied, the argument
-      :argument-precedence-order was not supplied, and the argument
+      :LAMBDA-LIST was supplied, the argument
+      :ARGUMENT-PRECEDENCE-ORDER was not supplied, and the argument
       precedence order of the existing generic function is not a
       permutation of the required parameters of the value of this
       argument, then an error is signaled.
 
-      If the argument :argument-precedence-order was not supplied, the
+      If the argument :ARGUMENT-PRECEDENCE-ORDER was not supplied, the
       argument precedence order of the generic function is not
-      modified.  If the argument :argument-precedence-order was
+      modified.  If the argument :ARGUMENT-PRECEDENCE-ORDER was
       supplied, but the lambda list of the existing generic function
       has not been initialized, an error is signaled.  If the argument
-      :argument-precedence-order was supplied, the argument
-      :lambda-list was not supplied, and the value of this argument is
+      :ARGUMENT-PRECEDENCE-ORDER was supplied, the argument
+      :LAMBDA-LIST was not supplied, and the value of this argument is
       not a proper list containing a permutation of the required
       parameters of the lambda list of the existing generic function,
       then an error is signaled.  If the argument
-      :argument-precedence-order was supplied, the argument
-      :lambda-list was supplied, and the value of this argument is not
+      :ARGUMENT-PRECEDENCE-ORDER was supplied, the argument
+      :LAMBDA-LIST was supplied, and the value of this argument is not
       a proper list containing a permutation of the required
-      parameters of the value of the argument :lambda-list, then an
+      parameters of the value of the argument :LAMBDA-LIST, then an
       error is signaled.  Otherwise the argument precedence order of
       the existing generic function is modified accordingly.
 
-      If the arguemnt :method-combination was not supplied, then the
+      If the arguemnt :METHOD-COMBINATION was not supplied, then the
       method combination of the existing generic function is not
-      modified.  If the argument :method-combination was supplied,
+      modified.  If the argument :METHOD-COMBINATION was supplied,
       then the method combination of the existing generic function is
       modified accordingly. 
 
-      If the argument :documentation was not given, then the
+      If the argument :DOCUMENTATION was not given, then the
       documentation of the existing generic function is not modified.
-      If the argument :documentation was given, the documentation of
+      If the argument :DOCUMENTATION was given, the documentation of
       the existing generic function is modified accordingly. 
 
-      If the argument :declare was not given, then the declarations
+      If the argument :DECLARE was not given, then the declarations
       associated with the existing generic function are not modified.
-      If the argument :declare was given, the declarations associated
+      If the argument :DECLARE was given, the declarations associated
       with the existing generic function is modified accordingly.
 
   We suggest modifying the Exceptional Situations part of the
@@ -161,59 +162,59 @@ Proposal (ENSURE-GENERIC-FUNCTION-REASONABLE-DEFAULTS):
 
     If function-name is a symbol and (fdefintion function-name)
     returns an ordinary function, a macro, or a special operator, then
-    an error of type type-error is signaled.
+    an error of type TYPE-ERROR is signaled.
 
-    If the argument :lambda-list was supplied, but it is it not a
+    If the argument :LAMBDA-LIST was supplied, but it is it not a
     valid generic-function lambda list, then an error of type
-    type-error is signaled.
+    TYPE-ERROR is signaled.
 
     If function-name is the name of an existing generic function, the
-    argument :lambda-list was supplied, the argument
-    :argument-precedence-order was not supplied, and the argument
+    argument :LAMBDA-LIST was supplied, the argument
+    :ARGUMENT-PRECEDENCE-ORDER was not supplied, and the argument
     precedence order of the existing generic function is not a
     permutation of the required parameters in the value of the
-    argument :lambda-list, then an error is signaled.
+    argument :LAMBDA-LIST, then an error is signaled.
 
     If function-name is the name of an existing generic function, if
-    the argument :lambda-list was supplied, and the existing generic
+    the argument :LAMBDA-LIST was supplied, and the existing generic
     function has a method with a lambda list that is not congruent
-    with the argument, then an error of type type-error is signaled. 
+    with the argument, then an error of type TYPE-ERROR is signaled. 
 
     If function-name is not the name of an existing generic function,
-    the argument :argument-precedence-order was supplied, but the
-    argument :lambda-list was not supplied, then an error is
+    the argument :ARGUMENT-PRECEDENCE-ORDER was supplied, but the
+    argument :LAMBDA-LIST was not supplied, then an error is
     signaled.
 
     If function-name is not the name of an existing generic function,
-    the argument :argument-precedence-order was supplied, the argument
-    :lambda-list was supplied, but the value of the argument
-    :argument-precedence-order is not a proper list containing a
+    the argument :ARGUMENT-PRECEDENCE-ORDER was supplied, the argument
+    :LAMBDA-LIST was supplied, but the value of the argument
+    :ARGUMENT-PRECEDENCE-ORDER is not a proper list containing a
     permutation of the required parameters in the value of the augment
-    :lambda-list then an error is signaled.
+    :LAMBDA-LIST then an error is signaled.
 
-    If the argument :generic-function-class was supplied and it is not
+    If the argument :GENERIC-FUNCTION-CLASS was supplied and it is not
     a subclass of the class GENERIC-FUNCTION, nor the name of such a
-    subclass, then an error of type type-error is signaled.
+    subclass, then an error of type TYPE-ERROR is signaled.
 
     If function-name is the name of an existing generic function, if
-    the argument :generic-function-class was supplied, and the value
+    the argument :GENERIC-FUNCTION-CLASS was supplied, and the value
     supplied is not the same as the class of the existing generic
-    function, then an error of type type-error is signaled.
+    function, then an error of type TYPE-ERROR is signaled.
 
-    If the argument :method-class was supplied and it is not a
+    If the argument :METHOD-CLASS was supplied and it is not a
     subclass of the class METHOD, nor the name of such a subclass,
-    then an error of type type-error is signaled.
+    then an error of type TYPE-ERROR is signaled.
 
-    If the argument :method-combination is supplied, but it is not a
+    If the argument :METHOD-COMBINATION is supplied, but it is not a
     subclass of the class METHOD-COMBINATION, then an error of type
-    type-error is signaled.
+    TYPE-ERROR is signaled.
 
-    If the argument :documentation is supplied, and it is neither a
-    string nor NIL, then an error of type type-error is signaled.
+    If the argument :DOCUMENTATION is supplied, and it is neither a
+    string nor NIL, then an error of type TYPE-ERROR is signaled.
 
-    If the argument :declare is supplied, and it is neither a
+    If the argument :DECLARE is supplied, and it is neither a
     declaration specifier containing only OPTIMIZE declaration
-    specifiers nor NIL, then an error of type type-error is signaled.
+    specifiers nor NIL, then an error of type TYPE-ERROR is signaled.
 
 Rationale:
 
