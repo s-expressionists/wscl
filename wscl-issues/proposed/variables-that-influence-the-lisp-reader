@@ -1,0 +1,59 @@
+Issue:          VARIABLES-THAT-INFLUENCE-THE-LISP-READER
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         proposed
+Edit History:   04-Mar-24, Version 1 by Robert Strandh,
+References:     READ
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, figure 2-2 in section
+  2.1.2 mentions the dynamic variables that influence the Lisp
+  reader.  However, the variables *READ-BASE* and  *FEATURES* also
+  influence the Lisp reader, but these variables are not mentioned in
+  figure 2-2.
+
+Proposal (ADD-VARIABLES-THAT-INFLUENCE-THE-LISP-READER):
+
+  This proposal adds the variables *READ-BASE* and *FEATURES* to
+  figure 2-2.
+
+Test cases:
+
+  Not applicable.
+
+Rationale:
+
+  We think it is a simple omission that these variables are not
+  mentioned in figure 2-2.
+
+Current practice:
+
+  Not applicable.
+
+Cost to implementors:
+
+  None.
+
+Cost to users:
+
+  None.
+
+Cost of non-adoption:
+
+  Implementors may fail to take into account the missing variables
+  when implementing the reader.
+
+Benefits:
+
+  Implementors have a complete list of variables that influence the
+  Lisp reader.
+
+Aesthetics:
+
+  It is preferable to have a complete, rather than partial, list of
+  variables that influence the Lisp reader.
+
+Discussion:
+
+  Not required.
