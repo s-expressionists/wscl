@@ -9,7 +9,7 @@ Problem Description:
 
   In the draft ANSI Common Lisp specification, figure 2-2 in section
   2.1.2 mentions the dynamic variables that influence the Lisp
-  reader.  However, the variables *READ-BASE* and  *FEATURES* also
+  reader.  However, the variables *READ-BASE* and *FEATURES* also
   influence the Lisp reader, but these variables are not mentioned in
   figure 2-2.
 
