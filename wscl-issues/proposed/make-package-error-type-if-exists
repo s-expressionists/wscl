@@ -12,7 +12,7 @@ Problem Description:
   that a correctable error is signaled if the name or any of the
   nicknames supplied is already the name of an existing package, but
   it does not mention any particular subtype of ERROR.  It seems
-  appropriate if an error of type PACKAGE-ERROR would be signaled.
+  appropriate to signal an error of type PACKAGE-ERROR.
 
 Proposal (MAKE-PACKAGE-SIGNALS-PACKAGE-ERROR-IF-EXISTS):
 
