@@ -20,7 +20,7 @@ Proposal (MAKE-PACKAGE-SIGNALS-PACKAGE-ERROR-IF-EXISTS):
   the PACKAGE-NAME or any of the nicknames is already the name or
   nickname of an existing package" to "A correctable error of type
   PACKAGE-ERROR is signaled if the PACKAGE-NAME or any of the
-  nicknames is already the name or nickname of an existing package"
+  nicknames is already the name or nickname of an existing package".
 
 Test cases:
 
@@ -61,7 +61,7 @@ Cost of non-adoption:
 Benefits:
 
   Application programmers may rely on an error of type PACKAGE-ERROR
-  to be signaled for this exceptional situation.
+  being signaled for this exceptional situation.
 
 Aesthetics:
 
