@@ -1,0 +1,72 @@
+Issue:          MAKE-PACKAGE-ERROR-TYPE-IF-EXISTS
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         proposed
+Edit History:   05-Mar-24, Version 1 by Robert Strandh,
+References:     MAKE-PACKAGE
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the section Exceptional
+  Situations of the description of the operator MAKE-PACKAGE indicates
+  that a correctable error is signaled if the name or any of the
+  nicknames supplied is already the name of an existing package, but
+  it does not mention any particular subtype of ERROR.  It seems
+  appropriate if an error of type PACKAGE-ERROR would be signaled.
+
+Proposal (MAKE-PACKAGE-SIGNALS-PACKAGE-ERROR-IF-EXISTS):
+
+  This proposal changes the phrase "A correctable error is signaled if
+  the PACKAGE-NAME or any of the nicknames is already the name or
+  nickname of an existing package" to "A correctable error of type
+  PACKAGE-ERROR is signaled if the PACKAGE-NAME or any of the
+  nicknames is already the name or nickname of an existing package"
+
+Test cases:
+
+  (defun one (name)
+    (typep (nth-value 1 (ignore-errors
+                          (progn (make-package name)
+                                 (make-package name))))
+           'package-error))
+
+Rationale:
+
+  It seems natural that an operator that has to do with packages would
+  signal an error of type PACKAGE-ERROR.
+
+Current Practice:
+
+  SBCL 2.1.3
+  (one "hello") => T
+
+Cost to Implementors:
+
+  Very small.  We believe that most implementations already signal an
+  error of type PACKAGE-ERROR.  Some implementations may signal an
+  error of a different type, but it would be a fairly simple change to
+  make them signal a PACKAGE-ERROR instead.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Users who want to handle errors as a result of invoking MAKE-PACKAGE
+  have to handle all errors to detect this exceptional situation, and
+  the error can then be the result of some other exceptional
+  situation, thereby complicating error handling.
+
+Benefits:
+
+  Application programmers may rely on an error of type PACKAGE-ERROR
+  to be signaled for this exceptional situation.
+
+Aesthetics:
+
+  No influence.
+
+Discussion:
+
+  TODO.
