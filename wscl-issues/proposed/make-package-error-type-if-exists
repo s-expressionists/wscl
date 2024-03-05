@@ -55,6 +55,9 @@ Current Practice:
   GCL 2.6.14
   (one "hello") => T
 
+  ABCL 1.9.2
+  (one "hello") => NIL
+
 Cost to Implementors:
 
   Very small.  We believe that most implementations already signal an

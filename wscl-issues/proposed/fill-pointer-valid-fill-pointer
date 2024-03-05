@@ -77,6 +77,13 @@ Current Practice:
   (let ((v (make-array 10 :fill-pointer t)))
     (setf (fill-pointer v) 11)) => [signals an internal-simple-error]
 
+  ABCL 1.9.2
+  (let ((v (make-array 10 :fill-pointer t)))
+    (setf (fill-pointer v) -1)) => [signals an error other than type-error]
+
+  (let ((v (make-array 10 :fill-pointer t)))
+    (setf (fill-pointer v) 11)) => [signals an error other than type-error]
+
 Cost to Implementors:
 
   Very small.  We believe that most implementations are already
