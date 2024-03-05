@@ -42,6 +42,41 @@ Current Practice:
   (let ((v (make-array 10 :fill-pointer t)))
     (setf (fill-pointer v) 11)) => [signals a simple-type-error]
 
+  CCL 1.12.1
+  (let ((v (make-array 10 :fill-pointer t)))
+    (setf (fill-pointer v) -1)) => [signals a simple-type-error]
+
+  (let ((v (make-array 10 :fill-pointer t)))
+    (setf (fill-pointer v) 11)) => [signals a simple-type-error]
+
+  ECL 23.9.9
+  (let ((v (make-array 10 :fill-pointer t)))
+    (setf (fill-pointer v) -1)) => [signals a simple-type-error]
+
+  (let ((v (make-array 10 :fill-pointer t)))
+    (setf (fill-pointer v) 11)) => [signals a simple-type-error]
+
+  Clasp 2.5.0
+  (let ((v (make-array 10 :fill-pointer t)))
+    (setf (fill-pointer v) -1)) => [signals a simple-type-error]
+
+  (let ((v (make-array 10 :fill-pointer t)))
+    (setf (fill-pointer v) 11)) => [signals a simple-type-error]
+
+  CLISP 2.49.92
+  (let ((v (make-array 10 :fill-pointer t)))
+    (setf (fill-pointer v) -1)) => [signals a simple-type-error]
+
+  (let ((v (make-array 10 :fill-pointer t)))
+    (setf (fill-pointer v) 11)) => [signals a simple-type-error]
+
+  GCL 2.6.14
+  (let ((v (make-array 10 :fill-pointer t)))
+    (setf (fill-pointer v) -1)) => [signals an internal-simple-error]
+
+  (let ((v (make-array 10 :fill-pointer t)))
+    (setf (fill-pointer v) 11)) => [signals an internal-simple-error]
+
 Cost to Implementors:
 
   Very small.  We believe that most implementations are already
