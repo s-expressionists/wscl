@@ -1,0 +1,94 @@
+Issue:          UNREAD-CHAR-EXCEPTIONAL-SITUATIONS
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         proposed
+Edit History:   06-Mar-24, Version 1 by Robert Strandh,
+References:     UNREAD-CHAR
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the description of the
+  operator UNREAD-CHAR lacks the section Exceptional Situations.
+  Furthermore, two situations are mentioned in the sections Arguments
+  and Values and Description that we think should be mentioned in the
+  section Exceptional situations.  In the section Arguments and
+  Values, there is the phrase "CHARACTER -- a character, must be the
+  last character that was read from INPUT-STREAM".  We don't think
+  there is a formal definition of "must be", but we suggest that it
+  means that an error is signaled otherwise.  Similarly, in the
+  section Description, there is the phrase "It is an error to invoke
+  UNREAD-CHAR twice consecutively on the same stream without an
+  intervening call to READ-CHAR (or some other input operation which
+  implicitly reads characters) on that stream".  Here, "it is an
+  error" is clearly defined (in the glossary of the standard) to mean
+  "a situation in which the semantics of a program are not specified,
+  and in which the consequences are undefined".  This report suggests
+  that an error of type stream-error should be signaled. 
+
+Proposal (UNREAD-CHAR-SIGNAL-STREAM-ERROR):
+
+  This proposal adds the following section to the dictionary entry for
+  UNREAD-CHAR:
+
+    Exceptional Situations
+
+      An error of type STREAM-ERROR should be signaled if CHARACTER is
+      not the last character that was read from INPUT-STREAM.
+
+      An error of type STREAM-ERROR should be signaled if UNREAD-CHAR
+      is invoked twice consecutively on the same stream without an
+      intervening call to READ-CHAR (or some other input operation
+      which implicitly reads characters) on that stream.
+
+Test Cases:
+
+  (defun one ()
+    (let ((c (read-char)))
+      (unread-char (code-char (1+ (char-code c))))))
+
+  (defun two ()
+    (let ((c (read-char)))
+      (unread-char c)
+      (unread-char c)))
+
+Rationale:
+
+  We think that it reasonable for these situations to be caught in
+  safe code.  We also think it is reasonable that an error of type
+  STREAM-ERROR be signaled, since UNREAD-CHAR is a stream operation.
+
+Current Practice:
+
+  SBCL 2.1.3
+  (one) => [signals a warning and ignores the operation]
+  (two) => [signals an error of type sb-int:invalid-array-index-error]
+
+Cost to Implementors:
+
+  Very small.  We think that most implementations already detect the
+  exceptional situations, perhaps signaling a different condition than
+  what we propose.  So then, it is a fairly simple operations to make
+  it signal a STREAM-ERROR instead.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  Application programmers may have to add explicit tests before
+  calling UNREAD-CHAR in order to make sure the code is conforming.
+
+Benefits:
+
+  Application programmers may rely on an error of type STREAM-ERROR
+  being signaled, and thus avoid having to add explicit checks in
+  portable code.
+
+Aesthetics:
+
+  No influence.
+
+Discussion:
+
+  TODO.
