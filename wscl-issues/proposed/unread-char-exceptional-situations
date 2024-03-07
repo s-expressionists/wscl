@@ -9,9 +9,9 @@ Problem Description:
 
   In the draft ANSI Common Lisp specification, the description of the
   operator UNREAD-CHAR lacks the section Exceptional Situations.
-  Furthermore, two situations are mentioned in the sections Arguments
-  and Values and Description that we think should be mentioned in the
-  section Exceptional situations.  In the section Arguments and
+  Furthermore, the section Arguments and Values and the section
+  Description mention situations that we think should appear in the
+  section Exceptional Situations.  In the section Arguments and
   Values, there is the phrase "CHARACTER -- a character, must be the
   last character that was read from INPUT-STREAM".  We don't think
   there is a formal definition of "must be", but we suggest that it
@@ -23,7 +23,7 @@ Problem Description:
   error" is clearly defined (in the glossary of the standard) to mean
   "a situation in which the semantics of a program are not specified,
   and in which the consequences are undefined".  This report suggests
-  that an error of type stream-error should be signaled. 
+  that an error of type STREAM-ERROR should be signaled.
 
 Proposal (UNREAD-CHAR-SIGNAL-STREAM-ERROR):
 
@@ -53,7 +53,7 @@ Test Cases:
 
 Rationale:
 
-  We think that it reasonable for these situations to be caught in
+  We think that it is reasonable for these situations to be caught in
   safe code.  We also think it is reasonable that an error of type
   STREAM-ERROR be signaled, since UNREAD-CHAR is a stream operation.
 
@@ -67,7 +67,7 @@ Cost to Implementors:
 
   Very small.  We think that most implementations already detect the
   exceptional situations, perhaps signaling a different condition than
-  what we propose.  So then, it is a fairly simple operations to make
+  what we propose.  So then, it is a fairly simple operation to make
   it signal a STREAM-ERROR instead.
 
 Cost to Users:
