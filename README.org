@@ -19,6 +19,12 @@
   Specifically, we mainly want to consolidate behavior that most
   existing Common Lisp implementations already agree upon.
 
+  New WSCL issues can be submitted by opening a pull request with the
+  issue. Examples of current issues can be found in the
+  `wscl-issues/draft` directory. New issue status should be marked as
+  "draft" and the issue file should be located in the
+  `wscl-issues/draft` directory.
+
 * Content
 
   + file:dpANS3 directory ::
@@ -47,6 +53,9 @@
        This directory contains cleanup issues which describe changes
        that produce the WSCL specification from the final draft of the
        Common Lisp specification.
+
+       New issues should be submitted by opening a pull request with
+       the issue marked as a "draft" and in the draft directory.
 
   + file:changes directory ::
 
