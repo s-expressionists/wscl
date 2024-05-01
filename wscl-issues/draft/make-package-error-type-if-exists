@@ -1,7 +1,7 @@
 Issue:          MAKE-PACKAGE-ERROR-TYPE-IF-EXISTS
 Forum:          Cleanup
 Category:       CLARIFICATION
-Status:         proposed
+Status:         draft
 Edit History:   05-Mar-24, Version 1 by Robert Strandh,
 References:     MAKE-PACKAGE
 

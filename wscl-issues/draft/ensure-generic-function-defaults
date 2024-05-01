@@ -1,7 +1,7 @@
 Issue:          ENSURE-GENERIC-FUNCTION-DEFAULTS
 Forum:          Cleanup
 Category:       REWRITE
-Status:         proposed
+Status:         draft
 Edit History:   01-Mar-24, Version 1 by Robert Strandh,
 References:     ENSURE-GENERIC-FUNCTION
 
