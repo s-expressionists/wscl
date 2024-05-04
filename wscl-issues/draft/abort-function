@@ -33,7 +33,7 @@ Test Cases:
   (defun one ()
     (restart-bind ((abort (lambda ())))
       (abort)))
-  (one) => [signals control-error]
+  (one) ; => [signals control-error]
 
 Rationale:
 
