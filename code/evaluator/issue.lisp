@@ -46,11 +46,14 @@
   nil)
 
 (defun parse-test-cases (text)
-  (with-input-from-string (stream text)
-    (loop with client = (make-instance 'test-cases-client :text text)
-          for form = (eclector.parse-result:read client stream nil stream)
-          until (eq form stream)
-          collect (setf (last-form client) (make-instance 'eval-form :form form)))))
+  (let ((forms (with-input-from-string (stream text)
+                 (loop with client = (make-instance 'test-cases-client :text text)
+                       for form = (eclector.parse-result:read client stream nil stream)
+                       until (eq form stream)
+                       collect (setf (last-form client) (make-instance 'eval-form :form form))))))
+    (if (some #'recordp forms)
+        forms
+        nil)))
 
 (defun parse-issue (stream)
   (loop with text-stream = (make-string-output-stream)
@@ -72,8 +75,11 @@
         end))
 
 (defun eval-issue (path)
+  (format t "~%Parsing and evaluating ~a...~%" path)
   (handler-case
-      (let* ((issue (with-open-file (stream path)
+      (let* ((*package* (make-package (gensym) :use '(:common-lisp)))
+             (update nil)
+             (issue (with-open-file (stream path)
                       (parse-issue stream)))
              (text (with-output-to-string (stream)
                      (loop with last-current-practice = nil
@@ -84,7 +90,7 @@
                                           (equalp (section-title section) "Current Practice:"))
                                   do (write-line (section-title section) stream)
                                      (let ((pos (search last-current-practice (section-text section)
-                                                        :end1 6)))
+                                                        :end1 6 :test #'equalp)))
                                        (cond (pos
                                               (write-string (section-text section) stream :end pos)
                                               (write-string last-current-practice stream)
@@ -103,15 +109,21 @@
                                 (write-string (section-text section) stream)
                            when (and (typep section 'section)
                                      (equalp (section-title section) "Test Cases:"))
-                             do (setf last-current-practice
-                                      (record-eval (parse-test-cases (section-text section))))))))
-        (with-open-file (stream path :direction :output :if-exists :supersede)
-          (write-string text stream)))
+                             do (let ((forms (parse-test-cases (section-text section))))
+                                  (when forms
+                                    (setf update t
+                                          last-current-practice (record-eval forms))))))))
+        (cond (update
+               (with-open-file (stream path :direction :output :if-exists :supersede)
+                 (write-string text stream))
+               (write-line "Issue updated."))
+              (otherwise
+               (write-line "Issue skipped due to no valid test cases."))))
     (error (condition)
       (format *error-output* "Unable to update ~a because of error:~%  ~a~&"
               path condition))))
 
 (defun eval-issues (&optional (path #P"wscl-issues/draft/*"))
-  (loop for path in (directory path)
+  (loop for path in (sort (directory path) #'string-lessp :key #'namestring)
         when (uiop:file-pathname-p path)
           do (eval-issue path)))
