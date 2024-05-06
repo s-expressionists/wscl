@@ -4,7 +4,10 @@ Category:       CLARIFICATION
 Status:         draft
 Edit History:   11-Jul-21, Version 1 by Robert Strandh,
                 12-Jul-21, Version 2 by Robert Strandh,
-                11-Aug-21, Version 3 by Tarn W. Burton (update current practice).
+                11-Aug-21, Version 3 by Tarn W. Burton (update current
+                practice).
+                06-May-24, Version 4 by Tarn W. Burton (update test
+                  cases formatting)
 References:     AREF
 
 Problem Description:
@@ -29,13 +32,13 @@ Test Cases:
     (declare (optimize (safety 3)))
     (aref object 0))
 
-  (one 234) => ERROR: The value 234 is not of type ARRAY.
+  (one 234) ; => ERROR: The value 234 is not of type ARRAY.
 
   (defun two (object)
     (declare (optimize (safety 3)))
     (setf (aref object 0) 345))
 
-  (two 234) => ERROR: The value 234 is not of type ARRAY.
+  (two 234) ; => ERROR: The value 234 is not of type ARRAY.
 
 Rationale:
 

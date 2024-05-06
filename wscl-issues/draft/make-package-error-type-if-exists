@@ -3,6 +3,8 @@ Forum:          Cleanup
 Category:       CLARIFICATION
 Status:         draft
 Edit History:   05-Mar-24, Version 1 by Robert Strandh,
+                06-May-24, Version 2 by Tarn W. Burton (update test
+                  cases formatting)
 References:     MAKE-PACKAGE
 
 Problem Description:
@@ -29,6 +31,8 @@ Test cases:
                           (progn (make-package name)
                                  (make-package name))))
            'package-error))
+
+  (one "hello") ; => T
 
 Rationale:
 

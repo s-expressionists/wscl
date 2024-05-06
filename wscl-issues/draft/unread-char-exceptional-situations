@@ -3,6 +3,8 @@ Forum:          Cleanup
 Category:       CLARIFICATION
 Status:         draft
 Edit History:   06-Mar-24, Version 1 by Robert Strandh,
+                06-May-24, Version 2 by Tarn W. Burton (update test
+                  cases for automated evaluation)
 References:     UNREAD-CHAR
 
 Problem Description:
@@ -42,14 +44,20 @@ Proposal (UNREAD-CHAR-SIGNAL-STREAM-ERROR):
 
 Test Cases:
 
-  (defun one ()
-    (let ((c (read-char)))
-      (unread-char (code-char (1+ (char-code c))))))
+  (defun one (string)
+    (with-input-from-string (stream string)
+      (let ((c (read-char stream)))
+        (unread-char (code-char (1+ (char-code c))) stream))))
 
-  (defun two ()
-    (let ((c (read-char)))
-      (unread-char c)
-      (unread-char c)))
+  (one "ab") ; => [signals STREAM-ERROR]
+
+  (defun two (string)
+    (with-input-from-string (stream string)
+      (let ((c (read-char stream)))
+        (unread-char c stream)
+        (unread-char c stream))))
+
+  (two "ab") ; => [signals STREAM-ERROR]
 
 Rationale:
 

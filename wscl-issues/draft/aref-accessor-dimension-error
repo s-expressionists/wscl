@@ -6,6 +6,8 @@ Edit History:   13-Jul-21, Version 1 by Robert Strandh
                 17-Jul-21, Version 2 by Robert Strandh
                 11-Aug-21, Version 3 by Tarn W. Burton (update current practice)
                 02-Nov-22, Version 4 by Robert Strandh
+                06-May-24, Version 5 by Tarn W. Burton (update test
+                  cases formatting)
 References:     AREF
 
 Problem Description:
@@ -32,15 +34,15 @@ Test Cases:
     (declare (optimize (safety 3)))
     (aref object 1))
 
-  (one (make-array 1 :initial-element nil)) =>
-     ERROR: Invalid index 1 for array #(nil).
+  (one (make-array 1 :initial-element nil))
+  ; => ERROR: Invalid index 1 for array #(nil).
 
   (defun two (object)
     (declare (optimize (safety 3)))
     (setf (aref object 1) 345))
 
-  (two (make-array 1 :initial-element nil)) =>
-     ERROR: Invalid index 1 for array #(nil).
+  (two (make-array 1 :initial-element nil))
+  ; => ERROR: Invalid index 1 for array #(nil).
 
 Rationale:
 

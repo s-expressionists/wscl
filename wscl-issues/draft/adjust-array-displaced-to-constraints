@@ -3,7 +3,10 @@ Forum:          Cleanup
 Category:       CLARIFICATION
 Status:         draft
 Edit History:   11-Jul-21, Version 1 by Jan Moringen
-                11-Aug-21, Version 2 by Tarn W. Burton (update current practice)
+                11-Aug-21, Version 2 by Tarn W. Burton (update current
+                  practice)
+                06-May-24, Version 3 by Tarn W. Burton (update test
+                  cases formatting)
 References:     ADJUST-ARRAY
 Related Issues: ADJUST-ARRAY-DISPLACEMENT
 
@@ -57,18 +60,18 @@ Test Cases:
   (defun one ()
     (adjust-array (make-array 3 :initial-element 1 :adjustable t) 4
                   :displaced-to nil :initial-element 2))
-  (one) => #(1 1 1 2)
+  (one) ; => #(1 1 1 2)
 
   (defun two ()
     (adjust-array (make-array 3 :initial-element 1 :adjustable t) 4
                   :displaced-to nil :initial-contents '(2 2 2 2)))
-  (two) => #(2 2 2 2)
+  (two) ; => #(2 2 2 2)
 
   (defun three ()
     (adjust-array (make-array 3 :initial-element 1 :adjustable t) 4
                   :displaced-to nil :displaced-index-offset 1))
-  (three) => ERROR: :displaced-index-offset must not be supplied when
-                    :displaced-to nil is supplied.
+  (three) ; => ERROR: :displaced-index-offset must not be supplied when
+          ;           :displaced-to nil is supplied.
 
 Rationale:
 
