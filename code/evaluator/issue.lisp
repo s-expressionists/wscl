@@ -71,36 +71,46 @@
           and collect (setf section (make-instance 'section :title line))
         end))
 
+(defun eval-issue (path issue)
+  (handler-case
+      (let ((text (with-output-to-string (stream)
+                    (loop with last-current-practice = nil
+                          for section in issue
+                          when (stringp section)
+                            do (write-string section stream)
+                          else when (and last-current-practice
+                                         (equalp (section-title section) "Current Practice:"))
+                                 do (write-line (section-title section) stream)
+                                    (let ((pos (search last-current-practice (section-text section)
+                                                       :end1 6)))
+                                      (cond (pos
+                                             (write-string (section-text section) stream :end pos)
+                                             (write-string last-current-practice stream)
+                                             (write-string (section-text section) stream
+                                                           :start (search (make-string 2 :initial-element #\Newline)
+                                                                          (section-text section)
+                                                                          :start2 pos)))
+                                            (t
+                                             (write-string (section-text section) stream)
+                                             (write-string last-current-practice stream)
+                                             (terpri stream)
+                                             (terpri stream))))
+                                    (setf last-current-practice nil)
+                          else
+                            do (write-line (section-title section) stream)
+                               (write-string (section-text section) stream)
+                          when (and (typep section 'section)
+                                    (equalp (section-title section) "Test Cases:"))
+                            do (setf last-current-practice
+                                     (record-eval (parse-test-cases (section-text section))))))))
+        (with-open-file (stream path :direction :output :if-exists :supersede)
+          (write-string text stream)))
+    (error (condition)
+      (format *error-output* "Unable to update ~a because of error:~%  ~a~&"
+              path condition))))
+
 (defun eval-issues (&optional (paths (uiop:command-line-arguments)))
   (loop for path in paths
-        for issue = (with-open-file (stream path)
-                      (parse-issue stream))
-        do (with-open-file (stream "t" :direction :output :if-exists :supersede)
-             (loop with last-current-practice = nil
-                   for section in issue
-                   when (stringp section)
-                     do (write-string section stream)
-                   else when (and last-current-practice
-                                  (equalp (section-title section) "Current Practice:"))
-                          do (write-line (section-title section) stream)
-                             (let ((pos (search last-current-practice (section-text section)
-                                                :end1 6)))
-                               (cond (pos
-                                      (write-string (section-text section) stream :end pos)
-                                      (write-string last-current-practice stream)
-                                      (write-string (section-text section) stream
-                                                    :start (search (make-string 2 :initial-element #\Newline)
-                                                                   (section-text section)
-                                                                   :start2 pos)))
-                                     (t
-                                      (write-string (section-text section) stream)
-                                      (write-string last-current-practice stream)
-                                      (terpri stream)
-                                      (terpri stream))))
-                   else
-                     do (write-line (section-title section) stream)
-                        (write-string (section-text section) stream)
-                   when (and (typep section 'section)
-                             (equalp (section-title section) "Test Cases:"))
-                     do (setf last-current-practice
-                              (record-eval (parse-test-cases (section-text section))))))))
+        do (eval-issue path
+                       (with-open-file (stream path)
+                         (parse-issue stream)))))
