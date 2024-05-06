@@ -1,9 +1,12 @@
 name: Render WSCL
 
-on: [push]
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
 
 jobs:
-  render-html:
+  build:
     runs-on: ubuntu-22.04
     steps:
       - name: install-platform-dependencies
@@ -34,9 +37,13 @@ jobs:
             > dpans-converter
           chmod +x dpans-converter
 
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
+        
       - name: render-html
         run: |
-          ./dpans-converter "$(pwd)/" /tmp/output/ --format html \
+          ./dpans-converter "$(pwd)/" "${{ steps.pages.outputs.base_path }}/" --format html \
             --issue-annotations     true                         \
             --reviewer-annotations  true                         \
             --editor-annotations    true                         \
@@ -49,10 +56,26 @@ jobs:
           echo -e '<head>\n' >> /tmp/output/index.html
           echo -e '<meta charset="utf-8">\n' >> /tmp/output/index.html
           echo -e '<meta http-equiv="refresh" content="0;url=chap-0.xhtml"/>\n' >> /tmp/output/index.html
-          echo -e '<link rel="canonical" href="https://s-expressionists.github.io/wscl/chap-0.xhtml"/>\n' >> /tmp/output/index.html
+          echo -e '<link rel="canonical" href="https://s-expressionists.github.io/wscl/chap-0.xhtml"/>\n' >> "${{ steps.pages.outputs.base_path }}/index.html"
           echo -e '</head>\n' >> /tmp/output/index.html
           echo -e '</html>\n' >> /tmp/output/index.html
 
+      - name: Upload artifact
+        # Automatically uploads an artifact from the './_site' directory by default
+        uses: actions/upload-pages-artifact@v3
+
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        
       - name: deploy-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
