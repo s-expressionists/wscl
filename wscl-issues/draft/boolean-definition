@@ -1,0 +1,68 @@
+Issue:          BOOLEAN-DEFINITION
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         draft
+Edit History:   16-May-24, Version 1 by Jin-Cheng Guu
+References:     BOOLEAN
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the description of the type
+  BOOLEAN [a] can be more accurate.
+
+    [a]: The type boolean contains the symbols t and nil, [..]
+
+  It is more accurate to use the word "consists of" than "contains". After
+  all, according to the glossary [b], BOOLEAN is exclusively either the symbol
+  T or the symbol NIL.
+
+    [b]: boolean n. an object of type boolean; that is, one of the following
+    objects: the symbol t (representing true), or the symbol nil (representing
+    false).
+
+Proposal:
+
+  This proposal changes the description of the type BOOLEAN so that [a]
+  instead reads:
+
+    > The type boolean consists of the symbols t and nil, [..]
+
+Test Cases:
+
+  N/A (Test cases are difficult to provide, because conforming implementations
+  are not expected to expose its definition of the type BOOLEAN
+  programmatically.)
+
+Rationale:
+
+  This is an improvement for clarity in dpANS.
+
+Current Practice:
+
+  SBCL 2.4.1
+    (slot-value (sb-kernel::specifier-type 'boolean) 'sb-kernel::xset)
+      ;; => #S(SB-INT:XSET :DATA (NIL T) :EXTRA 2)
+
+Cost to Implementors:
+
+  None.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  None.
+
+Benefits:
+
+  It makes the standard more accurate.
+
+Aesthetics:
+
+  No influence.
+
+Discussion:
+
+  None.
