@@ -1,0 +1,69 @@
+Issue:          SEQUENCE-DEFINITION
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         draft
+Edit History:   16-May-24, Version 1 by Jin-Cheng Guu
+References:     SEQUENCE
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the description of the system
+  class SEQUENCE [a] conflicts with the description of the Sequence Concepts
+  [b], where
+
+    [a]: The types vector and the type list are disjoint subtypes of type
+    sequence, but are not necessarily an exhaustive partition of sequence.
+
+    [b]: A sequence is an ordered collection of elements, implemented as
+    either a vector or a list.
+
+Proposal:
+
+  This proposal changes the description of the Sequence Concepts so that [b]
+  instead reads:
+
+    > A sequence is an ordered collection of elements, implemented either as a
+    vector, a list, or possibly something else.
+
+Test Cases:
+
+  N/A (Test cases are difficult to provide, because conformating
+  implementations are not expected to expose its definition of a SEQUENCE
+  programmatically.)
+
+Rationale:
+
+  This is a plain contradiction in dpANS.
+
+Current Practice:
+
+  SBCL 2.4.1
+    (slot-value (sb-kernel::specifier-type 'sequence) 'sb-kernel::types)
+      ;; => (#<SB-KERNEL:CONS-TYPE CONS>
+             #<SB-KERNEL:MEMBER-TYPE NULL>
+             #<SB-KERNEL:ARRAY-TYPE VECTOR>
+             #<SB-KERNEL:NAMED-TYPE SB-KERNEL:EXTENDED-SEQUENCE>)
+
+Cost to Implementors:
+
+  None.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  None.
+
+Benefits:
+
+  Remove a conflict from the standard.
+
+Aesthetics:
+
+  No influence.
+
+Discussion:
+
+  None.
