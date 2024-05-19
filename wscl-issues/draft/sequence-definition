@@ -23,7 +23,7 @@ Proposal: (SEQUENCE:A-SEQUENCE-CAN-BE-SOMETHING-ELSE)
   instead reads:
 
     > A sequence is an ordered collection of elements, implemented either as a
-    vector, a list, or possibly something else.
+    vector, a list, or possibly some other implementation-defined object.
 
 Test Cases:
 
