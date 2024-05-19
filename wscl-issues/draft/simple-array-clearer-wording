@@ -20,7 +20,7 @@ Problem Description:
     fill pointer, and is not expressly adjustable is a subtype of type
     simple-array.
 
-Proposal:
+Proposal (SIMPLE-ARRAY-CLEARER-WORDING:RECALL-SUBTYPE-DEFINITION):
 
   This proposal changes the note of the type SIMPLE-ARRAY so that [a] instead
   reads:
