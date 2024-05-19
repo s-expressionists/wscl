@@ -29,9 +29,12 @@ Proposal: (BOOLEAN-DEFINITION:TYPE-BOOLEAN-IS-T-OR-NIL)
 
 Test Cases:
 
-  N/A (Test cases are difficult to provide, because conforming implementations
-  are not expected to expose their definitions of the type BOOLEAN
-  programmatically.)
+  (defun one ()
+    (assert
+     (equal '(t t)
+            (multiple-value-list (subtypep 'boolean '(member t nil))))))
+
+  (one) => NIL
 
 Rationale:
 
@@ -40,8 +43,10 @@ Rationale:
 Current Practice:
 
   SBCL 2.4.1
-    (slot-value (sb-kernel::specifier-type 'boolean) 'sb-kernel::xset)
-      ;; => #S(SB-INT:XSET :DATA (NIL T) :EXTRA 2)
+    (one) ;; => NIL
+
+  ECL 23.9.9
+    (one) ;; => NIL
 
 Cost to Implementors:
 
