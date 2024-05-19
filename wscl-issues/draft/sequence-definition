@@ -17,7 +17,7 @@ Problem Description:
     [b]: A sequence is an ordered collection of elements, implemented as
     either a vector or a list.
 
-Proposal:
+Proposal: (SEQUENCE:A-SEQUENCE-CAN-BE-SOMETHING-ELSE)
 
   This proposal changes the description of the Sequence Concepts so that [b]
   instead reads:
