@@ -29,10 +29,13 @@ Proposal: (BOOLEAN-DEFINITION:TYPE-BOOLEAN-IS-T-OR-NIL)
 
 Test Cases:
 
-  (defun one ()
+(defun one ()
     (assert
-     (equal '(t t)
-            (multiple-value-list (subtypep 'boolean '(member t nil))))))
+     (and
+      (equal '(t t)
+             (multiple-value-list (subtypep 'boolean '(member t nil))))
+      (equal '(t t)
+             (multiple-value-list (subtypep '(member t nil) 'boolean))))))
 
   (one) => NIL
 
