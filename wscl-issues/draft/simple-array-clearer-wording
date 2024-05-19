@@ -1,0 +1,68 @@
+Issue:          SIMPLE-ARRAY-CLEARER-WORDING
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         draft
+Edit History:   18-May-24, Version 1 by Jin-Cheng Guu
+References:     SIMPLE-ARRAY
+
+Problem Description:
+
+  In the draft ANSI Common Lisp specification, the note section regarding the
+  type SIMPLE-ARRAY [a] could benefit from clearer wording.
+
+    [a]: It is implementation-dependent whether displaced arrays, vectors with
+    fill pointers, or arrays that are actually adjustable are simple arrays.
+
+  Although this is logically correct, readers might mistakenly perceive a
+  contradiction with the description of SIMPLE-ARRAY [b].
+
+    [b]: The type of an array that is not displaced to another array, has no
+    fill pointer, and is not expressly adjustable is a subtype of type
+    simple-array.
+
+Proposal (SIMPLE-ARRAY-CLEARER-WORDING:RECALL-SUBTYPE-DEFINITION):
+
+  This proposal changes the note of the type SIMPLE-ARRAY so that [a] instead
+  reads:
+
+    [a]: Recall that "subtype" means "subset" in Common Lisp. So there may be
+    a conforming implementation whose type SIMPLE-ARRAY equals the type ARRAY.
+    In particular, it is implementation-dependent whether displaced arrays,
+    vectors with fill pointers, or arrays that are actually adjustable are
+    simple arrays.
+
+Test Cases:
+
+  N/A
+
+Rationale:
+
+  This is an improvement for clarity in dpANS.
+
+Current Practice:
+
+  Irrelevant.
+
+Cost to Implementors:
+
+  None.
+
+Cost to Users:
+
+  None.
+
+Cost of non-adoption:
+
+  None.
+
+Benefits:
+
+  It makes the standard more easily to understand.
+
+Aesthetics:
+
+  No influence.
+
+Discussion:
+
+  None.
