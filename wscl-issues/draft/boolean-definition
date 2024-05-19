@@ -20,7 +20,7 @@ Problem Description:
     objects: the symbol t (representing true), or the symbol nil (representing
     false).
 
-Proposal:
+Proposal: (BOOLEAN-DEFINITION:TYPE-BOOLEAN-IS-T-OR-NIL)
 
   This proposal changes the description of the type BOOLEAN so that [a]
   instead reads:
