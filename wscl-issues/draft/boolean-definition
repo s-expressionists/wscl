@@ -30,7 +30,7 @@ Proposal: (BOOLEAN-DEFINITION:TYPE-BOOLEAN-IS-T-OR-NIL)
 Test Cases:
 
   N/A (Test cases are difficult to provide, because conforming implementations
-  are not expected to expose its definition of the type BOOLEAN
+  are not expected to expose their definitions of the type BOOLEAN
   programmatically.)
 
 Rationale:
