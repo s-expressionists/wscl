@@ -49,32 +49,37 @@ Rationale:
 
 Current Practice:
 
-  ABCL 1.8.1-dev-fasl43
-    (one) => [signals control-error]
+  ABCL 1.9.3-dev-fasl43
+    (one) ; => [signals CONTROL-ERROR]
 
   ACL 10.1
     (one) => nil
 
   CCL 1.12-f98
-    (one) => [signals restart-failure which is not a defined condition]
+    (one) ; => [signals CONTROL-ERROR]
 
-  CLASP cclasp-boehmprecise-0.4.2-4610-g5e6b2fa12-cst
-    (one) => [signals control-error]
+  CLASP cclasp-boehmprecise-2.5.0-235-ge805dd64a-gfb774da1-cst
+    (one) ; => [signals CONTROL-ERROR]
 
   CLISP 2.49.93+
     (one) => nil
 
-  CMU 2019-05-27 16:42:54 (21D Unicode)
-    (one) => [signals control-error]
+  CMU 2024-03-10 18:28:32 (21E Unicode)
+    (one) ; => [signals CONTROL-ERROR]
 
-  ECL 21.2.1-e68e6827
-    (one) => [signals control-error]
+  ECL 23.9.9-UNKNOWN
+    (one) ; => [signals CONTROL-ERROR]
 
   LWPE 7.1.2
     (one) => nil
 
-  SBCL 2.1.7
-    (one) => [signals control-error]
+  SBCL 2.4.1
+    (one) ; => [signals CONTROL-ERROR]
+
+  
+CLISP 2.49.93+
+  (one) 
+ => NIL
 
 Cost to Implementors:
 

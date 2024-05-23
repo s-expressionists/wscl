@@ -18,6 +18,8 @@ jobs:
     steps:
     - name: Checkout WSCL
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     - name: Setup Lisp Environment
       run: |
         make-rc

@@ -3,6 +3,8 @@
 (defun record-eval (forms &aux (package *package*))
   (with-standard-io-syntax
     (let ((*print-pretty* t)
+          (*print-readably* nil)
+          (*print-circle* t)
           (*print-right-margin* 72)
           (*package* package))
       (with-output-to-string (stream)

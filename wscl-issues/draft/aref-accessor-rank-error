@@ -50,41 +50,61 @@ Rationale:
 
 Current Practice:
 
-  ABCL 1.8.1-dev-fasl43
-    (one (make-array 1 :initial-element nil)) => [signals program-error]
-    (two (make-array 1 :initial-element nil)) => [signals program-error]
+  ABCL 1.9.3-dev-fasl43
+    (one (make-array 1 :initial-element nil))
+    ; => [signals PROGRAM-ERROR]
+    (two (make-array 1 :initial-element nil))
+    ; => [signals PROGRAM-ERROR]
 
   ACL 10.1
     (one (make-array 1 :initial-element nil)) => [signals simple-error]
     (two (make-array 1 :initial-element nil)) => [signals simple-error]
 
   CCL 1.12-f98
-    (one (make-array 1 :initial-element nil)) => [signals type-error]
-    (two (make-array 1 :initial-element nil)) => [signals type-error]
+    (one (make-array 1 :initial-element nil))
+    ; => [signals TYPE-ERROR with expected type #1=(ARRAY * (* *))]
+    (two (make-array 1 :initial-element nil))
+    ; => [signals TYPE-ERROR with expected type #1#]
 
-  CLASP cclasp-boehmprecise-0.4.2-4548-g80d9caef9-cst
-    (one (make-array 1 :initial-element nil)) => [signals program-error]
-    (two (make-array 1 :initial-element nil)) => [signals program-error]
+  CLASP cclasp-boehmprecise-2.5.0-235-ge805dd64a-gfb774da1-cst
+    (one (make-array 1 :initial-element nil))
+    ; => [signals PROGRAM-ERROR]
+    (two (make-array 1 :initial-element nil))
+    ; => [signals PROGRAM-ERROR]
 
   CLISP 2.49.93+
     (one (make-array 1 :initial-element nil)) => [signals simple-error]
     (two (make-array 1 :initial-element nil)) => [signals simple-error]
 
-  CMU 2019-05-27 16:42:54 (21D Unicode)
-    (one (make-array 1 :initial-element nil)) => [signals program-error]
-    (two (make-array 1 :initial-element nil)) => [signals program-error]
+  CMU 2024-03-10 18:28:32 (21E Unicode)
+    (one (make-array 1 :initial-element nil))
+    ; => [signals PROGRAM-ERROR]
+    (two (make-array 1 :initial-element nil))
+    ; => [signals PROGRAM-ERROR]
 
-  ECL 21.2.1-e68e6827
-    (one (make-array 1 :initial-element nil)) => [signals simple-error]
-    (two (make-array 1 :initial-element nil)) => [signals simple-error]
+  ECL 23.9.9-UNKNOWN
+    (one (make-array 1 :initial-element nil))
+    ; => [signals SIMPLE-ERROR]
+    (two (make-array 1 :initial-element nil))
+    ; => [signals SIMPLE-ERROR]
 
   LWPE 7.1.2
     (one (make-array 1 :initial-element nil)) => [signals error]
     (two (make-array 1 :initial-element nil)) => [signals error]
 
-  SBCL 2.1.7
-    (one (make-array 1 :initial-element nil)) => [signals type-error]
-    (two (make-array 1 :initial-element nil)) => [signals type-error]
+  SBCL 2.4.1
+    (one (make-array 1 :initial-element nil))
+    ; => [signals TYPE-ERROR with expected type (ARRAY * (* *))]
+    (two (make-array 1 :initial-element nil))
+    ; => [signals TYPE-ERROR with expected type (ARRAY * (* *))]
+
+  
+CLISP 2.49.93+
+  (one (make-array 1 :initial-element nil)) 
+ => [signals SIMPLE-ERROR]
+  (two
+  (make-array 1 :initial-element nil)) 
+ => [signals SIMPLE-ERROR]
 
 Cost to Implementors:
 
