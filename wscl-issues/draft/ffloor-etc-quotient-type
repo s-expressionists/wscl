@@ -63,62 +63,10 @@ Test Cases:
 
 Current Practice:
 
-  SBCL 2.4.1
-    (values (ftruncate 3 2)) ; => 1.0
-    (values (ftruncate 3.0 2)) ; => 1.0
-    (values (ftruncate 3 2.0d0)) ; => 1.0d0
-    (values (ftruncate 3.0d0 2.0)) ; => 1.0d0
-    (values (ftruncate 3.0 2.0d0)) ; => 1.0d0
-
-  CLASP cclasp-boehmprecise-2.5.0-235-ge805dd64a-gfb774da1-cst
-    (values (ftruncate 3 2)) ; => 1.0
-    (values (ftruncate 3.0 2)) ; => 1.0
-    (values (ftruncate 3 2.0d0)) ; => 1.0d0
-    (values (ftruncate 3.0d0 2.0)) ; => 1.0d0
-    (values (ftruncate 3.0 2.0d0)) ; => 1.0d0
-
-  ECL 23.9.9-UNKNOWN
-    (values (ftruncate 3 2)) ; => 1.0
-    (values (ftruncate 3.0 2)) ; => 1.0
-    (values (ftruncate 3 2.0d0)) ; => 1.0d0
-    (values (ftruncate 3.0d0 2.0)) ; => 1.0d0
-    (values (ftruncate 3.0 2.0d0)) ; => 1.0
-
-  CCL 1.12-f98
-    (values (ftruncate 3 2)) ; => 1.0
-    (values (ftruncate 3.0 2)) ; => 1.0
-    (values (ftruncate 3 2.0D0)) ; => 1.0D0
-    (values (ftruncate 3.0D0 2.0)) ; => 1.0D0
-    (values (ftruncate 3.0 2.0D0)) ; => 1.0D0
-
-  ABCL 1.9.3-dev-fasl43
-    (values (ftruncate 3 2)) ; => 1.0
-    (values (ftruncate 3.0 2)) ; => 1.0
-    (values (ftruncate 3 2.0d0)) ; => 1.0d0
-    (values (ftruncate 3.0d0 2.0)) ; => 1.0d0
-    (values (ftruncate 3.0 2.0d0)) ; => 1.0d0
-
-  CMU 2024-03-10 18:28:32 (21E Unicode)
-    (values (ftruncate 3 2)) ; => 1.0
-    (values (ftruncate 3.0 2)) ; => 1.0
-    (values (ftruncate 3 2.0d0)) ; => 1.0d0
-    (values (ftruncate 3.0d0 2.0)) ; => 1.0d0
-    (values (ftruncate 3.0 2.0d0)) ; => 1.0d0
-
-  
-CLISP 2.49.93+
-  (values (ftruncate 3 2)) 
- => 1.0
-  (values
-  (ftruncate 3.0 2)) 
- => 1.0
-  (values (ftruncate 3 2.0d0)) 
- => 1.0d0
-  (values
-  (ftruncate 3.0d0 2.0)) 
- => 1.0
-  (values (ftruncate 3.0 2.0d0)) 
- => 1.0
+  SBCL 2.0.0 and Clasp 0.4.2-5623-g89a262d0f match the test case
+  results, except that Clasp returns 1f0 for the last case in the
+  interpreter. This is contrary to the existing description and so
+  a bug even without the proposal.
 
 Cost to Implementors:
 

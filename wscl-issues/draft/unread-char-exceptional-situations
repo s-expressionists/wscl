@@ -67,36 +67,9 @@ Rationale:
 
 Current Practice:
 
-  SBCL 2.4.1
-    (one "ab") ; => NIL
-    (two "ab") ; => NIL
-
-  CLASP cclasp-boehmprecise-2.5.0-235-ge805dd64a-gfb774da1-cst
-    (one "ab") ; => NIL
-    (two "ab") ; => NIL
-
-  ECL 23.9.9-UNKNOWN
-    (one "ab") ; => NIL
-    (two "ab") ; => NIL
-
-  CCL 1.12-f98
-    (one "ab") ; => [signals SIMPLE-ERROR]
-    (two "ab") ; => [signals SIMPLE-ERROR]
-
-  ABCL 1.9.3-dev-fasl43
-    (one "ab") ; => NIL
-    (two "ab") ; => NIL
-
-  CMU 2024-03-10 18:28:32 (21E Unicode)
-    (one "ab") ; => NIL
-    (two "ab") ; => NIL
-
-  
-CLISP 2.49.93+
-  (one "ab") 
- => [signals SIMPLE-ERROR]
-  (two "ab") 
- => [signals SIMPLE-ERROR]
+  SBCL 2.1.3
+  (one) => [signals a warning and ignores the operation]
+  (two) => [signals an error of type sb-int:invalid-array-index-error]
 
 Cost to Implementors:
 

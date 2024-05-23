@@ -83,44 +83,50 @@ Rationale:
 
 Current Practice:
 
-  ABCL 1.9.3-dev-fasl43
-    (one) ; => #(1 1 1 2)
-    (two) ; => #(2 2 2 2)
-    (three) ; => #(1 1 1 0)
+  ABCL 1.8.1-dev-fasl43
+    (one) => #(1 1 1 2)
+    (two) => #(2 2 2 2)
+    (three) => #(1 1 1 0) ; not conforming under ALLOW-NIL
+
+  ACL 10.1
+    (one) => #(1 1 1 2)
+    (two) => #(2 2 2 2)
+    (three) => #(1 1 1 nil) ; not conforming under ALLOW-NIL
 
   CCL 1.12-f98
-    (one) ; => #(1 1 1 2)
-    (two) ; => #(2 2 2 2)
-    (three) ; => [signals SIMPLE-ERROR]
+    (one) => #(1 1 1 2)
+    (two) => #(2 2 2 2)
+    (three) => [signals simple-error]
 
-  CLASP cclasp-boehmprecise-2.5.0-235-ge805dd64a-gfb774da1-cst
-    (one) ; => #(1 1 1 2)
-    (two) ; => #(2 2 2 2)
-    (three) ; => #(1 1 1 0)
+  CLISP 2.49.93+
+    (one) => #(1 1 1 2)
+    (two) => #(2 2 2 2)
+    (three) => [signals simple-error]
 
-  CMU 2024-03-10 18:28:32 (21E Unicode)
-    (one) ; => #(1 1 1 2)
-    (two) ; => #(2 2 2 2)
-    (three) ; => #(1 1 1 0)
+  CLASP cclasp-boehmprecise-0.4.2-4548-g80d9caef9-cst
+    (one) => #(1 1 1 2)
+    (two) => #(2 2 2 2)
+    (three) => #(1 1 1 0) ; not conforming under ALLOW-NIL
 
-  ECL 23.9.9-UNKNOWN
-    (one) ; => #(1 1 1 2)
-    (two) ; => #(2 2 2 2)
-    (three) ; => #(1 1 1 NIL)
+  CMU 2019-05-27 16:42:54 (21D Unicode)
+    (one) => #(1 1 1 2)
+    (two) => #(2 2 2 2)
+    (three) => #(1 1 1 0) ; not conforming under ALLOW-NIL
 
-  SBCL 2.4.1
-    (one) ; => #(1 1 1 2)
-    (two) ; => #(2 2 2 2)
-    (three) ; => [signals SIMPLE-ERROR]
+  ECL 21.2.1-e68e6827
+    (one) => #(1 1 1 2)
+    (two) => #(2 2 2 2)
+    (three) => #(1 1 1 nil) ; not conforming under ALLOW-NIL
 
-  
-CLISP 2.49.93+
-  (one) 
- => #(1 1 1 2)
-  (two) 
- => #(2 2 2 2)
-  (three) 
- => [signals SIMPLE-ERROR]
+  LWPE 7.1.2
+    (one) => #(1 1 1 2)
+    (two) => #(2 2 2 2)
+    (three) => #(1 1 1 nil) ; not conforming under ALLOW-NIL
+
+  SBCL 2.1.7
+    (one) => #(1 1 1 2)
+    (two) => #(2 2 2 2)
+    (three) => [signals simple-error]
 
 Cost to Implementors:
 

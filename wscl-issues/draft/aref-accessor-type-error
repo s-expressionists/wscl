@@ -47,49 +47,41 @@ Rationale:
 
 Current Practice:
 
-  ABCL 1.9.3-dev-fasl43
-    (one 234) ; => [signals TYPE-ERROR with expected type ARRAY]
-    (two 234) ; => [signals TYPE-ERROR with expected type ARRAY]
+  ABCL 1.8.1-dev-fasl43
+    (one 234) => [signals type-error]
+    (two 234) => [signals type-error]
 
   ACL 10.1
     (one 234) => [signals type-error]
     (two 234) => [signals type-error]
 
   CCL 1.12-f98
-    (one 234) ; => [signals TYPE-ERROR with expected type ARRAY]
-    (two 234) ; => [signals TYPE-ERROR with expected type ARRAY]
+    (one 234) => [signals type-error]
+    (two 234) => [signals type-error]
 
-  CLASP cclasp-boehmprecise-2.5.0-235-ge805dd64a-gfb774da1-cst
-    (one 234) ; => [signals TYPE-ERROR with expected type ARRAY]
-    (two 234) ; => [signals TYPE-ERROR with expected type ARRAY]
+  CLASP cclasp-boehmprecise-0.4.2-4548-g80d9caef9-cst
+    (one 234) => [signals type-error]
+    (two 234) => [signals type-error]
 
   CLISP 2.49.93+
     (one 234) => [signals simple-type-error]
     (two 234) => [signals simple-type-error]
 
-  CMU 2024-03-10 18:28:32 (21E Unicode)
-    (one 234) ; => [signals TYPE-ERROR with expected type ARRAY]
-    (two 234) ; => [signals TYPE-ERROR with expected type ARRAY]
+  CMU 2019-05-27 16:42:54 (21D Unicode)
+    (one 234) => [signals type-error]
+    (two 234) => [signals type-error]
 
-  ECL 23.9.9-UNKNOWN
-    (one 234) ; => [signals TYPE-ERROR with expected type ARRAY]
-    (two 234) ; => [signals TYPE-ERROR with expected type ARRAY]
+  ECL 21.2.1-e68e6827
+    (one 234) => [signals simple-type-error]
+    (two 234) => [signals simple-type-error]
 
   LWPE 7.1.2
     (one 234) => [signals type-error]
     (two 234) => [signals type-error]
 
-  SBCL 2.4.1
-    (one 234) ; => [signals TYPE-ERROR with expected type VECTOR]
-    (two 234) ; => [signals TYPE-ERROR with expected type VECTOR]
-
-  
-CLISP 2.49.93+
-  (one 234) 
- => [signals TYPE-ERROR with expected type ARRAY]
-  (two
-  234) 
- => [signals TYPE-ERROR with expected type ARRAY]
+  SBCL 2.1.7
+    (one 234) => [signals type-error]
+    (two 234) => [signals type-error]
 
 Cost to Implementors:
 

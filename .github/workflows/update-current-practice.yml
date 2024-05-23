@@ -24,16 +24,13 @@ jobs:
       run: |
         make-rc
         asdf-add
-    - name: ABCL Current Practice
+    - name: Update Current Practice
       run: |
-        lisp -i abcl -e "(ql:quickload :wscl-evaluator)" -e "(wscl-evaluator:eval-issues)"
-    - name: SBCL Current Practice
-      run: |
-        pwd
-        lisp -i sbcl -e "(ql:quickload :wscl-evaluator)" -e "(wscl-evaluator:eval-issues)"
+        for lisp in abcl ccl clasp ecl sbcl; do
+          lisp -i $lisp -e "(ql:quickload :wscl-evaluator)" -e "(wscl-evaluator:eval-issues)"
+        done
     - name: diff
       run: |
-        pwd
         git config --global --add safe.directory $(realpath .)
         git diff --output=diff.patch
     - uses: actions/upload-artifact@v4

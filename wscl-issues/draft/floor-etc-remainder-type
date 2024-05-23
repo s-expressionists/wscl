@@ -68,69 +68,13 @@ Test Cases:
 
 Current Practice:
 
-  SBCL 2.4.1
-    (nth-value 1 (truncate 3 2)) ; => 1
-    (nth-value 1 (truncate 3/2 1)) ; => 1/2
-    (typep (nth-value 1 (truncate 3.0d0 2)) 'double-float) ; => T
-    (typep (nth-value 1 (truncate 3 2.0)) 'short-float) ; => T
-    (typep (nth-value 1 (truncate 3.0d0 2.0)) 'double-float) ; => T
+  SBCL 2.0.0 and Clasp 0.4.2-5623-g89a262d0f match the test case
+  results.
 
   The ANSI test suite for Common Lisp, although not administered by
   ANSI, relies on the proposed behavior. For example, test FLOOR.10
   checks that the remainder of (floor x x) is eql to (float 0 x) if
   x is a float.
-
-  CLASP cclasp-boehmprecise-2.5.0-235-ge805dd64a-gfb774da1-cst
-    (nth-value 1 (truncate 3 2)) ; => 1
-    (nth-value 1 (truncate 3/2 1)) ; => 1/2
-    (typep (nth-value 1 (truncate 3.0d0 2)) 'double-float) ; => T
-    (typep (nth-value 1 (truncate 3 2.0)) 'short-float) ; => T
-    (typep (nth-value 1 (truncate 3.0d0 2.0)) 'double-float) ; => T
-
-  ECL 23.9.9-UNKNOWN
-    (nth-value 1 (truncate 3 2)) ; => 1
-    (nth-value 1 (truncate 3/2 1)) ; => 1/2
-    (typep (nth-value 1 (truncate 3.0d0 2)) 'double-float) ; => T
-    (typep (nth-value 1 (truncate 3 2.0)) 'short-float) ; => T
-    (typep (nth-value 1 (truncate 3.0d0 2.0)) 'double-float) ; => T
-
-  CCL 1.12-f98
-    (nth-value 1 (truncate 3 2)) ; => 1
-    (nth-value 1 (truncate 3/2 1)) ; => 1/2
-    (typep (nth-value 1 (truncate 3.0D0 2)) 'double-float) ; => T
-    (typep (nth-value 1 (truncate 3 2.0)) 'short-float) ; => T
-    (typep (nth-value 1 (truncate 3.0D0 2.0)) 'double-float) ; => T
-
-  ABCL 1.9.3-dev-fasl43
-    (nth-value 1 (truncate 3 2)) ; => 1
-    (nth-value 1 (truncate 3/2 1)) ; => 1/2
-    (typep (nth-value 1 (truncate 3.0d0 2)) 'double-float) ; => T
-    (typep (nth-value 1 (truncate 3 2.0)) 'short-float) ; => T
-    (typep (nth-value 1 (truncate 3.0d0 2.0)) 'double-float) ; => T
-
-  CMU 2024-03-10 18:28:32 (21E Unicode)
-    (nth-value 1 (truncate 3 2)) ; => 1
-    (nth-value 1 (truncate 3/2 1)) ; => 1/2
-    (typep (nth-value 1 (truncate 3.0d0 2)) 'double-float) ; => T
-    (typep (nth-value 1 (truncate 3 2.0)) 'short-float) ; => T
-    (typep (nth-value 1 (truncate 3.0d0 2.0)) 'double-float) ; => T
-
-  
-CLISP 2.49.93+
-  (nth-value 1 (truncate 3 2)) 
- => 1
-  (nth-value 1
-  (truncate 3/2 1)) 
- => 1/2
-  (typep (nth-value 1 (truncate 3.0d0 2))
-  'double-float) 
- => T
-  (typep (nth-value 1 (truncate 3 2.0s0))
-  'short-float) 
- => T
-  (typep (nth-value 1 (truncate 3.0d0 2.0s0))
-  'double-float) 
- => NIL
 
 Cost to Implementors:
 
