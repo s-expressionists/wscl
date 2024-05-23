@@ -26,7 +26,7 @@ jobs:
         asdf-add
     - name: Update Current Practice
       run: |
-        for lisp in abcl ccl clasp ecl sbcl; do
+        for lisp in abcl acl ccl clasp cmucl ecl mkcl sbcl; do
           lisp -i $lisp -e "(ql:quickload :wscl-evaluator)" -e "(wscl-evaluator:eval-issues)"
         done
     - name: diff
