@@ -1,0 +1,37 @@
+name: Update Current Practice
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ evaluator ]
+  pull_request:
+
+jobs:
+  test:
+    name: Update Current Practice
+    defaults:
+      run:
+        shell: bash -l {0}
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/yitzchak/archlinux-cl:latest
+    steps:
+    - name: Checkout WSCL
+      uses: actions/checkout@v4
+    - name: Setup Lisp Environment
+      run: |
+        make-rc
+        asdf-add
+    - name: ABCL Current Practice
+      run: |
+        lisp -i abcl -e "(ql:quickload :wscl-evaluator)" -e "(wscl-evaluator:eval-issues)"
+    - name: SBCL Current Practice
+      run: |
+        lisp -i sbcl -e "(ql:quickload :wscl-evaluator)" -e "(wscl-evaluator:eval-issues)"
+    - name diff
+      run: |
+        git diff --output=diff.patch
+    - uses: actions/upload-artifact@v4
+      with:
+        name: diff
+        path: diff.patch
