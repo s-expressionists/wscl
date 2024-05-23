@@ -29,9 +29,11 @@ jobs:
         lisp -i abcl -e "(ql:quickload :wscl-evaluator)" -e "(wscl-evaluator:eval-issues)"
     - name: SBCL Current Practice
       run: |
+        pwd
         lisp -i sbcl -e "(ql:quickload :wscl-evaluator)" -e "(wscl-evaluator:eval-issues)"
     - name: diff
       run: |
+        pwd
         git diff --output=diff.patch
     - uses: actions/upload-artifact@v4
       with:
