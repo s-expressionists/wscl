@@ -28,7 +28,7 @@ jobs:
     - name: SBCL Current Practice
       run: |
         lisp -i sbcl -e "(ql:quickload :wscl-evaluator)" -e "(wscl-evaluator:eval-issues)"
-    - name diff
+    - name: diff
       run: |
         git diff --output=diff.patch
     - uses: actions/upload-artifact@v4
