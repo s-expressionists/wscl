@@ -19,7 +19,7 @@ jobs:
     - name: Checkout WSCL
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0
+        fetch-depth: 1
     - name: Setup Lisp Environment
       run: |
         make-rc
@@ -34,7 +34,8 @@ jobs:
     - name: diff
       run: |
         pwd
-        /usr/sbin/git diff --output=diff.patch
+        git config --global --add safe.directory $(realpath .)
+        git diff --output=diff.patch
     - uses: actions/upload-artifact@v4
       with:
         name: diff
