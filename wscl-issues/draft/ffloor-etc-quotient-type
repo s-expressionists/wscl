@@ -63,11 +63,6 @@ Test Cases:
 
 Current Practice:
 
-  SBCL 2.0.0 and Clasp 0.4.2-5623-g89a262d0f match the test case
-  results, except that Clasp returns 1f0 for the last case in the
-  interpreter. This is contrary to the existing description and so
-  a bug even without the proposal.
-
 Cost to Implementors:
 
   None, if they already have this behavior. Slight if they don't.

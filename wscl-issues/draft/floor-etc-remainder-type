@@ -56,6 +56,11 @@ Rationale:
   the type of the quotient in FFLOOR etc.
   (See issue FFLOOR-ETC-QUOTIENT-TYPE for more on that.)
 
+  The ANSI test suite for Common Lisp, although not administered by
+  ANSI, relies on the proposed behavior. For example, test FLOOR.10
+  checks that the remainder of (floor x x) is eql to (float 0 x) if
+  x is a float.
+
 Test Cases:
 
   (nth-value 1 (truncate 3 2)) ; => 1
@@ -67,14 +72,6 @@ Test Cases:
   (typep (nth-value 1 (truncate 3d0 2s0)) 'double-float) ; => true
 
 Current Practice:
-
-  SBCL 2.0.0 and Clasp 0.4.2-5623-g89a262d0f match the test case
-  results.
-
-  The ANSI test suite for Common Lisp, although not administered by
-  ANSI, relies on the proposed behavior. For example, test FLOOR.10
-  checks that the remainder of (floor x x) is eql to (float 0 x) if
-  x is a float.
 
 Cost to Implementors:
 

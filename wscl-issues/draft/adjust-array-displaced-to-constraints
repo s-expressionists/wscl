@@ -83,51 +83,6 @@ Rationale:
 
 Current Practice:
 
-  ABCL 1.8.1-dev-fasl43
-    (one) => #(1 1 1 2)
-    (two) => #(2 2 2 2)
-    (three) => #(1 1 1 0) ; not conforming under ALLOW-NIL
-
-  ACL 10.1
-    (one) => #(1 1 1 2)
-    (two) => #(2 2 2 2)
-    (three) => #(1 1 1 nil) ; not conforming under ALLOW-NIL
-
-  CCL 1.12-f98
-    (one) => #(1 1 1 2)
-    (two) => #(2 2 2 2)
-    (three) => [signals simple-error]
-
-  CLISP 2.49.93+
-    (one) => #(1 1 1 2)
-    (two) => #(2 2 2 2)
-    (three) => [signals simple-error]
-
-  CLASP cclasp-boehmprecise-0.4.2-4548-g80d9caef9-cst
-    (one) => #(1 1 1 2)
-    (two) => #(2 2 2 2)
-    (three) => #(1 1 1 0) ; not conforming under ALLOW-NIL
-
-  CMU 2019-05-27 16:42:54 (21D Unicode)
-    (one) => #(1 1 1 2)
-    (two) => #(2 2 2 2)
-    (three) => #(1 1 1 0) ; not conforming under ALLOW-NIL
-
-  ECL 21.2.1-e68e6827
-    (one) => #(1 1 1 2)
-    (two) => #(2 2 2 2)
-    (three) => #(1 1 1 nil) ; not conforming under ALLOW-NIL
-
-  LWPE 7.1.2
-    (one) => #(1 1 1 2)
-    (two) => #(2 2 2 2)
-    (three) => #(1 1 1 nil) ; not conforming under ALLOW-NIL
-
-  SBCL 2.1.7
-    (one) => #(1 1 1 2)
-    (two) => #(2 2 2 2)
-    (three) => [signals simple-error]
-
 Cost to Implementors:
 
   TODO
