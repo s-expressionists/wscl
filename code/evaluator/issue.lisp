@@ -45,6 +45,40 @@
     (setf (recordp (last-form client)) t))
   nil)
 
+(defmethod eclector.reader:interpret-symbol
+    ((client test-cases-client) input-stream
+     package-indicator symbol-name internp)
+  (prog (package)
+   set-package
+     (setf package (case package-indicator
+                     (:current (eclector.reader:state-value client '*package*))
+                     (:keyword (find-package "KEYWORD"))
+                     (t        (or (find-package package-indicator)
+                                   (multiple-value-bind (value kind)
+                                       (eclector.reader:package-does-not-exist
+                                        input-stream
+                                        package-indicator symbol-name internp)
+                                     (ecase kind
+                                       (symbol
+                                        (return value))
+                                       (package
+                                        value)
+                                       (:package-name
+                                        (setf package-indicator value)
+                                        (go set-package))))))))
+     (return (if internp
+               (intern symbol-name package)
+               (multiple-value-bind (symbol status)
+                   (find-symbol symbol-name package)
+                 (cond ((null status)
+                        (eclector.reader:symbol-does-not-exist
+                         input-stream package symbol-name))
+                       ((eq status :internal)
+                        (eclector.reader:symbol-is-not-external
+                         input-stream package symbol-name symbol))
+                       (t
+                        symbol)))))))
+
 (defun parse-test-cases (text)
   (let ((forms (with-input-from-string (stream text)
                  (loop with client = (make-instance 'test-cases-client :text text)
