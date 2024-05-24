@@ -27,7 +27,9 @@ jobs:
     - name: Update Current Practice
       run: |
         for lisp in abcl acl ccl clasp cmucl ecl mkcl sbcl; do
+          echo "::group::${lisp}"
           lisp -i $lisp -e "(ql:quickload :wscl-evaluator)" -e "(wscl-evaluator:eval-issues)"
+          echo "::endgroup::"        
         done
     - name: diff
       run: |
