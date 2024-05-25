@@ -37,7 +37,7 @@ Test Cases:
       (equal '(t t)
              (multiple-value-list (subtypep '(member t nil) 'boolean))))))
 
-  (one) => NIL
+  (one) ; => NIL
 
 Rationale:
 
@@ -46,10 +46,10 @@ Rationale:
 Current Practice:
 
   SBCL 2.4.1
-    (one) ;; => NIL
+    (one) ; => NIL
 
   ECL 23.9.9
-    (one) ;; => NIL
+    (one) ; => NIL
 
 Cost to Implementors:
 
