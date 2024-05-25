@@ -33,7 +33,10 @@ Test Cases:
 
 Rationale:
 
-  This is a plain contradiction in dpANS.
+  For Common Lisp implementations that support user defined sequences via a
+  mechanism like Extensible Sequences LIST and VECTOR will not be an
+  exhaustive partition of SEQUENCE. In this case [a] is an accurate statement,
+  but [b] will not be sufficient.
 
 Current Practice:
 
