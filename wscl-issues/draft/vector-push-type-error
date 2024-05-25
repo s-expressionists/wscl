@@ -29,7 +29,7 @@ Test Cases:
                                  :element-type 'character
                                  :initial-element #\a)))
 
-  (one) => ERROR: The value 5 is not of type CHARACTER.
+  (one) ; => [signals TYPE-ERROR with expected type CHARACTER]
 
 Rationale:
 
