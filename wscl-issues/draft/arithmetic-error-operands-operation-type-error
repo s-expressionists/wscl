@@ -37,8 +37,10 @@ Test Cases:
     (declare (optimize (safety 3)))
     (arithmetic-error-operation object))
 
-  (one 234) => ERROR: The value 234 is not of type ARITHMETIC-ERROR.
-  (two 234) => ERROR: The value 234 is not of type ARITHMETIC-ERROR.
+  (one 234)
+  ; => [signals TYPE-ERROR with expected type ARITHMETIC-ERROR]
+  (two 234)
+  ; => [signals TYPE-ERROR with expected type ARITHMETIC-ERROR]
 
 Rationale:
 
@@ -46,42 +48,6 @@ Rationale:
   to indicate no exceptional situations.
 
 Current Practice:
-
-  ABCL 1.8.1-dev-fasl43
-    (one 234) => [signals type-error]
-    (two 234) => [signals type-error]
-
-  ACL 10.1
-    (one 234) => [signals program-error]
-    (two 234) => [signals program-error]
-
-  CCL 1.12-f98
-    (one 234) => [signals error]
-    (two 234) => [signals error]
-
-  CLASP cclasp-boehmprecise-0.4.2-4548-g80d9caef9-cst
-    (one 234) => [signals error]
-    (two 234) => [signals error]
-
-  CLISP 2.49.93+
-    (one 234) => [signals simple-type-error]
-    (two 234) => [signals simple-type-error]
-
-  CMU 2019-05-27 16:42:54 (21D Unicode)
-    (one 234) => [signals type-error]
-    (two 234) => [signals type-error]
-
-  ECL 21.2.1-e68e6827
-    (one 234) => [signals simple-error]
-    (two 234) => [signals simple-error]
-
-  LWPE 7.1.2
-    (one 234) => [signals simple-error]
-    (two 234) => [signals simple-error]
-
-  SBCL 2.1.7
-    (one 234) => [signals type-error]
-    (two 234) => [signals type-error]
 
 Cost to Implementors:
 

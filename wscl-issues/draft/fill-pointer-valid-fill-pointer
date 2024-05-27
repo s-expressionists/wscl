@@ -23,66 +23,23 @@ Proposal:
 
 Test cases:
 
-  (let ((v (make-array 10 :fill-pointer t)))
-    (setf (fill-pointer v) -1))
+  (defun one ()
+    (let ((v (make-array 10 :fill-pointer t)))
+      (setf (fill-pointer v) -1)))
 
-  (let ((v (make-array 10 :fill-pointer t)))
-    (setf (fill-pointer v) 11))
+  (one) ; => [signals TYPE-ERROR with expected type (INTEGER 0 10)]
+
+  (defun two ()
+    (let ((v (make-array 10 :fill-pointer t)))
+      (setf (fill-pointer v) 11)))
+
+  (two) ; => [signals TYPE-ERROR with expected type (INTEGER 0 10)]
 
 Rationale:
 
   We think it is a simple omission in the draft ANSI specification.
 
 Current Practice:
-
-  SBCL 2.1.3
-  (let ((v (make-array 10 :fill-pointer t)))
-    (setf (fill-pointer v) -1)) => [signals a simple-type-error]
-
-  (let ((v (make-array 10 :fill-pointer t)))
-    (setf (fill-pointer v) 11)) => [signals a simple-type-error]
-
-  CCL 1.12.1
-  (let ((v (make-array 10 :fill-pointer t)))
-    (setf (fill-pointer v) -1)) => [signals a simple-type-error]
-
-  (let ((v (make-array 10 :fill-pointer t)))
-    (setf (fill-pointer v) 11)) => [signals a simple-type-error]
-
-  ECL 23.9.9
-  (let ((v (make-array 10 :fill-pointer t)))
-    (setf (fill-pointer v) -1)) => [signals a simple-type-error]
-
-  (let ((v (make-array 10 :fill-pointer t)))
-    (setf (fill-pointer v) 11)) => [signals a simple-type-error]
-
-  Clasp 2.5.0
-  (let ((v (make-array 10 :fill-pointer t)))
-    (setf (fill-pointer v) -1)) => [signals a simple-type-error]
-
-  (let ((v (make-array 10 :fill-pointer t)))
-    (setf (fill-pointer v) 11)) => [signals a simple-type-error]
-
-  CLISP 2.49.92
-  (let ((v (make-array 10 :fill-pointer t)))
-    (setf (fill-pointer v) -1)) => [signals a simple-type-error]
-
-  (let ((v (make-array 10 :fill-pointer t)))
-    (setf (fill-pointer v) 11)) => [signals a simple-type-error]
-
-  GCL 2.6.14
-  (let ((v (make-array 10 :fill-pointer t)))
-    (setf (fill-pointer v) -1)) => [signals an internal-simple-error]
-
-  (let ((v (make-array 10 :fill-pointer t)))
-    (setf (fill-pointer v) 11)) => [signals an internal-simple-error]
-
-  ABCL 1.9.2
-  (let ((v (make-array 10 :fill-pointer t)))
-    (setf (fill-pointer v) -1)) => [signals an error other than type-error]
-
-  (let ((v (make-array 10 :fill-pointer t)))
-    (setf (fill-pointer v) 11)) => [signals an error other than type-error]
 
 Cost to Implementors:
 

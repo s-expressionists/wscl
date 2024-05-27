@@ -27,7 +27,7 @@ Test Cases:
     (declare (optimize (safety 3)))
     (digit-char-p object))
 
-  (one 234) => ERROR: The value 234 is not of type CHARACTER.
+  (one 234) ; => [signals TYPE-ERROR with expected type CHARACTER]
 
 Rationale:
 
@@ -37,11 +37,6 @@ Rationale:
   as proposed here seems to support this idea.
 
 Current Practice:
-
-  SBCL 2.1.3
-    (one 234) => [signals a type error]
-
-  TODO: check other implementations.
 
 Cost to Implementors:
 
