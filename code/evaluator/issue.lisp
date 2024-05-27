@@ -1,5 +1,20 @@
 (in-package #:wscl-evaluator)
 
+(defclass current-practice ()
+  ((implementation :accessor implementation
+                   :initarg :implementation)
+   (version :accessor version
+            :initarg :version)
+   (test :accessor text
+         :initarg :text
+         :initform "")))
+
+(defun make-current-practice (x)
+           (let ((pos (position #\space x :start 2)))
+             (make-instance 'current-practice
+                            :implementation (subseq x 2 pos)
+                            :version (subseq x (1+ pos)))))
+
 (defclass section ()
   ((title :accessor section-title
           :initarg :title
@@ -108,6 +123,61 @@
           and collect (setf section (make-instance 'section :title line))
         end))
 
+(defun current-practice< (x y)
+  (or (string< (implementation x)
+               (implementation y))
+      (uiop:version< (version x)
+                     (version y))))
+
+(defun same-practice-p (x y)
+  (and x y
+       (equalp (implementation x) (implementation y))
+       (equalp (text y) (text y))))
+
+(defun same-implementation-p (x y)
+  (and x y
+       (equalp (implementation x) (implementation y))))
+
+(defun same-version-p (x y)
+  (and x y
+       (equalp (implementation x) (implementation y))
+       (equalp (version x) (version y))))
+
+(defun remove-practice-p (previous current next)
+  (or (same-version-p previous current)
+      (same-version-p current next)
+      (and (not (same-implementation-p previous current))
+           (same-practice-p current next))
+      (and (not (same-implementation-p current next))
+           (same-practice-p previous current))
+      (and (same-practice-p previous current)
+           (same-practice-p next current))))
+
+(defun write-current-practice (stream text)
+  (let ((items (loop with stream = (make-string-input-stream text)
+                     with current = nil
+                     for line = (read-line stream nil)
+                     while line
+                     when (and (> (length line) 2)
+                               (char/= (char line 2) #\Space))
+                       collect (setf current (make-current-practice line))
+                     else when (and (plusp (length line))
+                                    current)
+                            do (setf (text current)
+                                     (concatenate 'string
+                                                  (text current)
+                                                  '(#\newline)
+                                                  line)))))
+    (setf items (sort items #'current-practice<))
+    (loop with previous = nil
+          for (current next) on items
+          unless (remove-practice-p previous current next)
+            do (setf previous current)
+               (format stream "  ~a ~a~a~%~%"
+                       (implementation current)
+                       (version current)
+                       (text current)))))
+
 (defun eval-issue (path)
   (format t "~%Parsing and evaluating ~a...~%" path)
   (handler-case
@@ -123,20 +193,11 @@
                            else when (and last-current-practice
                                           (equalp (section-title section) "Current Practice:"))
                                   do (write-line (section-title section) stream)
-                                     (let ((pos (search last-current-practice (section-text section)
-                                                        :end1 6 :test #'equalp)))
-                                       (cond (pos
-                                              (write-string (section-text section) stream :end pos)
-                                              (write-string last-current-practice stream)
-                                              (write-string (section-text section) stream
-                                                            :start (search (make-string 2 :initial-element #\Newline)
-                                                                           (section-text section)
-                                                                           :start2 pos)))
-                                             (t
-                                              (write-string (section-text section) stream)
-                                              (write-string last-current-practice stream)
-                                              (terpri stream)
-                                              (terpri stream))))
+                                     (terpri stream)
+                                     (write-current-practice stream
+                                                             (concatenate 'string
+                                                                          (section-text section)
+                                                                          last-current-practice))
                                      (setf last-current-practice nil)
                            else
                              do (write-line (section-title section) stream)
