@@ -28,7 +28,9 @@ jobs:
       run: |
         for lisp in abcl acl ccl clasp cmucl ecl mkcl sbcl; do
           echo "::group::${lisp}"
-          lisp -i $lisp -e "(ql:quickload :wscl-evaluator)" -e "(wscl-evaluator:eval-issues)"
+          for FILE in wscl-issues/draft/*; do
+            lisp -i $lisp -e "(ql:quickload :wscl-evaluator)" -e "(wscl-evaluator:eval-issues \"$FILE\")"
+          done
           echo "::endgroup::"        
         done
     - name: diff
