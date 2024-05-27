@@ -19,17 +19,13 @@ Proposal (PROG2-RETURN-VALUE:SECOND-FORM):
 
 Test case:
 
-  (prog2 1 2)
-  ;;; Under the Description definition, returns 1. By common sense, returns 2.
+  (prog2 1 2) ; => 2
 
 Rationale:
 
   Bugfix.
 
 Current practice:
-
-  No known implementation is incompatible with proposal
-  PROG2-RETURN-VALUE:SECOND-FORM.
 
 Cost to Implementors:
 

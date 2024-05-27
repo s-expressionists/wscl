@@ -46,10 +46,10 @@ Test Cases:
     (declare (optimize (safety 0)))
     (setf (fdefinition 'foo) object))
 
-  (one 'foo) => ERROR The value FOO is not of type FUNCTION.
-  (one '(foo)) => ERROR The value (FOO) is not of type FUNCTION.
-  (one (fdefinition 'let)) => ERROR: ...
-  (one (fdefinition 'defun)) => ERROR: ...
+  (one 'foo) ; => [signals TYPE-ERROR with expected type FUNCTION]
+  (one '(foo)) ; => [signals TYPE-ERROR with expected type FUNCTION]
+  (one (fdefinition 'let)) ; => [signals ERROR]
+  (one (fdefinition 'defun)) ; => [signals ERROR]
 
 Rationale:
 
@@ -57,12 +57,6 @@ Rationale:
   normative.
 
 Current Practice:
-
-  SBCL 2.1.7
-  (one 'foo) => [signals a type error]
-  (one '(foo)) => [signals a type error]
-  (one (fdefinition 'let)) => [signals an SBCL-specific error]
-  (one (fdefinition 'defun)) => [signals an SBCL-specific error]
 
 Cost to Implementors:
 

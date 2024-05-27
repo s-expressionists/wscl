@@ -29,9 +29,9 @@ Test Cases:
 
   (defun one (object)
     (declare (optimize (safety 3)))
-    (package-used-by-list object))
+    (listp (package-used-by-list object)))
 
-  (one "CL") ; => [returns a list of packages]
+  (one "CL") ; => T
   (one "ZZ") ; => [signals TYPE-ERROR with expected type PACKAGE]
 
 Rationale:

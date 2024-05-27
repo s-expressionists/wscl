@@ -31,7 +31,7 @@ Test Cases:
     (declare (optimize (safety 3)))
     (type-error-expected-type object))
 
-  (one 234) => [signals TYPE-ERROR with expected type TYPE-ERROR]
+  (one 234) ; => [signals TYPE-ERROR with expected type TYPE-ERROR]
 
 Rationale:
 
@@ -39,33 +39,6 @@ Rationale:
   to indicate no exceptional situations.
 
 Current Practice:
-
-  ABCL 1.8.1-dev-fasl43
-    (one 234) => [signals TYPE-ERROR with expected type STANDARD-OBJECT]
-
-  ACL 10.1
-    (one 234) => [signals PROGRAM-ERROR]
-
-  CCL 1.12-f98
-    (one 234) => [signals ERROR]
-
-  CLASP cclasp-boehmprecise-0.4.2-4619-g23bf6aa3d-cst
-    (one 234) => [signals ERROR]
-
-  CLISP 2.49.93+
-    (one 234) => [signals TYPE-ERROR with expected type TYPE-ERROR]
-
-  CMU 2019-05-27 16:42:54 (21D Unicode)
-    (one 234) => [signals TYPE-ERROR]
-
-  ECL 21.2.1-e68e6827
-    (one 234) => [signals SIMPLE-ERROR]
-
-  LWPE 7.1.2
-    (one 234) => [signals SIMPLE-ERROR]
-
-  SBCL 2.1.7
-    (one 234) => [signals TYPE-ERROR with expected type CONDITION]
 
 Cost to Implementors:
 

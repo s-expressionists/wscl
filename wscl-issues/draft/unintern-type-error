@@ -33,8 +33,11 @@ Test Cases:
     (declare (optimize (safety 3)))
     (unintern object1 object2))
 
-  (one 234 "CL-USER") => ERROR: The value 234 is not of type ...
-  (one 'a 234) => ERROR: The value 234 is not of type ...
+  (one 234 "CL-USER")
+  ; => [signals TYPE-ERROR with expected type SYMBOL]
+  (one 'a 234)
+  ; => [signals TYPE-ERROR with expected type
+  ;     (OR STRING SYMBOL CHARACTER PACKAGE)]
 
 Rationale:
 
@@ -42,42 +45,6 @@ Rationale:
   to indicate no exceptional situations for these cases.
 
 Current Practice:
-
-  ABCL 1.8.1-dev-fasl43
-    (one 234 "CL-USER") => [signals type-error]
-    (one 'a 234) => [signals type-error]
-
-  ACL 10.1
-    (one 234 "CL-USER") => [signals type-error]
-    (one 'a 234) => [signals type-error]
-
-  CCL 1.12-f98
-    (one 234 "CL-USER") => [signals type-error]
-    (one 'a 234) => [signals type-error]
-
-  CLASP cclasp-boehmprecise-0.4.2-4548-g80d9caef9-cst
-    (one 234 "CL-USER") => [signals type-error]
-    (one 'a 234) => [signals type-error]
-
-  CLISP 2.49.93+
-    (one 234 "CL-USER") => [signals simple-type-error]
-    (one 'a 234) => [signals simple-type-error]
-
-  CMU 2019-05-27 16:42:54 (21D Unicode)
-    (one 234 "CL-USER") => [signals type-error]
-    (one 'a 234) => [signals simple-error]
-
-  ECL 21.2.1-e68e6827
-    (one 234 "CL-USER") => [signals simple-type-error]
-    (one 'a 234) => [signals simple-type-error]
-
-  LWPE 7.1.2
-    (one 234 "CL-USER") => [signals simple-type-error]
-    (one 'a 234) => [signals type-error]
-
-  SBCL 2.1.7
-    (one 234 "CL-USER") => [signals type-error]
-    (one 'a 234) => [signals type-error]
 
 Cost to Implementors:
 
