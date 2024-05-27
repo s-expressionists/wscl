@@ -126,8 +126,10 @@
 (defun current-practice< (x y)
   (or (string< (implementation x)
                (implementation y))
-      (uiop:version< (version x)
-                     (version y))))
+      (and (string-equal (implementation x)
+                         (implementation y))
+           (uiop:version< (version x)
+                          (version y)))))
 
 (defun same-practice-p (x y)
   (and x y
