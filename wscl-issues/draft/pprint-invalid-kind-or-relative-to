@@ -54,13 +54,16 @@ Test Cases:
     (declare (optimize (safety 3)))
     (pprint-tab object 10 10))
 
-  (one :bar) => [signals TYPE-ERROR with expected type
-                  (MEMBER :BLOCK :CURRENT)]
-  (two :bar) => [signals TYPE-ERROR with expected type
-                  (MEMBER :LINEAR :MISER :FILL :MANDATORY)]
-  (three :bar) => [signals TYPE-ERROR with expected type
-                    (MEMBER :LINE :SECTION :LINE-RELATIVE
-                            :SECTION-RELATIVE)]
+  (one :bar)
+  ; => [signals TYPE-ERROR with expected type
+  ;    (MEMBER :BLOCK :CURRENT)]
+  (two :bar)
+  ; => [signals TYPE-ERROR with expected type
+  ;     (MEMBER :LINEAR :MISER :FILL :MANDATORY)]
+  (three :bar)
+  ; => [signals TYPE-ERROR with expected type
+  ;     (MEMBER :LINE :SECTION :LINE-RELATIVE
+  ;             :SECTION-RELATIVE)]
 
 Rationale:
 
@@ -70,81 +73,6 @@ Rationale:
   arguments.
 
 Current Practice:
-
-  ABCL 1.8.1-dev-fasl43
-    (one :bar) => [signals SIMPLE-ERROR]
-    (two :bar) => [signals TYPE-ERROR with expected type
-                    (MEMBER :LINEAR :MISER :FILL :MANDATORY)]
-    (three :bar) => [signals SIMPLE-ERROR]
-
-  ACL 10.1
-    (one :bar) => [signals TYPE-ERROR with expected type
-                    (MEMBER :BLOCK :CURRENT)]
-    (two :bar) => [signals TYPE-ERROR with expected type
-                    (MEMBER :LINEAR :MISER :FILL :MANDATORY)]
-    (three :bar) => [signals TYPE-ERROR with expected type
-                      (MEMBER :LINE :SECTION :LINE-RELATIVE
-                              :SECTION-RELATIVE)]
-
-  CCL 1.12-f98
-    (one :bar) => [signals SIMPLE-ERROR]
-    (two :bar) => [signals TYPE-ERROR with expected type
-                    (MEMBER :LINEAR :MISER :FILL :MANDATORY)]
-    (three :bar) => [signals SIMPLE-ERROR]
-
-  CLASP cclasp-boehmprecise-0.4.2-4642-g23594dc12-cst
-    (one :bar) => [signals TYPE-ERROR with expected type
-                    (MEMBER :BLOCK :CURRENT)]
-    (two :bar) => [signals TYPE-ERROR with expected type
-                    (MEMBER :LINEAR :MISER :FILL :MANDATORY)]
-    (three :bar) => [signals TYPE-ERROR with expected type
-                      (MEMBER :LINE :SECTION :LINE-RELATIVE
-                              :SECTION-RELATIVE)]
-
-  CLISP 2.49.93+
-    (one :bar) => [signals TYPE-ERROR with expected type
-                    (MEMBER :BLOCK :CURRENT)]
-    (two :bar) => [signals TYPE-ERROR with expected type
-                    (MEMBER :LINEAR :FILL :MISER :MANDATORY)]
-    (three :bar) => [signals TYPE-ERROR with expected type
-                      (MEMBER :LINE :LINE-RELATIVE :SECTION
-                              :SECTION-RELATIVE)]
-
-  CMU 2019-05-27 16:42:54 (21D Unicode)
-    (one :bar) => [signals TYPE-ERROR with expected type
-                    (MEMBER :BLOCK :CURRENT)]
-    (two :bar) => [signals TYPE-ERROR with expected type
-                    (MEMBER :LINEAR :MISER :FILL :MANDATORY)]
-    (three :bar) => [signals TYPE-ERROR with expected type
-                      (MEMBER :LINE :SECTION :LINE-RELATIVE
-                              :SECTION-RELATIVE)]
-
-  ECL 21.2.1-1b5b8b40
-    (one :bar) => [signals TYPE-ERROR with expected type
-                    (MEMBER :BLOCK :CURRENT)]
-    (two :bar) => [signals TYPE-ERROR with expected type
-                    (MEMBER :LINEAR :MISER :FILL :MANDATORY)]
-    (three :bar) => [signals TYPE-ERROR with expected type
-                      (MEMBER :LINE :SECTION :LINE-RELATIVE
-                              :SECTION-RELATIVE)]
-
-  LWPE 7.1.2
-    (one :bar) => [signals TYPE-ERROR with expected type
-                    (MEMBER :BLOCK :CURRENT)]
-    (two :bar) => [signals TYPE-ERROR with expected type
-                    (MEMBER :LINEAR :MISER :FILL :MANDATORY)]
-    (three :bar) => [signals TYPE-ERROR with expected type
-                      (MEMBER :LINE :SECTION :LINE-RELATIVE
-                              :SECTION-RELATIVE)]
-
-  SBCL 2.1.7
-    (one :bar) => [signals TYPE-ERROR with expected type
-                    (MEMBER :BLOCK :CURRENT)]
-    (two :bar) => [signals TYPE-ERROR with expected type
-                    (MEMBER :LINEAR :MISER :FILL :MANDATORY)]
-    (three :bar) => [signals TYPE-ERROR with expected type
-                      (MEMBER :LINE :SECTION :LINE-RELATIVE
-                              :SECTION-RELATIVE)]
 
 Cost to Implementors:
 

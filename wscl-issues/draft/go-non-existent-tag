@@ -43,8 +43,8 @@ Test Cases:
          (go ,go-name)
         ,tag-name)))
 
-  (one a a) => NIL
-  (one a b) => [signals PROGRAM-ERROR]
+  (one a a) ; => NIL
+  (one a b) ; => [signals PROGRAM-ERROR]
 
 Rationale:
 
@@ -52,42 +52,6 @@ Rationale:
   behavior of GO when applied to unmatched tags.
 
 Current Practice:
-
-  ABCL 1.8.1-dev-fasl43
-    (one a a) => NIL
-    (one a b) => [signals CONTROL-ERROR]
-
-  ACL 10.1
-    (one a a) => NIL
-    (one a b) => [signals CONTROL-ERROR]
-
-  CCL 1.12-f98
-    (one a a) => NIL
-    (one a b) => [signals PROGRAM-ERROR]
-
-  CLASP cclasp-boehmprecise-0.4.2-4619-g23bf6aa3d-cst
-    (one a a) => NIL
-    (one a b) => [signals PROGRAM-ERROR]
-
-  CLISP 2.49.93+
-    (one a a) => NIL
-    (one a b) => [signals SIMPLE-ERROR]
-
-  CMU 2019-05-27 16:42:54 (21D Unicode)
-    (one a a) => NIL
-    (one a b) => [signals PROGRAM-ERROR]
-
-  ECL 21.2.1-e68e6827
-    (one a a) => NIL
-    (one a b) => [signals SIMPLE-ERROR]
-
-  LWPE 7.1.2
-    (one a a) => NIL
-    (one a b) => [signals PROGRAM-ERROR]
-
-  SBCL 2.1.7
-    (one a a) => NIL
-    (one a b) => [signals PROGRAM-ERROR]
 
 Cost to Implementors:
 

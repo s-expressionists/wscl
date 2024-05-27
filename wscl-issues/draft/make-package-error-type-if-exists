@@ -27,12 +27,10 @@ Proposal (MAKE-PACKAGE-SIGNALS-PACKAGE-ERROR-IF-EXISTS):
 Test cases:
 
   (defun one (name)
-    (typep (nth-value 1 (ignore-errors
-                          (progn (make-package name)
-                                 (make-package name))))
-           'package-error))
+    (make-package name)
+    (make-package name))
 
-  (one "hello") ; => T
+  (one "hello") ; => [signals PACKAGE-ERROR]
 
 Rationale:
 
