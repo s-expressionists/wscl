@@ -29,7 +29,7 @@ jobs:
         for lisp in abcl acl ccl clasp cmucl ecl mkcl sbcl; do
           echo "::group::${lisp}"
           for FILE in wscl-issues/draft/*; do
-            lisp -i $lisp -e "(ql:quickload :wscl-evaluator)" -e "(wscl-evaluator:eval-issues \"$FILE\")"
+            lisp -i $lisp -e "(ql:quickload :wscl-evaluator)" -e "(wscl-evaluator:eval-issues (first (uiop:command-line-arguments)))" $FILE
           done
           echo "::endgroup::"        
         done
