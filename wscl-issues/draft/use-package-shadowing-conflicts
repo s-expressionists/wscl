@@ -1,0 +1,97 @@
+Issue:         USE-PACKAGE-SHADOWING-CONFLICTS
+Forum:	       Cleanup
+Category:      CLARIFICATION CHANGE
+References:    USE-PACKAGE `shadowing symbols list'
+Edit History:  02-May-25, Version 1 by Umut Tuna Akgül
+
+Problem description:
+
+  The description of the function USE-PACKAGE states that "USE-PACKAGE
+  checks for name conflicts between the newly imported symbols and
+  those already accessible in package", while the glossary entry for
+  `shadowing symbols list' states that `shadowing symbols' are those
+  "that are to be exempted from `symbol conflict errors' detected when
+  packages are used".
+
+Proposal (USE-PACKAGE-SHADOWING-CONFLICTS:IGNORE-SHADOWING-CONFLICTS):
+
+  This proposal amends the description of USE-PACKAGE such that
+  "USE-PACKAGE checks for name conflicts between the newly imported
+  symbols and those already accessible in package" is followed by:
+
+  "unless when the accessible symbol is a shadowing symbol in package"
+
+Test Cases:
+
+  (defpackage foo (:shadow quux))
+  (defpackage bar (:export quux))
+  (use-package 'bar 'foo) => T
+
+  (defpackage baz (:export foobar))
+  (intern "FOOBAR" 'foo)
+  (use-package 'baz 'foo) => ERROR
+
+Rationale:
+
+  The current description of USE-PACKAGE is in conflict with the
+  description of a shadowing symbol.  If the description of
+  USE-PACKAGE is the correct one, then the definition of the term
+  `shadowing symbol' is invalid, and PACKAGE-SHADOWING-SYMBOLS ceases
+  to be meaningful.
+
+Current practice:
+
+  ECL 24.5.10
+  Armed Bear Common Lisp 1.9.3
+  SBCL 2.4.5
+    (use-package 'bar 'foo) => T
+    (use-package 'baz 'foo) => ERROR
+
+Cost to Implementors:
+
+  Small.  If any implementation only checks that a symbol is
+  accessible, it would only need to add a second check that the symbol
+  is not in PACKAGE-SHADOWING-SYMBOLS.
+
+Cost to Users:
+
+  Very small.  Code written with the expectation that the shadowing
+  status of a symbol does not persist across various USE-PACKAGE and
+  UNUSE-PACKAGE operations will need to be rewritten.
+
+Cost of non-adoption:
+
+  Due to order of options in DEFPACKAGE, a package in :USE which
+  conflicts with a symbol in :SHADOW or :SHADOWING-IMPORT-FROM would
+  signal an error, which would run counter to user intent.
+
+Performance impact:
+
+  In the worst case scenario, this will add N*M comparisons to
+  USE-PACKAGE, where N is the number of external symbols in the used
+  package and M is the number of shadowing symbols in the using
+  package.  More likely N will be the number of external conflicting
+  symbols, and if the shadowing status of a symbol is stored M can be
+  omitted.  Ultimately, the performance is unlikely to be significant
+  or noticable.
+
+This will add a check to USE-PACKAGE for every conflicting symbol.
+  This check, depending on the implementation, may be a single
+  operation or, in the worst case scenario, a comparison against all
+  shadowing symbols.  Regardless, the impact is likely to be
+  ultimately minimal.
+
+Benefits:
+
+  Users would avoid correctable errors during DEFPACKAGE where a
+  package in :USE conflicts with a symbol in :SHADOW or
+  :SHADOWING-IMPORT-FROM, which goes against user intent.
+
+Esthetics:
+
+  None.
+
+Discussion:
+
+  None.
+
