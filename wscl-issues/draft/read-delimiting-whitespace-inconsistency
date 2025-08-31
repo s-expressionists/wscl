@@ -1,0 +1,71 @@
+Issue:         READ-DELIMITING-WHITESPACE-INCONSISTENCY
+Forum:         Cleanup
+Category:      CLARIFICATION
+References:    READ, READ-PRESERVING-WHITESPACE
+Edit history:  2024-06-25, Version 1 by Umut Tuna AKGÜL TURAÇ
+
+Problem description:
+
+  In the draft ANSI Common Lisp specification, the description of what
+  READ does with a delimiting whitespace character states that it both
+  "throws [it] away" and "preserves [it]".
+
+Proposal (READ-DELIMITING-WHITESPACE-INCONSISTENCY:FIX-MISNAMING):
+
+  This propoal changes the second instance of READ in the third
+  paragraph of the description to READ-PRESERVING-WHITESPACE, such
+  that READ "throws away the delimiting character" and
+  READ-PRESERVING-WHITESPACE "preserves the [delimiting] character".
+  
+Rationale:
+
+  This appears to be a mistake of sorts with the proposed reading
+  being the intended one, as is supported by the naming of the
+  function READ-PRESERVING-WHITESPACE.
+
+Current practice:
+
+  ABCL 1.9.2, ECL 24.5.10, SBCL 2.4.5
+    (with-input-from-string (in "foo bar")
+      (read in)
+      (read-line in))
+    => "bar"
+    (with-input-from-string (in "foo bar")
+      (read-preserving-whitespace in)
+      (read-line in))
+    => " bar"
+
+Cost to Implementors:
+
+  Small.  Most implementations are likely to behave consistently with
+  the clarified definitions, and for those who don't, if they are
+  conforming the function READ should be working as either the
+  clarified READ or the clarified READ-PRESERVING-WHITESPACE.  One can
+  be defined in terms of other using UNREAD-CHAR and/or READ-CHAR with
+  not too great effort.
+
+Cost to Users:
+
+  Any code using READ where READ-PRESERVING-WHITESPACE is intended
+  will need to use it instead.
+
+Cost of non-adoption:
+
+  The definition of READ would be self-inconsistent.
+  
+Benefits:
+
+  This proposal would ensure a version of READ-PRESERVING-WHITESPACE
+  which explicitly does not preserve whitespace, in the form of READ,
+  and clarify the difference between the two.
+
+Discussion:
+
+  While this problem means that READ is inconsistent and
+  READ-PRESERVING-WHITESPACE underspecified,
+  READ-PRESERVING-WHITESPACE is earlier explicitly defined to preserve
+  "any whitespace[2] character that delimits ... the object" so it
+  does not suffer from any issues as a result.  It could be argued
+  that the usage of the word "but" in that line could be understood to
+  mean that READ in fact does not preserve any whitespace but - while
+  it supports the proposal - it isn't very explicit.
