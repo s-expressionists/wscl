@@ -1,0 +1,46 @@
+Issue:          MATCHING-IN-CASE
+Forum:          Cleanup
+Category:       CLARIFICATION
+Status:         proposed
+Edit history:   2022-08-19, Version 1 by John Cowan
+                2021-07-15, version 2 by Bike (reformat for WSCL, etc)
+                11-Aug-21, Version 3 by Tarn W. Burton (update current practice)
+References:     VALUES
+
+Problem Description:
+
+  The description of CASE/ECASE/CCASE talks about keys "matching" a clause, but this
+  term is not define either in the description or in the glossary.
+
+Proposal (MATCHING-IN-CASE:EQL):
+
+ Replace "match", "matches", "matching" by "are the same as", etc.
+
+Test case:
+
+  None.
+
+Rationale:
+
+  Current practice.
+
+Current practice:
+
+  All existing implementations understand matching as being the same in the
+  sense of EQL.
+
+Cost to Implementors:
+
+  None.
+
+Cost to Users:
+
+  None.
+
+Cost of Non-Adoption:
+
+  Unclear spec.
+
+Discussion:
+
+  None as yet.
